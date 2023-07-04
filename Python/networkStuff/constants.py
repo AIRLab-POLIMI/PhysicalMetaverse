@@ -1,6 +1,7 @@
 MSG_DELIMITER = '_'
 DELIMITER = ":"
 BUMP_KEY = b'\xf0'
+SUN_KEY = b'\xfa'
 LIDAR_KEY = b'\xf1'
 POSE_KEY = b'\xf2'
 UNITY_PRESENTATION_KEY = b'\xc0'

@@ -3,6 +3,7 @@ using System.Linq;
 using Core;
 using UnityEngine;
 using System.Text;
+using System.Collections;
 
 public class LidarManager : Monosingleton<LidarManager>
 {
@@ -66,25 +67,63 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
+    [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
+    private int[] currentPositions;
+
     public void OnMsgRcv(byte[] msg)
     {
         int[] bytesAsInts = new int[arraySize];
         Buffer.BlockCopy(msg, 0, bytesAsInts, 0, msg.Length);
+        //log bytesAsInts
+        Debug.Log(bytesAsInts);
 
         trackedCameraDegrees = CopyTrackedDegrees(bytesAsInts, nOfLidarDegrees);
         
         //var sb = new StringBuilder("new int[] { ");
 
         int i = 0;
-        foreach (int n in bytesAsInts)
-        {
-            UpdatePosition(i, n);
-            //sb.Append(n + ", ");
-            //UpdatePosition(i, n);
-            i++;
+
+        if(currentPositions == null){
+            currentPositions = new int[arraySize];
+            foreach (int n in bytesAsInts)
+            {
+                UpdatePosition(i, n);
+                i++;
+            }
         }
+        else
+            foreach (int n in bytesAsInts)
+            {
+                //if max between current and new divided by min between current and new is greater than tolerance then update
+                float relativeDistance = (float)Math.Max(currentPositions[i], n) / (float)Math.Min(currentPositions[i], n);
+                if(!(currentPositions[i] == 0 && n == 0) && relativeDistance > newTolerance)
+                {
+                    UpdatePosition(i, n);
+                    currentPositions[i] = n;
+                }
+                //sb.Append(n + ", ");
+                //UpdatePosition(i, n);
+                i++;
+            }
         
-        UpdatePoseDistance();
+        //////// GPT ALTERNATIVE, add epsilon to avoid zero check
+        /*
+        //init currentPositions outside
+        foreach (int n in bytesAsInts)
+            {
+                //if max between current and new divided by min between current and new is greater than tolerance then update
+                float relativeDistance = (float)Math.Max(currentPositions[i] +1, n +1) / (float)Math.Min(currentPositions[i] +1, n +1);
+                if(relativeDistance > newTolerance)
+                {
+                    UpdatePosition(i, n);
+                    currentPositions[i] = n;
+                }
+
+                i++;
+            }
+        */
+
+        //UpdatePoseDistance(); //MAYBE IMPORTANT BUT NOT WORKING
 
         //sb.Append("}");
         //Debug.Log(sb.ToString());
@@ -235,12 +274,13 @@ public class LidarManager : Monosingleton<LidarManager>
     {
         if (value == 0) //Default invalid value
         {
-            _points[pos].transform.position = defaultHidePosition;
+            StartCoroutine(FadeOutPoint(_points[pos]));
+            //_points[pos].transform.position = defaultHidePosition;
             //_points[pos].transform.localScale = defaultScale;
         }
         else
         {
-            
+            StartCoroutine(FadeInPoint(_points[pos]));
             if ((ConvertAngleTo360(pos) >= MinConvertedAngle.runtimeValue && ConvertAngleTo360(pos) <= MaxConvertedAngle.runtimeValue) && (MinConvertedAngle.runtimeValue != -1)) //if one of the angles where Pose is
             {
                 _points[pos].GetComponent<MeshRenderer>().enabled = false;
@@ -260,6 +300,57 @@ public class LidarManager : Monosingleton<LidarManager>
             _points[pos].transform.localScale = new Vector3(convertedValue / 10, _points[pos].transform.localScale.y,
                 convertedValue / 10);
         }
+    }
+
+    
+    [SerializeField] float fadeDuration = 0.05f; // Duration of the fade-out effect in seconds
+
+    private IEnumerator FadeOutPoint(GameObject point)
+    {
+        Renderer renderer = point.GetComponent<Renderer>();
+        Material material = renderer.material;
+
+        Color originalColor = material.color;
+        Color targetColor = new Color(originalColor.r, originalColor.g, originalColor.b, 0f); // Fade out to fully transparent
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            float t = elapsedTime / fadeDuration; // Normalized time value (0 to 1)
+            //fadeout linear duration/elapsed
+            material.color = new Color(originalColor.r, originalColor.g, originalColor.b, 1f - t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the material color is set to the target color at the end of the fade-out
+        material.color = targetColor;
+    }
+
+    private IEnumerator FadeInPoint(GameObject point)
+    {
+        Renderer renderer = point.GetComponent<Renderer>();
+        Material material = renderer.material;
+
+        Color originalColor = material.color;
+        Color targetColor = new Color(originalColor.r, originalColor.g, originalColor.b, 1f); // Fade in to fully opaque
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < fadeDuration)
+        {
+            float t = elapsedTime / fadeDuration; // Normalized time value (0 to 1)
+            //fadeout linear duration/elapsed
+            material.color = new Color(originalColor.r, originalColor.g, originalColor.b, t);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        // Ensure the material color is set to the target color at the end of the fade-in
+        material.color = targetColor;
     }
 
     private float ConvertRange(int oldValue)

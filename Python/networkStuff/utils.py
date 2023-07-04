@@ -41,7 +41,11 @@ def encode_msg(msgtype, data):
     if msgtype == BUMP_KEY :
         msg = msgtype + data
         return msg
-
+    
+    if msgtype == SUN_KEY :
+        msg = msgtype + data
+        return msg
+    
     elif msgtype == LIDAR_KEY :
         value = struct.pack('360i', *data)
         msg = msgtype + value
