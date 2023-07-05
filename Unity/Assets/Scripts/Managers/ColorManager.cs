@@ -7,7 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 
 //to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
-public class UDPReceiverColor : MonoBehaviour
+//this manager receives x, y of the biggest blob of one chosen color in image frame and positions a sphere at such coordinates
+public class ColorManager : MonoBehaviour
 {
     //listen for udp messages on port 5004
     static int port = 5004;
@@ -21,32 +22,16 @@ public class UDPReceiverColor : MonoBehaviour
     private bool spawned = false;
 
     private GameObject[] spheres;
+
+    public void OnMsgRcv(byte[] msg)
+    {
+        string message = Encoding.ASCII.GetString(msg);
+        //log the message
+        Debug.Log("Color\n" + message);
+        parsedData = ParseData(message);
+    }
     void Start()
     {
-        //create udpclient object
-        client = new UdpClient(port);
-        //udp packets are sent as byte data
-        data = new byte[1024];
-        //begin listening for messages
-        client.BeginReceive(new AsyncCallback(recv), null);
-    }
-
-    //recv
-    private void recv(IAsyncResult res)
-    {
-        //store the remote endpoint
-        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, port);
-        //get the data
-        data = client.EndReceive(res, ref RemoteIpEndPoint);
-        //get the message
-        string message = Encoding.ASCII.GetString(data);
-        //log the message
-        Debug.Log(message);
-        //parse the message
-        parsedData = ParseData(message);
-        //Debug.Log(ParseData(message));
-        //listen for new messages
-        client.BeginReceive(new AsyncCallback(recv), null);
     }
 
     //a receive looks like
@@ -121,4 +106,5 @@ public class UDPReceiverColor : MonoBehaviour
         client.Close();
     }
 }
+
 

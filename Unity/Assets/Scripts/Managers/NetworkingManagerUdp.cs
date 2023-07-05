@@ -1,57 +1,78 @@
-using System.Collections;
+//this script should receive udp messages in unity and log them
+using UnityEngine;
+using System;
+using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
-using UnityEngine;
-using System.Threading.Tasks;
+using GameEvents;
+
+//new version of NetworkingManager, just start listening and see what happens
+//for now just receive, control of the robot is done via controller external to unity
 public class NetworkingManagerUdp : MonoBehaviour
 {
-    UdpClient udpClient;
-    IPEndPoint remoteEndPoint;
+    //listen for udp messages on port 25888
+    public int _udpPort = 25888;
+    //udpclient object
+    private UdpClient _client;
+    //udp packet storage
+    private byte[] _data;
+    //udp packet size
+    public int _packetSize = 1024;  //CHANGE IF NOT ENOUGH
 
-    void Start()
+    [SerializeField] private KeyValueGameEventSO _onKeyValueReceived;
+
+    public void Setup()
     {
-        udpClient = new UdpClient(11000);
-        remoteEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.10"), 11000);
-
-        StartCoroutine(SendDataCoroutine());
-
-        StartCoroutine(ReceiveDataCoroutine());
+        //create udpclient object
+        _client = new UdpClient(_udpPort);
+        //udp packets are sent as byte data
+        _data = new byte[_packetSize];
+        //begin listening for messages
+        _client.BeginReceive(new AsyncCallback(recv), null);
     }
 
-    IEnumerator SendDataCoroutine()
+    //recv
+    private void recv(IAsyncResult res)
     {
-        string text = "Hello";
-        byte[] send_buffer = Encoding.ASCII.GetBytes(text);
-        udpClient.Send(send_buffer, send_buffer.Length, remoteEndPoint);
-
-        yield return new WaitForSeconds(1f);
-
-        StartCoroutine(SendDataCoroutine());
-    }
-
-    IEnumerator ReceiveDataCoroutine()
-    {
-        while (true)
+        //store the remote endpoint
+        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, _udpPort);
+        //get the data
+        _data = _client.EndReceive(res, ref RemoteIpEndPoint);
+        //get the message
+        string message = Encoding.ASCII.GetString(_data);
+        //log the message
+        //Debug.Log(message);
+        if (!CheckKeyValueMessage(_data))
         {
-            Task<UdpReceiveResult> receiveTask = Task.Run(async () =>
-            {
-                return await udpClient.ReceiveAsync();
-            });
-
-            while (!receiveTask.IsCompleted)
-            {
-                yield return null; // wait until next frame
-            }
-
-            UdpReceiveResult result = receiveTask.Result;
-            string receivedData = Encoding.ASCII.GetString(result.Buffer);
-            Debug.Log("Received: " + receivedData);
+            Debug.Log("Message not recognized");
+        Debug.Log(message);
         }
+        //listen for new messages
+        _client.BeginReceive(new AsyncCallback(recv), null);
+    }
+
+    private bool CheckKeyValueMessage(byte[] msg)
+    {
+        var keyValMsg = KeyValueMsg.ParseKeyValueMsg(msg);
+
+        if (keyValMsg != null)
+        {
+            _onKeyValueReceived.Invoke(keyValMsg);
+            return true;
+        }
+
+        return false;
+    }
+
+    private void FixedUpdate()
+    {
+        
     }
 
     private void OnApplicationQuit()
     {
-        udpClient.Close();
+        //stop listening
+        _client.Close();
     }
 }
+

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aef07d548a63d384aa708a3903e1d9d7, type: 3}
-  m_Name: Sun Key
+  m_Name: Color Key
   m_EditorClassIdentifier: 
   priorityLevel: 2
-  startValue: 250
+  startValue: 255
   runtimeValue: 250
   initOutside: 0
-  Description: 0xfa
+  Description: 0x70

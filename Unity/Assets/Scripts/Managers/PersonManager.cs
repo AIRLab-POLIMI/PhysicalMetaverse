@@ -7,7 +7,8 @@ using System.Net;
 using System.Net.Sockets;
 
 //to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
-public class UDPReceiver : MonoBehaviour
+//this manager receives the 34 body landmarks detected by the depthai camera and positions a sphere at each landmark
+public class PersonManager : MonoBehaviour
 {
     //make a slider to adjust the rotation angle
     //public float rotationAngle = -20f;
@@ -26,32 +27,16 @@ public class UDPReceiver : MonoBehaviour
     private bool spawned = false;
 
     private GameObject[] spheres;
+
+    public void OnMsgRcv(byte[] msg)
+    {
+        string message = Encoding.ASCII.GetString(msg);
+        Debug.Log("Pose\n" + message);
+        parsedData = ParseData(message);
+    }
     void Start()
     {
-        //create udpclient object
-        client = new UdpClient(port);
-        //udp packets are sent as byte data
-        data = new byte[1024];
-        //begin listening for messages
-        client.BeginReceive(new AsyncCallback(recv), null);
-    }
 
-    //recv
-    private void recv(IAsyncResult res)
-    {
-        //store the remote endpoint
-        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, port);
-        //get the data
-        data = client.EndReceive(res, ref RemoteIpEndPoint);
-        //get the message
-        string message = Encoding.ASCII.GetString(data);
-        //log the message
-        Debug.Log(message);
-        //parse the message
-        parsedData = ParseData(message);
-        //Debug.Log(ParseData(message));
-        //listen for new messages
-        client.BeginReceive(new AsyncCallback(recv), null);
     }
 
     //a receive looks like

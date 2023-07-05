@@ -313,7 +313,7 @@ GameObject:
   - component: {fileID: 1948799301}
   - component: {fileID: 1948799303}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: CameraManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -331,6 +331,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a97bf847a4dacfa488863b235e54ef10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationAngle: -15
+  scale: 169
+  zOffset: 5.5
+  zMultiplier: 1
 --- !u!4 &1948799302
 Transform:
   m_ObjectHideFlags: 0

@@ -37,7 +37,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     [SerializeField] private ByteSO jetsonSensorsReadyKey;
 
     [SerializeField] private ByteSO jetsonPingKey;
- 
+
     private readonly UdpMessenger _udpMessenger = new UdpMessenger();
 
     private TcpClient _tcpClient = null;
@@ -84,7 +84,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         var connected = false;
             
         _tcpClient = null;
-        while (!connected)
+        while (!connected) //try tcp connection every 3 seconds
         {
             _tcpClient = TryTcpConnection(_jetsonEndpoint.EndPoint.Address.ToString(), myTcpPort);
             if (_tcpClient != null)
@@ -99,18 +99,18 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
         _tcpStream = _tcpClient.GetStream();
             
-        Debug.Log("SONO QUI");
+        Debug.Log("TCP Connection enstabilished");
         
         _tcpStream.WriteByte(data);
-        Debug.Log("sent data");
+        Debug.Log("TCP ping");
 
         
         //WAIT FOR JETSON RESPONSE
-        Debug.Log("Waiting for response");
+        //Debug.Log("Waiting for response");
         while (!_tcpStream.DataAvailable)
         {
 
-            Debug.Log("Data not available, waiting");
+            Debug.Log("Waiting for TCP ping reply");
             yield return new WaitForSeconds(1);
             
         }
@@ -120,7 +120,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         Debug.Log(response[0]);
         if (response[0] == jetsonSensorsReadyKey.runtimeValue)
         {
-            Debug.Log("RESPONSE OK");
+            Debug.Log("TCP pong");
             SetInitialized(true);
 
             lastPingReceivedTime = Time.time;
@@ -133,6 +133,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
         
         //CLOSE THE CONNECTION
+        //WASTE TCP CONNECTION JUST LIKE THIS?
         _tcpStream.Close();
         _tcpClient.Close();
 
@@ -141,7 +142,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         
         //ConnectToTcpServer();
     }
-
+/*
     private void ConnectToTcpServer()
     {
         try
@@ -183,7 +184,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             Debug.Log(e);
         }
     }
-
+*/
 
     private TcpClient TryTcpConnection(string ip, int port)
     {
@@ -209,7 +210,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             return null;
         }
     }
-    
+/*
     private async Task<TcpClient> TryTcpConnectionAsync(string ip, int port)
     {
         try
@@ -235,7 +236,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             return null;
         }
     }
-
+*/
     #endregion
 
     #region LOOP
