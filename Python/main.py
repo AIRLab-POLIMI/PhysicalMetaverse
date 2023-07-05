@@ -1,141 +1,95 @@
-import queue
+import json
+import trt_pose.coco
+import trt_pose.models
+import torch
+import torch2trt
+from torch2trt import TRTModule
 import time
-from networkStuff.constants import *
-import Jetson.GPIO as GPIO
-from networkStuff.connection import Connection
-import multiprocessing
+import cv2
+import torchvision.transforms as transforms
+import PIL.Image
+from trt_pose.draw_objects import DrawObjects
+from trt_pose.parse_objects import ParseObjects
+from jetcam.usb_camera import USBCamera
+# from jetcam.csi_camera import CSICamera
+from jetcam.utils import bgr8_to_jpeg
+import ipywidgets
+from IPython.display import display
 
-# PIN SETUP
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(setup_pin, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(connection_pin, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(third_pin, GPIO.OUT, initial=GPIO.LOW)
+with open('human_pose.json', 'r') as f:
+    human_pose = json.load(f)
 
-# LIDAR SETTINGS
-LIDAR_TOLERANCE = 50
-LIDAR_TIMEOUT_INVALIDATE = 3 # after this amount of invalid or missing readings, the stored value gets invalidated
-LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
+topology = trt_pose.coco.coco_category_to_topology(human_pose)
 
-# GYRO SETTINGS
-GYRO_TOLERANCE = 0.75
+num_parts = len(human_pose['keypoints'])
+num_links = len(human_pose['skeleton'])
 
-# ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 1
-GYRO_ENABLED = 1
-POSE_D_ENABLED = 1
+model = trt_pose.models.resnet18_baseline_att(num_parts, 2 * num_links).cuda().eval()
 
-#Enable/disable display output
-POSE_SCREENLESS_MODE = 1
+MODEL_WEIGHTS = 'resnet18_baseline_att_224x224_A_epoch_249.pth'
 
-#LIGHT UP LED WHEN SETUP STARTS
-GPIO.output(setup_pin, GPIO.HIGH)
+model.load_state_dict(torch.load(MODEL_WEIGHTS))
 
-connection = Connection()
+WIDTH = 224
+HEIGHT = 224
 
-if LIDAR_ENABLED:
-    from Lidar import Lidar
-    lidar = Lidar()
-    lidarQueue = multiprocessing.Queue(maxsize=100)
-connection.set_lidar_ready(True)
+data = torch.zeros((1, 3, HEIGHT, WIDTH)).cuda()
 
-if GYRO_ENABLED:
-    from GyroSerial import GyroSerial
-    gyro = GyroSerial()
-connection.set_gyro_ready(True)
+model_trt = torch2trt.torch2trt(model, [data], fp16_mode=True, max_workspace_size=1<<25)
 
-if POSE_D_ENABLED:
-    from Pose_detect_new import PoseDetector
-    pose = PoseDetector()
-connection.set_pose_ready(True)
+OPTIMIZED_MODEL = 'resnet18_baseline_att_224x224_A_epoch_249_trt.pth'
 
-GPIO.output(setup_pin, GPIO.LOW)
+torch.save(model_trt.state_dict(), OPTIMIZED_MODEL)
 
-class Main:
-    def __init__(self):
-        self.lidar_process = None
-        self.gyro_process = None
-    def setup(self):
-        # setting up the network connection
+model_trt = TRTModule()
+model_trt.load_state_dict(torch.load(OPTIMIZED_MODEL))
 
-        GPIO.output(connection_pin, GPIO.HIGH)
+t0 = time.time()
+torch.cuda.current_stream().synchronize()
+for i in range(50):
+    y = model_trt(data)
+torch.cuda.current_stream().synchronize()
+t1 = time.time()
 
-        connection.setup()
+print(50.0 / (t1 - t0))
 
-        GPIO.output(connection_pin, GPIO.LOW)
+mean = torch.Tensor([0.485, 0.456, 0.406]).cuda()
+std = torch.Tensor([0.229, 0.224, 0.225]).cuda()
+device = torch.device('cuda')
 
-        #connection.set_lidar_queue(lidarQueue)
+def preprocess(image):
+    global device
+    device = torch.device('cuda')
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = PIL.Image.fromarray(image)
+    image = transforms.functional.to_tensor(image).to(device)
+    image.sub_(mean[:, None, None]).div_(std[:, None, None])
+    return image[None, ...]
 
-        if LIDAR_ENABLED:
-            print("setting up lidar...")
+parse_objects = ParseObjects(topology)
+draw_objects = DrawObjects(topology)
 
+camera = USBCamera(width=WIDTH, height=HEIGHT, capture_fps=30)
+# camera = CSICamera(width=WIDTH, height=HEIGHT, capture_fps=30)
 
-            lidar.sensor.stop()
-            lidar.sensor.clean_input()
-            #lidar.print_status()
-            self.lidar_process = multiprocessing.Process(target=lidar.update_measurements,
-                                                   args=[lidarQueue, LIDAR_TOLERANCE, LIDAR_TIMEOUT_INVALIDATE,
-                                                         LIDAR_MAX_DIST_INVALIDATE, connection])
-            self.lidar_process.start()
+camera.running = True
 
+image_w = ipywidgets.Image(format='jpeg')
 
-        if GYRO_ENABLED:
-            print("setting up serial communication...")
-            self.gyro_process = multiprocessing.Process(target=gyro.start_update, args=[GYRO_TOLERANCE, connection])
-            self.gyro_process.start()
+display(image_w)
 
+def execute(change):
+    image = change['new']
+    data = preprocess(image)
+    cmap, paf = model_trt(data)
+    cmap, paf = cmap.detach().cpu(), paf.detach().cpu()
+    counts, objects, peaks = parse_objects(cmap, paf)#, cmap_threshold=0.15, link_threshold=0.15)
+    draw_objects(image, counts, objects, peaks)
+    image_w.value = bgr8_to_jpeg(image[:, ::-1, :])
 
-        if POSE_D_ENABLED:
-            print("setting up pose detection...")
-            #pose_d_process = multiprocessing.Process(target=pose.loop, args=[connection, POSE_SCREENLESS_MODE])
-            #pose_d_process.start()
+execute({'new': camera.value})
 
-        print("Setup COMPLETED =)")
+camera.observe(execute, names='value')
 
-    def loop(self):
-
-        GPIO.output(third_pin, GPIO.HIGH)
-
-        i = 0
-        try:
-            connection_process = multiprocessing.Process(target=connection.loop, args=[])
-            connection_process.start()
-
-            while connection_process.is_alive():
-                if POSE_D_ENABLED:
-                    pose.getMeasure(connection, POSE_SCREENLESS_MODE)
-
-            self.restart()
-                #connection.loop()
-        except ConnectionError:
-            self.restart()
-
-        except KeyboardInterrupt:
-            GPIO.output(setup_pin, GPIO.LOW)
-            GPIO.output(connection_pin, GPIO.LOW)
-            GPIO.output(third_pin, GPIO.LOW)
-
-    def restart(self):
-
-        GPIO.output(third_pin, GPIO.LOW)
-
-        if LIDAR_ENABLED:
-            self.lidar_process.terminate()
-
-        if GYRO_ENABLED:
-            self.gyro_process.terminate()
-
-        connection.retry_connection()
-        self.setup()
-        self.loop()
-
-
-    def close(self):
-        pose.close()
-        connection.cleanup()
-
-if __name__ == '__main__':
-    main = Main()
-    main.setup()
-    main.loop()
-    main.close()
+camera.unobserve_all()
 
