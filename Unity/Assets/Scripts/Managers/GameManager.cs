@@ -10,20 +10,20 @@ public class GameManager : Monosingleton<GameManager>
 {
 
     [SerializeField] private InputActionReference _InputActionReferenceSceneRestart;
-    [SerializeField] private NetworkingManagerUdp _networkingManager;
+    [SerializeField] private NetworkingManagerUdp _networkingManagerUdp;
 
     //private GameObject _setup;
     //private GameObject _environment;
     public void Start()
     {
-        _networkingManager.Setup();
+        _networkingManagerUdp.Setup();
         //_setup = GameObject.FindGameObjectWithTag("Setup");
         //_environment = GameObject.FindGameObjectWithTag("Environment");
         
         //_InputActionReferenceSceneRestart.action.performed += _ => RestartScene();
-        BumpManager.Instance.Setup();
-        LidarManager.Instance.Setup();
-        PoseManager.Instance.Setup();
+        //BumpManager.Instance.Setup();
+        //LidarManager.Instance.Setup();
+        //PoseManager.Instance.Setup();
         
         //_setup.GetComponent<SetupManager>().DeleteEnvironmentSetupText();
         //_setup.GetComponent<SetupManager>().ActivateNetworkSetupText();

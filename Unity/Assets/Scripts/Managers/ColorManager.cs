@@ -64,7 +64,7 @@ public class ColorManager : MonoBehaviour
     private void FixedUpdate()
     {
         //if first receive
-        if (parsedData.Length > 0)
+        if (parsedData != null)
         {
             if(!spawned)
                 //call function to spawn spheres

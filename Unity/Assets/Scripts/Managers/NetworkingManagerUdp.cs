@@ -18,6 +18,10 @@ public class NetworkingManagerUdp : MonoBehaviour
     private byte[] _data;
     //udp packet size
     public int _packetSize = 1024;  //CHANGE IF NOT ENOUGH
+    //robot ip public variable init null
+    public string _robotIp = null;
+
+    private bool _confirmed = false;
 
     [SerializeField] private KeyValueGameEventSO _onKeyValueReceived;
 
@@ -40,14 +44,57 @@ public class NetworkingManagerUdp : MonoBehaviour
         _data = _client.EndReceive(res, ref RemoteIpEndPoint);
         //get the message
         string message = Encoding.ASCII.GetString(_data);
-        //log the message
-        //Debug.Log(message);
-        if (!CheckKeyValueMessage(_data))
+        if (_robotIp == null)
         {
-            Debug.Log("Message not recognized");
-        Debug.Log(message);
+            //the robot is sending in udp broadcast message " "Metaverse is on " + socket.gethostbyname(socket.gethostname()) ", find it and set the robot ip"
+            if (message.Contains("Metaverse is on"))
+            {
+                //split the message
+                string[] splitMessage = message.Split(' ');
+                //get the ip
+                _robotIp = splitMessage[splitMessage.Length - 1];
+                Debug.Log("Robot ip is " + _robotIp);
+                //reply with "Client on " + socket.gethostbyname(socket.gethostname())
+                _client.Send(Encoding.ASCII.GetBytes("Client on " + IPAddress.Any.ToString()), Encoding.ASCII.GetBytes("Client on " + IPAddress.Any.ToString()).Length, _robotIp, _udpPort);
+                Debug.Log("Sending my ip as: \"Client on " + IPAddress.Any.ToString() + "\"");
+            }
+            else
+            {
+                Debug.Log("Waiting for robot ip on broadcast");
+            }
         }
-        //listen for new messages
+        else if(!_confirmed)
+        {
+            //the robot is now sending in udp my ip, check if it is correct, message is "Client on " + socket.gethostbyname(socket.gethostname())
+            if (message.Contains("Client on"))
+            {
+                //split the message
+                string[] splitMessage = message.Split(' ');
+                //get the ip
+                string clientIp = splitMessage[splitMessage.Length - 1];
+                //check if it is correct
+                if (clientIp == IPAddress.Any.ToString())
+                {
+                    Debug.Log("Robot found me on " + clientIp + ", connection confirmed");
+                    _confirmed = true;
+                }
+                else
+                {
+                    Debug.Log("Client ip is not correct");
+                }
+            }
+        } 
+        else
+        {
+            //log the message
+            //Debug.Log(message);
+            if (!CheckKeyValueMessage(_data))
+            {
+                Debug.Log("Message not recognized");
+            Debug.Log(message);
+            }
+            //listen for new messages
+        }
         _client.BeginReceive(new AsyncCallback(recv), null);
     }
 

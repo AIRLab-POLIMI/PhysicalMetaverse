@@ -146,7 +146,7 @@ public class PersonManager : MonoBehaviour
     private void FixedUpdate()
     {
         //if first receive
-        if (data.Length > 0)
+        if (data != null)
         {
             if(!spawned)
                 //call function to spawn spheres
