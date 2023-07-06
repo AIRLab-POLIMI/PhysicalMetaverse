@@ -10,7 +10,7 @@ MSG_DELIMITER = '_'
 
 # --------------------------------------------------------- SERIAL
 # DEFAULT serial parameters: SERIAL_ARDUINO class will be initialized with these values if not
-serial_default_port = "/dev/ttyACM1"
+serial_default_port = "/dev/ttyACM0"
 serial_default_baud = 500000  # 115200
 serial_default_timeout = 1  # in seconds
 serial_default_delay_after_setup = 1  # in seconds
