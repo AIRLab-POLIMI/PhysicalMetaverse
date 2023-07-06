@@ -8,7 +8,7 @@ using GameEvents;
 
 //new version of NetworkingManager, just start listening and see what happens
 //for now just receive, control of the robot is done via controller external to unity
-public class NetworkingManagerUdp : MonoBehaviour
+public class NetworkingManagerUdp_copy : MonoBehaviour
 {
     //listen for udp messages on port 25888
     public int _udpPort = 25888;

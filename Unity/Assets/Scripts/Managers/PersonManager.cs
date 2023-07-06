@@ -265,10 +265,5 @@ public class PersonManager : MonoBehaviour
             Debug.Log(spheres.Length);
         }
     }
-    private void OnApplicationQuit()
-    {
-        //stop listening
-        client.Close();
-    }
 }
 

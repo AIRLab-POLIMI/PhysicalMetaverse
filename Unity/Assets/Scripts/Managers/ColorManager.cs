@@ -79,31 +79,38 @@ public class ColorManager : MonoBehaviour
     //spawn spheres
     private void SpawnSphere()
     {
-        //create a sphere
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        spawned = true;
-        //name the sphere
-        sphere.name = "Sphere";
-        //set the sphere's position
-        sphere.transform.position = new Vector3(parsedData[1]/100, parsedData[0]/100, 0);
-        //set the sphere's scale
-        sphere.transform.localScale = new Vector3(10f, 10f, 10f);
-        //set the sphere's color
-        sphere.GetComponent<Renderer>().material.color = Color.blue;
+        try{
+            //create a sphere
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            spawned = true;
+            //name the sphere
+            sphere.name = "Sphere";
+            //set the sphere's position
+            sphere.transform.position = new Vector3(parsedData[1]/100, parsedData[0]/100, 0);
+            //set the sphere's scale
+            sphere.transform.localScale = new Vector3(10f, 10f, 10f);
+            //set the sphere's color
+            sphere.GetComponent<Renderer>().material.color = Color.blue;
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e);
+        }
     }
 
     //move spheres
     private void MoveSphere()
     {
-        //get the sphere
-        GameObject sphere = GameObject.Find("Sphere");
-        //set the sphere's position
-        sphere.transform.position = new Vector3(parsedData[1]/100, parsedData[0]/100, 0);
-    }
-    private void OnApplicationQuit()
-    {
-        //stop listening
-        client.Close();
+        try{
+            //get the sphere
+            GameObject sphere = GameObject.Find("Sphere");
+            //set the sphere's position
+            sphere.transform.position = new Vector3(parsedData[1]/100, parsedData[0]/100, 0);
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e);
+        }
     }
 }
 

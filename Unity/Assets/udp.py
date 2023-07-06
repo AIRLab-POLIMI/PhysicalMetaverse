@@ -1,7 +1,7 @@
 import socket
 
-UDP_IP = "192.168.0.100"  # IP address to listen on
-UDP_PORT = 5005  # Port number to listen on
+UDP_IP = "192.168.1.4"  # IP address to listen on
+UDP_PORT = 25888  # Port number to listen on
 
 # Create a UDP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

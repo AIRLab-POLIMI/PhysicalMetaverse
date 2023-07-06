@@ -12,7 +12,7 @@ using Unity.VisualScripting;
 using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 
-public class NetworkingManager : Monosingleton<NetworkingManager>
+public class NetworkingManagerCopy : Monosingleton<NetworkingManager>
 {
     [SerializeField] private GameObject _setupScreen;
     
@@ -86,9 +86,6 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         _tcpClient = null;
         while (!connected)
         {
-            //_setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.red;
-            //setupscreen random color
-            _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
             _tcpClient = TryTcpConnection(_jetsonEndpoint.EndPoint.Address.ToString(), myTcpPort);
             if (_tcpClient != null)
                 connected = true;
@@ -99,48 +96,41 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         }
 
         byte data = unityPresentationKey.runtimeValue;
-        _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.red;
 
         _tcpStream = _tcpClient.GetStream();
-        _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.yellow;
             
         Debug.Log("SONO QUI");
         
-        Debug.Log("sent data");
-        //change color of setup screen
-        _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.green;
-        yield return new WaitForSeconds(1);
         _tcpStream.WriteByte(data);
-        _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.blue;
+        Debug.Log("sent data");
 
         
         //WAIT FOR JETSON RESPONSE
-        //Debug.Log("Waiting for response");
-        //while (!_tcpStream.DataAvailable)
-        //{
-        //    _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
-        //    Debug.Log("Data not available, waiting");
-        //    yield return new WaitForSeconds(1);
-        //    
-        //}
-//
-        //byte[] response = new byte[1];
-        //_tcpStream.Read(response);
-        //Debug.Log(response[0]);
-        //if (response[0] == jetsonSensorsReadyKey.runtimeValue)
-        //{
-        //    Debug.Log("RESPONSE OK");
-        //    SetInitialized(true);
-//
-        //    lastPingReceivedTime = Time.time;
-        //}
-        //else
-        //{
-        //    Debug.Log("RESPONSE NOT OK");
-        //}
+        Debug.Log("Waiting for response");
+        while (!_tcpStream.DataAvailable)
+        {
+
+            Debug.Log("Data not available, waiting");
+            yield return new WaitForSeconds(1);
+            
+        }
+
+        byte[] response = new byte[1];
+        _tcpStream.Read(response);
+        Debug.Log(response[0]);
+        if (response[0] == jetsonSensorsReadyKey.runtimeValue)
+        {
+            Debug.Log("RESPONSE OK");
+            SetInitialized(true);
+
+            lastPingReceivedTime = Time.time;
+        }
+        else
+        {
+            Debug.Log("RESPONSE NOT OK");
+        }
 
 
-        SetInitialized(true);
         
         //CLOSE THE CONNECTION
         _tcpStream.Close();

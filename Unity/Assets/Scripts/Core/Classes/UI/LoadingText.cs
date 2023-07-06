@@ -20,7 +20,7 @@ public class LoadingText : MonoBehaviour
     {
         while (true)
         {
-            Debug.Log("QUI");
+            //Debug.Log("QUI");
             _text.SetText("LOADING");
             yield return new WaitForSeconds(1);
             _text.SetText("LOADING.");
