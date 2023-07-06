@@ -37,7 +37,6 @@ def parse_unity_setup_msg(msg):
 
 
 def encode_msg(msgtype, data):
-    print(f"ENCODE MSG: {msgtype} - {data}")
 
     if msgtype == BUMP_KEY :
         msg = msgtype + data
