@@ -1,50 +1,42 @@
-//receive udp messages using UdpMessenger
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
-
+using System.Text;
+using System;
+using UnityEngine.UI;
 
 public class SimpleUdpReceiver : MonoBehaviour
 {
-    // Start is called before the first frame update
-    private UdpClient _udpClient;
-    private byte[] _data;
-    [SerializeField] private GameObject _setupScreen;
+    public int port = 1234;
+    private UdpClient udpClient;
+    public Image _image;
+
     void Start()
     {
-        //start udp client on port 24000
-        _udpClient = new UdpClient(24000);
-        //udp packets are sent as byte data
-        _data = new byte[1024];
-        //print address where it is receiving
-        Debug.Log("Receiving on " + _udpClient.Client.LocalEndPoint.ToString());
-        //begin listening for messages
-        _udpClient.BeginReceive(new AsyncCallback(recv), null);
+        udpClient = new UdpClient(port);
+        udpClient.BeginReceive(ReceiveCallback, null);
+        //set timeout
+        udpClient.Client.ReceiveTimeout = 50;
     }
 
-    private void recv(IAsyncResult res)
+    private void ReceiveCallback(IAsyncResult ar)
     {
-        //store the remote endpoint
-        //IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 24000);
-        //receive on 192.168.0.100
-        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Parse("192.168.0.100"), 24000);
-        //print address where it is receiving
-        Debug.Log("Receiving on " + _udpClient.Client.LocalEndPoint.ToString());
-        //change color of setup screen to random color
-        _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = UnityEngine.Random.ColorHSV();
-        //get the data
-        _data = _udpClient.EndReceive(res, ref RemoteIpEndPoint);
-        //get the message
-        string message = Encoding.ASCII.GetString(_data);
-        //log the message
-        Debug.Log(message);
-        //parse the message
-        //Debug.Log(ParseData(message));
-        //listen for new messages
-        _udpClient.BeginReceive(new AsyncCallback(recv), null);
+        IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, port);
+        byte[] receivedBytes = udpClient.EndReceive(ar, ref endPoint);
+        string receivedMessage = Encoding.ASCII.GetString(receivedBytes);
+        
+        Debug.Log("Received: " + receivedMessage);
+        //setupscreen getcomponent in children change to random color
+        _image.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
+
+        // Process the received message or update game state accordingly
+
+        // Start listening for the next message
+        udpClient.BeginReceive(ReceiveCallback, null);
+    }
+
+    void OnApplicationQuit()
+    {
+        udpClient.Close();
     }
 }
