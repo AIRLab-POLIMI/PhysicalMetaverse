@@ -6,6 +6,8 @@ public class Character : MonoBehaviour
 {
     private CharacterController controller;
     private Vector3 playerVelocity;
+    //public gameobject camera
+    public GameObject _other;
 
     void Start()
     {
@@ -26,5 +28,25 @@ public class Character : MonoBehaviour
         // Apply gravity
         playerVelocity.y += Physics.gravity.y * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
+    }
+
+    //when keyboard q is pressed
+    void OnGUI()
+    {
+        if (Event.current.Equals(Event.KeyboardEvent("q")))
+        {
+            //disable this Gameobject's camera
+            this.GetComponentInChildren<Camera>().enabled = false;
+            //enable other camera
+            _other.GetComponentInChildren<Camera>().enabled = true;
+            //enable other character controller
+            _other.GetComponent<CharacterController>().enabled = true;
+            //enable other character script
+            _other.GetComponent<Character>().enabled = true;
+            //disable character controller
+            this.GetComponent<CharacterController>().enabled = false;
+            //disable this script
+            this.GetComponent<Character>().enabled = false;
+        }
     }
 }
