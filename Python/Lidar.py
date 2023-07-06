@@ -31,7 +31,7 @@ class Lidar:
 
     def update_measurements(self, queue, tolerance, timeout, max_dist, connection):
         print("thread1")
-        self.sensor.clean_input()
+        #self.sensor.clean_input()
 
         tmp_measure = [DEFAULT_INVALID_VALUE] * N_OF_DEGREES
         timeout_array = [0] * N_OF_DEGREES

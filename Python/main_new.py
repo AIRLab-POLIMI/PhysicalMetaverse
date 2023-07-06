@@ -20,13 +20,13 @@ LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 1
+LIDAR_ENABLED = 0
 GYRO_ENABLED = 1
-POSE_D_ENABLED = 0
-CONTROLLER_ENABLED = 1
+#POSE_D_ENABLED = 0
+CONTROLLER_ENABLED = 0
 
 #Enable/disable display output
-POSE_SCREENLESS_MODE = 1
+#POSE_SCREENLESS_MODE = 1
 
 #LIGHT UP LED WHEN SETUP STARTS
 GPIO.output(setup_pin, GPIO.HIGH)
@@ -45,10 +45,10 @@ if GYRO_ENABLED:
     gyro = GyroSerial()
 connection.set_gyro_ready(True)
 
-if POSE_D_ENABLED:
-    from Pose_detect_new import PoseDetector
-    pose = PoseDetector()
-connection.set_pose_ready(True)
+#if POSE_D_ENABLED:
+#    from Pose_detect_new import PoseDetector
+#    pose = PoseDetector()
+#connection.set_pose_ready(True)
 
 GPIO.output(setup_pin, GPIO.LOW)
 
@@ -59,16 +59,18 @@ class Main:
     def setup(self):
         # setting up the network connection
 
-        GPIO.output(connection_pin, GPIO.HIGH)
-
+        #GPIO.output(connection_pin, GPIO.HIGH)
+#
         connection.setup()
-
-        GPIO.output(connection_pin, GPIO.LOW)
+#
+        #GPIO.output(connection_pin, GPIO.LOW)
 
         #connection.set_lidar_queue(lidarQueue)
 
+        print("Setup robot components...")
+
         if LIDAR_ENABLED:
-            print("setting up lidar...")
+            print("Setup Lidar...")
 
 
             lidar.sensor.stop()
@@ -81,15 +83,15 @@ class Main:
 
 
         if GYRO_ENABLED:
-            print("setting up serial communication...")
+            print("Setup Gyro...")
             self.gyro_process = multiprocessing.Process(target=gyro.start_update, args=[GYRO_TOLERANCE, connection])
             self.gyro_process.start()
 
 
-        if POSE_D_ENABLED:
-            print("setting up pose detection...")
-            #pose_d_process = multiprocessing.Process(target=pose.loop, args=[connection, POSE_SCREENLESS_MODE])
-            #pose_d_process.start()
+        #if POSE_D_ENABLED:
+        #    print("setting up pose detection...")
+        #    #pose_d_process = multiprocessing.Process(target=pose.loop, args=[connection, POSE_SCREENLESS_MODE])
+        #    #pose_d_process.start()
 	
         if CONTROLLER_ENABLED:
             import Controller
@@ -101,24 +103,24 @@ class Main:
 
         GPIO.output(third_pin, GPIO.HIGH)
 
-        i = 0
-        try:
-            connection_process = multiprocessing.Process(target=connection.loop, args=[])
-            connection_process.start()
-
-            while connection_process.is_alive():
-                if POSE_D_ENABLED:
-                    pose.getMeasure(connection, POSE_SCREENLESS_MODE)
-
-            self.restart()
-                #connection.loop()
-        except ConnectionError:
-            self.restart()
-
-        except KeyboardInterrupt:
-            GPIO.output(setup_pin, GPIO.LOW)
-            GPIO.output(connection_pin, GPIO.LOW)
-            GPIO.output(third_pin, GPIO.LOW)
+        #i = 0
+        #try:
+        #    connection_process = multiprocessing.Process(target=connection.loop, args=[])
+        #    connection_process.start()
+#
+        #    #while connection_process.is_alive():
+        #    #    if POSE_D_ENABLED:
+        #    #        pose.getMeasure(connection, POSE_SCREENLESS_MODE)
+#
+        #    self.restart()
+        #        #connection.loop()
+        #except ConnectionError:
+        #    self.restart()
+#
+        #except KeyboardInterrupt:
+        #    GPIO.output(setup_pin, GPIO.LOW)
+        #    GPIO.output(connection_pin, GPIO.LOW)
+        #    GPIO.output(third_pin, GPIO.LOW)
 
     def restart(self):
 
@@ -136,7 +138,7 @@ class Main:
 
 
     def close(self):
-        pose.close()
+        #pose.close()
         connection.cleanup()
 
 if __name__ == '__main__':
