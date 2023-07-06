@@ -83,6 +83,9 @@ class Connection:
     def set_pose_ready(self, value):
         self.POSE_READY = value
 
+    def set_camera_ready(self, value):
+        self.CAMERA_READY = value
+
     def set_lidar_ready(self, value):
         self.LIDAR_READY = value
 

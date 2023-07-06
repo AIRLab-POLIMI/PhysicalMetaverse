@@ -20,10 +20,11 @@ LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 1
+LIDAR_ENABLED = 0
 GYRO_ENABLED = 1
 POSE_D_ENABLED = 0
 CONTROLLER_ENABLED = 0
+CAMERA_ENABLED = 1
 
 #Enable/disable display output
 POSE_SCREENLESS_MODE = 1
@@ -49,6 +50,10 @@ if POSE_D_ENABLED:
     from Pose_detect_new import PoseDetector
     pose = PoseDetector()
 connection.set_pose_ready(True)
+
+if CAMERA_ENABLED:
+    import DepthAICamera as camera #not a class sorry
+connection.set_camera_ready(True)
 
 GPIO.output(setup_pin, GPIO.LOW)
 
@@ -91,7 +96,12 @@ class Main:
             print("setting up pose detection...")
             #pose_d_process = multiprocessing.Process(target=pose.loop, args=[connection, POSE_SCREENLESS_MODE])
             #pose_d_process.start()
-	
+    
+        if CAMERA_ENABLED:
+            print("setting up camera...")
+            camera_process = multiprocessing.Process(target=camera.main, args=[connection])
+            camera_process.start()
+
         if CONTROLLER_ENABLED:
             import Controller
             Controller.main()

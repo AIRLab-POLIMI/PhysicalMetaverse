@@ -74,17 +74,17 @@ renderer = BlazeposeRenderer(
                 output=args.output)
 
 #start udp server to send body landmarks later
-import socket
-import time
-udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udp.bind(("192.168.0.106", 5005))
+#import socket
+#import time
+#udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#udp.bind(("192.168.0.106", 5005))
 
 import cv2
 import numpy as np
 
 showingColor = 0
 
-def showOnlyRed(frame):
+def showOnlyRed(frame, connection):
     #downscale frame to 1/4 resolution
     frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
@@ -114,7 +114,7 @@ def showOnlyRed(frame):
     cv2.imshow("output_img", output_img)
 
 
-def showOnlyBlue(frame):
+def showOnlyBlue(frame, connection):
     #downscale frame to 1/4 resolution
     frame = cv2.resize(frame, (0, 0), fx=0.1, fy=0.1)
 
@@ -167,7 +167,8 @@ def showOnlyBlue(frame):
         cy = cy * 10
         #print(str([cx, cy]))
         #send coordinates via udp as [x, y]
-        udp.sendto(str([cx, cy]).encode(), ("192.168.0.100", 5004))
+        #udp.sendto(str([cx, cy]).encode(), ("192.168.0.100", 5004))
+        connection.send(COLOR_KEY, str([cx, cy]).encode())
         #540x280
         #show upscaled
         cv2.imshow("output_img", output_img)
@@ -177,31 +178,32 @@ def showOnlyBlue(frame):
 
 
 
+def main(connection):
+    while True:
+        # Run blazepose on next frame
+        frame, body = tracker.next_frame()
+        if frame is None: break
+        # Draw 2d skeleton
+        frame = renderer.draw(frame, body)
+        #type of frame is numpy.ndarray
+        showOnlyBlue(frame, connection)
 
-while True:
-    # Run blazepose on next frame
-    frame, body = tracker.next_frame()
-    if frame is None: break
-    # Draw 2d skeleton
-    frame = renderer.draw(frame, body)
-    #type of frame is numpy.ndarray
-    showOnlyBlue(frame)
+        #print(body)
+        #print body properly, it is mediapipe_utils.Body
+        try:
+            #print(body.landmarks)
+            #print("sent")
+            #send body landmarks via udp
+            #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
+            connection.send(POSE_KEY, str(body.landmarks).encode())
 
-    #print(body)
-    #print body properly, it is mediapipe_utils.Body
-    try:
-        #print(body.landmarks)
-        print("sent")
-        #send body landmarks via udp
-        udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
-
-    except:
-        #print type of body
-        print(type(body))
-    
-    # Show 2d skeleton
-    key = renderer.waitKey(delay=1)
-    if key == 27 or key == ord('q'):
-        break
-renderer.exit()
-tracker.exit()
+        except:
+            #print type of body
+            print(type(body))
+        
+        # Show 2d skeleton
+        key = renderer.waitKey(delay=1)
+        if key == 27 or key == ord('q'):
+            break
+    renderer.exit()
+    tracker.exit()

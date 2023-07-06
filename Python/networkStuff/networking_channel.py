@@ -165,7 +165,7 @@ class NetworkingChannel:
             with conn:
                 print(f"Connected by {addr}")
                 client_ip = addr[0]
-                #data = conn.recv(1024)
+                #data = conn.recv(1024) #here the tcp response was suppressed because not working
                 #wait 1s
                 time.sleep(3)
                 data = UNITY_PRESENTATION_KEY
