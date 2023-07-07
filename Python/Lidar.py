@@ -82,11 +82,14 @@ class Lidar:
 
                 #print(to_send)
                 #print("\n")
-        except KeyboardInterrupt:
-            self.sensor.stop()
-            self.sensor.clean_input()
-            self.sensor.stop_motor()
-            self.sensor.disconnect()
+        except:
+            try:
+                print("lidar problem")
+            except KeyboardInterrupt:
+                self.sensor.stop()
+                self.sensor.clean_input()
+                self.sensor.stop_motor()
+                self.sensor.disconnect()
 
     def check_queue(self, queue_l):
         try:
