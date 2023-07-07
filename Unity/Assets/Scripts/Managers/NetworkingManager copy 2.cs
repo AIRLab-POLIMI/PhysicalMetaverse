@@ -12,7 +12,7 @@ using Unity.VisualScripting;
 using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
 
-public class NetworkingManager : Monosingleton<NetworkingManager>
+public class NetworkingManager2 : Monosingleton<NetworkingManager>
 {
     [SerializeField] private GameObject _setupScreen;
     
@@ -306,8 +306,11 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         {
             //send ping
             byte[] msg = new byte[1];
-            msg[0] = jetsonPingKey.runtimeValue;
-            _udpMessenger.SendUdp(msg);
+            //get  "192.168.1.5" bytes
+            //encode "192.168.1.5"
+            byte[] ipBytes = System.Text.Encoding.ASCII.GetBytes("192.168.1.5");
+            //msg[0] = "192.168.1.5";//jetsonPingKey.runtimeValue;
+            _udpMessenger.SendUdp(ipBytes);
             Debug.Log("----NEWPING SENT----");
             lastPingSentTime = Time.time;
         }
