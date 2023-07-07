@@ -11,7 +11,7 @@ default_jetson_tcp_port = 25777
 default_buffer_size = 1024
 
 PING_INTERVAL = 0.5
-PING_TIMEOUT = 5
+PING_TIMEOUT = 10
 
 
 # place them all in a list to check whether all are present at UDPEsp object initialization
@@ -91,7 +91,7 @@ class NetworkingChannel:
     def ping(self):
 
         if time.time() > (self.last_ping_received_time + PING_TIMEOUT):
-            print("NO PING RECEIVED FOR MORE THAN 5 SECONDS")
+            print("NO PING RECEIVED FOR MORE THAN 10 SECONDS")
             return False
 
         print("1")

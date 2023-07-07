@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import sys
 import os
-
+from networkStuff.constants import *
+showing = True
 #for this script to work you have to first git clone https://github.com/geaxgx/depthai_blazepose.git
 #in the same folder as this script
 
@@ -162,16 +163,21 @@ def showOnlyBlue(frame, connection):
         cx = int(M['m10']/M['m00'])
         cy = int(M['m01']/M['m00'])
         cv2.circle(output_img, (cx, cy), 10, (0, 0, 255), -1)
+        blob_size = cv2.contourArea(biggestContour)
+        print("Blob size:", blob_size)
         #multiply by 20 to upscale
         cx = cx * 10
         cy = cy * 10
         #print(str([cx, cy]))
         #send coordinates via udp as [x, y]
         #udp.sendto(str([cx, cy]).encode(), ("192.168.0.100", 5004))
-        connection.send(COLOR_KEY, str([cx, cy]).encode())
+        
+        to_send = str([cx, cy, int(blob_size)]).encode()
+        connection.send(COLOR_KEY, to_send)
         #540x280
         #show upscaled
-        cv2.imshow("output_img", output_img)
+        if showing:
+            cv2.imshow("output_img", output_img)
 
     except: 
         print("not enough contours")
@@ -179,31 +185,40 @@ def showOnlyBlue(frame, connection):
 
 
 def main(connection):
+    print("CAMERA STARTED")
     while True:
-        # Run blazepose on next frame
-        frame, body = tracker.next_frame()
-        if frame is None: break
-        # Draw 2d skeleton
-        frame = renderer.draw(frame, body)
-        #type of frame is numpy.ndarray
-        showOnlyBlue(frame, connection)
-
-        #print(body)
-        #print body properly, it is mediapipe_utils.Body
-        try:
-            #print(body.landmarks)
-            #print("sent")
-            #send body landmarks via udp
-            #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
-            connection.send(POSE_KEY, str(body.landmarks).encode())
-
-        except:
-            #print type of body
-            print(type(body))
-        
-        # Show 2d skeleton
-        key = renderer.waitKey(delay=1)
-        if key == 27 or key == ord('q'):
-            break
+        loop(connection)
     renderer.exit()
     tracker.exit()
+import traceback
+def loop(connection):
+    # Run blazepose on next frame
+    frame, body = tracker.next_frame()
+    if frame is None: print("framenone")
+    #type of frame is numpy.ndarray
+    showOnlyBlue(frame, connection)
+    # Draw 2d skeleton
+    frame = renderer.draw(frame, body)
+
+    #print(body)
+    #print body properly, it is mediapipe_utils.Body
+    try:
+        #print(body.landmarks)
+        #print("sent")
+        #send body landmarks via udp
+        #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
+        #body.landmarks string
+        to_send = str(body.landmarks).encode()
+        
+        connection.send(POSE_KEY, to_send)
+        print("SENT CAMERA ")# + str(body.landmarks))
+
+    #print exception
+    except Exception as e:
+        print(e)
+        #traceback.print_exc()
+    
+    # Show 2d skeleton
+    key = renderer.waitKey(delay=1)
+    if key == 27 or key == ord('q'):
+        print("keybreak")

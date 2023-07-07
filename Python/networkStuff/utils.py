@@ -59,18 +59,15 @@ def encode_msg(msgtype, data):
         return msg
 
     elif msgtype == POSE_KEY :
-        lenght = len(data)
-        len_data = struct.pack('i', lenght)
-        #print(f"LENGTH = {lenght}")
-        #rint(data)
-        if (lenght > 0):
-
-            value = struct.pack(f'{lenght}f', *data)
-
-            msg = msgtype + len_data + value
-        else:
-            msg = msgtype + len_data
+        msg = msgtype + data
         return msg
+        #data is a string to send entirely
+
+    elif msgtype == COLOR_KEY :
+        msg = msgtype + data
+        return msg
+        
+
 
     else:
         #print("ILLEGAL MSGTYPE")

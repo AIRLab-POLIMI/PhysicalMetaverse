@@ -4,7 +4,7 @@ from networkStuff.constants import *
 import Jetson.GPIO as GPIO
 from networkStuff.connection import Connection
 import multiprocessing
-
+import DepthAICamera
 # PIN SETUP
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(setup_pin, GPIO.OUT, initial=GPIO.LOW)
@@ -20,10 +20,10 @@ LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 0
+LIDAR_ENABLED = 1
 GYRO_ENABLED = 1
 POSE_D_ENABLED = 0
-CONTROLLER_ENABLED = 0
+CONTROLLER_ENABLED = 1
 CAMERA_ENABLED = 1
 
 #Enable/disable display output
@@ -33,6 +33,10 @@ POSE_SCREENLESS_MODE = 1
 GPIO.output(setup_pin, GPIO.HIGH)
 
 connection = Connection()
+
+if CAMERA_ENABLED:
+    import DepthAICamera as camera #not a class sorry
+connection.set_camera_ready(True)
 
 if LIDAR_ENABLED:
     from Lidar import Lidar
@@ -50,10 +54,6 @@ if POSE_D_ENABLED:
     from Pose_detect_new import PoseDetector
     pose = PoseDetector()
 connection.set_pose_ready(True)
-
-if CAMERA_ENABLED:
-    import DepthAICamera as camera #not a class sorry
-connection.set_camera_ready(True)
 
 GPIO.output(setup_pin, GPIO.LOW)
 
@@ -99,12 +99,13 @@ class Main:
     
         if CAMERA_ENABLED:
             print("setting up camera...")
-            camera_process = multiprocessing.Process(target=camera.main, args=[connection])
-            camera_process.start()
+            #camera_process = multiprocessing.Process(target=camera.main, args=[connection])
+            #camera_process.start()
 
         if CONTROLLER_ENABLED:
             import Controller
-            Controller.main()
+            controller_process = multiprocessing.Process(target=Controller.main, args=[])
+            controller_process.start()
 
         print("Setup COMPLETED =)")
 
@@ -118,6 +119,7 @@ class Main:
             connection_process.start()
 
             while connection_process.is_alive():
+                DepthAICamera.loop(connection)
                 if POSE_D_ENABLED:
                     pose.getMeasure(connection, POSE_SCREENLESS_MODE)
 
