@@ -16,7 +16,7 @@ class Connection:
 
         self.UNITY_CHANNEL = None
 
-        self.UNITY_IP = None
+        self.UNITY_IP = "192.168.1.5"
 
         # values used to check if the sensors are ready to send
         self.GYRO_READY = False
@@ -30,9 +30,9 @@ class Connection:
         self.NETWORKING_CHANNEL.setup(self.priority_responses)
 
         #wait for unity presentation
-        self.UNITY_IP = self.NETWORKING_CHANNEL.wait_for_unity_presentation()
+        #self.UNITY_IP = self.NETWORKING_CHANNEL.wait_for_unity_presentation()
 
-        self.NETWORKING_CHANNEL.set_timeout_tcp(0.33)
+        #self.NETWORKING_CHANNEL.set_timeout_tcp(0.33)
 
         self.UNITY_CHANNEL = UnityChannel(networking_channel=self.NETWORKING_CHANNEL, unity_ip=self.UNITY_IP)
 

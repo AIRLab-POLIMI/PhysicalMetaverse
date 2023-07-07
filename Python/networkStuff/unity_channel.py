@@ -8,7 +8,7 @@ unity_presentation_response = b"UOKRESP"
 unity_ping_msg = "UP"
 
 PING_INTERVAL = 0.5
-PING_TIMEOUT = 5
+PING_TIMEOUT = 20
 
 class UnityChannel:
 
@@ -89,7 +89,7 @@ class UnityChannel:
                 self.last_ping_received_time = time.time()
 
         if time.time() > (self.last_ping_received_time + PING_TIMEOUT):
-            print("NO PING RECEIVED FOR MORE THAN 5 SECONDS")
+            print("NO PING RECEIVED FOR MORE THAN " + str(PING_TIMEOUT) + " SECONDS")
             return False
 
         return True
@@ -98,7 +98,7 @@ class UnityChannel:
     def on_ping_rcv(self):
         # check if the MSG is the PING msg
         if bytes_to_unicode_str(self.NETWORKING_CHANNEL.udp_data[0]) == unity_ping_msg:
-
+                
             self.UNITY_IP = self.NETWORKING_CHANNEL.udp_data[1][0]
             self.UNITY_PORT = self.NETWORKING_CHANNEL.udp_data[1][1]
             self.is_unity_ping = True

@@ -3,7 +3,7 @@ import time
 from networkStuff.constants import *
 
 # bind all IP: DEFAULT IP of the raspberry running this code
-default_jetson_ip = '192.168.0.106'
+default_jetson_ip = '192.168.1.10'
 # Listen on Port: DEFAULT PORT of the socket connection of the raspberry
 default_jetson_udp_port = 25666
 default_jetson_tcp_port = 25777
@@ -28,7 +28,7 @@ class NetworkingChannel:
         # socket parameters
         self.JET_IP = jet_ip
         self.JET_UDP_PORT = jet_udp_port
-        self.JET_TCP_PORT = jet_tcp_port
+        #self.JET_TCP_PORT = jet_tcp_port
         self.BUFFER_SIZE = buffer_size
 
         # socket udp
@@ -37,11 +37,11 @@ class NetworkingChannel:
         self.udp_data = None
 
         #socket tcp
-        self.s_tcp = None
+        #self.s_tcp = None
         # TCP DATA
-        self.tcp_data = None
+        #self.tcp_data = None
         # TCP connection
-        self.tcp_conn = None
+        #self.tcp_conn = None
 
         self.last_ping_received_time = None
         self.last_ping_sent_time = None
@@ -61,7 +61,7 @@ class NetworkingChannel:
 
         print("[NETWORKING CHANNEL][SETUP] - setting up TCP")
         # Create a TCP socket
-        self.setup_tcp()
+        #self.setup_tcp()
 
         if all_priority_present:
             # in that case, check that all are present
@@ -137,24 +137,7 @@ class NetworkingChannel:
                       "connection FAILED with error: '", e, "'.\nTrying again in 1s..")
                 time.sleep(1)
 
-    def setup_tcp(self):
-        self.s_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # Bind the socket to the host and port
-        # wait until network is available
-        tcp_setup_complete = False
-
-        print("[NETWORKING CHANNEL][SETUP TCP] - "
-              "attempting connection with IP: ", self.JET_IP, " - and PORT: ", self.JET_TCP_PORT)
-        while not tcp_setup_complete:
-            try:
-                self.s_tcp.bind((self.JET_IP, self.JET_TCP_PORT))
-                tcp_setup_complete = True
-                print("[NETWORKING CHANNEL][SETUP TCP] - connected SUCCESSFULLY")
-            except Exception as e:
-                print("[NETWORKING CHANNEL][SETUP TCP] - "
-                      "connection FAILED with error: '", e, "'.\nTrying again in 1s..")
-                time.sleep(1)
+    
 
     def wait_for_unity_presentation(self):
         while True:
