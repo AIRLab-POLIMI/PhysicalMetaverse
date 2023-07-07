@@ -30,13 +30,21 @@ public class PersonManager : MonoBehaviour
 
     public void OnMsgRcv(byte[] msg)
     {
-        string message = Encoding.ASCII.GetString(msg);
-        Debug.Log("Pose\n" + message);
+        data = msg;
+        char[] bytesAsChars = new char[msg.Length];
+        for (int i = 0; i < msg.Length; i++)
+        {
+            bytesAsChars[i] = (char)msg[i];
+        }
+        string message = new string(bytesAsChars);
+        Debug.Log("Person Manager received message: " + message);
         parsedData = ParseData(message);
+
     }
     void Start()
     {
-
+        newObject = new GameObject("Transformer");
+        newTransform = newObject.AddComponent<Transform>();
     }
 
     //a receive looks like
@@ -170,7 +178,7 @@ public class PersonManager : MonoBehaviour
             //name the sphere
             sphere.name = "Sphere (" + i + ")";
             //scale 10
-            sphere.transform.localScale = new Vector3(80f/scale, 80f/scale, 80f/scale);
+            sphere.transform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
             //from 0 to 10 make spheres red, from 11 to 21 make spheres yellow only on odd numbers, from 10 to 20 make spheres orange only on even numbers,
             //from 24 to 32 make spheres green only on even numbers, from 23 to 31 make spheres blue only on odd numbers
             if (i >= 0 && i <= 10)
@@ -218,15 +226,73 @@ public class PersonManager : MonoBehaviour
     //gameobject sphere 34
     private GameObject sphere34;
     [Range(1f, 5000f)]
-    public float scale = 169f;
+    public float _scale = 169f;
 
     [Range(-100f, 100f)]
     public float zOffset = 5.5f;
 
+    [Range(-100f, 100f)]
+    public float yOffset = -10f;
+    [Range(-100f, 100f)]
+    public float xOffset = -10f;
+
     [Range(0f, 100f)]
     public float zMultiplier = 1f;
+    private GameObject newObject;
+    private Transform newTransform = null;
+
+[Range(0.01f, 1f)]
+    public float _speed = 0.05f;
 
     //move spheres
+    private void MoveSpheresNEW()
+    {
+        try{
+            
+
+            // Attach a Transform component to the GameObject
+            
+            //for each sphere
+            for (int i = 0; i < parsedData.Length; i++)
+            {
+                //get the sphere
+                GameObject sphere = spheres[i];
+                //create new transform// Create a new GameObject
+                //set positions
+                //sphere.transform.position = new Vector3(parsedData[i][1], parsedData[i][0], parsedData[i][2]);
+                //should rotate z by 45 degrees. if a point has y = 0 z is unchanged, if a point has y = 100, z is brought closer
+                newTransform.position = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
+                newTransform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
+                //rotate spheres position by 45 degrees with fulcrum at 
+                Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
+
+                // Specify the rotation angle in degrees
+                //float rotationAngle = -20f; // You can adjust the angle as desired
+                //rotation center in 0 0
+                Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
+                // Rotate the sphere around the center of rotation
+                newTransform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
+                //move sphere by Offset
+                newTransform.position = new Vector3(sphere.transform.position.x + xOffset, sphere.transform.position.y + yOffset, sphere.transform.position.z + zOffset);// + 1/sphere34.transform.position.y * zMultiplier);
+                //sphere lerp to newTransform
+                sphere.transform.position = Vector3.Lerp(sphere.transform.position, newTransform.position, _speed);
+                //move gradually
+                //sphere.transform.position = Vector3.Lerp(sphere.transform.position, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
+
+            }
+        }
+        catch(Exception e)
+        {
+            Debug.Log(":-)");
+            //log size of data
+            Debug.Log(parsedData.Length);
+            //log size of first element
+            Debug.Log(parsedData[0].Length);
+            //log spheres size
+            Debug.Log(spheres.Length);
+        }
+    }
+
     private void MoveSpheres()
     {
         try{
@@ -238,17 +304,19 @@ public class PersonManager : MonoBehaviour
                 //set positions
                 //sphere.transform.position = new Vector3(parsedData[i][1], parsedData[i][0], parsedData[i][2]);
                 //should rotate z by 45 degrees. if a point has y = 0 z is unchanged, if a point has y = 100, z is brought closer
-                sphere.transform.position = new Vector3(parsedData[i][1]/scale, parsedData[i][0]/scale, parsedData[i][2]/scale + zOffset + 1/sphere34.transform.position.y * zMultiplier);
-                sphere.transform.localScale = new Vector3(80f/scale, 80f/scale, 80f/scale);
+                sphere.transform.position = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
+                sphere.transform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
                 //rotate spheres position by 45 degrees with fulcrum at 
                 Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
 
                 // Specify the rotation angle in degrees
                 //float rotationAngle = -20f; // You can adjust the angle as desired
                 //rotation center in 0 0
-                Vector3 rotationCenter = new Vector3(224.1144f/scale, -26f/scale, -359.3866f/scale); // You can adjust the center of rotation as desired
+                Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
                 // Rotate the sphere around the center of rotation
                 sphere.transform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
+                //move sphere by Offset
+                sphere.transform.position = new Vector3(sphere.transform.position.x + xOffset, sphere.transform.position.y + yOffset, sphere.transform.position.z + zOffset);// + 1/sphere34.transform.position.y * zMultiplier);
                 //move gradually
                 //sphere.transform.position = Vector3.Lerp(sphere.transform.position, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
 

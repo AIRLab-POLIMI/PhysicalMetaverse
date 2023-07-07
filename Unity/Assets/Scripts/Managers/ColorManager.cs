@@ -23,13 +23,33 @@ public class ColorManager : MonoBehaviour
 
     private GameObject[] spheres;
 
+    public int _minColorSize = 300;
+    private bool _colorTracked = false;
     public void OnMsgRcv(byte[] msg)
     {
-        string message = Encoding.ASCII.GetString(msg);
-        //log the message
-        Debug.Log("Color\n" + message);
+        data = msg;
+        char[] bytesAsChars = new char[msg.Length];
+        for (int i = 0; i < msg.Length; i++)
+        {
+            bytesAsChars[i] = (char)msg[i];
+        }
+        string message = new string(bytesAsChars);
+        Debug.Log("Color Manager received message: " + message);
         parsedData = ParseData(message);
-    }
+        //if parsed 3 is smaller than 100 print UNTRACKED
+        if (parsedData[2] < _minColorSize)
+        {
+            Debug.Log("COLOR UNTRACKED");
+            if (_colorTracked){
+                //save angle of sun
+                _untrackedAngle = (int)_sun.transform.eulerAngles.y;
+                _untrackedLocation = _sphere.transform;
+            }
+            _colorTracked = false;
+        }
+        else
+            _colorTracked = true;
+    }   
     void Start()
     {
     }
@@ -76,6 +96,19 @@ public class ColorManager : MonoBehaviour
 
     }
 
+    [Range(1f, 100f)]
+    public float _scale = 2f;
+    [Range(1f, 100f)]
+    public float _imageFrameScale = 100;
+    [Range(-100f, 100f)]
+    public float zOffset = 0f;
+
+    [Range(-100f, 100f)]
+    public float yOffset = 0f;
+    [Range(-100f, 100f)]
+    public float xOffset = 0f;
+
+    private GameObject _sphere;
     //spawn spheres
     private void SpawnSphere()
     {
@@ -86,26 +119,38 @@ public class ColorManager : MonoBehaviour
             //name the sphere
             sphere.name = "Sphere";
             //set the sphere's position
-            sphere.transform.position = new Vector3(parsedData[1]/100, parsedData[0]/100, 0);
+            sphere.transform.position = new Vector3(parsedData[1]/_scale, parsedData[0]/_scale, 0);
             //set the sphere's scale
-            sphere.transform.localScale = new Vector3(10f, 10f, 10f);
+            sphere.transform.localScale = new Vector3(_scale, _scale, _scale);
             //set the sphere's color
             sphere.GetComponent<Renderer>().material.color = Color.blue;
+            _sphere = sphere;
+
         }
         catch(Exception e)
         {
             Debug.Log(e);
         }
     }
-
+    [Range(0.01f, 2f)]
+    public float _speed = 0.1f;
+    public int _untrackedAngle = 0;
+    public Transform _sun;
+    private Transform _untrackedLocation;
     //move spheres
     private void MoveSphere()
     {
         try{
-            //get the sphere
-            GameObject sphere = GameObject.Find("Sphere");
             //set the sphere's position
-            sphere.transform.position = new Vector3(parsedData[1]/100, parsedData[0]/100, 0);
+            //_sphere.transform.position = new Vector3(parsedData[1]/_imageFrameScale + xOffset, parsedData[0]/_imageFrameScale + yOffset, zOffset);
+            //linear movement to new position
+            if (_colorTracked)
+                _sphere.transform.position = Vector3.Lerp(_sphere.transform.position, new Vector3(parsedData[1]/_imageFrameScale + xOffset, yOffset, zOffset - parsedData[0]/_imageFrameScale), _speed);
+            else{
+                //rotate sphere around center of ther world around y axis _untrackedAngle, lerp use RotateAround to angle
+                _sphere.transform.RotateAround(Vector3.zero, Vector3.up, -(_untrackedAngle-(int)_sun.transform.eulerAngles.y));
+                _untrackedAngle = (int)_sun.transform.eulerAngles.y;
+            }
         }
         catch(Exception e)
         {

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Color Key
   m_EditorClassIdentifier: 
   priorityLevel: 2
-  startValue: 255
-  runtimeValue: 250
+  startValue: 193
+  runtimeValue: 193
   initOutside: 0
-  Description: 0x70
+  Description: 0xc1

@@ -299,6 +299,12 @@ public class LidarManager : Monosingleton<LidarManager>
 
             _points[pos].transform.localScale = new Vector3(convertedValue / 10, _points[pos].transform.localScale.y,
                 convertedValue / 10);
+            //if point pos is first 15 or last 15 then scale y to 0.1
+            if (pos < 30 || pos > 330)
+            {
+                _points[pos].transform.localScale = new Vector3(_points[pos].transform.localScale.x, 0.5f,
+                    _points[pos].transform.localScale.z);
+            }
         }
     }
 
