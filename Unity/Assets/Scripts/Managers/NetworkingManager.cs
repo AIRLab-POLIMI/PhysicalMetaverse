@@ -306,6 +306,14 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         {
             //send ping
             byte[] msg = new byte[1];
+            //get  "192.168.1.5" bytes
+            //encode "192.168.1.5"
+            byte[] ipBytes = System.Text.Encoding.ASCII.GetBytes("192.168.1.5");
+            //append ipbytes to msg into new byte[]
+            byte[] newMsg = new byte[msg.Length + ipBytes.Length];
+            msg.CopyTo(newMsg, 0);
+            ipBytes.CopyTo(newMsg, msg.Length);
+
             msg[0] = jetsonPingKey.runtimeValue;
             _udpMessenger.SendUdp(msg);
             Debug.Log("----NEWPING SENT----");
