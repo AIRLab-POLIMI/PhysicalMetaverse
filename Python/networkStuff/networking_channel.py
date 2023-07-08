@@ -46,6 +46,7 @@ class NetworkingChannel:
         self.last_ping_received_time = None
         self.last_ping_sent_time = None
 
+        self.UNITY_IP = None
 
         # priority response methods.
         # it's a DICTIONARY mapping each PRIORITY MSG to the corresponding method to be called.
@@ -178,7 +179,11 @@ class NetworkingChannel:
         try:
             # save the last rcv message
             self.udp_data = self.s_udp.recvfrom(self.BUFFER_SIZE)
-
+            #ip of sender is
+            print("sender ip ", self.udp_data[1][0])
+            self.UNITY_IP = self.udp_data[1][0]
+            #set unity ip to it
+            
             if self.udp_data:
 
                 # check priority messages first, and respond accordingly
@@ -210,7 +215,7 @@ class NetworkingChannel:
     def cleanup(self):
         print("CLEANING UP")
         self.s_udp.close()
-        self.s_tcp.close()
+        ####self.s_tcp.close()
 
     def send_setup_completed_msg(self):
         self.write_tcp(SETUP_COMPLETE_KEY)

@@ -8,7 +8,7 @@ unity_presentation_response = b"UOKRESP"
 unity_ping_msg = "UP"
 
 PING_INTERVAL = 0.5
-PING_TIMEOUT = 20
+PING_TIMEOUT = 5
 
 class UnityChannel:
 
@@ -72,7 +72,17 @@ class UnityChannel:
         return parsed_msg
 
     def loop(self):
-        return self.ping()
+        if(self.UNITY_IP is not None):
+            return self.ping()
+        else:
+            print("Waiting for client")
+            if self.NETWORKING_CHANNEL.read_udp_non_blocking():
+                self.UNITY_IP = self.NETWORKING_CHANNEL.UNITY_IP
+                if(self.UNITY_IP is not None):
+                    print("connected " + self.UNITY_IP)
+                    return True
+            time.sleep(0.5)
+            return True
 
     def ping(self):
         #msg = None
@@ -86,6 +96,7 @@ class UnityChannel:
             msg = self.NETWORKING_CHANNEL.udp_data
             print(msg)
             if (msg[0] == PING_KEY):
+                print("received ping")
                 self.last_ping_received_time = time.time()
 
         if time.time() > (self.last_ping_received_time + PING_TIMEOUT):
@@ -100,6 +111,7 @@ class UnityChannel:
         if bytes_to_unicode_str(self.NETWORKING_CHANNEL.udp_data[0]) == unity_ping_msg:
                 
             self.UNITY_IP = self.NETWORKING_CHANNEL.udp_data[1][0]
+            print("UNITY IP: ", self.UNITY_IP)
             self.UNITY_PORT = self.NETWORKING_CHANNEL.udp_data[1][1]
             self.is_unity_ping = True
             return True

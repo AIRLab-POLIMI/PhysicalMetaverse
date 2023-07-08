@@ -16,7 +16,7 @@ class Connection:
 
         self.UNITY_CHANNEL = None
 
-        self.UNITY_IP = "192.168.1.5"
+        self.UNITY_IP = None
 
         # values used to check if the sensors are ready to send
         self.GYRO_READY = False
