@@ -1,15 +1,15 @@
 import queue
 import time
 from networkStuff.constants import *
-import Jetson.GPIO as GPIO
+#####import Jetson.GPIO as GPIO
 from networkStuff.connection import Connection
 import multiprocessing
-import DepthAICamera
+#####import DepthAICamera
 # PIN SETUP
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(setup_pin, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(connection_pin, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(third_pin, GPIO.OUT, initial=GPIO.LOW)
+#####GPIO.setmode(#####GPIO.BCM)
+#####GPIO.setup(setup_pin, #####GPIO.OUT, initial=#####GPIO.LOW)
+#####GPIO.setup(connection_pin, #####GPIO.OUT, initial=#####GPIO.LOW)
+#####GPIO.setup(third_pin, #####GPIO.OUT, initial=#####GPIO.LOW)
 
 # LIDAR SETTINGS
 LIDAR_TOLERANCE = 50
@@ -20,17 +20,17 @@ LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 1
-GYRO_ENABLED = 1
+LIDAR_ENABLED = 0
+GYRO_ENABLED = 0
 POSE_D_ENABLED = 0
-CONTROLLER_ENABLED = 1
-CAMERA_ENABLED = 1
+CONTROLLER_ENABLED = 0
+CAMERA_ENABLED = 0
 
 #Enable/disable display output
 POSE_SCREENLESS_MODE = 1
 
 #LIGHT UP LED WHEN SETUP STARTS
-GPIO.output(setup_pin, GPIO.HIGH)
+#####GPIO.output(setup_pin, #####GPIO.HIGH)
 
 connection = Connection()
 
@@ -55,7 +55,7 @@ if POSE_D_ENABLED:
     pose = PoseDetector()
 connection.set_pose_ready(True)
 
-GPIO.output(setup_pin, GPIO.LOW)
+#####GPIO.output(setup_pin, #####GPIO.LOW)
 
 class Main:
     def __init__(self):
@@ -64,11 +64,11 @@ class Main:
     def setup(self):
         # setting up the network connection
 
-        GPIO.output(connection_pin, GPIO.HIGH)
+        #####GPIO.output(connection_pin, #####GPIO.HIGH)
 
         connection.setup()
 
-        GPIO.output(connection_pin, GPIO.LOW)
+        #####GPIO.output(connection_pin, #####GPIO.LOW)
 
         #connection.set_lidar_queue(lidarQueue)
 
@@ -111,7 +111,7 @@ class Main:
 
     def loop(self):
 
-        GPIO.output(third_pin, GPIO.HIGH)
+        #####GPIO.output(third_pin, #####GPIO.HIGH)
 
         i = 0
         try:
@@ -119,7 +119,7 @@ class Main:
             connection_process.start()
 
             while connection_process.is_alive():
-                DepthAICamera.loop(connection)
+                ####DepthAICamera.loop(connection)
                 if POSE_D_ENABLED:
                     pose.getMeasure(connection, POSE_SCREENLESS_MODE)
 
@@ -129,13 +129,13 @@ class Main:
             self.restart()
 
         except KeyboardInterrupt:
-            GPIO.output(setup_pin, GPIO.LOW)
-            GPIO.output(connection_pin, GPIO.LOW)
-            GPIO.output(third_pin, GPIO.LOW)
+            self.close()
+            #####GPIO.output(setup_pin, #####GPIO.LOW)
+            #####GPIO.output(connection_pin, #####GPIO.LOW)
+            #####GPIO.output(third_pin, #####GPIO.LOW)
 
     def restart(self):
-
-        GPIO.output(third_pin, GPIO.LOW)
+        #####GPIO.output(third_pin, #####GPIO.LOW)
 
         if LIDAR_ENABLED:
             self.lidar_process.terminate()
