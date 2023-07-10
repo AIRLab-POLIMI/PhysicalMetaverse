@@ -50,7 +50,7 @@ class Connection:
     def retry_connection(self):
         self.NETWORKING_CHANNEL.cleanup()
 
-        #self.setup()
+        self.setup()
 
         #self.resume_sendors_send()
 

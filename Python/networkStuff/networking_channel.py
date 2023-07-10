@@ -129,6 +129,8 @@ class NetworkingChannel:
               "attempting connection with IP: ", self.JET_IP, " - and PORT: ", self.JET_UDP_PORT)
         while not udp_setup_complete:
             try:
+                #prevent "address already in use" error
+                self.s_udp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.s_udp.bind((self.JET_IP, self.JET_UDP_PORT))
                 udp_setup_complete = True
                 print("[NETWORKING CHANNEL][SETUP UPD] - connected SUCCESSFULLY")
@@ -138,6 +140,7 @@ class NetworkingChannel:
                 time.sleep(1)
 
     def setup_tcp(self):
+        import traceback
         self.s_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s_tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         # Bind the socket to the host and port
@@ -152,8 +155,14 @@ class NetworkingChannel:
                 tcp_setup_complete = True
                 print("[NETWORKING CHANNEL][SETUP TCP] - connected SUCCESSFULLY")
             except Exception as e:
+                traceback.print_exc()
                 print("[NETWORKING CHANNEL][SETUP TCP] - "
                       "connection FAILED with error: '", e, "'.\nTrying again in 1s..")
+                
+                #if error is [Errno 98] Address already in use
+                #if e.errno == 98:
+                #    print("Address already in use so i guess we can continue")
+                #    tcp_setup_complete = True
                 time.sleep(1)
 
     def wait_for_unity_presentation(self):
@@ -173,7 +182,7 @@ class NetworkingChannel:
                     if data == UNITY_PRESENTATION_KEY:
                         print("Presentation Key Match <3")
 
-                        #conn.send(SETUP_COMPLETE_KEY)
+                        conn.send(SETUP_COMPLETE_KEY)
 
                         conn.close()
 
@@ -228,6 +237,7 @@ class NetworkingChannel:
         print("CLEANING UP")
         self.s_udp.close()
         self.s_tcp.close()
+
 
     def send_setup_completed_msg(self):
         self.write_tcp(SETUP_COMPLETE_KEY)
