@@ -21,10 +21,10 @@ GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
 LIDAR_ENABLED = 1
-GYRO_ENABLED = 1
+GYRO_ENABLED = 0
 POSE_D_ENABLED = 0
-CONTROLLER_ENABLED = 1
-CAMERA_ENABLED = 1
+CONTROLLER_ENABLED = 0
+CAMERA_ENABLED = 0
 
 #Enable/disable display output
 POSE_SCREENLESS_MODE = 1
@@ -36,6 +36,7 @@ connection = Connection()
 
 if CAMERA_ENABLED:
     import DepthAICamera as camera #not a class sorry
+    camera.start()
 connection.set_camera_ready(True)
 
 if LIDAR_ENABLED:
@@ -119,7 +120,8 @@ class Main:
             connection_process.start()
 
             while connection_process.is_alive():
-                DepthAICamera.loop(connection)
+                if CAMERA_ENABLED:
+                    DepthAICamera.loop(connection)
                 if POSE_D_ENABLED:
                     pose.getMeasure(connection, POSE_SCREENLESS_MODE)
 
@@ -137,8 +139,8 @@ class Main:
 
         GPIO.output(third_pin, GPIO.LOW)
 
-        if LIDAR_ENABLED:
-            self.lidar_process.terminate()
+        #if LIDAR_ENABLED:
+            #self.lidar_process.terminate()
 
         if GYRO_ENABLED:
             self.gyro_process.terminate()
