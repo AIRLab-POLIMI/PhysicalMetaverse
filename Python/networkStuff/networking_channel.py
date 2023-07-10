@@ -3,7 +3,7 @@ import time
 from networkStuff.constants import *
 
 # bind all IP: DEFAULT IP of the raspberry running this code
-default_jetson_ip = '192.168.1.10'
+default_jetson_ip = '192.168.0.106'
 # Listen on Port: DEFAULT PORT of the socket connection of the raspberry
 default_jetson_udp_port = 25666
 default_jetson_tcp_port = 25777
