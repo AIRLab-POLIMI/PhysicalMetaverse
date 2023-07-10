@@ -276,6 +276,17 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             {
                 //print the received message
                 Debug.Log("Received UDP " + message.Msg);
+                try
+                {
+                    Debug.Log(message.Msg[0]);
+                    Debug.Log(message.Msg[1].ToString());
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
+
+
                 _setupScreen.SetActive(false);
                 lastPingReceivedTime = Time.time;
                 CheckKeyValueMessage(message.Msg);
