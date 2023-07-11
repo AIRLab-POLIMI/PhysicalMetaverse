@@ -85,9 +85,13 @@ class Lidar:
         except:
             try:
                 print("lidar problem")
+                self.sensor.stop()
+                #self.sensor.stop_motor()
+                #sleep 1 second 
+                time.sleep(1)
+                self.update_measurements(queue, tolerance, timeout, max_dist, connection)
             except KeyboardInterrupt:
                 self.sensor.stop()
-                self.sensor.clean_input()
                 self.sensor.stop_motor()
                 self.sensor.disconnect()
 

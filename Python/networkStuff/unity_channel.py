@@ -127,3 +127,6 @@ class UnityChannel:
                 print(
                     f"[UNITY CHANNEL][write_udp_unity] - "
                     f"msg: '{msg}' could not be sent: WRITE FAILED with error: '{e}'")
+
+    def close_all_connections(self):
+        self.NETWORKING_CHANNEL.close_all_connections()

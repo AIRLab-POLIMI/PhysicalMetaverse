@@ -41,7 +41,8 @@ class Connection:
             if not self.UNITY_CHANNEL.loop():
                 # IF A PING IS MISSED, SETUP AGAIN
                 #self.interrupt_sensors_send()
-
+                #close connections
+                self.close_all_connections()
                 raise ConnectionError
 
                 #self.retry_connection()
@@ -95,3 +96,7 @@ class Connection:
         if self.GYRO_READY and self.POSE_READY and self.LIDAR_READY:
             return True
         return False
+
+    def close_all_connections(self):
+        self.UNITY_CHANNEL.close_all_connections()
+        self.NETWORKING_CHANNEL.close_all_connections()
