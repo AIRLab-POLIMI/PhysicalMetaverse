@@ -12,6 +12,7 @@ default_buffer_size = 1024
 
 PING_INTERVAL = 0.5
 PING_TIMEOUT = 10
+SOCKET_TIMEOUT = 1
 
 
 # place them all in a list to check whether all are present at UDPEsp object initialization
@@ -26,6 +27,7 @@ class NetworkingChannel:
                  jet_tcp_port=default_jetson_tcp_port,
                  buffer_size=default_buffer_size):
         # socket parameters
+        self.TCP_PRESENTATIONS = False
         self.JET_IP = jet_ip
         self.JET_UDP_PORT = jet_udp_port
         self.JET_TCP_PORT = jet_tcp_port
@@ -166,32 +168,47 @@ class NetworkingChannel:
                 time.sleep(1)
 
     def wait_for_unity_presentation(self):
+        #set conn.recv timeout to 4 seconds
+        self.s_tcp.settimeout(SOCKET_TIMEOUT)
+        connection_time = time.time()
         while True:
-
-            self.s_tcp.listen()
-            print("Wait for unity tcp")
-            conn, addr = self.s_tcp.accept()
-            with conn:
-                print(f"Connected by {addr}")
-                client_ip = addr[0]
-                #data = conn.recv(1024) #here the tcp response was suppressed because not working
-                #wait 1s
-                time.sleep(3)
-                data = UNITY_PRESENTATION_KEY
-                if data:
-                    if data == UNITY_PRESENTATION_KEY:
-                        print("Presentation Key Match <3")
-
-                        conn.send(SETUP_COMPLETE_KEY)
-
+            try:
+                self.s_tcp.listen()
+                print("Wait for unity tcp")
+                conn, addr = self.s_tcp.accept()
+                with conn:
+                    print(f"Connected by {addr}")
+                    if time.time() - connection_time > SOCKET_TIMEOUT * 1000:
+                        #close connection and raise exception
                         conn.close()
-
-                        self.last_ping_time = time.time()
-
-                        return client_ip
+                        raise socket.timeout
+                    client_ip = addr[0]
+                    #data = conn.recv(0)
+                    if self.TCP_PRESENTATIONS:
+                        data = conn.recv(4) #here the tcp response was suppressed because not working
                     else:
-                        conn.close()
-            time.sleep(0.5)
+                        data = UNITY_PRESENTATION_KEY
+                    #print data
+                    print("data: ", data)
+                    #wait 1s
+                    time.sleep(2)
+                    #data = UNITY_PRESENTATION_KEY
+                    if data:
+                        if data == UNITY_PRESENTATION_KEY:
+                            print("Presentation Key Match <3")
+
+                            conn.send(SETUP_COMPLETE_KEY)
+
+                            conn.close()
+
+                            self.last_ping_time = time.time()
+
+                            return client_ip
+                        else:
+                            conn.close()
+                time.sleep(0.5)
+            except socket.timeout:
+                print("Timeout")
 
 
 
@@ -241,6 +258,11 @@ class NetworkingChannel:
 
     def send_setup_completed_msg(self):
         self.write_tcp(SETUP_COMPLETE_KEY)
+    
+    def close_all_connections(self):
+        print("[NETWORKING CHANNEL][CLOSE ALL CONNECTIONS] - closing all connections")
+        self.s_udp.close()
+        self.s_tcp.close()
 
 
 def setup_failed(msg):

@@ -76,7 +76,7 @@ class Main:
         if LIDAR_ENABLED:
             print("setting up lidar...")
 
-
+            
             lidar.sensor.stop()
             #clean input
             #lidar.sensor.clean_input()
@@ -118,7 +118,6 @@ class Main:
         try:
             connection_process = multiprocessing.Process(target=connection.loop, args=[])
             connection_process.start()
-
             while connection_process.is_alive():
                 if CAMERA_ENABLED:
                     DepthAICamera.loop(connection)
@@ -131,27 +130,43 @@ class Main:
             self.restart()
 
         except KeyboardInterrupt:
+            self.destroy_connections()
             GPIO.output(setup_pin, GPIO.LOW)
             GPIO.output(connection_pin, GPIO.LOW)
             GPIO.output(third_pin, GPIO.LOW)
 
+    def destroy_connections(self):
+        print("\n\n")
+        print("REMAINING PROCESSES: "+ str(multiprocessing.active_children()))
+        print("\n\n")
+        #for each process close
+        for process in multiprocessing.active_children():
+            print("TERMINATING: "+ str(process))
+            process.kill()
+        
+        print("\n\n")
+        print("REMAINING PROCESSES: "+ str(multiprocessing.active_children()))
+        print("\n\n")
+
+        connection.close_all_connections()
+        connection.cleanup()
+
     def restart(self):
+        self.destroy_connections()
 
         GPIO.output(third_pin, GPIO.LOW)
 
         #if LIDAR_ENABLED:
-            #self.lidar_process.terminate()
-
-        if GYRO_ENABLED:
-            self.gyro_process.terminate()
-
-        connection.retry_connection()
+        #    self.lidar_process.terminate()
+#
+        #if GYRO_ENABLED:
+        #    self.gyro_process.terminate()
+        #connection.retry_connection()
         self.setup()
         self.loop()
 
-
     def close(self):
-        pose.close()
+        #pose.close()
         connection.cleanup()
 
 if __name__ == '__main__':
