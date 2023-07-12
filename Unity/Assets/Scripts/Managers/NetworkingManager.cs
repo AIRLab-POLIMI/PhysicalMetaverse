@@ -79,22 +79,27 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     private IEnumerator Presentations()
     {
-        yield return new WaitForSeconds(3);
 
         var connected = false;
             
         _tcpClient = null;
         while (!connected)
         {
-            //_setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.red;
-            //setupscreen random color
-            _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
-            _tcpClient = TryTcpConnection(_jetsonEndpoint.EndPoint.Address.ToString(), myTcpPort);
+            try{
+                //_setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.red;
+                //setupscreen random color
+                _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
+                _tcpClient = TryTcpConnection(_jetsonEndpoint.EndPoint.Address.ToString(), myTcpPort);
+            }catch(Exception e){
+                Debug.Log(e);
+                StartCoroutine(Presentations());
+                yield break;
+            }
             if (_tcpClient != null)
                 connected = true;
             else
             {
-                yield return new WaitForSeconds(3);
+                yield return new WaitForSeconds(1);
             }
         }
 
@@ -105,39 +110,49 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.yellow;
             
         Debug.Log("SONO QUI");
-        
-        Debug.Log("sent data");
         //change color of setup screen
         _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.green;
         yield return new WaitForSeconds(1);
         _tcpStream.WriteByte(data);
+        Debug.Log("[TCP CHANNEL] sent data");
         _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.blue;
-
         
         //WAIT FOR JETSON RESPONSE
-        //Debug.Log("Waiting for response");
-        //while (!_tcpStream.DataAvailable)
-        //{
-        //    _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
-        //    Debug.Log("Data not available, waiting");
-        //    yield return new WaitForSeconds(1);
-        //    
-        //}
-//
-        //byte[] response = new byte[1];
-        //_tcpStream.Read(response);
-        //Debug.Log(response[0]);
-        //if (response[0] == jetsonSensorsReadyKey.runtimeValue)
-        //{
-        //    Debug.Log("RESPONSE OK");
-        //    SetInitialized(true);
-//
-        //    lastPingReceivedTime = Time.time;
-        //}
-        //else
-        //{
-        //    Debug.Log("RESPONSE NOT OK");
-        //}
+        Debug.Log("Waiting for response");
+        int i = 0;
+        while (!_tcpStream.DataAvailable)
+        {
+            i++;
+            yield return new WaitForSeconds(1);
+            try{
+                _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
+                Debug.Log("Data not available, waiting");
+                if  (i > 3){
+                    Debug.Log("[TCP CHANNEL] sent data");
+                    _tcpStream.WriteByte(data);
+                    i = 0;
+                }
+            }catch(Exception e){
+                Debug.Log(e);
+                StartCoroutine(Presentations());
+                yield break;
+            }
+        }
+
+        byte[] response = new byte[1];
+        _tcpStream.Read(response);
+        Debug.Log(response[0]);
+        if (response[0] == jetsonSensorsReadyKey.runtimeValue)
+        {
+            Debug.Log("RESPONSE OK");
+            SetInitialized(true);
+
+            lastPingReceivedTime = Time.time;
+        }
+        else
+        {
+            Debug.Log("RESPONSE NOT OK");
+        }
 
 
         SetInitialized(true);
