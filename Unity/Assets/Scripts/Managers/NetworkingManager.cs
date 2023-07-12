@@ -37,6 +37,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     [SerializeField] private ByteSO jetsonSensorsReadyKey;
 
     [SerializeField] private ByteSO jetsonPingKey;
+    public bool TCP_PRESENTATIONS = false;
  
     private readonly UdpMessenger _udpMessenger = new UdpMessenger();
 
@@ -116,42 +117,44 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         _tcpStream.WriteByte(data);
         Debug.Log("[TCP CHANNEL] sent data");
         _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = Color.blue;
-        
-        //WAIT FOR JETSON RESPONSE
-        Debug.Log("Waiting for response");
-        int i = 0;
-        while (!_tcpStream.DataAvailable)
-        {
-            i++;
-            yield return new WaitForSeconds(1);
-            try{
-                _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
-                Debug.Log("Data not available, waiting");
-                if  (i > 3){
-                    Debug.Log("[TCP CHANNEL] sent data");
-                    _tcpStream.WriteByte(data);
-                    i = 0;
+        if(TCP_PRESENTATIONS){
+            //WAIT FOR JETSON RESPONSE
+            Debug.Log("Waiting for response");
+            int i = 0;
+            while (!_tcpStream.DataAvailable)
+            {
+                i++;
+                yield return new WaitForSeconds(1);
+                try{
+                    _setupScreen.GetComponentInChildren<UnityEngine.UI.Image>().color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f));
+                    Debug.Log("Data not available, waiting");
+                    if  (i > 3){
+                        Debug.Log("[TCP CHANNEL] sent data");
+                        _tcpStream.WriteByte(data);
+                        i = 0;
+                    }
+                }catch(Exception e){
+                    Debug.Log(e);
+                    StartCoroutine(Presentations());
+                    yield break;
                 }
-            }catch(Exception e){
-                Debug.Log(e);
-                StartCoroutine(Presentations());
-                yield break;
             }
-        }
 
-        byte[] response = new byte[1];
-        _tcpStream.Read(response);
-        Debug.Log(response[0]);
-        if (response[0] == jetsonSensorsReadyKey.runtimeValue)
-        {
-            Debug.Log("RESPONSE OK");
-            SetInitialized(true);
+            byte[] response = new byte[1];
+            _tcpStream.Read(response);
+            Debug.Log(response[0]);
+            if (response[0] == jetsonSensorsReadyKey.runtimeValue)
+            {
+                Debug.Log("RESPONSE OK");
+                SetInitialized(true);
 
-            lastPingReceivedTime = Time.time;
-        }
-        else
-        {
-            Debug.Log("RESPONSE NOT OK");
+                lastPingReceivedTime = Time.time;
+            }
+            else
+            {
+                Debug.Log("RESPONSE NOT OK");
+            }
+            
         }
 
 
