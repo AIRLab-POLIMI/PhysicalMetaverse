@@ -1,0 +1,1 @@
+codice per esp per ogni device implementato. Per ogni progetto, fare riferimento solo ai file main.cpp, EspChannel.h, ESPUDP.h, EspValue.h
