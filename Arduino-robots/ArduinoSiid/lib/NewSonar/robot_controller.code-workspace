@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "robot_controller",
+			"path": "../.."
+		},
+		{
+			"name": "main",
+			"path": "../../../../../control/esp/wireless_string/main"
+		}
+	],
+	"settings": {}
+}
