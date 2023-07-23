@@ -9,6 +9,8 @@ public class Character : MonoBehaviour
     //public gameobject camera
     public GameObject _other;
 
+    public GameObject _robotCollider;
+
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -47,6 +49,11 @@ public class Character : MonoBehaviour
             this.GetComponent<CharacterController>().enabled = false;
             //disable this script
             this.GetComponent<Character>().enabled = false;
+            //toggle robot collider if not null
+            if (_robotCollider != null)
+            {
+                _robotCollider.SetActive(!_robotCollider.activeSelf);
+            }
         }
     }
 }
