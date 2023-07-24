@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.17277357, g: 0.21589936, b: 0.2978351, a: 1}
+  m_IndirectSpecularColor: {r: 0.17277333, g: 0.21589892, b: 0.29783428, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -926,6 +926,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door: {fileID: 289188}
   peopleOnButton: 0
+  _initialDoorPosition: {x: 0, y: 0, z: 0}
   colliders: []
 --- !u!1 &213758167
 GameObject:
@@ -4493,7 +4494,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 841369874}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.15, z: -3.1399999}
+  m_LocalPosition: {x: 0, y: -1, z: -3.1399999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7236,7 +7237,7 @@ MonoBehaviour:
   m_MaxConnectAttempts: 60
   m_DisconnectTimeoutMS: 30000
   ConnectionData:
-    Address: 127.0.0.1
+    Address: 131.175.28.195
     Port: 7777
     ServerListenAddress: 0.0.0.0
   DebugSimulator:
@@ -7260,10 +7261,11 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1614285221}
-    PlayerPrefab: {fileID: 97805024486415106, guid: 4c006f2d810811946b75a521e90d762e,
+    PlayerPrefab: {fileID: 3576647386758344967, guid: ea5c170051214dc44907e9e14ce79e54,
       type: 3}
     Prefabs:
-      NetworkPrefabsLists: []
+      NetworkPrefabsLists:
+      - {fileID: 11400000, guid: fdd32a858d57a41449f71b6ec9338ddd, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
@@ -8731,6 +8733,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door: {fileID: 289188}
   peopleOnButton: 0
+  _initialDoorPosition: {x: 0, y: 0, z: 0}
   colliders: []
 --- !u!1 &2016966952
 GameObject:

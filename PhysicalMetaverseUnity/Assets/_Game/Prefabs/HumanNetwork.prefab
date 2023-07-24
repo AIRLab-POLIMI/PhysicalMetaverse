@@ -131,8 +131,10 @@ GameObject:
   - component: {fileID: 3715500012300486894}
   - component: {fileID: -5966299928811343259}
   - component: {fileID: -5136861856178846542}
+  - component: {fileID: 4201207881385728145}
+  - component: {fileID: -1160046087826300069}
   m_Layer: 0
-  m_Name: Human
+  m_Name: HumanNetwork
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -182,7 +184,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 012f42831f7d5724bac94c3a4b80fa1d, type: 2}
+  - {fileID: 2100000, guid: ba868db90445df14780b24a1b6c95974, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -243,7 +245,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3715500012300486888}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac67570ec350cff48b23f075070058e1, type: 3}
   m_Name: 
@@ -283,6 +285,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _serverAuth: 0
   _cheapInterpolationTime: 0.1
+--- !u!114 &4201207881385728145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715500012300486888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac4b937fd429a2a48a395eb9de878d8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefabA: {fileID: 0}
+  playerPrefabB: {fileID: 0}
+--- !u!114 &-1160046087826300069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3715500012300486888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 506a07ed5a98cca49aff2432f43f88c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3715500012596126117
 GameObject:
   m_ObjectHideFlags: 0

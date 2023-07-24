@@ -7,12 +7,14 @@ public class RoomButtonStay : MonoBehaviour
     //target door gameobject
     public GameObject door;
     public int peopleOnButton = 0;
+    //initial door position
+    public Vector3 _initialDoorPosition;
     //collider list
     public List<Collider> colliders = new List<Collider>();
     // Start is called before the first frame update
     void Start()
     {
-        
+        _initialDoorPosition = door.transform.position;
     }
 
     // Update is called once per frame
@@ -34,7 +36,7 @@ public class RoomButtonStay : MonoBehaviour
             //set door to trigger
             //door.GetComponent<BoxCollider>().isTrigger = true;
             //move up 1.5
-        door.transform.position = new Vector3(door.transform.position.x, 3.0f, door.transform.position.z);
+        door.transform.position = new Vector3(_initialDoorPosition.x, _initialDoorPosition.y + 1.5f, _initialDoorPosition.z);
         //call blink twice of who entered
         other.gameObject.GetComponentInChildren<Blink>().BlinkTwice();
         //}
@@ -56,7 +58,7 @@ public class RoomButtonStay : MonoBehaviour
                 //set door to not trigger
                 //door.GetComponent<BoxCollider>().isTrigger = false;
                 //move to y 1.5
-                door.transform.position = new Vector3(door.transform.position.x, 1.5f, door.transform.position.z);
+                door.transform.position = new Vector3(_initialDoorPosition.x, _initialDoorPosition.y, _initialDoorPosition.z);
             } catch {
                 //do nothing
             }
