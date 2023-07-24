@@ -816,11 +816,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 428f3a0f-2566-496b-bd55-73dd84efff76
+  cloudProjectId: 6b3baddc-3eb6-4fde-9c02-77561d6c3f5d
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: Test
-  organizationId: giuseppe-epifani
+  organizationId: morx97
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 
