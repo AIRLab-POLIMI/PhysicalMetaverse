@@ -17,7 +17,7 @@
 // IP = 192.168.0.50 -> SONAR 1
 
 //const IPAddress staticIP(192, 168, 0, 50);  // this device static IP
-const IPAddress staticIP(192, 168, 111, 50);  // this device static IP
+const IPAddress staticIP(192, 168, 0, 50);  // this device static IP
 // const IPAddress staticIP(192, 168, 0, 40);  // this device static IP
 
 

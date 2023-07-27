@@ -22,6 +22,11 @@ public class Blink : MonoBehaviour
         //if variable blink is true increase alpha linearly to 0.5 and then go back to zero, twice
         if (blink)
         {
+            //if mesh renderer is not esabled enable it
+            if (!this.GetComponent<Renderer>().enabled)
+            {
+                this.GetComponent<Renderer>().enabled = true;
+            }
             blinked++;
             if (blinked < blinkTime)
             {
@@ -40,6 +45,13 @@ public class Blink : MonoBehaviour
                 blink = false;
                 blinked = 0;
                 this.GetComponent<Renderer>().material.color = new Color(this.GetComponent<Renderer>().material.color.r , this.GetComponent<Renderer>().material.color.g, this.GetComponent<Renderer>().material.color.b, 0);
+            }
+        }
+        else{
+            //if mesh renderer is not disabled disable it
+            if (this.GetComponent<Renderer>().enabled)
+            {
+                this.GetComponent<Renderer>().enabled = false;
             }
         }
     }

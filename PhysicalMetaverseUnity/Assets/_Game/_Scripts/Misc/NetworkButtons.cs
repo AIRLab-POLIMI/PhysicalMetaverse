@@ -3,23 +3,55 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+//using textmesh input
+using TMPro;
 
 public class NetworkButtons : MonoBehaviour {
-    //PlayerSO
-    public PlayerSO _playerSO;
+    //ip prompt
+    private string _ip;
+    //tmp inputfield
+    public TMP_InputField _clientInput;
+    public TMP_InputField _hostInput;
+
+    private void Start(){
+        //set ip to value stored by unity transport
+        _ip = GetComponent<UnityTransport>().ConnectionData.Address;
+    }
     private void OnGUI() {
         GUILayout.BeginArea(new Rect(10, 10, 300, 300));
         if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer) {
             if (GUILayout.Button("Host")) {
-                NetworkManager.Singleton.StartHost();
+                //popup ip prompt
+                _hostInput.gameObject.SetActive(true);
+                //set text to ip
+                _hostInput.text = _ip;
+                //NetworkManager.Singleton.StartHost();
             }
             if (GUILayout.Button("Server")) NetworkManager.Singleton.StartServer();
             if (GUILayout.Button("Client")) {
-                NetworkManager.Singleton.StartClient();
+                //popup ip prompt
+                _clientInput.gameObject.SetActive(true);
+                //set text to ip
+                _clientInput.text = _ip;
+                //NetworkManager.Singleton.StartClient();
             }
         }
 
         GUILayout.EndArea();
+    }
+
+    public void ConnectClient(){
+        GetComponent<UnityTransport>().ConnectionData.Address = _clientInput.text;
+        //disable ip prompt
+        _clientInput.gameObject.SetActive(false);
+        NetworkManager.Singleton.StartClient();
+    }
+
+    public void StartHost(){
+        GetComponent<UnityTransport>().ConnectionData.Address = _hostInput.text;
+        //disable ip prompt
+        _hostInput.gameObject.SetActive(false);
+        NetworkManager.Singleton.StartHost();
     }
 
     // private void Awake() {
