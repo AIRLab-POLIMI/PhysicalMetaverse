@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.InputSystem;
 
 public class RobotController : MonoBehaviour
 {
@@ -12,10 +13,11 @@ public class RobotController : MonoBehaviour
     [System.Serializable]
     public class RobotJointsArmsDict
     {
-        public String cwKey;
-        public String ccKey;
         //list of joints
         public GameObject joint;
+        public String cwKey;
+        public String ccKey;
+        public String axis;
     }
 
     //list of RobotJointsArmsDict
@@ -23,20 +25,68 @@ public class RobotController : MonoBehaviour
     //list of strings
     public List<KeyCode> _keys = new List<KeyCode>();
     //button to fire updatekeys
-    public bool updateKeysButton = false;
+    public bool _updateKeysButton = false;
+    Gamepad _gamepad;
+    
+    //public enum containing keyboard and joystick selectable inputs
+    public enum InputType
+    {
+        Keyboard,
+        Joystick
+    }
 
+    //public InputType
+    public InputType _inputType = InputType.Joystick;
+    //controlsSO list
+    public List<ControlsSO> _controlsList = new List<ControlsSO>();
+    private ControlsSO _activeControls = null;
+    public InputSettings _inputSettings;
+    //set global input to input settings
+    void Awake()
+    {
+        //set global input to input settings
+        InputSystem.settings = _inputSettings;
+    }
     // Start is called before the first frame update
     void Start()
     {
-        UpdateKeys();
-        
+        _gamepad = Gamepad.current;
+        if (_gamepad == null)
+        {
+            Debug.LogWarning("Logitech F710 not detected or not supported.");
+            return;
+        }
+        if (_inputType == InputType.Keyboard)
+        {
+            //get active controls
+            _activeControls = _controlsList[0];
+            UpdateKeysKeyboard();
+        }
+        else if (_inputType == InputType.Joystick)
+        {
+            //get active controls
+            _activeControls = _controlsList[1];
+            UpdateKeysJoystick();
+        }
+
+
         //insert R key and gameobject in dictionary
         //robotJointsArmsDict.Add("R", GameObject.Find("Cube (4)"));
     }
 
     void FixedUpdate(){
-        //print input keycode
+        if (_inputType == InputType.Keyboard)
+        {
+            KeyboardUpdate();
+        }
+        else if (_inputType == InputType.Joystick)
+        {
+            JoystickUpdate();
+        }
+        
+    }
 
+    void KeyboardUpdate(){
         if (Input.anyKey)
         {
             // Loop through all the possible key codes and check if the key is pressed
@@ -80,17 +130,80 @@ public class RobotController : MonoBehaviour
                 }
             }
         }
-        if (updateKeysButton)
+        if (_updateKeysButton)
         {
-            UpdateKeys();
-            updateKeysButton = false;
+            UpdateKeysKeyboard();
+            _updateKeysButton = false;
         }
     }
 
-    //todo updatekeys for different input systems
-    void UpdateKeys(){
+    //prevaxisvalue dictionary
+    Dictionary<string, string> _prevAxisValue = new Dictionary<string, string>();
+    void JoystickUpdate(){
+        //print all the buttons that were pressed
+        foreach (InputControl control in _gamepad.allControls)
+        {
+            if (control.IsPressed())
+            {
+                //log value
+                Debug.Log(control.displayName + " " + control.ReadValueAsObject());
+            }
+            //if control display name is equal to the axis of the robot joint arm
+            if (_robotJointsArmsDict.Exists(x => x.axis == control.displayName))
+            {
+                //get value of x axis from unity global input
+                string value = control.ReadValueAsObject().ToString();
+                //update prevaxisvalue dictionary
+                if (!_prevAxisValue.ContainsKey(control.displayName))
+                {
+                    _prevAxisValue.Add(control.displayName, "0");
+                }
+                //if value changed
+                if (value != _prevAxisValue[control.displayName])
+                {
+                    //get index of robot joint arm
+                    int index = _robotJointsArmsDict.FindIndex(x => x.axis == control.displayName);
+                    //value to float
+                    float valueFloat = float.Parse(value);
+                    Debug.Log("Axis " + control.displayName + " " + valueFloat);
+                    //store parent
+                    Transform father = _robotJointsArmsDict[index].joint.transform.parent;
+                    Transform child = _robotJointsArmsDict[index].joint.transform;
+                    //save distance amount between joint and father
+                    //float distance = Vector3.Distance(father.position, child.position);
+                    //move joint to father
+                    //child.position = father.position;
+                    //rotate back by prevvalue
+                    child.RotateAround(father.position, father.right, -float.Parse(_prevAxisValue[control.displayName]) * 180);
+                    //map value to 0 180 and rotate joint to that precise angle relative to father's right
+                    child.RotateAround(father.position, father.right, valueFloat * 180);
+                    //get vector pointing as child rotation
+                    //Vector3 vector = child.rotation * Vector3.up;
+                    //move joint to distance amount from father
+                    //child.position += vector * distance;
+                    //set prevaxisvalue to value
+                    _prevAxisValue[control.displayName] = value;
+                }
+
+            }
+        }
+        if (_updateKeysButton)
+        {
+            UpdateKeysJoystick();
+            _updateKeysButton = false;
+        }
+    }
+    void UpdateKeysKeyboard(){
         //clear list
         _keys.Clear();
+        //clear _robotJointsArmsDict
+        _robotJointsArmsDict.Clear();
+        //for each element in active controls fill _robotJointsArmsDict using gameobject find
+        foreach (ControlsSO.RobotJointsArmsDict robotJointsArm in _activeControls._robotJointsArmsDict)
+        {
+            //add key to list parsing string, case insensitive
+            _robotJointsArmsDict.Add(new RobotJointsArmsDict{joint = GameObject.Find(robotJointsArm.joint), cwKey = robotJointsArm.cwKey, ccKey = robotJointsArm.ccKey});
+        }
         //populate list of keys using RobotJointsArmsDict
         foreach (RobotJointsArmsDict robotJointsArm in _robotJointsArmsDict)
         {
@@ -101,39 +214,32 @@ public class RobotController : MonoBehaviour
         //log keys updated
         Debug.Log("Keys updated");
     }
-/*  
-    void OldFixedUpdate()
-    {
-        //if q is pressed rotate second gameobject around first one on x axis, relative to first gameobject
-        if (Input.GetKey(KeyCode.Q))
+
+    void UpdateKeysJoystick(){
+        //clear list
+        _keys.Clear();
+        //clear _robotJointsArmsDict
+        _robotJointsArmsDict.Clear();
+        //for each element in active controls fill _robotJointsArmsDict using gameobject find
+        foreach (ControlsSO.RobotJointsArmsDict robotJointsArm in _activeControls._robotJointsArmsDict)
         {
-            robotJointsArms[1].transform.RotateAround(robotJointsArms[0].transform.position, robotJointsArms[0].transform.right, 1f);
+            //add key to list parsing string, case insensitive
+            _robotJointsArmsDict.Add(new RobotJointsArmsDict{joint = GameObject.Find(robotJointsArm.joint), axis = robotJointsArm.axis});
         }
-        //if w is pressed rotate second gameobject around first one on x axis, relative to first gameobject
-        if (Input.GetKey(KeyCode.W))
+        //populate list of keys using RobotJointsArmsDict
+        foreach (RobotJointsArmsDict robotJointsArm in _robotJointsArmsDict)
         {
-            robotJointsArms[1].transform.RotateAround(robotJointsArms[0].transform.position, robotJointsArms[0].transform.right, -1f);
+            //add key to list parsing string, case insensitive, if not null
+            if (robotJointsArm.cwKey != null)
+            {
+                _keys.Add((KeyCode)System.Enum.Parse(typeof(KeyCode), robotJointsArm.cwKey, true));
+            }
+            if (robotJointsArm.ccKey != null)
+            {
+                _keys.Add((KeyCode)System.Enum.Parse(typeof(KeyCode), robotJointsArm.ccKey, true));
+            }
         }
-        //if e is pressed rotate fourth gameobject around third one on x axis, relative to second gameobject
-        if (Input.GetKey(KeyCode.E))
-        {
-            robotJointsArms[3].transform.RotateAround(robotJointsArms[2].transform.position, robotJointsArms[2].transform.right, 1f);
-        }
-        //if r is pressed rotate fourth gameobject around third one on x axis, relative to second gameobject
-        if (Input.GetKey(KeyCode.R))
-        {
-            robotJointsArms[3].transform.RotateAround(robotJointsArms[2].transform.position, robotJointsArms[2].transform.right, -1f);
-        }
-        //if a is pressed rotate first gameobject around his own y axis
-        if (Input.GetKey(KeyCode.A))
-        {
-            robotJointsArms[0].transform.RotateAround(robotJointsArms[0].transform.position, robotJointsArms[0].transform.up, 1f);
-        }
-        //if s is pressed rotate first gameobject around his own y axis
-        if (Input.GetKey(KeyCode.S))
-        {
-            robotJointsArms[0].transform.RotateAround(robotJointsArms[0].transform.position, robotJointsArms[0].transform.up, -1f);
-        }
+        //log keys updated
+        Debug.Log("Keys updated");
     }
-*/
 }

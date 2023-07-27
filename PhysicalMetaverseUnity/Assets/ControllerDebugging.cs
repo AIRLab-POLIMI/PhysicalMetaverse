@@ -1,17 +1,27 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class ControllerDebugging : MonoBehaviour
 {
-    private Gamepad gamepad;
+    Gamepad gamepad;
+    //input settings scriptable object
+    public InputSettings inputSettings;
 
-    private void Awake()
+    //set global input to input settings
+    void Awake()
     {
-        // Get the default gamepad (Logitech F710 should be recognized as a gamepad)
+        //set global input to input settings
+        InputSystem.settings = inputSettings;
+    }
+
+    void Start()
+    {
+        //get gamepad
         gamepad = Gamepad.current;
     }
 
-    private void Update()
+    void Update()
     {
         if (gamepad == null)
         {
@@ -19,21 +29,14 @@ public class ControllerDebugging : MonoBehaviour
             return;
         }
 
-        // Check individual buttons and log their state
-        if (gamepad.buttonSouth.wasPressedThisFrame)
+        //print all the buttons that were pressed
+        foreach (InputControl control in gamepad.allControls)
         {
-            Debug.Log("Button South (A) pressed!");
+            if (control.IsPressed())
+            {
+                //log value
+                Debug.Log(control.displayName + " " + control.ReadValueAsObject());
+            }
         }
-
-        if (gamepad.buttonNorth.wasPressedThisFrame)
-        {
-            Debug.Log("Button North (Y) pressed!");
-        }
-
-        // Add more buttons as needed (e.g., gamepad.buttonWest, gamepad.buttonEast, etc.)
-
-        // Example for checking axis values (e.g., left stick)
-        Vector2 leftStick = gamepad.leftStick.ReadValue();
-        Debug.Log("Left Stick: " + leftStick);
     }
 }
