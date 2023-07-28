@@ -12,6 +12,7 @@ public class NetworkButtons : MonoBehaviour {
     //tmp inputfield
     public TMP_InputField _clientInput;
     public TMP_InputField _hostInput;
+    public bool _skipInput = false;
 
     private void Start(){
         //set ip to value stored by unity transport
@@ -21,19 +22,29 @@ public class NetworkButtons : MonoBehaviour {
         GUILayout.BeginArea(new Rect(10, 10, 300, 300));
         if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer) {
             if (GUILayout.Button("Host")) {
-                //popup ip prompt
-                _hostInput.gameObject.SetActive(true);
-                //set text to ip
-                _hostInput.text = _ip;
-                //NetworkManager.Singleton.StartHost();
+                if (_skipInput){
+                    NetworkManager.Singleton.StartHost();
+                }
+                else{
+                    //popup ip prompt
+                    _hostInput.gameObject.SetActive(true);
+                    //set text to ip
+                    _hostInput.text = _ip;
+                    //NetworkManager.Singleton.StartHost();
+                }
             }
             if (GUILayout.Button("Server")) NetworkManager.Singleton.StartServer();
             if (GUILayout.Button("Client")) {
-                //popup ip prompt
-                _clientInput.gameObject.SetActive(true);
-                //set text to ip
-                _clientInput.text = _ip;
-                //NetworkManager.Singleton.StartClient();
+                if (_skipInput){
+                    NetworkManager.Singleton.StartClient();
+                }
+                else{
+                    //popup ip prompt
+                    _clientInput.gameObject.SetActive(true);
+                    //set text to ip
+                    _clientInput.text = _ip;
+                    //NetworkManager.Singleton.StartClient();
+                }
             }
         }
 

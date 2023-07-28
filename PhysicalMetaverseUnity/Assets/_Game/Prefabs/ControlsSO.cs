@@ -15,6 +15,7 @@ public class ControlsSO : ScriptableObject
         public String cwKey;
         public String ccKey;
         public String axis;
+        public bool invert;
     }
 
     //list of RobotJointsArmsDict
