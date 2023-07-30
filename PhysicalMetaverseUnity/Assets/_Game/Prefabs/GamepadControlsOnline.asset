@@ -53,22 +53,22 @@ MonoBehaviour:
     ccKey: 
     axis: Right Trigger
     invert: 1
-  - joint: OdileOnline(Clone)
+  - joint: MoveForward
     cwKey: 
     ccKey: 
     axis: D-Pad Y
     invert: 0
-  - joint: OdileOnline(Clone)
+  - joint: MoveStrafe
     cwKey: 
     ccKey: 
     axis: D-Pad X
     invert: 0
-  - joint: OdileOnline(Clone)
+  - joint: MoveRotateRight
     cwKey: 
     ccKey: 
     axis: Right Bumper
     invert: 0
-  - joint: OdileOnline(Clone)
+  - joint: MoveRotateLeft
     cwKey: 
     ccKey: 
     axis: Left Bumper

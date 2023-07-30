@@ -1050,6 +1050,7 @@ GameObject:
   - component: {fileID: 2227502439815967715}
   - component: {fileID: 2227502439815967714}
   - component: {fileID: 2227502439815967741}
+  - component: {fileID: 3650422211242677656}
   m_Layer: 0
   m_Name: Odile
   m_TagString: Untagged
@@ -2784,35 +2785,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32b50f9c10ba917419b0fe637e94fc72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _guiEnabled: 1
   _robotJointsArmsDict:
   - joint: {fileID: 2227502440478871266}
     cwKey: j
     ccKey: u
     axis: 
+    direction: 
     invert: 0
     range: 180
   - joint: {fileID: 2227502440500981369}
     cwKey: u
     ccKey: j
     axis: 
+    direction: 
     invert: 0
     range: 180
   - joint: {fileID: 2227502439437424832}
     cwKey: y
     ccKey: h
     axis: 
+    direction: 
     invert: 0
     range: 180
   - joint: {fileID: 2227502439985829466}
     cwKey: r
     ccKey: f
     axis: 
+    direction: 
     invert: 0
     range: 180
   - joint: {fileID: 2227502439817837192}
     cwKey: t
     ccKey: g
     axis: 
+    direction: 
     invert: 0
     range: 180
   _keys: 
@@ -2940,11 +2947,29 @@ MeshCollider:
   m_GameObject: {fileID: 2227502439815967740}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!143 &3650422211242677656
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2227502439815967740}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 0.6
+  m_Radius: 0.33485854
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2227502439817837192
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,59 +17,71 @@ MonoBehaviour:
     cwKey: 
     ccKey: 
     axis: -Right Trigger
+    direction: 
     invert: 0
   - joint: CamAlign
     cwKey: 
     ccKey: 
     axis: -Right Trigger
+    direction: 
     invert: 1
   - joint: CamPan
     cwKey: 
     ccKey: 
     axis: Right Stick X
+    direction: 
     invert: 1
   - joint: CamTilt
     cwKey: 
     ccKey: 
     axis: Right Stick Y
+    direction: 
     invert: 1
   - joint: Wrist
     cwKey: 
     ccKey: 
     axis: Left Stick Y
+    direction: 
     invert: 1
   - joint: Rotate
     cwKey: 
     ccKey: 
     axis: Left Stick X
+    direction: 
     invert: 1
   - joint: Arm
     cwKey: 
     ccKey: 
     axis: Left Trigger
+    direction: 
     invert: 0
   - joint: Arm
     cwKey: 
     ccKey: 
     axis: Right Trigger
+    direction: 
     invert: 1
   - joint: Odile
     cwKey: 
     ccKey: 
     axis: D-Pad Y
+    direction: MoveForward
     invert: 0
   - joint: Odile
     cwKey: 
     ccKey: 
     axis: D-Pad X
+    direction: MoveStrafe
     invert: 0
   - joint: Odile
     cwKey: 
     ccKey: 
     axis: Right Bumper
+    direction: MoveRotateRight
     invert: 0
   - joint: Odile
     cwKey: 
     ccKey: 
     axis: Left Bumper
+    direction: MoveRotateLeft
     invert: 0

@@ -20,6 +20,7 @@ public class RobotController : MonoBehaviour
         public String cwKey;
         public String ccKey;
         public String axis;
+        public String direction;
         public bool invert;
         public int range = 180;
     }
@@ -240,32 +241,52 @@ public class RobotController : MonoBehaviour
                     }
                     string jointAxis = occurrency.joint.name + " " + occurrency.axis;
                     //if occurrency name contains Odile controls move it
-                    if(occurrency.joint.name.Contains("Odile")){
-                        //if dpad y
-                        if (control.displayName == "D-Pad Y")
+                    if(occurrency.joint.name.Contains(gameObject.name)){
+                        ////if dpad y
+                        //if (control.displayName == "D-Pad Y")
+                        //{
+                        //    //move odile up and forward to transform forward
+                        //    //occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.forward / _moveUpdate;
+                        //    //controller move
+                        //    controller.Move(transform.forward * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
+                        //}
+                        //if (control.displayName == "D-Pad X")
+                        //{
+                        //    //move odile up and forward to transform forward
+                        //    //occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.right / _moveUpdate;
+                        //    controller.Move(transform.right * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
+                        //}
+                        //if (control.displayName == "Right Bumper")
+                        //{
+                        //    //rotate odile right, sum angle to euler rotation
+                        //    //occurrency.joint.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                        //    controller.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                        //}
+                        //if (control.displayName == "Left Bumper")
+                        //{
+                        //    //rotate odile right, sum angle to euler rotation
+                        //    //occurrency.joint.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                        //    controller.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                        //}
+                        //if occurrency.joint.name == StrafeLeft
+                        if (occurrency.direction == "MoveStrafe")
                         {
-                            //move odile up and forward to transform forward
-                            //occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.forward / _moveUpdate;
-                            //controller move
-                            controller.Move(transform.forward * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
-                        }
-                        if (control.displayName == "D-Pad X")
-                        {
-                            //move odile up and forward to transform forward
-                            //occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.right / _moveUpdate;
                             controller.Move(transform.right * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
                         }
-                        if (control.displayName == "Right Bumper")
+                        //if occurrency.joint.name == Forward
+                        if (occurrency.direction == "MoveForward")
                         {
-                            //rotate odile right, sum angle to euler rotation
-                            //occurrency.joint.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
-                            controller.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                            controller.Move(transform.forward * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
                         }
-                        if (control.displayName == "Left Bumper")
+                        //if occurrency.joint.name == RotateLeft
+                        if (occurrency.direction == "MoveRotateRight")
                         {
-                            //rotate odile right, sum angle to euler rotation
-                            //occurrency.joint.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
-                            controller.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                            controller.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString()) / _angleUpdate, 0);
+                        }
+                        //if occurrency.joint.name == RotateRight
+                        if (occurrency.direction == "MoveRotateLeft")
+                        {
+                            controller.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString()) / _angleUpdate, 0);
                         }
                     }
                     else{
@@ -330,28 +351,25 @@ public class RobotController : MonoBehaviour
                     {
                         continue;
                     }
-                    //if occurrency name is Odile controls move it
-                    if(occurrency.joint.name == "Odile"){
-                        //if dpad y
-                        if (control.displayName == "D-Pad Y")
+                    if(occurrency.joint.name.Contains(gameObject.name)){
+                        if (occurrency.direction == "MoveStrafe")
                         {
-                            //move odile up and forward to transform forward
-                            occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.forward / _moveUpdate;
+                            controller.Move(transform.right * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
                         }
-                        if (control.displayName == "D-Pad X")
+                        //if occurrency.joint.name == Forward
+                        if (occurrency.direction == "MoveForward")
                         {
-                            //move odile up and forward to transform forward
-                            occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.right / _moveUpdate;
+                            controller.Move(transform.forward * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
                         }
-                        if (control.displayName == "Right Bumper")
+                        //if occurrency.joint.name == RotateLeft
+                        if (occurrency.direction == "MoveRotateRight")
                         {
-                            //rotate odile right, sum angle to euler rotation
-                            occurrency.joint.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                            controller.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString()) / _angleUpdate, 0);
                         }
-                        if (control.displayName == "Left Bumper")
+                        //if occurrency.joint.name == RotateRight
+                        if (occurrency.direction == "MoveRotateLeft")
                         {
-                            //rotate odile right, sum angle to euler rotation
-                            occurrency.joint.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                            controller.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString()) / _angleUpdate, 0);
                         }
                     }
                     else{
@@ -431,7 +449,7 @@ public class RobotController : MonoBehaviour
         foreach (ControlsSO.RobotJointsArmsDict robotJointsArm in _activeControls._robotJointsArmsDict)
         {
             //add key to list parsing string, case insensitive
-            _robotJointsArmsDict.Add(new RobotJointsArmsDict{joint = GameObject.Find(robotJointsArm.joint), axis = robotJointsArm.axis});
+            _robotJointsArmsDict.Add(new RobotJointsArmsDict{joint = GameObject.Find(robotJointsArm.joint), axis = robotJointsArm.axis, direction = robotJointsArm.direction});
             //invert
             _robotJointsArmsDict[_robotJointsArmsDict.Count - 1].invert = robotJointsArm.invert;
         }
@@ -460,6 +478,7 @@ public class RobotController : MonoBehaviour
     public List<bool> showOptions = new List<bool>(); // List of booleans to show/hide the options
     private bool listSetup = false; // Boolean to check if the list has been setup
     public string[] options = { "Right Stick X", "Right Stick Y", "Left Stick X", "Left Stick Y", "Right Trigger", "Left Trigger", "D-Pad X", "D-Pad Y", "Right Bumper", "Left Bumper", "A", "B", "X", "Y", "Start", "Select", "Left Stick Button", "Right Stick Button", "Left Stick Button", "Right Stick Button", "None" };
+    private bool _hideGui = false;
     private void OnGUI()
     {
         if (!_guiEnabled)
@@ -486,6 +505,26 @@ public class RobotController : MonoBehaviour
         }
         float scrollViewHeight = (numButtons * buttonHeight) + ((numButtons - 1) * spacing);
         float scrollViewWidth = 500f;
+        //button to hide or show gui
+        if (GUILayout.Button("Hide/Show Control GUI"))
+        {
+            _hideGui = !_hideGui;
+        }
+        if (_hideGui)
+        {
+            return;
+        }
+        InputControl controlPressed = null;
+        //get gamepad pressed command and if it matches with one options
+        foreach (InputControl control in _gamepad.allControls)
+        {
+            //if control is not zero and it is in options store it in controlPressed and break
+            if (control.ReadValueAsObject().ToString() != "0" && Array.IndexOf(options, control.displayName) != -1)
+            {
+                controlPressed = control;
+                break;
+            }
+        }
 
         // Begin the scroll view
         scrollPosition = GUILayout.BeginScrollView(scrollPosition, customStyle, GUILayout.Width(scrollViewWidth), GUILayout.Height(600));
@@ -541,7 +580,7 @@ public class RobotController : MonoBehaviour
                 int robotJointsArmsIndex = _robotJointsArmsDict.IndexOf(robotJointsArm);
                 GUILayout.BeginHorizontal();
                 // Display the joint name and axis
-                GUILayout.Label(robotJointsArm.joint.name + " " + robotJointsArm.axis);
+                GUILayout.Label(robotJointsArm.joint.name + robotJointsArm.direction + " " + robotJointsArm.axis);
 
                 // Add a button to modify the value for this dictionary entry
                 /*if (GUILayout.Button("Change"))
@@ -575,6 +614,14 @@ public class RobotController : MonoBehaviour
                         showOptions[robotJointsArmsIndex] = false;
                         prevSelectedOption[robotJointsArmsIndex] = selectedOption[robotJointsArmsIndex];
                     }
+                    //if controlPressed is not null close the options
+                    if (controlPressed != null)
+                    {
+                        showOptions[robotJointsArmsIndex] = false;
+                        //find control in options and set its index to selectedOption
+                        selectedOption[robotJointsArmsIndex] = Array.IndexOf(options, controlPressed.displayName);
+                        prevSelectedOption[robotJointsArmsIndex] = selectedOption[robotJointsArmsIndex];
+                    }
                 }
                 // button to toggle invert
                 if (GUILayout.Button("Invert " + (robotJointsArm.invert? "True" : "False")))
@@ -586,46 +633,26 @@ public class RobotController : MonoBehaviour
                 GUILayout.Label("Range: ");
                 robotJointsArm.range = int.Parse(GUILayout.TextField(robotJointsArm.range.ToString(), 3));
 
-                if (GUILayout.Button("Copy"))
-                {
-                    // Example: Add a new entry to the dictionary with default values
-                    RobotJointsArmsDict newEntry = new RobotJointsArmsDict();
-                    newEntry.joint = robotJointsArm.joint;
-                    newEntry.axis = axisInput;
-                    /*
-                    _robotJointsArmsDict.Add(newEntry);
-                    showOptions.Add(false);
-                    selectedOption.Add(0);
-                    prevSelectedOption.Add(0);
-                    */
-                    //add everything at this position
-                    _robotJointsArmsDict.Insert(robotJointsArmsIndex, newEntry);
-                    showOptions.Insert(robotJointsArmsIndex, false);
-                    selectedOption.Insert(robotJointsArmsIndex, 0);
-                    prevSelectedOption.Insert(robotJointsArmsIndex, 0);
-                    //update all other indexes
-                    for (int i = robotJointsArmsIndex + 1; i < showOptions.Count; i++)
-                    {
-                        selectedOption[i] = Array.IndexOf(options, _robotJointsArmsDict[i].axis);
-                        if (selectedOption[i] == -1)
-                        {
-                            selectedOption[i] = options.Length - 1;
-                        }
-                        prevSelectedOption[i] = selectedOption[i];
-                    }
-                }
-                if (GUILayout.Button("Remove"))
-                {
-                    //if there are no other entries with this name do not remove it
-                    if (_robotJointsArmsDict.FindAll(x => x.joint == robotJointsArm.joint).Count > 1)
+                if(!robotJointsArm.joint.name.Contains(gameObject.name)){
+                    if (GUILayout.Button("Copy"))
                     {
                         // Example: Add a new entry to the dictionary with default values
-                        _robotJointsArmsDict.Remove(robotJointsArm);
-                        showOptions.RemoveAt(robotJointsArmsIndex);
-                        selectedOption.RemoveAt(robotJointsArmsIndex);
-                        prevSelectedOption.RemoveAt(robotJointsArmsIndex);
+                        RobotJointsArmsDict newEntry = new RobotJointsArmsDict();
+                        newEntry.joint = robotJointsArm.joint;
+                        newEntry.axis = axisInput;
+                        /*
+                        _robotJointsArmsDict.Add(newEntry);
+                        showOptions.Add(false);
+                        selectedOption.Add(0);
+                        prevSelectedOption.Add(0);
+                        */
+                        //add everything at this position
+                        _robotJointsArmsDict.Insert(robotJointsArmsIndex, newEntry);
+                        showOptions.Insert(robotJointsArmsIndex, false);
+                        selectedOption.Insert(robotJointsArmsIndex, 0);
+                        prevSelectedOption.Insert(robotJointsArmsIndex, 0);
                         //update all other indexes
-                        for (int i = robotJointsArmsIndex; i < showOptions.Count; i++)
+                        for (int i = robotJointsArmsIndex + 1; i < showOptions.Count; i++)
                         {
                             selectedOption[i] = Array.IndexOf(options, _robotJointsArmsDict[i].axis);
                             if (selectedOption[i] == -1)
@@ -633,6 +660,28 @@ public class RobotController : MonoBehaviour
                                 selectedOption[i] = options.Length - 1;
                             }
                             prevSelectedOption[i] = selectedOption[i];
+                        }
+                    }
+                    if (GUILayout.Button("Remove"))
+                    {
+                        //if there are no other entries with this name do not remove it
+                        if (_robotJointsArmsDict.FindAll(x => x.joint == robotJointsArm.joint).Count > 1)
+                        {
+                            // Example: Add a new entry to the dictionary with default values
+                            _robotJointsArmsDict.Remove(robotJointsArm);
+                            showOptions.RemoveAt(robotJointsArmsIndex);
+                            selectedOption.RemoveAt(robotJointsArmsIndex);
+                            prevSelectedOption.RemoveAt(robotJointsArmsIndex);
+                            //update all other indexes
+                            for (int i = robotJointsArmsIndex; i < showOptions.Count; i++)
+                            {
+                                selectedOption[i] = Array.IndexOf(options, _robotJointsArmsDict[i].axis);
+                                if (selectedOption[i] == -1)
+                                {
+                                    selectedOption[i] = options.Length - 1;
+                                }
+                                prevSelectedOption[i] = selectedOption[i];
+                            }
                         }
                     }
                 }
