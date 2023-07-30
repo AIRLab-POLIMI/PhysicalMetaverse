@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class RobotController : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class RobotController : MonoBehaviour
         public String ccKey;
         public String axis;
         public bool invert;
+        public int range = 180;
     }
 
     //list of RobotJointsArmsDict
@@ -27,6 +29,12 @@ public class RobotController : MonoBehaviour
     public List<KeyCode> _keys = new List<KeyCode>();
     //button to fire updatekeys
     public bool _updateKeysButton = false;
+
+    //public first person camera gameobject
+    public Camera _firstPersonCamera;
+    //public third person camera gameobject
+    public Camera _thirdPersonCamera;
+    public RawImage _renderPlane;
     Gamepad _gamepad;
     
     //public enum containing keyboard and joystick selectable inputs
@@ -76,10 +84,13 @@ public class RobotController : MonoBehaviour
             _activeControls = _controlsList[1];
             UpdateKeysJoystick();
         }
-
+        //_thirdPersonCamera.enabled = false;
 
         //insert R key and gameobject in dictionary
         //robotJointsArmsDict.Add("R", GameObject.Find("Cube (4)"));
+        //render third person camera into _renderPlane raw image
+        _renderPlane.GetComponent<RawImage>().texture = _thirdPersonCamera.targetTexture;
+
     }
 
     void FixedUpdate(){
@@ -94,7 +105,36 @@ public class RobotController : MonoBehaviour
             else if (_joystickMode == JoystickMode.Move)
                 JoystickUpdateMove();
         }
-        
+        //update camera
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            if (_firstPersonCamera.enabled)
+            {
+                //set tag of first person camera to untagged
+                _firstPersonCamera.tag = "Untagged";
+                //set tag of third person camera to main camera
+                _thirdPersonCamera.tag = "MainCamera";
+                //switch render plane to first person, render is a raw image
+            }
+            else
+            {
+                //set tag of third person camera to untagged
+                _thirdPersonCamera.tag = "Untagged";
+                //set tag of first person camera to main camera
+                _firstPersonCamera.tag = "MainCamera";
+                //switch render plane to third person
+                
+            }
+        }
+        //if left or right arrows are pressed rotate third person camera around robot
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            _thirdPersonCamera.transform.RotateAround(transform.position, Vector3.up, 1f);
+        }
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            _thirdPersonCamera.transform.RotateAround(transform.position, Vector3.up, -1f);
+        }
     }
 
     void KeyboardUpdate(){
@@ -150,8 +190,11 @@ public class RobotController : MonoBehaviour
 
     //prevaxisvalue dictionary
     //TODO FIX JOINTS THAT ARE REPEATED ON MORE AXES
+    //prev value is not just for joint but also for axis
     Dictionary<string, float> _prevJointValue = new Dictionary<string, float>();
     Dictionary<string, string> _prevAxisValue = new Dictionary<string, string>();
+    //dictionary of 2 string tuples and float
+    Dictionary<Tuple<string, string>, float> _prevAxisValue2 = new Dictionary<Tuple<string, string>, float>();
     public float  _moveUpdate = 100f;
     public float  _angleUpdate = 10f;
     void JoystickUpdateHold(){
@@ -172,52 +215,6 @@ public class RobotController : MonoBehaviour
             */
             //find all occurrencies
             List<RobotJointsArmsDict> occurrencies = _robotJointsArmsDict.FindAll(x => x.axis == control.displayName);
-            /*
-            //if control display name is equal to the axis of the robot joint arm
-            if (_robotJointsArmsDict.Exists(x => x.axis == control.displayName))
-            {
-                
-                //get value of x axis from unity global input
-                string value = control.ReadValueAsObject().ToString();
-                //update prevaxisvalue dictionary
-                if (!_prevAxisValue.ContainsKey(control.displayName))
-                {
-                    _prevAxisValue.Add(control.displayName, "0");
-                }
-                //if value changed
-                if (value != _prevAxisValue[control.displayName])
-                {
-                    //get index of robot joint arm
-                    int index = _robotJointsArmsDict.FindIndex(x => x.axis == control.displayName);
-                    //value to float
-                    float valueFloat = float.Parse(value);
-                    Debug.Log("Axis " + control.displayName + " " + valueFloat);
-                    //store parent
-                    Transform father = _robotJointsArmsDict[index].joint.transform.parent;
-                    Transform child = _robotJointsArmsDict[index].joint.transform;
-                    //save distance amount between joint and father
-                    //float distance = Vector3.Distance(father.position, child.position);
-                    //move joint to father
-                    //child.position = father.position;
-                    //if invert is true
-                    int invert = 1;
-                    if (_robotJointsArmsDict[index].invert)
-                    {
-                        //invert value
-                        invert = -1;
-                    }
-                    //rotate back by prevvalue
-                    child.RotateAround(father.position, father.right, -invert * float.Parse(_prevAxisValue[control.displayName]) * 90);
-                    //map value to 0 180 and rotate joint to that precise angle relative to father's right
-                    child.RotateAround(father.position, father.right, invert * valueFloat * 90);
-                    //get vector pointing as child rotation
-                    //Vector3 vector = child.rotation * Vector3.up;
-                    //move joint to distance amount from father
-                    //child.position += vector * distance;
-                    //set prevaxisvalue to value
-                    _prevAxisValue[control.displayName] = value;
-                }
-            }*/
             if(occurrencies.Count > 0){
                 //log occurrencies if count > 1
                 /*if (occurrencies.Count > 1)
@@ -231,8 +228,9 @@ public class RobotController : MonoBehaviour
                 //do the same but for all occurrencies
                 foreach (RobotJointsArmsDict occurrency in occurrencies)
                 {
-                    //if occurrency name is Odile controls move it
-                    if(occurrency.joint.name == "Odile"){
+                    string jointAxis = occurrency.joint.name + " " + occurrency.axis;
+                    //if occurrency name contains Odile controls move it
+                    if(occurrency.joint.name.Contains("Odile")){
                         //if dpad y
                         if (control.displayName == "D-Pad Y")
                         {
@@ -257,9 +255,9 @@ public class RobotController : MonoBehaviour
                     }
                     else{
                         //update prevaxisvalue dictionary
-                        if (!_prevJointValue.ContainsKey(occurrency.joint.name))
+                        if (!_prevJointValue.ContainsKey(jointAxis))
                         {
-                            _prevJointValue.Add(occurrency.joint.name, 0);
+                            _prevJointValue.Add(jointAxis, 0);
                         }
                         string value = control.ReadValueAsObject().ToString();
                         //if control is left trigger print value
@@ -273,7 +271,7 @@ public class RobotController : MonoBehaviour
                         if (control.displayName == "Left Trigger")
                         {
                             Debug.Log("Left Trigger float " + valueFloat);
-                            Debug.Log("Prev Left Trigger float " + _prevJointValue[occurrency.joint.name]);
+                            Debug.Log("Prev Arm Left Trigger float " + _prevJointValue[jointAxis]);
                         }
                         //Debug.Log("Axis " + control.displayName + " " + valueFloat);
                         //store parent
@@ -294,13 +292,13 @@ public class RobotController : MonoBehaviour
                         ////child.RotateAround(father.position, father.right, -invert * float.Parse(_prevAxisValue[occurrency.joint.name]) * 90);
                         //map value to 0 180 and rotate joint to that precise angle relative to father's right
                         ////child.RotateAround(father.position, father.right, invert * valueFloat * 90);
-                        child.RotateAround(father.position, father.right, invert * (valueFloat - _prevJointValue[occurrency.joint.name]) * 90);
+                        child.RotateAround(father.position, father.right, invert * (valueFloat - _prevJointValue[jointAxis]) * occurrency.range / 2);
                         //get vector pointing as child rotation
                         //Vector3 vector = child.rotation * Vector3.up;
                         //move joint to distance amount from father
                         //child.position += vector * distance;
                         //set prevaxisvalue to value
-                        _prevJointValue[occurrency.joint.name] = valueFloat;
+                        _prevJointValue[jointAxis] = valueFloat;
                     }
                 }
             }
@@ -490,6 +488,7 @@ public class RobotController : MonoBehaviour
                 _joystickMode = JoystickMode.Hold;
         }
         GUILayout.Label("Input type: " + _inputType);
+        GUILayout.Label("Press T to switch first person and third person, arrows to rotate third person camera");
 
         // Text input field to allow the user to change the value
         GUILayout.Label("Enter new axis value:");
@@ -498,6 +497,23 @@ public class RobotController : MonoBehaviour
         //jointInput = GUILayout.TextField(jointInput, 25); // '25' is the maximum character limit (optional)
         // Only show the options if the showOptions variable is true
         
+        //horizontal two buttons, save and load _robotJointsArmsDict to file using json
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Save"))
+        {
+            //save _robotJointsArmsDict to file using json
+            string json = JsonUtility.ToJson(_robotJointsArmsDict);
+            System.IO.File.WriteAllText(Application.dataPath + "/Resources/robotJointsArmsDict.json", json);
+        }
+        if (GUILayout.Button("Load"))
+        {
+            //load _robotJointsArmsDict from file using json
+            string json = System.IO.File.ReadAllText(Application.dataPath + "/Resources/robotJointsArmsDict.json");
+            _robotJointsArmsDict = JsonUtility.FromJson<List<RobotJointsArmsDict>>(json);
+            _updateKeysButton = true;
+        }
+        GUILayout.EndHorizontal();
+
         GUILayout.Label("Keys: ");
 
         // Loop through the dictionary elements
@@ -549,6 +565,10 @@ public class RobotController : MonoBehaviour
                     // Example: If you want to update the axis value of this entry
                     robotJointsArm.invert = !robotJointsArm.invert;
                 }
+                // short range text input
+                GUILayout.Label("Range: ");
+                robotJointsArm.range = int.Parse(GUILayout.TextField(robotJointsArm.range.ToString(), 3));
+
                 if (GUILayout.Button("Copy"))
                 {
                     // Example: Add a new entry to the dictionary with default values
@@ -616,6 +636,7 @@ public class RobotController : MonoBehaviour
             newEntry.axis = userInput;
             _robotJointsArmsDict.Add(newEntry);
         }*/
+    
         GUILayout.EndScrollView();
     }
 }
