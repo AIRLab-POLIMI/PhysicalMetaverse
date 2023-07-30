@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -7774386535832723952}
   - component: {fileID: -3496646061455119445}
   m_Layer: 0
-  m_Name: PlayerSpawner
+  m_Name: PlayerSpawnerOdile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,12 +47,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefabA: {fileID: 3715500012300486888, guid: 85f589b0fd571f041b6127e3a6e4f5ee,
     type: 3}
-  playerPrefabB: {fileID: 7263397530399767896, guid: b9d8d098b7f7bce4487f6acec80e45a5,
+  playerPrefabB: {fileID: 2227502439815967740, guid: 519524717042eb141a8c9d8abcbbc87f,
     type: 3}
-  _coloredObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &-3496646061455119445
 MonoBehaviour:
   m_ObjectHideFlags: 0

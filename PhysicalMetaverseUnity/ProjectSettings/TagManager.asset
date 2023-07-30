@@ -8,6 +8,7 @@ TagManager:
   - Environment
   - Robot
   - Ground
+  - RobotViz
   layers:
   - Default
   - TransparentFX

@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5be8d9ec3bb3ac4f9e442913bf56c13, type: 3}
+  m_Name: GamepadControlsOnline
+  m_EditorClassIdentifier: 
+  _robotJointsArmsDict:
+  - joint: CamArm
+    cwKey: 
+    ccKey: 
+    axis: -Right Trigger
+    invert: 0
+  - joint: CamAlign
+    cwKey: 
+    ccKey: 
+    axis: -Right Trigger
+    invert: 1
+  - joint: CamPan
+    cwKey: 
+    ccKey: 
+    axis: Right Stick X
+    invert: 1
+  - joint: CamTilt
+    cwKey: 
+    ccKey: 
+    axis: Right Stick Y
+    invert: 1
+  - joint: Wrist
+    cwKey: 
+    ccKey: 
+    axis: Left Stick Y
+    invert: 1
+  - joint: Rotate
+    cwKey: 
+    ccKey: 
+    axis: Left Stick X
+    invert: 1
+  - joint: Arm
+    cwKey: 
+    ccKey: 
+    axis: Left Trigger
+    invert: 0
+  - joint: Arm
+    cwKey: 
+    ccKey: 
+    axis: Right Trigger
+    invert: 1
+  - joint: OdileOnline(Clone)
+    cwKey: 
+    ccKey: 
+    axis: D-Pad Y
+    invert: 0
+  - joint: OdileOnline(Clone)
+    cwKey: 
+    ccKey: 
+    axis: D-Pad X
+    invert: 0
+  - joint: OdileOnline(Clone)
+    cwKey: 
+    ccKey: 
+    axis: Right Bumper
+    invert: 0
+  - joint: OdileOnline(Clone)
+    cwKey: 
+    ccKey: 
+    axis: Left Bumper
+    invert: 0

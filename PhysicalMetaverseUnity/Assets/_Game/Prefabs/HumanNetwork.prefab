@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5345407081072148864}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -318,7 +318,7 @@ CapsuleCollider:
   m_Radius: 0.5000001
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: -0.2, z: -0.00000008940697}
+  m_Center: {x: 0.000000059604645, y: -0.08, z: -0.00000008940697}
 --- !u!143 &3715500012300486893
 CharacterController:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class RobotController : MonoBehaviour
 {
+    public bool _guiEnabled = true;
     //list of gameobjects robot joints arms
     //public List<GameObject> robotJointsArms = new List<GameObject>();
     
@@ -58,6 +59,8 @@ public class RobotController : MonoBehaviour
     private ControlsSO _activeControls = null;
     public InputSettings _inputSettings;
     //set global input to input settings
+    //private controller
+    private CharacterController controller;
     void Awake()
     {
         //set global input to input settings
@@ -66,6 +69,8 @@ public class RobotController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //init controller
+        controller = GetComponent<CharacterController>();
         _gamepad = Gamepad.current;
         if (_gamepad == null)
         {
@@ -89,7 +94,7 @@ public class RobotController : MonoBehaviour
         //insert R key and gameobject in dictionary
         //robotJointsArmsDict.Add("R", GameObject.Find("Cube (4)"));
         //render third person camera into _renderPlane raw image
-        _renderPlane.GetComponent<RawImage>().texture = _thirdPersonCamera.targetTexture;
+        //_renderPlane.GetComponent<RawImage>().texture = _thirdPersonCamera.targetTexture;
 
     }
 
@@ -228,6 +233,11 @@ public class RobotController : MonoBehaviour
                 //do the same but for all occurrencies
                 foreach (RobotJointsArmsDict occurrency in occurrencies)
                 {
+                    //if occurrency joint is null continue
+                    if (occurrency.joint == null)
+                    {
+                        continue;
+                    }
                     string jointAxis = occurrency.joint.name + " " + occurrency.axis;
                     //if occurrency name contains Odile controls move it
                     if(occurrency.joint.name.Contains("Odile")){
@@ -235,22 +245,27 @@ public class RobotController : MonoBehaviour
                         if (control.displayName == "D-Pad Y")
                         {
                             //move odile up and forward to transform forward
-                            occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.forward / _moveUpdate;
+                            //occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.forward / _moveUpdate;
+                            //controller move
+                            controller.Move(transform.forward * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
                         }
                         if (control.displayName == "D-Pad X")
                         {
                             //move odile up and forward to transform forward
-                            occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.right / _moveUpdate;
+                            //occurrency.joint.transform.position += float.Parse(control.ReadValueAsObject().ToString()) * occurrency.joint.transform.right / _moveUpdate;
+                            controller.Move(transform.right * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
                         }
                         if (control.displayName == "Right Bumper")
                         {
                             //rotate odile right, sum angle to euler rotation
-                            occurrency.joint.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                            //occurrency.joint.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                            controller.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
                         }
                         if (control.displayName == "Left Bumper")
                         {
                             //rotate odile right, sum angle to euler rotation
-                            occurrency.joint.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                            //occurrency.joint.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
+                            controller.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString())/_angleUpdate, 0);
                         }
                     }
                     else{
@@ -260,19 +275,8 @@ public class RobotController : MonoBehaviour
                             _prevJointValue.Add(jointAxis, 0);
                         }
                         string value = control.ReadValueAsObject().ToString();
-                        //if control is left trigger print value
-                        if (control.displayName == "Left Trigger")
-                        {
-                            Debug.Log("Left Trigger " + value);
-                        }
-
                         //value to float
                         float valueFloat = float.Parse(value);
-                        if (control.displayName == "Left Trigger")
-                        {
-                            Debug.Log("Left Trigger float " + valueFloat);
-                            Debug.Log("Prev Arm Left Trigger float " + _prevJointValue[jointAxis]);
-                        }
                         //Debug.Log("Axis " + control.displayName + " " + valueFloat);
                         //store parent
                         Transform father = occurrency.joint.transform.parent;
@@ -292,7 +296,8 @@ public class RobotController : MonoBehaviour
                         ////child.RotateAround(father.position, father.right, -invert * float.Parse(_prevAxisValue[occurrency.joint.name]) * 90);
                         //map value to 0 180 and rotate joint to that precise angle relative to father's right
                         ////child.RotateAround(father.position, father.right, invert * valueFloat * 90);
-                        child.RotateAround(father.position, father.right, invert * (valueFloat - _prevJointValue[jointAxis]) * occurrency.range / 2);
+                        //child.RotateAround(father.position, father.right, invert * (valueFloat - _prevJointValue[jointAxis]) * occurrency.range / 2);
+                        father.Rotate(Vector3.right, invert * (valueFloat - _prevJointValue[jointAxis]) * occurrency.range / 2);
                         //get vector pointing as child rotation
                         //Vector3 vector = child.rotation * Vector3.up;
                         //move joint to distance amount from father
@@ -320,6 +325,11 @@ public class RobotController : MonoBehaviour
                 //do the same but for all occurrencies
                 foreach (RobotJointsArmsDict occurrency in occurrencies)
                 {
+                    //if occurrency joint is null continue
+                    if (occurrency.joint == null)
+                    {
+                        continue;
+                    }
                     //if occurrency name is Odile controls move it
                     if(occurrency.joint.name == "Odile"){
                         //if dpad y
@@ -372,7 +382,8 @@ public class RobotController : MonoBehaviour
                         //rotate back by prevvalue
                         //child.RotateAround(father.position, father.right, -invert * float.Parse(_prevAxisValue[occurrency.joint.name]) * 90);
                         //map value to 0 180 and rotate joint to that precise angle relative to father's right
-                        child.RotateAround(father.position, father.right, invert * valueFloat);
+                        //child.RotateAround(father.position, father.right, invert * valueFloat);
+                        father.Rotate(Vector3.right, invert * valueFloat);
                         //get vector pointing as child rotation
                         //Vector3 vector = child.rotation * Vector3.up;
                         //move joint to distance amount from father
@@ -451,6 +462,8 @@ public class RobotController : MonoBehaviour
     public string[] options = { "Right Stick X", "Right Stick Y", "Left Stick X", "Left Stick Y", "Right Trigger", "Left Trigger", "D-Pad X", "D-Pad Y", "Right Bumper", "Left Bumper", "A", "B", "X", "Y", "Start", "Select", "Left Stick Button", "Right Stick Button", "Left Stick Button", "Right Stick Button", "None" };
     private void OnGUI()
     {
+        if (!_guiEnabled)
+            return;
         GUIStyle customStyle = new GUIStyle(GUI.skin.box);
         // If the list has not been setup, set it up
         if (!listSetup)
@@ -520,9 +533,13 @@ public class RobotController : MonoBehaviour
         try{
             foreach (RobotJointsArmsDict robotJointsArm in _robotJointsArmsDict)
             {
+                //if robotJointsArm joint is null continue
+                if (robotJointsArm.joint == null)
+                {
+                    continue;
+                }
                 int robotJointsArmsIndex = _robotJointsArmsDict.IndexOf(robotJointsArm);
                 GUILayout.BeginHorizontal();
-
                 // Display the joint name and axis
                 GUILayout.Label(robotJointsArm.joint.name + " " + robotJointsArm.axis);
 
@@ -622,11 +639,6 @@ public class RobotController : MonoBehaviour
 
                 GUILayout.EndHorizontal();
             }
-        }
-        //catch foreach exception
-        catch(InvalidOperationException e){
-            Debug.Log(e);
-        }
         /*
         // Add button to add new dictionary entry
         if (GUILayout.Button("Add New Entry"))
@@ -638,5 +650,10 @@ public class RobotController : MonoBehaviour
         }*/
     
         GUILayout.EndScrollView();
+        }
+        //catch foreach exception
+        catch(InvalidOperationException e){
+            Debug.Log(e);
+        }
     }
 }

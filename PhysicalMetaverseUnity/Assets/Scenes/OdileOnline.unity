@@ -1057,7 +1057,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 205466087}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.026, y: 1.077, z: 5.63}
+  m_LocalPosition: {x: -1.026, y: 1.586, z: 5.63}
   m_LocalScale: {x: 0.35, y: 0.31882957, z: 0.33917898}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -4325,7 +4325,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 768626741}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.213, y: 1.077, z: 5.335}
+  m_LocalPosition: {x: 4.213, y: 1.586, z: 5.335}
   m_LocalScale: {x: 0.35, y: 0.35, z: 0.35}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -8067,7 +8067,7 @@ MonoBehaviour:
   m_MaxConnectAttempts: 60
   m_DisconnectTimeoutMS: 30000
   ConnectionData:
-    Address: 192.168.0.100
+    Address: 192.168.1.14
     Port: 7777
     ServerListenAddress: 0.0.0.0
   DebugSimulator:
@@ -8091,11 +8091,11 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 1614285221}
-    PlayerPrefab: {fileID: 3576647386758344967, guid: ea5c170051214dc44907e9e14ce79e54,
+    PlayerPrefab: {fileID: 3576647386758344967, guid: c03afa46d27e6c846b9ff443c27a6670,
       type: 3}
     Prefabs:
       NetworkPrefabsLists:
-      - {fileID: 11400000, guid: fdd32a858d57a41449f71b6ec9338ddd, type: 2}
+      - {fileID: 11400000, guid: 3da8b07f55f209e4cb4331d50abca98f, type: 2}
     TickRate: 30
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0

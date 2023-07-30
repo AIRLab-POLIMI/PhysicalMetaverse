@@ -6,7 +6,6 @@ using Unity.Netcode;
 public class NetworkPlayerSpawner : NetworkBehaviour {
     [SerializeField] private GameObject playerPrefabA; //add prefab in inspector
     [SerializeField] private GameObject playerPrefabB; //add prefab in inspector
- 
     
     [ServerRpc(RequireOwnership=false)] //server owns this object but client can request a spawn
     public void SpawnPlayerServerRpc(ulong clientId,int prefabId) {
@@ -29,16 +28,25 @@ public class NetworkPlayerSpawner : NetworkBehaviour {
         else {
             SpawnPlayerServerRpc(NetworkManager.Singleton.LocalClientId,1);
             //find gameobject "Walls" and set the material of all its children to black
-            GameObject walls = GameObject.Find("Walls");
-            foreach (Transform child in walls.transform)
+            //GameObject walls = GameObject.Find("Walls");
+            //foreach (Transform child in walls.transform)
+            //{
+            //    //if possible 
+            //    if (child.GetComponent<Renderer>() != null)
+            //        child.GetComponent<Renderer>().material.color = Color.black;
+            //    //else disable mesh renderer if possible
+            //    else if (child.GetComponent<MeshRenderer>() != null)
+            //        child.GetComponent<MeshRenderer>().enabled = false;
+            //}
+            //find all meshrenderers in scene
+            MeshRenderer[] meshRenderers = FindObjectsOfType<MeshRenderer>();
+            //if gameobject is not tagged as "RobotViz" set its material to black
+            foreach (MeshRenderer meshRenderer in meshRenderers)
             {
-                //if possible 
-                if (child.GetComponent<Renderer>() != null)
-                    child.GetComponent<Renderer>().material.color = Color.black;
-                //else disable mesh renderer if possible
-                else if (child.GetComponent<MeshRenderer>() != null)
-                    child.GetComponent<MeshRenderer>().enabled = false;
+                if (!meshRenderer.gameObject.CompareTag("RobotViz") && !meshRenderer.gameObject.CompareTag("Player"))
+                    meshRenderer.material.color = Color.black;
             }
+
         }
     }
 
