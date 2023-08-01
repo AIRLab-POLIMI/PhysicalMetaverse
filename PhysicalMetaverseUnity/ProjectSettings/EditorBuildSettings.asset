@@ -17,16 +17,16 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
-  - enabled: 1
+  - enabled: 0
     path: Assets/_Game/Scenes/Main.unity
     guid: 231611a0a6f97f44a9807abe5d2691ae
   - enabled: 0
     path: Assets/Scenes/Odile.unity
     guid: 5a926df488f40494c924c742217835a1
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/FPVRobot.unity
     guid: f68db832d50615643aeb04052bd6a222
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/OdileOnline.unity
     guid: 0c65ce37d92616f4a8abbc3859cff165
   m_configObjects:

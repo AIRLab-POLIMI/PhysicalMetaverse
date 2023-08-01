@@ -1,10 +1,10 @@
 import cv2
 import socket
-import pickle
 import struct
+import numpy as np
 
 # Define the UDP IP address and port to receive the stream
-UDP_IP = '0.0.0.0'  # Listen to all incoming UDP packets
+UDP_IP = '192.168.0.100'  # Listen to all incoming UDP packets
 UDP_PORT = 12345    # Use the same port as the sender
 
 # Create a socket object to receive data over UDP, timeout in 2s
@@ -19,13 +19,11 @@ while True:
     try:
         # Receive the packed data from the sender
         data, addr = sock.recvfrom(65536)
-
-        # Unpack the data
-        size = struct.unpack("Q", data[:struct.calcsize("Q")])[0]
-        frame_data = data[struct.calcsize("Q"):]
-
-        # Deserialize the frame
-        frame = pickle.loads(frame_data)
+        
+        # data is a jpg, show it
+        frame = cv2.imdecode(np.frombuffer(data, dtype=np.uint8), -1)
+        
+        
 
         # Display the frame
         cv2.imshow("Received Stream", frame)

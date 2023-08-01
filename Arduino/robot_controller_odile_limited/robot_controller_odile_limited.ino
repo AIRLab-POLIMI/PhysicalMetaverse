@@ -90,6 +90,18 @@ bool released = 0;
 #define MIN_ANGLE_TAIL_BODY_P 110
 #define MAX_ANGLE_TAIL_BODY_P 130
 
+//SPEEDS
+#define HEAD_BEAK_T2_INCREMENT 180
+#define HEAD_BEAK_P_INCREMENT 180
+#define HEAD_BEAK_T1_INCREMENT 180
+#define TAIL_BEAK_T2_INCREMENT 3
+#define TAIL_BEAK_P_INCREMENT 3
+#define TAIL_BEAK_T1_INCREMENT 3
+#define TAIL_NECK_INCREMENT 10
+#define TAIL_BODY_P_INCREMENT 3
+#define HEAD_BODY_T_INCREMENT 3
+#define TAIL_BODY_T_INCREMENT 3
+
 #define MIN_SIN 0
 #define MAX_SIN 255
 
@@ -186,6 +198,7 @@ int servos[10] = {MIN_ANGLE_HEAD_BEAK_T2, MIN_ANGLE_HEAD_BEAK_P, MIN_ANGLE_HEAD_
 int upperLimits[10] = {MAX_ANGLE_HEAD_BEAK_T2, MAX_ANGLE_HEAD_BEAK_P, MAX_ANGLE_HEAD_BEAK_T1, MAX_ANGLE_TAIL_BEAK_T2, MAX_ANGLE_TAIL_BEAK_P, MAX_ANGLE_TAIL_BEAK_T1, MAX_ANGLE_TAIL_NECK_T, MAX_ANGLE_TAIL_BODY_P, MAX_ANGLE_HEAD_BODY_T, MAX_ANGLE_TAIL_BODY_T};
 int lowerLimits[10] = {MIN_ANGLE_HEAD_BEAK_T2, MIN_ANGLE_HEAD_BEAK_P, MIN_ANGLE_HEAD_BEAK_T1, MIN_ANGLE_TAIL_BEAK_T2, MIN_ANGLE_TAIL_BEAK_P, MIN_ANGLE_TAIL_BEAK_T1, MIN_ANGLE_TAIL_NECK_T, MIN_ANGLE_TAIL_BODY_P,  MIN_ANGLE_HEAD_BODY_T, MIN_ANGLE_TAIL_BODY_T};
 int targetPoses[10] = {MIN_ANGLE_HEAD_BEAK_T2, MIN_ANGLE_HEAD_BEAK_P, MIN_ANGLE_HEAD_BEAK_T1, MIN_ANGLE_TAIL_BEAK_T2, MIN_ANGLE_TAIL_BEAK_P, MIN_ANGLE_TAIL_BEAK_T1, MIN_ANGLE_TAIL_NECK_T, MIN_ANGLE_TAIL_BODY_P, 90, 90};
+int increment[10] = {HEAD_BEAK_T2_INCREMENT, HEAD_BEAK_P_INCREMENT, HEAD_BEAK_T1_INCREMENT, TAIL_BEAK_T2_INCREMENT, TAIL_BEAK_P_INCREMENT, TAIL_BEAK_T1_INCREMENT, TAIL_NECK_INCREMENT, TAIL_BODY_P_INCREMENT, HEAD_BODY_T_INCREMENT, TAIL_BODY_T_INCREMENT};
 //_______________
 
 void write_serial(String msg) {
@@ -445,28 +458,41 @@ void set_servos_pos() {
     servo_tail_beak_p.write(T_P1_angle, SERVO_SPEED, false);
     servo_tail_body_p.writeMicroseconds(scale2us(T_LR_angle));
   }*/
-
-  servos[0] = B_UD_angle;
-  servos[1] = B_LR_angle;
-  servos[2] = B_TB_angle;
+  
+  targetPoses[0] = B_UD_angle;
+  targetPoses[1] = B_LR_angle;
+  targetPoses[2] = B_TB_angle;
   write_serial("--------- ANGLE TB: " + String(B_TB_angle));
-  servos[3] = T_UD_angle;
-  servos[4] = T_P1_angle;
-  servos[5] = T_T1_angle;
-  servos[6] = T_TN_angle;
+  targetPoses[3] = T_UD_angle;
+  targetPoses[4] = T_P1_angle;
+  targetPoses[5] = T_T1_angle;
+  targetPoses[6] = T_TN_angle;
   //servos[7] = scale2us(T_LR_angle);
-  servos[8] = B_BF_angle;
+  targetPoses[8] = B_BF_angle;
   write_serial("--------- ANGLE BF : " + String(B_BF_angle));
-  servos[9] = T_BF_angle;
+  targetPoses[9] = T_BF_angle;
 
   write_serial("-------- ANGLE : " + String(angleToPulse(servos[2])));
   write_serial("-------- ANGLE BF : " + String(angleToPulse(servos[8])));
   
   servo_tail_body_p.writeMicroseconds(scale2us(T_LR_angle));
   //pwm.setPWM(0, 0, angleToPulse(servos[0]));
-  for(int i = 0; i < 10; i++){
+  for(int i=0; i<10; i++){
     pwm.setPWM(i, 0, angleToPulse(servos[i]));
-    delay(5);
+    //increase servos in the direction of targetposes by increment to reach targetPoses[i] = servos[i], if delta is less than increment set it directly
+    if(servos[i] < targetPoses[i]){
+      if(targetPoses[i] - servos[i] < increment[i])
+        servos[i] = targetPoses[i];
+      else
+        servos[i] += increment[i];
+    }
+    else if(servos[i] > targetPoses[i]){
+      if(servos[i] - targetPoses[i] < increment[i])
+        servos[i] = targetPoses[i];
+      else
+        servos[i] -= increment[i];
+    }
+    //delay(5);
   }
 }
 

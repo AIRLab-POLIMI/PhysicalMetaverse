@@ -1,15 +1,20 @@
 import queue
 import time
 from networkStuff.constants import *
-import Jetson.GPIO as GPIO
 from networkStuff.connection import Connection
 import multiprocessing
 import DepthAICamera
-# PIN SETUP
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(setup_pin, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(connection_pin, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(third_pin, GPIO.OUT, initial=GPIO.LOW)
+
+WINDOWS = 0
+
+if not WINDOWS:
+    import Jetson.GPIO as GPIO
+
+    # PIN SETUP
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(setup_pin, GPIO.OUT, initial=GPIO.LOW)
+    GPIO.setup(connection_pin, GPIO.OUT, initial=GPIO.LOW)
+    GPIO.setup(third_pin, GPIO.OUT, initial=GPIO.LOW)
 
 # LIDAR SETTINGS
 LIDAR_TOLERANCE = 50
@@ -20,17 +25,18 @@ LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 1
+LIDAR_ENABLED = 0
 GYRO_ENABLED = 0
 POSE_D_ENABLED = 0
 CONTROLLER_ENABLED = 0
-CAMERA_ENABLED = 0
+CAMERA_ENABLED = 1
 
 #Enable/disable display output
 POSE_SCREENLESS_MODE = 1
 
-#LIGHT UP LED WHEN SETUP STARTS
-GPIO.output(setup_pin, GPIO.HIGH)
+if not WINDOWS:
+    #LIGHT UP LED WHEN SETUP STARTS
+    GPIO.output(setup_pin, GPIO.HIGH)
 
 connection = Connection()
 
@@ -56,7 +62,8 @@ if POSE_D_ENABLED:
     pose = PoseDetector()
 connection.set_pose_ready(True)
 
-GPIO.output(setup_pin, GPIO.LOW)
+if not WINDOWS:
+    GPIO.output(setup_pin, GPIO.LOW)
 
 class Main:
     def __init__(self):
@@ -65,11 +72,13 @@ class Main:
     def setup(self):
         # setting up the network connection
 
-        GPIO.output(connection_pin, GPIO.HIGH)
+        if not WINDOWS:
+            GPIO.output(connection_pin, GPIO.HIGH)
 
         connection.setup()
 
-        GPIO.output(connection_pin, GPIO.LOW)
+        if not WINDOWS:
+            GPIO.output(connection_pin, GPIO.LOW)
 
         #connection.set_lidar_queue(lidarQueue)
 
@@ -112,7 +121,8 @@ class Main:
 
     def loop(self):
 
-        GPIO.output(third_pin, GPIO.HIGH)
+        if not WINDOWS:
+            GPIO.output(third_pin, GPIO.HIGH)
 
         i = 0
         try:
@@ -131,9 +141,10 @@ class Main:
 
         except KeyboardInterrupt:
             self.destroy_connections()
-            GPIO.output(setup_pin, GPIO.LOW)
-            GPIO.output(connection_pin, GPIO.LOW)
-            GPIO.output(third_pin, GPIO.LOW)
+            if not WINDOWS:
+                GPIO.output(setup_pin, GPIO.LOW)
+                GPIO.output(connection_pin, GPIO.LOW)
+                GPIO.output(third_pin, GPIO.LOW)
 
     def destroy_connections(self):
         print("\n\n")
@@ -154,7 +165,8 @@ class Main:
     def restart(self):
         self.destroy_connections()
 
-        GPIO.output(third_pin, GPIO.LOW)
+        if not WINDOWS:
+            GPIO.output(third_pin, GPIO.LOW)
 
         #if LIDAR_ENABLED:
         #    self.lidar_process.terminate()

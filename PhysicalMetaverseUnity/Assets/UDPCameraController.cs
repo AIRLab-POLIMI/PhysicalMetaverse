@@ -10,7 +10,7 @@ public class UDPCameraController : MonoBehaviour
     public Camera camera;
 
     // UDP settings
-    public string serverIP = "127.0.0.1"; // Change this to the IP address of the receiver
+    public string serverIP = "192.168.0.102"; // Change this to the IP address of the receiver
     public int serverPort = 12345;       // Change this to the port number of the receiver
 
     private UdpClient udpClient;
@@ -31,7 +31,11 @@ public class UDPCameraController : MonoBehaviour
     // Send camera angles via UDP
     void SendCameraAnglesUDP(float xAngle, float yAngle)
     {
-        string message = "X:" + xAngle.ToString() + "_Y:" + yAngle.ToString();
+        //map xangle from 0 360 to -3 3
+        xAngle = (xAngle - 180) / 60;
+        //map yangle from 0 360 to -3 3
+        yAngle = (yAngle - 180) / 60;
+        string message = "az:" + xAngle.ToString() + "_ay:" + yAngle.ToString();
         byte[] data = System.Text.Encoding.ASCII.GetBytes(message);
         udpClient.Send(data, data.Length, serverIP, serverPort);
         //log

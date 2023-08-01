@@ -907,8 +907,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _minColorSize: 300
-  _timeSinceLastMessage: 0
-  _prevTimeSinceLastMessage: 0
   _scale: 1
   _imageFrameScale: 100
   zOffset: 11
@@ -3169,7 +3167,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1347834284
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4866,6 +4864,7 @@ MonoBehaviour:
   jetsonSensorsReadyKey: {fileID: 11400000, guid: c8df839a4eec06b449ea9f7b290c61ca,
     type: 2}
   jetsonPingKey: {fileID: 11400000, guid: 85b9b3f28247a79499cfa1b3ffe572ca, type: 2}
+  TCP_PRESENTATIONS: 0
 --- !u!198 &1892134779 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 8014663005667766323, guid: f2af42a0927161d40bc2d263244b47da,
