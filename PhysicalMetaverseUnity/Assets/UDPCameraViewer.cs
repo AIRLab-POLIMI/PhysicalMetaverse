@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
 
+//receives camera feed on udp socket and shows it on a RawImage, also sends camera angles via udp using key protocol
 public class UDPCameraViewer : MonoBehaviour
 {
     // Public camera

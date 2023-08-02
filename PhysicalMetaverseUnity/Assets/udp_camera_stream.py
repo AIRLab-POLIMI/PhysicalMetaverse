@@ -4,6 +4,9 @@ import pickle
 import struct
 import time
 
+# This streams the camera over udp
+# You can change the Quality and Size of the JPG you are sending to test tradeoffs on packet size
+
 # Define the UDP IP address and port to send the stream to
 UDP_IP = '127.0.0.1'  # Change this to the IP address of the receiving machine
 UDP_PORT = 12345      # Change this to an available UDP port on the receiving machine

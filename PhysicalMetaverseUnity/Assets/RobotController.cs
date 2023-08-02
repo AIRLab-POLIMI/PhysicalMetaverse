@@ -5,6 +5,7 @@ using System;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+// Script used by Odile robots, it lets you control with Keyboard or F710 Logitec Gamepad, also has a gui to change controller button mapping
 public class RobotController : MonoBehaviour
 {
     public bool _guiEnabled = true;

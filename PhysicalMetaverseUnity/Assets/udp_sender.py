@@ -1,5 +1,7 @@
 import socket
 
+# basic script to send udp string to an address
+
 def send_udp_message(ip_address, port, message):
     try:
         # Create a UDP socket

@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
-/// Just a crappy character controller for the video
+/// VR version of the demo player controller, best effort to have some working controls, almost made Fede throw up after 5 minutes of testing
 /// </summary>
 public class PlayerControllerVR : MonoBehaviour {
     private CharacterController controller;

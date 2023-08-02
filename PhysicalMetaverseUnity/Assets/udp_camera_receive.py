@@ -4,6 +4,8 @@ import struct
 import numpy as np
 import time
 
+# show incoming udp video stream
+
 # Define the UDP IP address and port to receive the stream
 UDP_IP = '0.0.0.0'  # Listen to all incoming UDP packets
 UDP_PORT = 12345    # Use the same port as the sender
