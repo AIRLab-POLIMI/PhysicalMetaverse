@@ -30,32 +30,39 @@ cv2.createTrackbar('PACKET_SIZE', 'frame', 1, 10000, lambda x: None)
 
 
 while True:
-    # Capture a frame from the camera
-    ret, frame = cap.read()
-    #show
-    #cv2.imshow('frame',frame)
-    #print resolution
-    #print(frame.shape)
-    frame = cv2.resize(frame, (0,0), fx=RESIZE/100, fy=RESIZE/100)
-    # send frame as jpg over udp
-    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), QUALITY]
-    frame = cv2.imencode('.jpg', frame, encode_param)[1].tobytes()
-    print(len(frame))
-    sock.sendto(frame, (UDP_IP, UDP_PORT))
-    #string saying "time " and current time
-    timestring = "time " + str(time.time())
-    #send string "time"+ time now
-    sock.sendto(timestring.encode(), (UDP_IP, UDP_PORT))
-    
-    #slider to set quality
-    QUALITY = cv2.getTrackbarPos('QUALITY', 'frame')
-    RESIZE = cv2.getTrackbarPos('RESIZE', 'frame')
-    #set PACKET_SIZE trackbar value to len(frame)
-    cv2.setTrackbarPos('PACKET_SIZE', 'frame', len(frame)) 
-    
-    #print image size in bytes
-    # sleep 0.05
-    cv2.waitKey(50)
+    try:
+        # Capture a frame from the camera
+        ret, frame = cap.read()
+        #show
+        #cv2.imshow('frame',frame)
+        #print resolution
+        #print(frame.shape)
+        frame = cv2.resize(frame, (0,0), fx=RESIZE/100, fy=RESIZE/100)
+        # send frame as jpg over udp
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), QUALITY]
+        frame = cv2.imencode('.jpg', frame, encode_param)[1].tobytes()
+        print(len(frame))
+        #if len > 60000 dont sent
+        if len(frame) < 60000:
+            sock.sendto(frame, (UDP_IP, UDP_PORT))
+        #string saying "time " and current time
+        timestring = "time " + str(time.time())
+        #send string "time"+ time now
+        sock.sendto(timestring.encode(), (UDP_IP, UDP_PORT))
+        
+        #slider to set quality
+        QUALITY = cv2.getTrackbarPos('QUALITY', 'frame')
+        RESIZE = cv2.getTrackbarPos('RESIZE', 'frame')
+        if(RESIZE == 0):
+            RESIZE = 1
+        #set PACKET_SIZE trackbar value to len(frame)
+        cv2.setTrackbarPos('PACKET_SIZE', 'frame', len(frame)) 
+        
+        #print image size in bytes
+        # sleep 0.05
+        cv2.waitKey(50)
+    except:
+        print("Error sending frame")
     
 
 # Release the camera and close the socket when done

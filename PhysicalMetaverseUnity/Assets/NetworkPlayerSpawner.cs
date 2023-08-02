@@ -44,7 +44,11 @@ public class NetworkPlayerSpawner : NetworkBehaviour {
             foreach (MeshRenderer meshRenderer in meshRenderers)
             {
                 if (!meshRenderer.gameObject.CompareTag("RobotViz") && !meshRenderer.gameObject.CompareTag("Player"))
-                    meshRenderer.material.color = Color.black;
+                    //if father is playerPrefabA set material to yellow
+                    if (meshRenderer.transform.parent.gameObject.CompareTag("Player"))
+                        meshRenderer.material.color = Color.yellow;
+                    else
+                        meshRenderer.material.color = Color.black;
             }
 
         }

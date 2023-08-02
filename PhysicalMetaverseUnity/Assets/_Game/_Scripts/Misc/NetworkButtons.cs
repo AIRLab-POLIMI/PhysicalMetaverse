@@ -13,6 +13,7 @@ public class NetworkButtons : MonoBehaviour {
     public TMP_InputField _clientInput;
     public TMP_InputField _hostInput;
     public bool _skipInput = false;
+    public bool _isHost = false;
 
     private void Start(){
         //set ip to value stored by unity transport
@@ -21,7 +22,7 @@ public class NetworkButtons : MonoBehaviour {
     private void OnGUI() {
         GUILayout.BeginArea(new Rect(10, 10, 300, 300));
         if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer) {
-            if (GUILayout.Button("Host")) {
+            if (GUILayout.Button("Host") || (_isHost && _skipInput)) {
                 if (_skipInput){
                     NetworkManager.Singleton.StartHost();
                 }
@@ -34,7 +35,7 @@ public class NetworkButtons : MonoBehaviour {
                 }
             }
             if (GUILayout.Button("Server")) NetworkManager.Singleton.StartServer();
-            if (GUILayout.Button("Client")) {
+            if (GUILayout.Button("Client") || (!_isHost && _skipInput)) {
                 if (_skipInput){
                     NetworkManager.Singleton.StartClient();
                 }
@@ -45,6 +46,8 @@ public class NetworkButtons : MonoBehaviour {
                     _clientInput.text = _ip;
                     //NetworkManager.Singleton.StartClient();
                 }
+                //unlock cursor
+                Cursor.lockState = CursorLockMode.None;
             }
         }
 

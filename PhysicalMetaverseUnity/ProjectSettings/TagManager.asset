@@ -9,6 +9,7 @@ TagManager:
   - Robot
   - Ground
   - RobotViz
+  - PoseTracker
   layers:
   - Default
   - TransparentFX

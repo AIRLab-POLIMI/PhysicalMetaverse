@@ -56,14 +56,14 @@ bool released = 0;
 #define PIN_SERVO_HEAD_BEAK_T2 2
 #define PIN_SERVO_HEAD_BEAK_P 3
 #define PIN_SERVO_HEAD_BEAK_T1 4
-#define PIN_SERVO_HEAD_BODY_T 22
+#define PIN_SERVO_HEAD_BODY_T 10 //22
 
 //TAIL PINS
 #define PIN_SERVO_TAIL_BEAK_T2 5
 #define PIN_SERVO_TAIL_BEAK_P 6
 #define PIN_SERVO_TAIL_BEAK_T1 7
 #define PIN_SERVO_TAIL_NECK_T 8
-#define PIN_SERVO_TAIL_BODY_T 24
+#define PIN_SERVO_TAIL_BODY_T 11 //24
 #define PIN_SERVO_TAIL_BODY_P 9
 
 //HEAD ANGLES
@@ -94,13 +94,13 @@ bool released = 0;
 #define HEAD_BEAK_T2_INCREMENT 180
 #define HEAD_BEAK_P_INCREMENT 180
 #define HEAD_BEAK_T1_INCREMENT 180
-#define TAIL_BEAK_T2_INCREMENT 3
-#define TAIL_BEAK_P_INCREMENT 3
-#define TAIL_BEAK_T1_INCREMENT 3
-#define TAIL_NECK_INCREMENT 10
-#define TAIL_BODY_P_INCREMENT 3
-#define HEAD_BODY_T_INCREMENT 3
-#define TAIL_BODY_T_INCREMENT 3
+#define TAIL_BEAK_T2_INCREMENT 4
+#define TAIL_BEAK_P_INCREMENT 4
+#define TAIL_BEAK_T1_INCREMENT 4
+#define TAIL_NECK_INCREMENT 15
+#define TAIL_BODY_P_INCREMENT 4
+#define HEAD_BODY_T_INCREMENT 4
+#define TAIL_BODY_T_INCREMENT 4
 
 #define MIN_SIN 0
 #define MAX_SIN 255
@@ -462,21 +462,31 @@ void set_servos_pos() {
   targetPoses[0] = B_UD_angle;
   targetPoses[1] = B_LR_angle;
   targetPoses[2] = B_TB_angle;
-  write_serial("--------- ANGLE TB: " + String(B_TB_angle));
+  //write_serial("--------- ANGLE TB: " + String(B_TB_angle));
   targetPoses[3] = T_UD_angle;
   targetPoses[4] = T_P1_angle;
   targetPoses[5] = T_T1_angle;
   targetPoses[6] = T_TN_angle;
   //servos[7] = scale2us(T_LR_angle);
   targetPoses[8] = B_BF_angle;
-  write_serial("--------- ANGLE BF : " + String(B_BF_angle));
+  //write_serial("--------- ANGLE BF : " + String(B_BF_angle));
   targetPoses[9] = T_BF_angle;
 
-  write_serial("-------- ANGLE : " + String(angleToPulse(servos[2])));
-  write_serial("-------- ANGLE BF : " + String(angleToPulse(servos[8])));
+  //write_serial("-------- ANGLE : " + String(angleToPulse(servos[2])));
+  //write_serial("-------- ANGLE BF : " + String(angleToPulse(servos[8])));
   
+  servo_head_beak_t2.write(B_UD_angle, SERVO_SPEED*2, false);
+  servo_head_body.write(B_BF_angle, SERVO_SPEED, true);
+  servo_head_beak_p.write(B_LR_angle, SERVO_SPEED*2, true);
+  servo_head_beak_t1.write(B_TB_angle, SERVO_SPEED*1.5, true);
+  servo_tail_beak_t2.write(T_UD_angle, SERVO_SPEED, false);
+  servo_tail_neck.write(T_TN_angle, SERVO_SPEED, true);
+  servo_tail_body.write(T_BF_angle, 10, false);
+  servo_tail_beak_t1.write(T_T1_angle, SERVO_SPEED*2.7, true);
+  servo_tail_beak_p.write(T_P1_angle, SERVO_SPEED, false);
   servo_tail_body_p.writeMicroseconds(scale2us(T_LR_angle));
   //pwm.setPWM(0, 0, angleToPulse(servos[0]));
+  /*
   for(int i=0; i<10; i++){
     pwm.setPWM(i, 0, angleToPulse(servos[i]));
     //increase servos in the direction of targetposes by increment to reach targetPoses[i] = servos[i], if delta is less than increment set it directly
@@ -493,7 +503,7 @@ void set_servos_pos() {
         servos[i] -= increment[i];
     }
     //delay(5);
-  }
+  }*/
 }
 
 void reset_all_servos() {
