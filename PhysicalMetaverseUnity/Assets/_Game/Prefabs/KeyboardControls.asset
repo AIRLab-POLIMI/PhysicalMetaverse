@@ -16,15 +16,54 @@ MonoBehaviour:
   - joint: CamArm
     cwKey: j
     ccKey: u
+    axis: 
+    direction: 
+    invert: 0
   - joint: CamPan
     cwKey: u
     ccKey: j
+    axis: 
+    direction: 
+    invert: 0
   - joint: CamTilt
     cwKey: y
     ccKey: h
+    axis: 
+    direction: 
+    invert: 0
   - joint: Arm
     cwKey: r
     ccKey: f
+    axis: 
+    direction: 
+    invert: 0
   - joint: Wrist
     cwKey: t
     ccKey: g
+    axis: 
+    direction: 
+    invert: 0
+  - joint: Odile
+    cwKey: w
+    ccKey: s
+    axis: 
+    direction: MoveForward
+    invert: 0
+  - joint: Odile
+    cwKey: d
+    ccKey: a
+    axis: 
+    direction: MoveStrafe
+    invert: 0
+  - joint: Odile
+    cwKey: e
+    ccKey: q
+    axis: 
+    direction: MoveRotateRight
+    invert: 0
+  - joint: Rotate
+    cwKey: c
+    ccKey: v
+    axis: 
+    direction: 
+    invert: 0

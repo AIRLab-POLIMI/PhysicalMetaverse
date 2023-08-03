@@ -129,6 +129,8 @@ public class RobotController : MonoBehaviour
     }
 
     void FixedUpdate(){
+        //charactercontroller move down
+        controller.Move(transform.up * -0.1f);
         //if P is pressed reset rigid bodies
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -196,7 +198,7 @@ public class RobotController : MonoBehaviour
             {
                 if (Input.GetKey(keyCode))
                 {
-                    //print(keyCode);
+                    print(keyCode);
                     //if key pressed is in list of keys, check each occurrence
                     if(_keys.Contains(keyCode))
                     {
@@ -212,20 +214,44 @@ public class RobotController : MonoBehaviour
                         //for each index do
                         foreach (int index in indexes)
                         {
-                            //if index is even
-                            if (index % 2 == 0)
+                            //if index is associated with gameobject Odile
+                            if (_robotJointsArmsDict[index / 2].joint.name.Contains(gameObject.name))
                             {
-                                //store parent
-                                Transform father = _robotJointsArmsDict[index / 2].joint.transform.parent;
-                                //rotate joint clockwise around father
-                                _robotJointsArmsDict[index / 2].joint.transform.RotateAround(father.position, father.right, 1f);
+                                //if direction is MoveStrafe
+                                if (_robotJointsArmsDict[index / 2].direction == "MoveStrafe")
+                                {
+                                    //move odile right
+                                    controller.Move(transform.right * (index % 2 == 0 ? 1 : -1) / _moveUpdate);
+                                }
+                                //if direction is MoveForward
+                                if (_robotJointsArmsDict[index / 2].direction == "MoveForward")
+                                {
+                                    //move odile forward
+                                    controller.Move(transform.forward * (index % 2 == 0 ? 1 : -1) / _moveUpdate);
+                                }
+                                //if direction is MoveRotate
+                                if (_robotJointsArmsDict[index / 2].direction == "MoveRotateRight")
+                                {
+                                    //rotate odile right
+                                    controller.transform.eulerAngles += new Vector3(0, (index % 2 == 0 ? 1 : -1) / _angleUpdate, 0);
+                                }
                             }
-                            //if index is odd
-                            else
-                            {
-                                //rotate joint counterclockwise
-                                Transform father = _robotJointsArmsDict[(index - 1) / 2].joint.transform.parent;
-                                _robotJointsArmsDict[(index - 1) / 2].joint.transform.RotateAround(father.position, father.right, -1f);
+                            else{
+                                //if index is even
+                                if (index % 2 == 0)
+                                {
+                                    //store parent
+                                    Transform father = _robotJointsArmsDict[index / 2].joint.transform.parent;
+                                    //rotate joint clockwise around father
+                                    _robotJointsArmsDict[index / 2].joint.transform.RotateAround(father.position, father.right, 1f);
+                                }
+                                //if index is odd
+                                else
+                                {
+                                    //rotate joint counterclockwise
+                                    Transform father = _robotJointsArmsDict[(index - 1) / 2].joint.transform.parent;
+                                    _robotJointsArmsDict[(index - 1) / 2].joint.transform.RotateAround(father.position, father.right, -1f);
+                                }
                             }
                         }
                     }
@@ -407,14 +433,9 @@ public class RobotController : MonoBehaviour
                             controller.Move(transform.forward * float.Parse(control.ReadValueAsObject().ToString()) / _moveUpdate);
                         }
                         //if occurrency.joint.name == RotateLeft
-                        if (occurrency.direction == "MoveRotateRight")
+                        if (occurrency.direction == "MoveRotate")
                         {
                             controller.transform.eulerAngles += new Vector3(0, float.Parse(control.ReadValueAsObject().ToString()) / _angleUpdate, 0);
-                        }
-                        //if occurrency.joint.name == RotateRight
-                        if (occurrency.direction == "MoveRotateLeft")
-                        {
-                            controller.transform.eulerAngles += new Vector3(0, -float.Parse(control.ReadValueAsObject().ToString()) / _angleUpdate, 0);
                         }
                     }
                     else{
@@ -472,7 +493,7 @@ public class RobotController : MonoBehaviour
         foreach (ControlsSO.RobotJointsArmsDict robotJointsArm in _activeControls._robotJointsArmsDict)
         {
             //add key to list parsing string, case insensitive
-            _robotJointsArmsDict.Add(new RobotJointsArmsDict{joint = GameObject.Find(robotJointsArm.joint), cwKey = robotJointsArm.cwKey, ccKey = robotJointsArm.ccKey});
+            _robotJointsArmsDict.Add(new RobotJointsArmsDict{joint = GameObject.Find(robotJointsArm.joint), cwKey = robotJointsArm.cwKey, ccKey = robotJointsArm.ccKey, axis = robotJointsArm.axis, direction = robotJointsArm.direction});
         }
         //populate list of keys using RobotJointsArmsDict
         foreach (RobotJointsArmsDict robotJointsArm in _robotJointsArmsDict)
@@ -559,32 +580,56 @@ public class RobotController : MonoBehaviour
         {
             return;
         }
-        InputControl controlPressed = null;
-        //get gamepad pressed command and if it matches with one options
-        try{
-        foreach (InputControl control in _gamepad.allControls)
-            {
-                //if control is not zero and it is in options store it in controlPressed and break
-                if (control.ReadValueAsObject().ToString() != "0" && Array.IndexOf(options, control.displayName) != -1)
-                {
-                    controlPressed = control;
-                    break;
-                }
-            }
-            GUILayout.Label("GAMEPAD OK");
-        }
-        catch (Exception e)
-        {
-            //add NO GAMEPAD text
-            GUILayout.Label("!!!NO GAMEPAD DETECTED!!!");
-        }
 
         // Begin the scroll view
         scrollPosition = GUILayout.BeginScrollView(scrollPosition, customStyle, GUILayout.Width(scrollViewWidth), GUILayout.Height(600));
         //set background
         GUI.backgroundColor = Color.grey;
-        
+        //button to switch keyboard and joystick
         GUILayout.Label("Robot controls editor");
+        if (GUILayout.Button("Switch input type: " + _inputType, customStyle))
+        {
+            if (_inputType == InputType.Keyboard)
+            {
+                _inputType = InputType.Joystick;
+                //get active controls
+                _activeControls = _controlsList[1];
+                UpdateKeysJoystick();
+            }
+            else if (_inputType == InputType.Joystick)
+            {
+                _inputType = InputType.Keyboard;
+                //get active controls
+                _activeControls = _controlsList[0];
+                UpdateKeysKeyboard();
+            }
+        }
+        InputControl controlPressed = null;
+        if (_inputType == InputType.Keyboard)
+        {
+            GUILayout.Label("WARNING: GUI does not work for keyboard");
+        }
+        else if (_inputType == InputType.Joystick){
+            //get gamepad pressed command and if it matches with one options
+            try{
+            foreach (InputControl control in _gamepad.allControls)
+                {
+                    //if control is not zero and it is in options store it in controlPressed and break
+                    if (control.ReadValueAsObject().ToString() != "0" && Array.IndexOf(options, control.displayName) != -1)
+                    {
+                        controlPressed = control;
+                        break;
+                    }
+                }
+                GUILayout.Label("GAMEPAD OK");
+            }
+            catch (Exception e)
+            {
+                //add NO GAMEPAD text
+                GUILayout.Label("!!!NO GAMEPAD DETECTED!!!");
+            }
+        }
+        
         GUILayout.Label("Active controls: " + _activeControls.name);
         if (GUILayout.Button("Mode " + _joystickMode, customStyle)){
             if (_joystickMode == JoystickMode.Hold)
@@ -592,18 +637,19 @@ public class RobotController : MonoBehaviour
             else if (_joystickMode == JoystickMode.Move)
                 _joystickMode = JoystickMode.Hold;
         }
-        GUILayout.Label("Input type: " + _inputType);
         GUILayout.Label("Press arrows to rotate third person camera");
+        //press p to reset solids
+        GUILayout.Label("Press P to reset solids");
 
         // Text input field to allow the user to change the value
-        GUILayout.Label("Enter new axis value:");
-        axisInput = GUILayout.TextField(axisInput, 25); // '25' is the maximum character limit (optional)
+        //GUILayout.Label("Enter new axis value:");
+        //axisInput = GUILayout.TextField(axisInput, 25); // '25' is the maximum character limit (optional)
         //GUILayout.Label("Enter new Joint value:");
         //jointInput = GUILayout.TextField(jointInput, 25); // '25' is the maximum character limit (optional)
         // Only show the options if the showOptions variable is true
         
         //horizontal two buttons, save and load _robotJointsArmsDict to file using json
-        GUILayout.BeginHorizontal();
+        /*GUILayout.BeginHorizontal();
         //label save button maybe works, will save in game folder
         GUILayout.Label("Save button maybe works, will save in game folder if it does");
         if (GUILayout.Button("Save"))
@@ -626,7 +672,7 @@ public class RobotController : MonoBehaviour
         {
             _updateKeysButton = true;
         }
-        GUILayout.EndHorizontal();
+        GUILayout.EndHorizontal();*/
 
         GUILayout.Label("Keys: ");
 
