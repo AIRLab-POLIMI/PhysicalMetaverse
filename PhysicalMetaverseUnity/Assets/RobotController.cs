@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using System.Linq;
 
 // Script used by Odile robots, it lets you control with Keyboard or F710 Logitec Gamepad, also has a gui to change controller button mapping
 public class RobotController : MonoBehaviour
@@ -68,17 +69,32 @@ public class RobotController : MonoBehaviour
         //set global input to input settings
         InputSystem.settings = _inputSettings;
     }
+    public Transform[] _rigidBodiesInitialTransforms;
+    public Transform[] _rigidBodiesTransforms;
     // Start is called before the first frame update
     void Start()
     {
+        //copy _rigidBodiesTransforms into _rigidBodiesInitialTransforms, they are already filled
+        _rigidBodiesInitialTransforms = new Transform[_rigidBodiesTransforms.Length];
+        for (int i = 0; i < _rigidBodiesTransforms.Length; i++)
+        {
+            //store a copy
+            //new
+            _rigidBodiesInitialTransforms[i] = new GameObject().transform;
+            //copy
+            _rigidBodiesInitialTransforms[i].position = _rigidBodiesTransforms[i].position;
+            _rigidBodiesInitialTransforms[i].rotation = _rigidBodiesTransforms[i].rotation;
+
+        }
+        
         //init controller
         controller = GetComponent<CharacterController>();
         _gamepad = Gamepad.current;
-        if (_gamepad == null)
+        /*if (_gamepad == null)
         {
             Debug.LogWarning("Logitech F710 not detected or not supported.");
             return;
-        }
+        }*/
         if (_inputType == InputType.Keyboard)
         {
             //get active controls
@@ -100,7 +116,25 @@ public class RobotController : MonoBehaviour
 
     }
 
+    private void ResetRigidBodies()
+    {  
+        //log RESET BODIES
+        Debug.Log("RESET BODIES");
+        //reset rigid bodies
+        for (int i = 0; i < _rigidBodiesInitialTransforms.Length; i++)
+        {
+            _rigidBodiesTransforms[i].transform.position = _rigidBodiesInitialTransforms[i].position;
+            _rigidBodiesTransforms[i].transform.rotation = _rigidBodiesInitialTransforms[i].rotation;
+        }
+    }
+
     void FixedUpdate(){
+        //if P is pressed reset rigid bodies
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            //reset rigid bodies
+            ResetRigidBodies();
+        }
         if (_inputType == InputType.Keyboard)
         {
             KeyboardUpdate();
@@ -108,9 +142,19 @@ public class RobotController : MonoBehaviour
         else if (_inputType == InputType.Joystick)
         {
             if(_joystickMode == JoystickMode.Hold)
-                JoystickUpdateHold();
+                try{
+                    JoystickUpdateHold();
+                }
+                catch (Exception e){
+                    Debug.Log("No gamepad");
+                }
             else if (_joystickMode == JoystickMode.Move)
-                JoystickUpdateMove();
+                try{
+                    JoystickUpdateMove();
+                }
+                catch (Exception e){
+                    Debug.Log("No gamepad");
+                }
         }
         //update camera
         if (Input.GetKeyDown(KeyCode.T))
@@ -517,14 +561,22 @@ public class RobotController : MonoBehaviour
         }
         InputControl controlPressed = null;
         //get gamepad pressed command and if it matches with one options
+        try{
         foreach (InputControl control in _gamepad.allControls)
-        {
-            //if control is not zero and it is in options store it in controlPressed and break
-            if (control.ReadValueAsObject().ToString() != "0" && Array.IndexOf(options, control.displayName) != -1)
             {
-                controlPressed = control;
-                break;
+                //if control is not zero and it is in options store it in controlPressed and break
+                if (control.ReadValueAsObject().ToString() != "0" && Array.IndexOf(options, control.displayName) != -1)
+                {
+                    controlPressed = control;
+                    break;
+                }
             }
+            GUILayout.Label("GAMEPAD OK");
+        }
+        catch (Exception e)
+        {
+            //add NO GAMEPAD text
+            GUILayout.Label("!!!NO GAMEPAD DETECTED!!!");
         }
 
         // Begin the scroll view
@@ -541,7 +593,7 @@ public class RobotController : MonoBehaviour
                 _joystickMode = JoystickMode.Hold;
         }
         GUILayout.Label("Input type: " + _inputType);
-        GUILayout.Label("Press T to switch first person and third person, arrows to rotate third person camera");
+        GUILayout.Label("Press arrows to rotate third person camera");
 
         // Text input field to allow the user to change the value
         GUILayout.Label("Enter new axis value:");
@@ -552,17 +604,26 @@ public class RobotController : MonoBehaviour
         
         //horizontal two buttons, save and load _robotJointsArmsDict to file using json
         GUILayout.BeginHorizontal();
+        //label save button maybe works, will save in game folder
+        GUILayout.Label("Save button maybe works, will save in game folder if it does");
         if (GUILayout.Button("Save"))
         {
-            //save _robotJointsArmsDict to file using json
-            string json = JsonUtility.ToJson(_robotJointsArmsDict);
-            System.IO.File.WriteAllText(Application.dataPath + "/Resources/robotJointsArmsDict.json", json);
+            //store _robotJointsArmsDict into a string, write manually
+            string dict;
+            dict = "[";
+            //for each field in _robotJointsArmsDict write it
+            foreach (RobotJointsArmsDict robotJointsArm in _robotJointsArmsDict)
+            {
+                dict += "{\"joint\":\"" + robotJointsArm.joint + "\",\"axis\":\"" + robotJointsArm.axis + "\"},";
+            }
+            dict = dict.Remove(dict.Length - 1);
+            dict += "]";
+
+            //create file
+            System.IO.File.WriteAllText(Application.dataPath + "/robotJointsArmsDict.json", dict);
         }
         if (GUILayout.Button("Load"))
         {
-            //load _robotJointsArmsDict from file using json
-            string json = System.IO.File.ReadAllText(Application.dataPath + "/Resources/robotJointsArmsDict.json");
-            _robotJointsArmsDict = JsonUtility.FromJson<List<RobotJointsArmsDict>>(json);
             _updateKeysButton = true;
         }
         GUILayout.EndHorizontal();
