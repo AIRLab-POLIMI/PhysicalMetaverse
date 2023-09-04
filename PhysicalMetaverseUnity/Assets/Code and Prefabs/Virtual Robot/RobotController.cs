@@ -215,7 +215,7 @@ public class RobotController : MonoBehaviour
                         foreach (int index in indexes)
                         {
                             //if index is associated with gameobject Odile
-                            if (_robotJointsArmsDict[index / 2].joint.name.Contains(gameObject.name))
+                            if (_robotJointsArmsDict[index / 2].joint == null)
                             {
                                 //if direction is MoveStrafe
                                 if (_robotJointsArmsDict[index / 2].direction == "MoveStrafe")
