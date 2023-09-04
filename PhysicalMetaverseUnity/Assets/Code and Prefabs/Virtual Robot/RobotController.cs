@@ -243,14 +243,14 @@ public class RobotController : MonoBehaviour
                                     //store parent
                                     Transform father = _robotJointsArmsDict[index / 2].joint.transform.parent;
                                     //rotate joint clockwise around father
-                                    _robotJointsArmsDict[index / 2].joint.transform.RotateAround(father.position, father.right, 1f);
+                                    father.transform.RotateAround(father.position, father.right, 1f);
                                 }
                                 //if index is odd
                                 else
                                 {
                                     //rotate joint counterclockwise
                                     Transform father = _robotJointsArmsDict[(index - 1) / 2].joint.transform.parent;
-                                    _robotJointsArmsDict[(index - 1) / 2].joint.transform.RotateAround(father.position, father.right, -1f);
+                                    father.transform.RotateAround(father.position, father.right, -1f);
                                 }
                             }
                         }

@@ -59,7 +59,7 @@ public class PlayerControllerVR : MonoBehaviour {
             controller.transform.rotation = Quaternion.Euler(controller.transform.eulerAngles.x, controller.transform.eulerAngles.y + Input.GetAxis("Horizontal") * Time.deltaTime * _sensitivity, controller.transform.eulerAngles.z);
 
         //print input
-        Debug.Log(Input.GetAxis("Horizontal"));
+        //Debug.Log(Input.GetAxis("Horizontal"));
         controller.Move(controller.transform.forward * Input.GetAxis("Vertical") * Time.deltaTime * _speed);
         //if not grounded
         // Apply gravity
