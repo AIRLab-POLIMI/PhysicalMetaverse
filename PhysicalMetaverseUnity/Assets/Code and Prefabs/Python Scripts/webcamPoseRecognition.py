@@ -15,6 +15,8 @@ pTime = 0
 server_address = ('localhost', 44444)  # Change the address and port as needed
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+SHOW = True
+
 while True:
     success, img = cap.read()
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -41,6 +43,8 @@ while True:
         pose_data[i][0] = img.shape[0] - pose_data[i][0]
         pose_data[i][1] = img.shape[1] - pose_data[i][1]
         
+        pose_data[i][2] = pose_data[i][2] * 60
+        
     
     # Convert the pose landmarks to a JSON string
     pose_json = json.dumps(pose_data)
@@ -59,7 +63,8 @@ while True:
     # Draw the pose landmarks on the image
     mpDraw.draw_landmarks(img, results.pose_landmarks, mpPose.POSE_CONNECTIONS)
     #show
-    cv2.imshow("Image", img)
-    cv2.waitKey(1)
+    if SHOW:
+        cv2.imshow("Image", img)
+        cv2.waitKey(1)
 
 sock.close()

@@ -14,20 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _robotJointsArmsDict:
   - joint: CamArm
-    cwKey: j
-    ccKey: u
+    cwKey: u
+    ccKey: o
     axis: 
     direction: 
     invert: 0
   - joint: CamPan
-    cwKey: u
-    ccKey: j
+    cwKey: j
+    ccKey: l
     axis: 
     direction: 
     invert: 0
   - joint: CamTilt
-    cwKey: y
-    ccKey: h
+    cwKey: i
+    ccKey: k
     axis: 
     direction: 
     invert: 0
@@ -62,8 +62,8 @@ MonoBehaviour:
     direction: MoveRotateRight
     invert: 0
   - joint: Rotate
-    cwKey: c
-    ccKey: v
+    cwKey: z
+    ccKey: c
     axis: 
     direction: 
     invert: 0
