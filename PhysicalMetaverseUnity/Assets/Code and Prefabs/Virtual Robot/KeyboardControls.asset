@@ -26,20 +26,20 @@ MonoBehaviour:
     direction: 
     invert: 0
   - joint: CamTilt
-    cwKey: i
-    ccKey: k
+    cwKey: k
+    ccKey: i
     axis: 
     direction: 
     invert: 0
   - joint: Arm
-    cwKey: r
+    cwKey: h
     ccKey: f
     axis: 
     direction: 
     invert: 0
   - joint: Wrist
-    cwKey: t
-    ccKey: g
+    cwKey: g
+    ccKey: t
     axis: 
     direction: 
     invert: 0
@@ -62,8 +62,8 @@ MonoBehaviour:
     direction: MoveRotateRight
     invert: 0
   - joint: Rotate
-    cwKey: z
-    ccKey: c
+    cwKey: r
+    ccKey: y
     axis: 
     direction: 
     invert: 0
