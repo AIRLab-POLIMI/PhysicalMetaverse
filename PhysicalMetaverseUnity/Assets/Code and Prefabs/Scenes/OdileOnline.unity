@@ -9083,7 +9083,7 @@ MonoBehaviour:
   _clientInput: {fileID: 7956078}
   _hostInput: {fileID: 972035861}
   _skipInput: 1
-  _isHost: 0
+  _isHost: 1
 --- !u!1 &1618221790
 GameObject:
   m_ObjectHideFlags: 0
