@@ -38,7 +38,11 @@ public class RoomButtonStay : MonoBehaviour
             //move up 1.5
         door.transform.position = new Vector3(_initialDoorPosition.x, _initialDoorPosition.y + 1.5f, _initialDoorPosition.z);
         //call blink twice of who entered
-        other.gameObject.GetComponentInChildren<Blink>().BlinkTwice();
+        try{
+            other.gameObject.GetComponentInChildren<Blink>().BlinkTwice();
+        } catch {
+            //do nothing
+        }
         //}
     }
 

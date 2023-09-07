@@ -7,7 +7,7 @@ import json
 #camera types:
 #internal - internal webcam
 #remote - ip camera at http://192.168.1.7:8080/video
-CAMERA_TYPE = "internal"
+CAMERA_TYPE = "remote"
 
 SHOW = True
 DISTANCE_MULTIPLIER = 60
@@ -23,7 +23,7 @@ if CAMERA_TYPE == "internal":
     cap = cv2.VideoCapture(0)
 #camera stream from ip camera at http://192.168.1.7:8080/video
 elif CAMERA_TYPE == "remote":
-    cap = cv2.VideoCapture("http://192.168.1.7:8080/video")
+    cap = cv2.VideoCapture("http://192.168.1.11:8080/video")
 
 pTime = 0
 
@@ -102,6 +102,6 @@ while True:
         cv2.waitKey(1)
 
     #sleep 0.1
-    time.sleep(0.1)
+    #time.sleep(0.1)
     
 sock.close()
