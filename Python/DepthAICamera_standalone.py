@@ -2,9 +2,13 @@
 import sys
 import os
 from networkStuff.constants import *
+import cv2
+import time
 showing = True
 #for this script to work you have to first git clone https://github.com/geaxgx/depthai_blazepose.git
 #in the same folder as this script
+
+#python3 DepthAICamera_standalone.py --lm_m lite --internal_frame_height 400 --show_3d image
 
 # Get the absolute path of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +19,7 @@ sys.path.append(depthai_blazepose_path)
 renderer = None
 tracker = None
 def start():
-    global renderer, tracker
+    global renderer, trackershow, tracker
     #run with python3 demo.py --lm_m lite 
     from BlazeposeRenderer import BlazeposeRenderer
     import argparse
@@ -120,28 +124,43 @@ def start():
 
     
 
+DEST_IP = "192.168.231.10"
+DEST_PORT = 44444
 
-
-    def main(connection):
+def main():
         print("CAMERA STARTED")
+        #setup udp socket
+        import socket
+        import time
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         while True:
-            loop(connection)
+            loop(sock)
         renderer.exit()
         tracker.exit()
-    import traceback
+    #import traceback
     
-def loop(connection):
-    # Run blazepose on next frame
-    frame, body = tracker.next_frame()
-    if frame is None: print("framenone")
+def loop(sock):
+    if tracker is None: print("tracker none")
+    else:
+        start = time.time()
+        # Run blazepose on next frame
+        frame, body = tracker.next_frame()
+        print("Pose detection time " + str(time.time() - start))
+        # show
+        # Draw 2d skeleton
+        # frame = renderer.draw(frame, body)
+        
+        if frame is not None:
+            # Draw 2d skeleton
+            frame = renderer.draw(frame, body)
     #type of frame is numpy.ndarray
     #showOnlyBlue(frame, connection)
-    # Draw 2d skeleton
-    frame = renderer.draw(frame, body)
+    
 
     #print(body)
     #print body properly, it is mediapipe_utils.Body
     try:
+        start = time.time()
         #print(body.landmarks)
         #print("sent")
         #send body landmarks via udp
@@ -149,18 +168,20 @@ def loop(connection):
         #body.landmarks string
         to_send = str(body.landmarks).encode()
         
-        connection.send(POSE_KEY, to_send)
+        #udp send socket
+        sock.sendto(to_send, (DEST_IP, DEST_PORT))
+        print("Udp send time " + str(time.time() - start))
         print("SENT CAMERA ")# + str(body.landmarks))
 
     #print exception
-    except Exception as e:
-        print(e)
+    except:
+        print("error")
         #traceback.print_exc()
     
     # Show 2d skeleton
-    key = renderer.waitKey(delay=1)
-    if key == 27 or key == ord('q'):
-        print("keybreak")
+    #key = renderer.waitKey(delay=1)
+    #if key == 27 or key == ord('q'):
+        #print("keybreak")
 
 def showOnlyBlue(frame, connection):
     #downscale frame to 1/4 resolution
@@ -228,3 +249,8 @@ def showOnlyBlue(frame, connection):
 
     except: 
         print("not enough contours")
+        
+start()      
+main()
+        
+    
