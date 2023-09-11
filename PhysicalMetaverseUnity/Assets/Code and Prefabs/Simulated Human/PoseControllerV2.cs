@@ -11,7 +11,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading;
 using Unity.Multiplayer.Samples.Utilities.ClientAuthority;
-
+//using datetime
+using System.Globalization;
 
 //to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
 //this manager receives the 34 body landmarks detected by the depthai camera and positions a sphere at each landmark
@@ -37,7 +38,9 @@ public class PoseControllerV2 : MonoBehaviour
     private bool _isReceiving = false;
     public float _scalePose = 1000f;
     public float _sphereScale = 0.05f;
-
+    [Range(0f, 1f)]
+    public float _cameraBack = 0.25f;
+    public bool _headSpheres = true;
     //spawned
     private bool spawned = false;
 
@@ -65,8 +68,13 @@ public class PoseControllerV2 : MonoBehaviour
         {
             try
             {
+                //get time
+                DateTime time = DateTime.Now;
                 IPEndPoint remoteIpEndPoint = new IPEndPoint(IPAddress.Any, _udpPort);
                 _data = _udpClient.Receive(ref remoteIpEndPoint);
+                //print time passed to receive
+                Debug.Log("Time to receive: " + (DateTime.Now - time).TotalMilliseconds);
+                time = DateTime.Now;
                 data = _data;
                 char[] bytesAsChars = new char[_data.Length];
                 for (int i = 0; i < _data.Length; i++)
@@ -76,7 +84,7 @@ public class PoseControllerV2 : MonoBehaviour
                 string message = new string(bytesAsChars);
                 Debug.Log("Person Manager received message: " + message);
                 parsedData = ParseData(message);
-
+                Debug.Log("Time to elaborate: " + (DateTime.Now - time).TotalMilliseconds);
 
             }
             catch (SocketException e)
@@ -219,7 +227,7 @@ public class PoseControllerV2 : MonoBehaviour
 
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
-    private void FixedUpdate()
+    private void Update()
     {
         //if first receive
         if (data != null)
@@ -396,6 +404,8 @@ public class PoseControllerV2 : MonoBehaviour
                 //should rotate z by 45 degrees. if a point has y = 0 z is unchanged, if a point has y = 100, z is brought closer
                 sphere.transform.localPosition = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
                 sphere.transform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
+                //scale spherescale
+                sphere.transform.localScale = new Vector3(_sphereScale, _sphereScale, _sphereScale);
                 //rotate spheres position by 45 degrees with fulcrum at 
                 Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
 
@@ -416,8 +426,6 @@ public class PoseControllerV2 : MonoBehaviour
                 if(i != 33)
                     //move sphere by center offset locally
                     sphere.transform.localPosition = new Vector3(sphere.transform.localPosition.x - _centerOffset.x, sphere.transform.localPosition.y, sphere.transform.localPosition.z + _centerOffset.z);
-
-
             }
         }
         catch(Exception e)
@@ -430,6 +438,26 @@ public class PoseControllerV2 : MonoBehaviour
             //log spheres size
             Debug.Log(spheres.Length);
         }
+        /*
+        //find Camera among children
+        Camera camera = GetComponentInChildren<Camera>();
+        //set camera position to position of first sphere
+        camera.transform.position = spheres[0].transform.position;
+        //move camera back on its back vector
+        camera.transform.position = camera.transform.position - camera.transform.forward * _cameraBack;
+        //set mesh renderer of the first 10 spheres if headSpheres is true
+        if(_headSpheres){
+            for(int i = 0; i < 10; i++){
+                spheres[i].GetComponent<MeshRenderer>().enabled = true;
+            }
+        }
+        else{
+            for(int i = 0; i < 10; i++){
+                spheres[i].GetComponent<MeshRenderer>().enabled = false;
+            }
+        }
+        */
+        
     }
 
     //on quit stop socket
