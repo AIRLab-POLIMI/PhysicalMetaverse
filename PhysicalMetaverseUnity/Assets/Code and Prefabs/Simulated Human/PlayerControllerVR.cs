@@ -80,7 +80,7 @@ public class PlayerControllerVR : MonoBehaviour {
     void Update()
     {
         //rotate camera as trackcamera locally
-        _myCamera.transform.localRotation = _camera.transform.localRotation;
+        //_myCamera.transform.localRotation = _camera.transform.localRotation;
         //space to jump
         if (Input.GetKeyDown(KeyCode.Space) && _canJump && _grounded)
         {
