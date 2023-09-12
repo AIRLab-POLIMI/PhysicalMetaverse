@@ -7,12 +7,12 @@ import json
 #camera types:
 #internal - internal webcam
 #remote - ip camera at http://192.168.1.7:8080/video
-CAMERA_TYPE = "internal"
+CAMERA_TYPE = "remote"
 
 SHOW = True
 DISTANCE_MULTIPLIER = 60
 
-
+ADD_KEY = True #necessary to make robot viz work
 
 mpPose = mp.solutions.pose
 pose = mpPose.Pose()
@@ -23,12 +23,12 @@ if CAMERA_TYPE == "internal":
     cap = cv2.VideoCapture(0)
 #camera stream from ip camera at http://192.168.1.7:8080/video
 elif CAMERA_TYPE == "remote":
-    cap = cv2.VideoCapture("http://192.168.1.11:8080/video")
+    cap = cv2.VideoCapture("http://192.168.1.5:8080/video")
 
 pTime = 0
 
 # Define the UDP server's address and port
-server_address = ('localhost', 44444)  # Change the address and port as needed
+server_address = ('localhost', 25666)  # Change the address and port as needed
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
@@ -87,7 +87,10 @@ while True:
     pose_json = pose_json.replace("] ", "]\n")
 
     # Send the JSON-formatted pose data via UDP
-    sock.sendto(pose_json.encode(), server_address)
+    if ADD_KEY:
+        sock.sendto(b'\xf2' + pose_json.encode(), server_address)
+    else:
+        sock.sendto(pose_json.encode(), server_address)
     # print
     print(pose_json)
     #print count

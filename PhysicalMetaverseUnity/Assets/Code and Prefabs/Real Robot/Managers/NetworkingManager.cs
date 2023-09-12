@@ -38,6 +38,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     [SerializeField] private ByteSO jetsonPingKey;
     public bool TCP_PRESENTATIONS = false;
+    public bool _skipTcp = true;
  
     private readonly UdpMessenger _udpMessenger = new UdpMessenger();
 
@@ -68,9 +69,11 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         //todo make robot broadcast udp his ip and when picked up by this client start tcp connection (to avoid hardcoding the ip)
         _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
         _udpMessenger.Init(_jetsonEndpoint.EndPoint, myUdpPort, maxMsgAge: maxUdpAge, bufferSize: bufferSize);
-        StartCoroutine(CheckOldMessages());
-        StartCoroutine(Presentations());
-        
+        _setupScreen.SetActive(false);
+        if(!_skipTcp){
+            StartCoroutine(CheckOldMessages());
+            StartCoroutine(Presentations());
+        }
         
     }
 
@@ -80,7 +83,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     private IEnumerator Presentations()
     {
-
+        _setupScreen.SetActive(true);
         var connected = false;
             
         _tcpClient = null;
@@ -270,17 +273,20 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     private void Update()
     {
-        if(!_initialized)
-            return;
+        if(!_skipTcp){
+            if(!_initialized)
+                return;
 
-        if (!_connectedFirstTime)
-        {
-            _connectedFirstTime = true;
-            ConnectedFirstTimeRoutine();
+            if (!_connectedFirstTime)
+            {
+                _connectedFirstTime = true;
+                ConnectedFirstTimeRoutine();
+            }
         }
-        
         ReceiveMessages();
-        CheckPingNew();
+        if(!_skipTcp){
+            CheckPingNew();
+        }
         //SendPing();
     }
 
