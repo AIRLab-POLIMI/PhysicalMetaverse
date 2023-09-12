@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7374127562143781761}
+  - component: {fileID: 7374127562143781767}
   - component: {fileID: 7374127562143781766}
   - component: {fileID: 7374127562143781765}
   - component: {fileID: 7374127562143781764}
   - component: {fileID: 7374127562143781763}
   - component: {fileID: 7374127562143781762}
-  - component: {fileID: 7374127562143781767}
   m_Layer: 0
   m_Name: VirtualLidar
   m_TagString: Untagged
@@ -37,6 +37,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7374127562143781767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7374127562143781760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac1316edf9e095044b59424b46c3c946, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _jetson: {fileID: 0}
+  _dataMultiplier: 100
+  _frameSkip: 4
+  _maxDistance: 50
+  key: 241
+  _noise: 0.607
+  _missChance: 0.023
 --- !u!114 &7374127562143781766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -667,16 +686,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
---- !u!114 &7374127562143781767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7374127562143781760}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac1316edf9e095044b59424b46c3c946, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _dataMultiplier: 100

@@ -6,6 +6,8 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 
+//replace back all .localPosition to .position if there are problems
+
 //to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
 //this manager receives the 34 body landmarks detected by the depthai camera and positions a sphere at each landmark
 public class PersonManager : MonoBehaviour
@@ -214,7 +216,7 @@ public class PersonManager : MonoBehaviour
                 }
             }
             //set the position of the sphere
-            sphere.transform.position = new Vector3(i, 0, 0);
+            sphere.transform.localPosition = new Vector3(i, 0, 0);
             //add the sphere to the spheres array
             spheres[i] = sphere;
         }
@@ -222,6 +224,11 @@ public class PersonManager : MonoBehaviour
         spawned = true;
         //set sphere34 if sphere name is sphere 34
         sphere34 = spheres[33];
+        //set all spheres as children of this gameobject
+        foreach (GameObject sphere in spheres)
+        {
+            sphere.transform.parent = this.transform;
+        }
     }
     //gameobject sphere 34
     private GameObject sphere34;
@@ -259,9 +266,9 @@ public class PersonManager : MonoBehaviour
                 GameObject sphere = spheres[i];
                 //create new transform// Create a new GameObject
                 //set positions
-                //sphere.transform.position = new Vector3(parsedData[i][1], parsedData[i][0], parsedData[i][2]);
+                //sphere.transform.localPosition = new Vector3(parsedData[i][1], parsedData[i][0], parsedData[i][2]);
                 //should rotate z by 45 degrees. if a point has y = 0 z is unchanged, if a point has y = 100, z is brought closer
-                newTransform.position = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
+                newTransform.localPosition = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
                 newTransform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
                 //rotate spheres position by 45 degrees with fulcrum at 
                 Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
@@ -273,11 +280,11 @@ public class PersonManager : MonoBehaviour
                 // Rotate the sphere around the center of rotation
                 newTransform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
                 //move sphere by Offset
-                newTransform.position = new Vector3(sphere.transform.position.x + xOffset, sphere.transform.position.y + yOffset, sphere.transform.position.z + zOffset);// + 1/sphere34.transform.position.y * zMultiplier);
+                newTransform.localPosition = new Vector3(sphere.transform.localPosition.x + xOffset, sphere.transform.localPosition.y + yOffset, sphere.transform.localPosition.z + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
                 //sphere lerp to newTransform
-                sphere.transform.position = Vector3.Lerp(sphere.transform.position, newTransform.position, _speed);
+                sphere.transform.localPosition = Vector3.Lerp(sphere.transform.localPosition, newTransform.localPosition, _speed);
                 //move gradually
-                //sphere.transform.position = Vector3.Lerp(sphere.transform.position, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
+                //sphere.transform.localPosition = Vector3.Lerp(sphere.transform.localPosition, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
 
             }
         }
@@ -302,9 +309,9 @@ public class PersonManager : MonoBehaviour
                 //get the sphere
                 GameObject sphere = spheres[i];
                 //set positions
-                //sphere.transform.position = new Vector3(parsedData[i][1], parsedData[i][0], parsedData[i][2]);
+                //sphere.transform.localPosition = new Vector3(parsedData[i][1], parsedData[i][0], parsedData[i][2]);
                 //should rotate z by 45 degrees. if a point has y = 0 z is unchanged, if a point has y = 100, z is brought closer
-                sphere.transform.position = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
+                sphere.transform.localPosition = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
                 sphere.transform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
                 //rotate spheres position by 45 degrees with fulcrum at 
                 Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
@@ -316,9 +323,9 @@ public class PersonManager : MonoBehaviour
                 // Rotate the sphere around the center of rotation
                 sphere.transform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
                 //move sphere by Offset
-                sphere.transform.position = new Vector3(sphere.transform.position.x + xOffset, sphere.transform.position.y + yOffset, sphere.transform.position.z + zOffset);// + 1/sphere34.transform.position.y * zMultiplier);
+                sphere.transform.localPosition = new Vector3(sphere.transform.localPosition.x + xOffset, sphere.transform.localPosition.y + yOffset, sphere.transform.localPosition.z + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
                 //move gradually
-                //sphere.transform.position = Vector3.Lerp(sphere.transform.position, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
+                //sphere.transform.localPosition = Vector3.Lerp(sphere.transform.localPosition, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
 
             }
         }

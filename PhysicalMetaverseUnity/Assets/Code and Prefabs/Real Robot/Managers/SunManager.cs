@@ -23,6 +23,9 @@ public class SunManager : Monosingleton<SunManager>
     private float receivedSunAngle = 0f;
     private float xAngle = 180-65f;
     private bool firstUpdate = true;
+    //range
+    [Range(0.01f, 1.0f)]
+    public float _lerpParam = 0.1f;
 
     public void OnMsgRcv(byte[] msg) //Sun receive key 250
     {
@@ -47,9 +50,9 @@ public class SunManager : Monosingleton<SunManager>
     void FixedUpdate()
     {
         //set sun angle to received angle
-        //directionalLight.transform.eulerAngles = new Vector3(xAngle, receivedSunAngle, 0);
+        directionalLight.transform.eulerAngles = new Vector3(xAngle, -receivedSunAngle, 0);
         //gradually
-        directionalLight.transform.eulerAngles = new Vector3(xAngle, Mathf.Lerp(prevSunAngle, receivedSunAngle, 1f), 0);
+        //directionalLight.transform.eulerAngles = new Vector3(xAngle, Mathf.Lerp(prevSunAngle, receivedSunAngle, _lerpParam), 0);
     }
 }
 
