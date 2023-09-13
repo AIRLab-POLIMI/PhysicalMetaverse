@@ -2613,6 +2613,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   directionalLight: {fileID: 835397781}
+  _lerpParam: 0.1
 --- !u!1 &1106272663
 GameObject:
   m_ObjectHideFlags: 0
@@ -4865,7 +4866,7 @@ MonoBehaviour:
     type: 2}
   jetsonPingKey: {fileID: 11400000, guid: 85b9b3f28247a79499cfa1b3ffe572ca, type: 2}
   TCP_PRESENTATIONS: 0
-  _skipTcp: 1
+  _skipTcp: 0
 --- !u!198 &1892134779 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 8014663005667766323, guid: f2af42a0927161d40bc2d263244b47da,
