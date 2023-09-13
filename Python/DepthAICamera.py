@@ -72,10 +72,10 @@ def start():
                 stats=True,
                 trace=args.trace)   
 
-    renderer = BlazeposeRenderer(
-                    tracker, 
-                    show_3d=args.show_3d, 
-                    output=args.output)
+    ###renderer = BlazeposeRenderer(
+    ###                tracker, 
+    ###                show_3d=args.show_3d, 
+    ###                output=args.output)
 
     #start udp server to send body landmarks later
     #import socket
@@ -137,7 +137,7 @@ def loop(connection):
     #type of frame is numpy.ndarray
     #showOnlyBlue(frame, connection)
     # Draw 2d skeleton
-    frame = renderer.draw(frame, body)
+    #frame = renderer.draw(frame, body)
 
     #print(body)
     #print body properly, it is mediapipe_utils.Body
@@ -158,9 +158,9 @@ def loop(connection):
         #traceback.print_exc()
     
     # Show 2d skeleton
-    key = renderer.waitKey(delay=1)
-    if key == 27 or key == ord('q'):
-        print("keybreak")
+    #key = renderer.waitKey(delay=1)
+    #if key == 27 or key == ord('q'):
+    #    print("keybreak")
 
 def showOnlyBlue(frame, connection):
     #downscale frame to 1/4 resolution
