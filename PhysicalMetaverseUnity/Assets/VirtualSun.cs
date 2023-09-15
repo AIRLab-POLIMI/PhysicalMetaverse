@@ -24,7 +24,7 @@ public class VirtualSun : MonoBehaviour
             //send rotation of robotbase to jetson
             _jetson.Send(bytes, 0xfa);
             //log
-            Debug.Log("SUN: " + sunAngle);
+            //Debug.Log("SUN: " + sunAngle);
         }
     }
 }

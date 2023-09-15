@@ -4,6 +4,7 @@ using Core;
 using UnityEngine;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 public class LidarManager : Monosingleton<LidarManager>
 {
@@ -70,12 +71,19 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
     private int[] currentPositions;
 
+    //range _aggregatePointsTolerance from 0 to 100
+    [Range(1, 2)] [SerializeField] private float _aggregatePointsTolerance = 1.1f; //1 is no tolerance
+    public int _skippablePoints = 0;
+
+    public bool _mergeWalls = true;
+    private List<GameObject> blobs = new List<GameObject>();
+
     public void OnMsgRcv(byte[] msg)
     {
         int[] bytesAsInts = new int[arraySize];
         Buffer.BlockCopy(msg, 0, bytesAsInts, 0, msg.Length);
         //log bytesAsInts
-        Debug.Log(bytesAsInts);
+        //Debug.Log(bytesAsInts);
 
         trackedCameraDegrees = CopyTrackedDegrees(bytesAsInts, nOfLidarDegrees);
         
@@ -92,6 +100,7 @@ public class LidarManager : Monosingleton<LidarManager>
             }
         }
         else
+        {
             foreach (int n in bytesAsInts)
             {
                 //if max between current and new divided by min between current and new is greater than tolerance then update
@@ -105,6 +114,84 @@ public class LidarManager : Monosingleton<LidarManager>
                 //UpdatePosition(i, n);
                 i++;
             }
+        }
+
+        if(_mergeWalls)
+            WallsUsingDistances();
+        if(!_mergeWalls){
+            //destroy all elements in blobs
+            foreach (GameObject blob in blobs)
+            {
+                Destroy(blob);
+            }
+        }
+    }
+
+    void WallsUsingDistances(){
+        int skippedPoints = 0;
+        int lastValid = 0;
+        int newStart = 0;
+        float _debugLineTime = 0.5f;
+        //destroy all blobs
+        foreach (GameObject blob in blobs)
+        {
+            Destroy(blob);
+        }
+        //for first 10 points print their distance difference if more than aggregatePointsTolerance
+        for (int j = 0; j < 360; j++)
+        {
+            //check distance difference between current and next
+            int next = j + 1;
+            if (next == 360)
+            {
+                Debug.DrawLine(_points[newStart].transform.position, _points[j].transform.position, Color.red, _debugLineTime);
+                //spawn cube along line stretching it
+                SpawnWall(newStart, j);
+
+                break;
+            }
+            float relativeDistance = (float)Math.Max(currentPositions[j], currentPositions[next]) / (float)Math.Min(currentPositions[j], currentPositions[next]);
+
+            //if another obstacle is found, not infinity
+            if (relativeDistance > _aggregatePointsTolerance + _aggregatePointsTolerance / 10 && relativeDistance < _aggregatePointsTolerance * 10){
+                Debug.Log("New blob found, blob ended");
+                //draw last valid point
+                Debug.DrawLine(_points[newStart].transform.position, _points[lastValid].transform.position, Color.red, _debugLineTime);
+                //spawn cube along line stretching it
+                SpawnWall(newStart, j);
+                //break;
+                newStart = next;
+                lastValid = next;
+                skippedPoints = 0;
+            }
+            else if (relativeDistance > _aggregatePointsTolerance)
+            {
+                skippedPoints++;
+                Debug.Log("Distance difference between " + j + " and " + next + " is " + relativeDistance);
+                //draw a debug line that goes from _point 0 to point j
+            }
+            else
+            {
+                if(j > 0 && skippedPoints == 0)
+                    lastValid = j-1;
+                skippedPoints = 0;
+            }
+            if (relativeDistance > _aggregatePointsTolerance * 10)
+            {
+                if(skippedPoints > _skippablePoints)
+                {
+                    Debug.Log("Too far, blob ended");
+                    //draw last valid point
+                    Debug.DrawLine(_points[newStart].transform.position, _points[lastValid].transform.position, Color.red, _debugLineTime);
+                    //spawn cube along line stretching it
+                    SpawnWall(newStart, j);
+                    //break;
+                    newStart = next;
+                    lastValid = next;
+                    skippedPoints = 0;
+                }
+            }
+        }
         
         //////// GPT ALTERNATIVE, add epsilon to avoid zero check
         /*
@@ -127,6 +214,57 @@ public class LidarManager : Monosingleton<LidarManager>
 
         //sb.Append("}");
         //Debug.Log(sb.ToString());
+    }
+    private void SpawnWall(int start, int end){
+        Vector3 startVec = _points[start].transform.position;
+        Vector3 endVec = _points[end].transform.position;
+        Vector3 middleVec = (startVec + endVec) / 2;
+        float length = Vector3.Distance(startVec, endVec);
+        Vector3 scaleVec = new Vector3(0.1f, 6.0f, length + length*0.1f );
+        Vector3 directionVec = endVec - startVec;
+        Quaternion rotation = Quaternion.LookRotation(directionVec);
+        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        wall.transform.position = middleVec;
+        wall.transform.localScale = scaleVec;
+        wall.transform.rotation = rotation;
+        blobs.Add(wall);
+
+    }
+
+    private void SpawnWallQuaternion(int start, int end){
+        //rotations
+        List<Quaternion> rotations = new List<Quaternion>();
+        Vector3 startVec = new Vector3(0,0,0);
+        Vector3 endVec = new Vector3(0,0,0);
+        //spawn cube along line stretching it, consider all points in the middle too
+        for(int q = start; q < end; q++){
+            //calculate direction of q and q+1
+            startVec = _points[q].transform.position;
+            endVec = _points[q+1].transform.position;
+            Vector3 directionVec = endVec - startVec;
+            Quaternion rotation = Quaternion.LookRotation(directionVec);
+            rotations.Add(rotation);
+        }
+        //get average rotation quaternion
+        Quaternion averageRotation = new Quaternion(0,0,0,0);
+        foreach(Quaternion q in rotations){
+            averageRotation = Quaternion.Lerp(averageRotation, q, 1.0f/rotations.Count);
+        }
+
+
+        //spawn cube
+        startVec = _points[start].transform.position;
+        endVec = _points[end].transform.position;
+        Vector3 middleVec = (startVec + endVec) / 2;
+        float length = Vector3.Distance(startVec, endVec);
+        Vector3 scaleVec = new Vector3(0.1f, 6.0f, length + length*0.1f );
+        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        wall.transform.position = middleVec;
+        wall.transform.localScale = scaleVec;
+        wall.transform.rotation = averageRotation;
+        blobs.Add(wall);
+
+
     }
 
     private void UpdatePoseDistance()
@@ -287,7 +425,10 @@ public class LidarManager : Monosingleton<LidarManager>
             }
             else
             {
-                _points[pos].GetComponent<MeshRenderer>().enabled = true;
+                if(!_mergeWalls)
+                    _points[pos].GetComponent<MeshRenderer>().enabled = true;
+                else
+                    _points[pos].GetComponent<MeshRenderer>().enabled = false;
             }
             
             //float convertedValue = ConvertRange(value);

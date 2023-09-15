@@ -299,7 +299,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             foreach (var message in messages)
             {
                 //print the received message
-                Debug.Log("Received UDP " + message.Msg);
+                //Debug.Log("Received UDP " + message.Msg);
                 lastPingReceivedTime = Time.time;
                 CheckKeyValueMessage(message.Msg);
             }

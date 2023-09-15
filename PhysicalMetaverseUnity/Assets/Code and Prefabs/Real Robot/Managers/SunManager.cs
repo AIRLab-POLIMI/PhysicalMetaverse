@@ -30,11 +30,11 @@ public class SunManager : Monosingleton<SunManager>
     public void OnMsgRcv(byte[] msg) //Sun receive key 250
     {
         //log received integer from sun
-        Debug.Log("Sun received: " + msg.ToString());
+        //Debug.Log("Sun received: " + msg.ToString());
         //for each element of msg decode ascii and build a string
         string received = Encoding.ASCII.GetString(msg);
         //log string
-        Debug.Log("Sun received: " + received);
+        //Debug.Log("Sun received: " + received);
         //string to int
         int receivedInt = Int32.Parse(received);
         receivedSunAngle = receivedInt;

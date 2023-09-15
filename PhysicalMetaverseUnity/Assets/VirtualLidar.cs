@@ -14,11 +14,11 @@ public class VirtualLidar : MonoBehaviour
     public int _frameSkip = 4;
     public int _maxDistance = 50;
     public byte key = 0xf1;
-
-    [Range(0.01f, 1.0f)]
-    public float _noise = 0.1f;
-    [Range(0.01f, 1.0f)]
-    public float _missChance = 0.1f;
+    public bool _enableNoise = false;
+    [Range(0f, 1.0f)]
+    public float _noise = 0.22f;
+    [Range(0f, 1.0f)]
+    public float _missChance = 0.023f;
     // Start is called before the first frame update
     void Start()
     {
@@ -44,7 +44,7 @@ public class VirtualLidar : MonoBehaviour
                     Debug.DrawRay(transform.position, Quaternion.Euler(0, i, 0) * transform.forward * hit.distance, Color.red);
                 }
                 //random miss chance
-                if (UnityEngine.Random.Range(0.0f, 1.0f) < _missChance)
+                if (_enableNoise && UnityEngine.Random.Range(0.0f, 1.0f) < _missChance)
                 {
                     distances.Add(99999);
                     continue;
@@ -52,7 +52,14 @@ public class VirtualLidar : MonoBehaviour
                 //Debug.DrawRay(transform.position, Quaternion.Euler(0, i, 0) * transform.forward * hit.distance, Color.red);
                 //distances.Add((float)(hit.distance));
                 //add gaussian noise
-                distances.Add((float)(hit.distance + (UnityEngine.Random.Range(0.0f, 1.0f) * _noise)));
+                if (_enableNoise)
+                {
+                    distances.Add((float)(hit.distance + (UnityEngine.Random.Range(0.0f, 1.0f) * _noise)));
+                }
+                else
+                {
+                    distances.Add((float)(hit.distance));
+                }
             }
             else
             {
