@@ -26,9 +26,9 @@ const IPAddress memoriaIP(192, 168, 0, 4);
 IPAddress destinationIPs [] = {siidIP, blackwingIP, memoriaIP}; 
 */
 
-const IPAddress baseIP(192, 168, 111, 4); //IP del raspberry!!!
 
 //const IPAddress baseIP(192, 168, 0, 4); //IP del raspberry!!!
+const IPAddress baseIP(192, 168, 0, 3); //IP del raspberry!!!
 IPAddress destinationIPs [] = {baseIP};
 
 const int raspPort = 44444;  // my mac os udp port is: 49242
@@ -246,8 +246,32 @@ class EspChannel {
 
         virtual void loop_send() = 0;
 
+        int _ping = 0;
+
+        
 
         void loop() {
+            if(_ping == 0)
+                _ping = 1;
+            else{
+                int _pinA = 27; //18 SDA
+                int _pinB = 26; //19 SCL
+                TwoWire I2Cone = TwoWire(0);
+                MPU6050 mpu(I2Cone);
+                I2Cone.begin(_pinA, _pinB, 100000);
+                byte status = mpu.begin();
+                mpu.setAccConfig(2);
+                Serial.print(F("MPU6050 status: "));
+                Serial.println(status);
+                while (status != 0) { 
+                    I2Cone.begin(_pinA, _pinB, 100000);
+                    status = mpu.begin();
+                    mpu.setAccConfig(2);
+                    Serial.print(F("MPU6050 status: "));
+                    Serial.println(status);
+                    delay(3000);
+                }
+            }
             // 1. check for TCP messages essages
             // - check if a msg is RCV that UPDATES THE CONFIG
             // TODO
@@ -256,9 +280,11 @@ class EspChannel {
 
             // 2. loop sensor: get readings from sensor
             loop_sensor();
+            _ping = 0;
 
             // 3. loop send: check if it's time to SEND, then send from ALL ACTIVE ESP VALUES all the AVAILABLE DATA
             loop_send();
+            
         }
 };
 
@@ -371,7 +397,14 @@ class JAccEspChannel: public EspChannel {
   mpu.setAccConfig(2);
   Serial.print(F("MPU6050 status: "));
   Serial.println(status);
-  while (status != 0) { } // stop everything if could not connect to MPU6050
+  while (status != 0) { 
+    I2Cone.begin(_pinA, _pinB, 100000);
+    status = mpu.begin();
+    mpu.setAccConfig(2);
+    Serial.print(F("MPU6050 status: "));
+    Serial.println(status);
+    delay(3000);
+  } // stop everything if could not connect to MPU6050
   /*
   Serial.println(F("Calculating offsets, do not move MPU6050"));
   delay(3000);

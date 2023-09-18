@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5be8d9ec3bb3ac4f9e442913bf56c13, type: 3}
+  m_Name: GamepadControls
+  m_EditorClassIdentifier: 
+  _robotJointsArmsDict:
+  - joint: CamArm
+    cwKey: 
+    ccKey: 
+    axis: -Right Trigger
+    direction: 
+    invert: 0
+  - joint: CamAlign
+    cwKey: 
+    ccKey: 
+    axis: -Right Trigger
+    direction: 
+    invert: 1
+  - joint: CamPan
+    cwKey: 
+    ccKey: 
+    axis: Right Stick X
+    direction: 
+    invert: 1
+  - joint: CamTilt
+    cwKey: 
+    ccKey: 
+    axis: Right Stick Y
+    direction: 
+    invert: 1
+  - joint: Wrist
+    cwKey: 
+    ccKey: 
+    axis: Left Stick Y
+    direction: 
+    invert: 1
+  - joint: Rotate
+    cwKey: 
+    ccKey: 
+    axis: Left Stick X
+    direction: 
+    invert: 1
+  - joint: Arm
+    cwKey: 
+    ccKey: 
+    axis: Left Trigger
+    direction: 
+    invert: 0
+  - joint: Arm
+    cwKey: 
+    ccKey: 
+    axis: Right Trigger
+    direction: 
+    invert: 1
+  - joint: Odile
+    cwKey: 
+    ccKey: 
+    axis: D-Pad Y
+    direction: MoveForward
+    invert: 0
+  - joint: Odile
+    cwKey: 
+    ccKey: 
+    axis: D-Pad X
+    direction: MoveStrafe
+    invert: 0
+  - joint: Odile
+    cwKey: 
+    ccKey: 
+    axis: Right Bumper
+    direction: MoveRotateRight
+    invert: 0
+  - joint: Odile
+    cwKey: 
+    ccKey: 
+    axis: Left Bumper
+    direction: MoveRotateLeft
+    invert: 0

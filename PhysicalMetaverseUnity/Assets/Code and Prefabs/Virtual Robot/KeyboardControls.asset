@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5be8d9ec3bb3ac4f9e442913bf56c13, type: 3}
+  m_Name: KeyboardControls
+  m_EditorClassIdentifier: 
+  _robotJointsArmsDict:
+  - joint: CamArm
+    cwKey: u
+    ccKey: o
+    axis: 
+    direction: 
+    invert: 0
+  - joint: CamPan
+    cwKey: j
+    ccKey: l
+    axis: 
+    direction: 
+    invert: 0
+  - joint: CamTilt
+    cwKey: k
+    ccKey: i
+    axis: 
+    direction: 
+    invert: 0
+  - joint: Arm
+    cwKey: h
+    ccKey: f
+    axis: 
+    direction: 
+    invert: 0
+  - joint: Wrist
+    cwKey: g
+    ccKey: t
+    axis: 
+    direction: 
+    invert: 0
+  - joint: Odile
+    cwKey: w
+    ccKey: s
+    axis: 
+    direction: MoveForward
+    invert: 0
+  - joint: Odile
+    cwKey: d
+    ccKey: a
+    axis: 
+    direction: MoveStrafe
+    invert: 0
+  - joint: Odile
+    cwKey: e
+    ccKey: q
+    axis: 
+    direction: MoveRotateRight
+    invert: 0
+  - joint: Rotate
+    cwKey: r
+    ccKey: y
+    axis: 
+    direction: 
+    invert: 0

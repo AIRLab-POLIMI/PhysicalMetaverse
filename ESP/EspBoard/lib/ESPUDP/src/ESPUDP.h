@@ -39,29 +39,29 @@ IPAddress default_secondaryDNS(8, 8, 8, 8);  // DNS 2
 #define OUT_SIZE 255
 */
 
-/*MIO*/
+/*MIO
 IPAddress default_gateway(192, 168, 111, 35);   // IP Address of your WiFi Router (Gateway)
 IPAddress default_subnet(255, 255, 255, 0);  // Subnet mask
 IPAddress default_primaryDNS(192, 168, 111, 35);  // DNS 1
 IPAddress default_secondaryDNS(8, 8, 8, 8);  // DNS 2
+*/
 
-
-/*PHYSICAL METAVERSE
+/*PHYSICAL METAVERSE*/
 IPAddress default_gateway(192, 168, 0, 1);   // IP Address of your WiFi Router (Gateway)
 IPAddress default_subnet(255, 255, 255, 0);  // Subnet mask
 IPAddress default_primaryDNS(192, 168, 0, 1);  // DNS 1
 IPAddress default_secondaryDNS(8, 8, 8, 8);  // DNS 2
-*/
+
 
 // WIFI
-/*MIO*/
+/*MIO
 #define WIFI_SSID "Galaxy A321FFC"
 #define WIFI_PSW "sfdh6363"
-
-/*PHYSICAL METAVERSE
+*/
+/*PHYSICAL METAVERSE*/
 #define WIFI_SSID "Physical Metaverse 2.4GHz"
 #define WIFI_PSW "earthbound"
-*/
+
 
 // UDP
 #define MY_UDP_PORT 4210
