@@ -435,14 +435,14 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
-    private void SpawnWall2(int start, int end){
+    private void SpawnWall(int start, int end){
         //enable
         _walls[_wallCount].GetComponent<MeshRenderer>().enabled = true;
         Vector3 startVec = _points[start].transform.position;
         Vector3 endVec = _points[end].transform.position;
         Vector3 middleVec = (startVec + endVec) / 2;
         float length = Vector3.Distance(startVec, endVec);
-        Vector3 scaleVec = new Vector3(0.1f, 6.0f, length + length*0.1f );
+        Vector3 scaleVec = new Vector3(0.1f, _wallHeight, length + (middleVec.magnitude/5.0f/_wallSizeMultiplier) );
         Vector3 directionVec = endVec - startVec;
         Quaternion rotation = Quaternion.LookRotation(directionVec);
         _walls[_wallCount].transform.position = middleVec;
@@ -452,7 +452,9 @@ public class LidarManager : Monosingleton<LidarManager>
 
     }
 
-    private void SpawnWall(int start, int end){
+    public float _wallSizeMultiplier = 1.2f;
+    public float _wallHeight = 4.5f;
+    private void SpawnWall2(int start, int end){
         //enable
         _walls[_wallCount].GetComponent<MeshRenderer>().enabled = true;
         //rotations
@@ -487,7 +489,7 @@ public class LidarManager : Monosingleton<LidarManager>
         endVec = _points[end].transform.position;
         Vector3 middleVec = (startVec + endVec) / 2;
         float length = Vector3.Distance(startVec, endVec);
-        Vector3 scaleVec = new Vector3(0.1f, 6.0f, length + length*0.1f );
+        Vector3 scaleVec = new Vector3(0.1f, _wallHeight, length + (middleVec.magnitude/5.0f/_wallSizeMultiplier) );
         _walls[_wallCount].transform.position = middleVec;
         _walls[_wallCount].transform.localScale = scaleVec;
         _walls[_wallCount].transform.rotation = averageRotation;

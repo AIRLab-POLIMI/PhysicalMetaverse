@@ -16,7 +16,9 @@ public class VirtualLidar : MonoBehaviour
     public byte key = 0xf1;
     public bool _enableNoise = false;
     [Range(0f, 1.0f)]
-    public float _noise = 0.22f;
+    public float _noiseChance = 0.01f;
+    [Range(0f, 1.0f)]
+    public float _noiseMagnitude = 0.2f;
     [Range(0f, 1.0f)]
     public float _missChance = 0.023f;
     public List<GameObject> _lidarSeamFixObjects = new List<GameObject>();
@@ -25,7 +27,8 @@ public class VirtualLidar : MonoBehaviour
     {
         foreach(GameObject toRotate in _lidarSeamFixObjects)
         {
-            //toRotate.transform.rotation = Quaternion.LookRotation(new Vector3(180.0f, 0, 0));
+            //set rotation to same plus 180 on y axis
+            toRotate.transform.rotation = Quaternion.Euler(toRotate.transform.rotation.eulerAngles.x, toRotate.transform.rotation.eulerAngles.y + 180, toRotate.transform.rotation.eulerAngles.z);
         }
     }
 
@@ -49,7 +52,7 @@ public class VirtualLidar : MonoBehaviour
                     Debug.DrawRay(transform.position, Quaternion.Euler(0, i, 0) * transform.forward * hit.distance, Color.red);
                 }
                 //random miss chance
-                if (_enableNoise && UnityEngine.Random.Range(0.0f, 1.0f) < _missChance)
+                if (_enableNoise && UnityEngine.Random.Range(0.0f, 1.0f) < _missChance && UnityEngine.Random.Range(0.0f, 1.0f) < _noiseChance)
                 {
                     distances.Add(99999);
                     continue;
@@ -57,9 +60,9 @@ public class VirtualLidar : MonoBehaviour
                 //Debug.DrawRay(transform.position, Quaternion.Euler(0, i, 0) * transform.forward * hit.distance, Color.red);
                 //distances.Add((float)(hit.distance));
                 //add gaussian noise
-                if (_enableNoise)
+                if (_enableNoise && UnityEngine.Random.Range(0.0f, 1.0f) < _noiseChance)
                 {
-                    distances.Add((float)(hit.distance + (UnityEngine.Random.Range(0.0f, 1.0f) * _noise)));
+                    distances.Add((float)(hit.distance + (UnityEngine.Random.Range(-1.0f, 1.0f) * _noiseMagnitude)));
                 }
                 else
                 {
