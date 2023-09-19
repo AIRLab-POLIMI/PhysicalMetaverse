@@ -76,7 +76,26 @@ public class LidarManager : Monosingleton<LidarManager>
     public int _skippablePoints = 0;
 
     public bool _mergeWalls = true;
-    private List<GameObject> blobs = new List<GameObject>();
+
+
+    private List<GameObject> _walls = new List<GameObject>();
+
+    private void Start()
+    {
+        //add object Walls as children and populate it with 100 cube meshes
+        GameObject walls = new GameObject("Walls");
+        walls.transform.parent = transform;
+        for(int i = 0; i < 150; i++){
+            GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            wall.transform.parent = walls.transform;
+            wall.transform.position = new Vector3(0,0,0);
+            wall.transform.localScale = new Vector3(0.1f, 6.0f, 0.1f);
+            wall.GetComponent<MeshRenderer>().enabled = false;
+            //remove collider
+            Destroy(wall.GetComponent<BoxCollider>());
+            _walls.Add(wall);
+        }
+    }
 
     public void OnMsgRcv(byte[] msg)
     {
@@ -117,27 +136,28 @@ public class LidarManager : Monosingleton<LidarManager>
         }
 
         if(_mergeWalls)
-            WallsUsingDistances();
+            WallsUsingDistancesSkippableGroups();
         if(!_mergeWalls){
-            //destroy all elements in blobs
-            foreach (GameObject blob in blobs)
-            {
-                Destroy(blob);
+            //disable all elements in walls
+            foreach(GameObject wall in _walls){
+                wall.GetComponent<MeshRenderer>().enabled = false;
             }
         }
     }
 
+    private int _wallCount = 0;
     void WallsUsingDistances(){
         int skippedPoints = 0;
         int lastValid = 0;
         int newStart = 0;
-        float _debugLineTime = 0.5f;
-        //destroy all blobs
-        foreach (GameObject blob in blobs)
-        {
-            Destroy(blob);
+        float _debugLineTime = 0.1f;
+        
+        //disable all elements in walls
+        foreach(GameObject wall in _walls){
+            wall.GetComponent<MeshRenderer>().enabled = false;
         }
-        //for first 10 points print their distance difference if more than aggregatePointsTolerance
+        _wallCount = 0;
+
         for (int j = 0; j < 360; j++)
         {
             //check distance difference between current and next
@@ -167,7 +187,7 @@ public class LidarManager : Monosingleton<LidarManager>
             else if (relativeDistance > _aggregatePointsTolerance)
             {
                 skippedPoints++;
-                Debug.Log("Distance difference between " + j + " and " + next + " is " + relativeDistance);
+                //Debug.Log("Distance difference between " + j + " and " + next + " is " + relativeDistance);
                 //draw a debug line that goes from _point 0 to point j
             }
             else
@@ -215,7 +235,209 @@ public class LidarManager : Monosingleton<LidarManager>
         //sb.Append("}");
         //Debug.Log(sb.ToString());
     }
-    private void SpawnWall(int start, int end){
+
+    private void WallsUsingDistancesSkippableGroups(){
+        int skippedPoints = 0;
+        int skippedAt = 0;
+        int newStart = 0;
+        bool requiredNewStart = true;
+        int numberOfBlobs = 0;
+
+        //disable all elements in walls
+        foreach(GameObject wall in _walls){
+            wall.GetComponent<MeshRenderer>().enabled = false;
+        }
+        _wallCount = 0; 
+
+        for(int i = 0; i < 360; i++){
+            if(currentPositions[i] >= 10000000){
+                Debug.Log("currentPositions[i] "+ currentPositions[i]);
+                skippedPoints++;
+            
+                if(skippedPoints > _skippablePoints){
+                    Debug.Log("Skipped at "+ (skippedAt));
+                    //spawn cube along line stretching it
+                    SpawnWall(newStart , skippedAt);
+                    requiredNewStart = true;
+                }
+                continue;
+            }
+            else{
+                if(requiredNewStart){
+                    skippedPoints = 0;
+                    newStart = i;
+                    skippedAt = i;
+                    requiredNewStart = false;
+                    numberOfBlobs++;
+                }
+            }
+            //check distance difference between current and next
+            int next = i+1;
+            if(next == 360){
+                SpawnWall(newStart , 359);
+                Debug.Log("Ended");
+                break;
+            }
+            float relativeDistance = 0;
+            if(skippedPoints > 0)
+                relativeDistance = (float)Math.Max(currentPositions[skippedAt], currentPositions[i]) / (float)Math.Min(currentPositions[skippedAt], currentPositions[i]);
+            else
+                relativeDistance = (float)Math.Max(currentPositions[i], currentPositions[next]) / (float)Math.Min(currentPositions[i], currentPositions[next]);
+
+            //if relativeDistance is more than tolerance then skip
+            if(relativeDistance > _aggregatePointsTolerance*10){
+                skippedPoints++;
+                Debug.Log("skippedPoints "+ (skippedPoints));
+                Debug.Log("relativeDistance "+ (relativeDistance));
+                //Debug.Log("Distance difference between " + i + " and " + next + " is " + relativeDistance);
+                //draw a debug line that goes from _point 0 to point i
+            }
+            else{
+                if(relativeDistance > _aggregatePointsTolerance + _aggregatePointsTolerance/10){
+                    SpawnWall(newStart , skippedAt);
+                    requiredNewStart = true;
+                    continue;
+                }
+
+                skippedPoints = 0;
+                skippedAt = i;
+            }
+            
+            if(skippedPoints > _skippablePoints){
+                Debug.Log("Skipped at "+ (skippedAt));
+                //spawn cube along line stretching it
+                SpawnWall(newStart , skippedAt);
+                requiredNewStart = true;
+            }
+        }
+        Debug.Log("Spawned "+ (numberOfBlobs));
+    }
+
+    private void WallsUsingDistancesSkippableGroupsBackup(){
+        int skippedPoints = 0;
+        int skippedAt = 0;
+        int newStart = 0;
+        bool requiredNewStart = true;
+        int numberOfBlobs = 0;
+
+        //disable all elements in walls
+        foreach(GameObject wall in _walls){
+            wall.GetComponent<MeshRenderer>().enabled = false;
+        }
+        _wallCount = 0; 
+
+        for(int i = 0; i < 360; i++){
+            if(currentPositions[i] >= 10000000){
+                Debug.Log("currentPositions[i] "+ currentPositions[i]);
+                skippedPoints++;
+            
+                if(skippedPoints > _skippablePoints){
+                    Debug.Log("Skipped at "+ (skippedAt));
+                    //spawn cube along line stretching it
+                    SpawnWall(newStart , skippedAt);
+                    requiredNewStart = true;
+                }
+                continue;
+            }
+            else{
+                if(requiredNewStart){
+                    skippedPoints = 0;
+                    newStart = i;
+                    skippedAt = i;
+                    requiredNewStart = false;
+                    numberOfBlobs++;
+                }
+            }
+            //check distance difference between current and next
+            int next = i+1;
+            if(next == 360){
+                //SpawnWall(newStart , next);
+                Debug.Log("Ended");
+                break;
+            }
+            float relativeDistance = 0;
+            if(skippedPoints > 0)
+                relativeDistance = (float)Math.Max(currentPositions[skippedAt], currentPositions[i]) / (float)Math.Min(currentPositions[skippedAt], currentPositions[i]);
+            else
+                relativeDistance = (float)Math.Max(currentPositions[i], currentPositions[next]) / (float)Math.Min(currentPositions[i], currentPositions[next]);
+
+            //if relativeDistance is more than tolerance then skip
+            if(relativeDistance > _aggregatePointsTolerance*10){
+                skippedPoints++;
+                Debug.Log("skippedPoints "+ (skippedPoints));
+                Debug.Log("relativeDistance "+ (relativeDistance));
+                //Debug.Log("Distance difference between " + i + " and " + next + " is " + relativeDistance);
+                //draw a debug line that goes from _point 0 to point i
+            }
+            else{
+                /*if(relativeDistance > _aggregatePointsTolerance + _aggregatePointsTolerance/10){
+                    SpawnWall(newStart , skippedAt);
+                    requiredNewStart = false;
+                    newStart = i;
+                }*/
+
+                skippedPoints = 0;
+                skippedAt = i;
+            }
+            
+            if(skippedPoints > _skippablePoints){
+                Debug.Log("Skipped at "+ (skippedAt));
+                //spawn cube along line stretching it
+                SpawnWall(newStart , skippedAt);
+                requiredNewStart = true;
+            }
+        }
+        Debug.Log("Spawned "+ (numberOfBlobs));
+    }
+
+    private void WallsUsingDistancesSkippableBACKUP(){
+        int skippedPoints = 0;
+        int skippedAt = 0;
+
+        //disable all elements in walls
+        foreach(GameObject wall in _walls){
+            wall.GetComponent<MeshRenderer>().enabled = false;
+        }
+        _wallCount = 0; 
+
+        for(int i = 0; i < 360; i++){
+            //check distance difference between current and next
+            int next = i+1;
+            if(next == 360){
+                Debug.Log("Ended");
+                break;
+            }
+            float relativeDistance = 0;
+            if(skippedPoints > 0)
+                relativeDistance = (float)Math.Max(currentPositions[skippedAt], currentPositions[next]) / (float)Math.Min(currentPositions[skippedAt], currentPositions[next]);
+            else
+                relativeDistance = (float)Math.Max(currentPositions[i], currentPositions[next]) / (float)Math.Min(currentPositions[i], currentPositions[next]);
+
+            //if relativeDistance is more than tolerance then skip
+            if(relativeDistance > _aggregatePointsTolerance*10){
+                skippedPoints++;
+                Debug.Log("skippedPoints "+ (skippedPoints));
+                Debug.Log("relativeDistance "+ (relativeDistance));
+                //Debug.Log("Distance difference between " + i + " and " + next + " is " + relativeDistance);
+                //draw a debug line that goes from _point 0 to point i
+            }
+            else{
+                skippedPoints = 0;
+                skippedAt = i;
+            }
+            
+            if(skippedPoints > _skippablePoints){
+                Debug.Log("Skipped at "+ (skippedAt));
+                //spawn cube along line stretching it
+                SpawnWall(0 , skippedAt);
+                break;
+            }
+        }
+    }
+
+    private void SpawnWall2(int start, int end){
+        //enable
+        _walls[_wallCount].GetComponent<MeshRenderer>().enabled = true;
         Vector3 startVec = _points[start].transform.position;
         Vector3 endVec = _points[end].transform.position;
         Vector3 middleVec = (startVec + endVec) / 2;
@@ -223,21 +445,29 @@ public class LidarManager : Monosingleton<LidarManager>
         Vector3 scaleVec = new Vector3(0.1f, 6.0f, length + length*0.1f );
         Vector3 directionVec = endVec - startVec;
         Quaternion rotation = Quaternion.LookRotation(directionVec);
-        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wall.transform.position = middleVec;
-        wall.transform.localScale = scaleVec;
-        wall.transform.rotation = rotation;
-        blobs.Add(wall);
+        _walls[_wallCount].transform.position = middleVec;
+        _walls[_wallCount].transform.localScale = scaleVec;
+        _walls[_wallCount].transform.rotation = rotation;
+        _wallCount++;
 
     }
 
-    private void SpawnWallQuaternion(int start, int end){
+    private void SpawnWall(int start, int end){
+        //enable
+        _walls[_wallCount].GetComponent<MeshRenderer>().enabled = true;
         //rotations
         List<Quaternion> rotations = new List<Quaternion>();
         Vector3 startVec = new Vector3(0,0,0);
         Vector3 endVec = new Vector3(0,0,0);
+        int skippedRotations = 0;
         //spawn cube along line stretching it, consider all points in the middle too
         for(int q = start; q < end; q++){
+            //if point is too far skip it
+            float relativeDistance = (float)Math.Max(currentPositions[q], currentPositions[q+1]) / (float)Math.Min(currentPositions[q], currentPositions[q+1]);
+            if(relativeDistance > _aggregatePointsTolerance * 10){
+                skippedRotations++;
+                continue;
+            }
             //calculate direction of q and q+1
             startVec = _points[q].transform.position;
             endVec = _points[q+1].transform.position;
@@ -248,7 +478,7 @@ public class LidarManager : Monosingleton<LidarManager>
         //get average rotation quaternion
         Quaternion averageRotation = new Quaternion(0,0,0,0);
         foreach(Quaternion q in rotations){
-            averageRotation = Quaternion.Lerp(averageRotation, q, 1.0f/rotations.Count);
+            averageRotation = Quaternion.Lerp(averageRotation, q, 1.0f/(rotations.Count-skippedRotations));
         }
 
 
@@ -258,11 +488,10 @@ public class LidarManager : Monosingleton<LidarManager>
         Vector3 middleVec = (startVec + endVec) / 2;
         float length = Vector3.Distance(startVec, endVec);
         Vector3 scaleVec = new Vector3(0.1f, 6.0f, length + length*0.1f );
-        GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        wall.transform.position = middleVec;
-        wall.transform.localScale = scaleVec;
-        wall.transform.rotation = averageRotation;
-        blobs.Add(wall);
+        _walls[_wallCount].transform.position = middleVec;
+        _walls[_wallCount].transform.localScale = scaleVec;
+        _walls[_wallCount].transform.rotation = averageRotation;
+        _wallCount++;
 
 
     }

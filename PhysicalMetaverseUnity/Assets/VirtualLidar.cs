@@ -19,9 +19,14 @@ public class VirtualLidar : MonoBehaviour
     public float _noise = 0.22f;
     [Range(0f, 1.0f)]
     public float _missChance = 0.023f;
+    public List<GameObject> _lidarSeamFixObjects = new List<GameObject>();
     // Start is called before the first frame update
     void Start()
     {
+        foreach(GameObject toRotate in _lidarSeamFixObjects)
+        {
+            //toRotate.transform.rotation = Quaternion.LookRotation(new Vector3(180.0f, 0, 0));
+        }
     }
 
     // Update is called once per frame
