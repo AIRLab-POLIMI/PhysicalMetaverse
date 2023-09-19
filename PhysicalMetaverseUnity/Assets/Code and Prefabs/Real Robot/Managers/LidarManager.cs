@@ -80,20 +80,34 @@ public class LidarManager : Monosingleton<LidarManager>
 
     private List<GameObject> _walls = new List<GameObject>();
 
+    private List<GameObject> _cylinders = new List<GameObject>();
+
     private void Start()
     {
-        //add object Walls as children and populate it with 100 cube meshes
+        //add object Walls as children and populate it with 150 cube meshes
         GameObject walls = new GameObject("Walls");
         walls.transform.parent = transform;
         for(int i = 0; i < 150; i++){
             GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
             wall.transform.parent = walls.transform;
             wall.transform.position = new Vector3(0,0,0);
-            wall.transform.localScale = new Vector3(0.1f, 6.0f, 0.1f);
-            wall.GetComponent<MeshRenderer>().enabled = false;
+            wall.transform.localScale = new Vector3(0.1f, _wallHeight, 0.1f);
+            wall.SetActive(false);
             //remove collider
             Destroy(wall.GetComponent<BoxCollider>());
             _walls.Add(wall);
+        }
+        //add 150 cylinders
+        for(int i = 0; i < 150; i++){
+            GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            wall.transform.parent = walls.transform;
+            wall.transform.position = new Vector3(0,0,0);
+            wall.transform.localScale = new Vector3(0.1f, _wallHeight, 0.1f);
+            //disable wall
+            wall.SetActive(false);
+            //remove collider
+            Destroy(wall.GetComponent<CapsuleCollider>());
+            _cylinders.Add(wall);
         }
     }
 
@@ -138,9 +152,16 @@ public class LidarManager : Monosingleton<LidarManager>
         if(_mergeWalls)
             WallsUsingDistancesSkippableGroups();
         if(!_mergeWalls){
-            //disable all elements in walls
-            foreach(GameObject wall in _walls){
-                wall.GetComponent<MeshRenderer>().enabled = false;
+            if(_wallCount > 0)
+            {
+                //disable all elements in walls
+                foreach(GameObject wall in _walls){
+                    wall.GetComponent<MeshRenderer>().enabled = false;
+                }
+                foreach(GameObject cylinder in _cylinders){
+                    cylinder.GetComponent<MeshRenderer>().enabled = false;
+                }
+                _wallCount = 0;
             }
         }
     }
@@ -245,7 +266,10 @@ public class LidarManager : Monosingleton<LidarManager>
 
         //disable all elements in walls
         foreach(GameObject wall in _walls){
-            wall.GetComponent<MeshRenderer>().enabled = false;
+            wall.SetActive(false);
+        }
+        foreach(GameObject cylinder in _cylinders){
+            cylinder.SetActive(false);
         }
         _wallCount = 0; 
 
@@ -435,9 +459,10 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
+    public float _wallCylinderThreshold = 3.0f;
     private void SpawnWall(int start, int end){
         //enable
-        _walls[_wallCount].GetComponent<MeshRenderer>().enabled = true;
+        _walls[_wallCount].SetActive(true);
         Vector3 startVec = _points[start].transform.position;
         Vector3 endVec = _points[end].transform.position;
         Vector3 middleVec = (startVec + endVec) / 2;
@@ -448,6 +473,13 @@ public class LidarManager : Monosingleton<LidarManager>
         _walls[_wallCount].transform.position = middleVec;
         _walls[_wallCount].transform.localScale = scaleVec;
         _walls[_wallCount].transform.rotation = rotation;
+        if(scaleVec.z < _wallCylinderThreshold){
+            _walls[_wallCount].SetActive(false);
+            _cylinders[_wallCount].SetActive(true);
+            _cylinders[_wallCount].transform.position = middleVec;
+            //scale cylinders x and y by scalevec's z
+            _cylinders[_wallCount].transform.localScale = new Vector3(scaleVec.z, _wallHeight/2, scaleVec.z);
+        }
         _wallCount++;
 
     }

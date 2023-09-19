@@ -9039,9 +9039,10 @@ MonoBehaviour:
   MaxConvertedAngle: {fileID: 11400000, guid: 3ba6d5b17663249438920c1a68c90d77, type: 2}
   MinConvertedAngle: {fileID: 11400000, guid: cd7119f51bb83bd4393b31d561a93f56, type: 2}
   newTolerance: 1
-  _aggregatePointsTolerance: 1.1
-  _skippablePoints: 0
+  _aggregatePointsTolerance: 1.2
+  _skippablePoints: 3
   _mergeWalls: 1
+  _wallCylinderThreshold: 3
   _wallSizeMultiplier: 1.2
   _wallHeight: 4.5
   fadeDuration: 0
@@ -9446,6 +9447,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _missChance
       value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
+        type: 3}
+      propertyPath: _enableNoise
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}

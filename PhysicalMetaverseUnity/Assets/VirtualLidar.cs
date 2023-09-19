@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System;
 using System.Linq;
+using System.Threading;
 
 public class VirtualLidar : MonoBehaviour
 {
@@ -92,6 +93,8 @@ public class VirtualLidar : MonoBehaviour
             //convert array to bytes and add 0xf1 at the start
             byte[] bytes = arr.SelectMany(BitConverter.GetBytes).ToArray();
             _jetson.Send(bytes, key);
+
+
             
         }
 
