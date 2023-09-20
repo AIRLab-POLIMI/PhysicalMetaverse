@@ -14,12 +14,7 @@ lr_check = True
 # Create pipeline
 pipeline = dai.Pipeline()
 
-# Closer-in minimum depth, disparity range is doubled (from 95 to 190):
-extended_disparity = False
-# Better accuracy for longer distance, fractional disparity 32-levels:
-subpixel = False
-# Better handling for occlusions:
-lr_check = True
+
 # Define sources and outputs
 monoLeft = pipeline.create(dai.node.MonoCamera)
 monoRight = pipeline.create(dai.node.MonoCamera)

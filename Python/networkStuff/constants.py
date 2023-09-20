@@ -8,6 +8,7 @@ SETUP_COMPLETE_KEY = b'\xc1'
 PING_KEY = b'\xc2'
 SUN_KEY = b'\xfa'
 COLOR_KEY = b'\xc1'
+STATION_KEY = b'\xc3'
 
 setup_pin = 18
 connection_pin = 23
