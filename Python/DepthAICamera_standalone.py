@@ -129,7 +129,7 @@ DEST_IP = "127.0.0.1"
 DEST_PORT = 25666
 KEY_VALUE = True
 POSE_KEY = b'\xf2'
-COLOR_KEY = b'\xc1'
+STATION_KEY = b'\xc3'
 RENDER = False
 
 import traceback
@@ -146,11 +146,13 @@ def qrThread():
     global frame, sock
     while True:
         if frame is not None:
-            cv2.imshow("frame", detectQR())
+            cv2.imshow("QR", detectQR())
             cv2.waitKey(1)
 
+q = None
+
 def main():
-        global sock, qr_tracker, qr_decoder
+        global sock, qr_tracker, qr_decoder, q
         print("CAMERA STARTED")
         #setup udp socket
         import socket
@@ -170,14 +172,95 @@ def main():
 
         # Initialize an object tracker (e.g., MeanShift)
         #qr_tracker = cv2.TrackerKCF_create()
+        # Output queue will be used to get the disparity frames from the outputs defined above
+        q = tracker.device.getOutputQueue(name="disparity", maxSize=4, blocking=False)
         while True:
             loop(sock)#,camera)
         renderer.exit()
         tracker.exit()
     #import traceback
 
+depthFrame = None
 
 def loop(sock):#,camera):
+    global frame, depthFrame
+    start = time.time()
+    inDisparity = q.get()  # blocking call, will wait until a new data has arrived
+    depthFrame = inDisparity.getFrame()
+    # Normalization for better visualization
+    depthFrame = (depthFrame * (255 / tracker.depth.initialConfig.getMaxDisparity())).astype(np.uint8)
+
+    cv2.imshow("disparity", depthFrame)
+    #print value of central pixel
+    #print(depthFrame[200][300])
+
+    # Available color maps: https://docs.opencv.org/3.4/d3/d50/group__imgproc__colormap.html
+    #depthFrame = cv2.applyColorMap(depthFrame, cv2.COLORMAP_JET)
+    #cv2.imshow("disparity_color", depthFrame)
+
+    cv2.waitKey(1)
+    if tracker is None: print("tracker none")
+    else:
+        #start = time.time()
+        # Run blazepose on next frame
+        frame, body = tracker.next_frame()
+        #draw skeleton on frame
+        #frame = renderer.draw(frame, body)
+        #print("Pose detection time " + str(time.time() - start))
+        #MOVED TO QR THREAD
+        ###if frame is not None:
+        ###    #frame is <class 'numpy.ndarray'>
+        ###    #show frame as cv2 image
+        ###    try:
+        ###        #cv2.imshow("frame", frame)
+        ###        cv2.imshow("frame", detectQR(frame,sock))
+        ###        cv2.waitKey(1)
+        ###    except:
+        ###        print("error")
+        ###        traceback.print_exc()
+
+
+        # Draw 2d skeleton
+        # frame = renderer.draw(frame, body)
+        
+        if frame is not None and RENDER:
+            # Draw 2d skeleton
+            frame = renderer.draw(frame, body)
+    #type of frame is numpy.ndarray
+    #showOnlyBlue(frame, connection)
+    
+
+    #print(body)
+    #print body properly, it is mediapipe_utils.Body
+    try:
+        if body is not None:
+            #start = time.time()
+            #print(body.landmarks)
+            #print("sent")
+            #send body landmarks via udp
+            #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
+            #body.landmarks string
+            to_send = str(body.landmarks).encode()
+            if(KEY_VALUE):
+                to_send = POSE_KEY + to_send
+            
+            #udp send socket
+            sock.sendto(to_send, (DEST_IP, DEST_PORT))
+            #print("Udp send time " + str(time.time() - start))
+            print("SENT CAMERA ")# + str(body.landmarks))
+
+    #print exception
+    except:
+        print("error")
+        traceback.print_exc()
+    
+    # Show 2d skeleton
+    #key = renderer.waitKey(delay=1)
+    #if key == 27 or key == ord('q'):
+        #print("keybreak")
+    print("Loop time " + str(time.time() - start))
+
+def loop2(sock):#,camera):
     global frame
     start = time.time()
     if tracker is None: print("tracker none")
@@ -254,9 +337,19 @@ def detectQR():
         #print("rectangle size: " + str(rectangle_size))
         #draw a rectangle around qr
         cv2.rectangle(frame, (qr[0].rect[0], qr[0].rect[1]), (qr[0].rect[0] + qr[0].rect[2], qr[0].rect[1] + qr[0].rect[3]), (0, 0, 255), 2)
-        #send qr x,y
+        #find rectangle distance in depthFrame, scale coordinates from frame
+        frameToDepthShape0Ratio = depthFrame.shape[0] / frame.shape[0]
+        frameToDepthShape1Ratio = depthFrame.shape[1] / frame.shape[1]
+        depthRectangle = [int(qr[0].rect[0] * frameToDepthShape1Ratio), int(qr[0].rect[1] * frameToDepthShape0Ratio), int(qr[0].rect[2] * frameToDepthShape1Ratio), int(qr[0].rect[3] * frameToDepthShape0Ratio)]
+        #find central value of depth rectangle in depthframe
+        depthRectangleCenter = [int(depthRectangle[0] + depthRectangle[2] / 2), int(depthRectangle[1] + depthRectangle[3] / 2)]
+        #print("depth rectangle center: " + str(depthRectangleCenter))
+        depthFrameCenterValue = depthFrame[depthRectangleCenter[1]][depthRectangleCenter[0]]
+        print("depth frame center value: " + str(depthFrameCenterValue))
+        print("rectangle size: " + str(rectangle_size))
+        #send qr x,y, size
         #append key
-        msg = COLOR_KEY + str([qr[0].rect[0], qr[0].rect[1], int(rectangle_size)]).encode()
+        msg = STATION_KEY + str([qr[0].rect[0], qr[0].rect[1], int(rectangle_size)]).encode()
         #udp send socket
         sock.sendto(msg, (DEST_IP, DEST_PORT))
     return frame
@@ -301,7 +394,7 @@ def detectMovingQR(frame, sock):
             x, y, w, h = [int(val) for val in box]
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
             #append key
-            msg = COLOR_KEY + str([x, y, int(w * h)]).encode()
+            msg = STATION_KEY + str([x, y, int(w * h)]).encode()
             #udp send socket
             sock.sendto(msg, (DEST_IP, DEST_PORT))
 
@@ -366,7 +459,7 @@ def showOnlyBlue(frame, connection):
         #udp.sendto(str([cx, cy]).encode(), ("192.168.0.100", 5004))
         
         to_send = str([cx, cy, int(blob_size)]).encode()
-        connection.send(COLOR_KEY, to_send)
+        connection.send(STATION_KEY, to_send)
         #540x280
         #show upscaled
         if showing:
@@ -374,8 +467,15 @@ def showOnlyBlue(frame, connection):
 
     except: 
         print("not enough contours")
-        
-start()      
+
+import cv2
+import depthai as dai
+import numpy as np
+
+
+
+
+start()  
 main()
         
     
