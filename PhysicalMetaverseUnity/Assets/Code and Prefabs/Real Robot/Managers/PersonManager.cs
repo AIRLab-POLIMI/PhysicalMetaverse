@@ -30,6 +30,8 @@ public class PersonManager : MonoBehaviour
 
     private GameObject[] spheres;
 
+    //prev rcv time
+    private float prevRcvTime = 0f;
     public void OnMsgRcv(byte[] msg)
     {
         data = msg;
@@ -41,7 +43,9 @@ public class PersonManager : MonoBehaviour
         string message = new string(bytesAsChars);
         Debug.Log("Person Manager received message: " + message);
         parsedData = ParseData(message);
-
+        //log difference between times
+        Debug.Log(Time.time - prevRcvTime);
+        prevRcvTime = Time.time;
     }
     void Start()
     {
@@ -153,7 +157,7 @@ public class PersonManager : MonoBehaviour
 
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
-    private void FixedUpdate()
+    private void Update()
     {
         //if first receive
         if (data != null)
@@ -164,6 +168,7 @@ public class PersonManager : MonoBehaviour
             
             //move spheres to position
             MoveSpheres();
+            data = null;
         }
 
     }

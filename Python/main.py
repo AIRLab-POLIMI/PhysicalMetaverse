@@ -5,7 +5,7 @@ from networkStuff.connection import Connection
 import multiprocessing
 import DepthAICamera
 
-WINDOWS = 0
+WINDOWS = 1
 
 if not WINDOWS:
     import Jetson.GPIO as GPIO
@@ -25,7 +25,7 @@ LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 1
+LIDAR_ENABLED = 0
 GYRO_ENABLED = 0
 POSE_D_ENABLED = 0
 CONTROLLER_ENABLED = 0
