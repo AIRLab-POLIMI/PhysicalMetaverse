@@ -11,6 +11,7 @@ using System.Collections.Generic;
 //this manager receives x, y of the biggest blob of one chosen color in image frame and positions a sphere at such coordinates
 public class StationManager : MonoBehaviour
 {
+    public GameObject _stationPrefab;
     //listen for udp messages on port 5004
     static int port = 5004;
     //udpclient object
@@ -31,8 +32,11 @@ public class StationManager : MonoBehaviour
 
     public int _minColorSize = 300;
     private bool _colorTracked = false;
+    public bool ENABLE_LOG = false;
     public void OnMsgRcv(byte[] msg)
     {
+        //disable Debug.Log for this object
+        Debug.unityLogger.logEnabled = ENABLE_LOG;
         data = msg;
         char[] bytesAsChars = new char[msg.Length];
         for (int i = 0; i < msg.Length; i++)
@@ -42,6 +46,7 @@ public class StationManager : MonoBehaviour
         string message = new string(bytesAsChars);
         Debug.Log("Station Manager received message: " + message);
         ParseData(message);
+        Debug.unityLogger.logEnabled = true;
     }   
     void Start()
     {
@@ -128,7 +133,7 @@ public class StationManager : MonoBehaviour
     {
         for (int i = 0; i < _totalStations; i++)
         {
-            GameObject station = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            GameObject station = Instantiate(_stationPrefab);
             _stations.Add(station);
             station.transform.localScale = new Vector3(_scale, _scale, _scale);
             //random color
@@ -159,7 +164,7 @@ public class StationManager : MonoBehaviour
             for (int i = 0; i < _stationsData.Count; i++)
             {
                 //log station data
-                Debug.Log("Station " + i + " data: " + ((int[])_stationsData[i])[0] + " " + ((int[])_stationsData[i])[1]);
+                //Debug.Log("Station " + i + " data: " + ((int[])_stationsData[i])[0] + " " + ((int[])_stationsData[i])[1]);
                 int stationCode = ((int[])_stationsData[i])[0];
                 if (stationCode >= 0 && stationCode < _totalStations)
                 {

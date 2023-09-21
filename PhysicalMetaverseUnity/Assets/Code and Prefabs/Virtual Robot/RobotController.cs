@@ -128,7 +128,10 @@ public class RobotController : MonoBehaviour
         }
     }
 
+    public bool ENABLE_LOG = false;
     void FixedUpdate(){
+        //disable Debug.Log for this object
+        Debug.unityLogger.logEnabled = ENABLE_LOG;
         //charactercontroller move down
         controller.Move(transform.up * -0.1f);
         //if P is pressed reset rigid bodies
@@ -188,6 +191,7 @@ public class RobotController : MonoBehaviour
         {
             _thirdPersonCamera.transform.RotateAround(transform.position, Vector3.up, -1f);
         }
+        Debug.unityLogger.logEnabled = true;
     }
 
     void KeyboardUpdate(){

@@ -11,7 +11,7 @@ using GameEvents;
 using Unity.VisualScripting;
 using UnityEngine.PlayerLoop;
 using UnityEngine.Serialization;
-
+using System.Net;
 public class NetworkingManager : Monosingleton<NetworkingManager>
 {
     [SerializeField] private GameObject _setupScreen;
@@ -544,6 +544,18 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     {
         _udpMessenger?.ClosePorts();
         _tcpClient?.Close();
+    }
+
+    public void Send(byte[] data, byte key)
+    {
+        byte[] bytes2 = new byte[data.Length + 1];
+        bytes2[0] = key;
+        Array.Copy(data, 0, bytes2, 1, data.Length);
+        //new broadcast endpoint
+        IPEndPoint broadcast = new IPEndPoint(IPAddress.Broadcast, myUdpPort);
+        //endpoint 192.168.0.100
+        broadcast = new IPEndPoint(IPAddress.Parse("192.168.0.100"), myUdpPort);
+        _udpMessenger.SendUdp(bytes2, broadcast);
     }
 
     #endregion

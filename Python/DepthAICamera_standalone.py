@@ -199,6 +199,7 @@ def loop(sock):#,camera):
     #cv2.imshow("disparity_color", depthFrame)
 
     cv2.waitKey(1)
+
     if tracker is None: print("tracker none")
     else:
         #start = time.time()
@@ -322,6 +323,7 @@ def loop2(sock):#,camera):
         #####print("keybreak")
     ####print("Loop time " + str(time.time() - start))
 
+ACCEPT_INVALID_QR = True
 #function to detect qr position and size in frame
 import pyzbar.pyzbar as pyzbar
 def detectQR():
@@ -379,7 +381,11 @@ def detectQR():
                 currMsg = STATION_KEY + str([int(barcode.data), rect_center[0], rect_center[1], int(distance_meters)]).encode()
                 msg += [currMsg]
             except:
-                currMsg = STATION_KEY + str([int(-1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                #DIRTY FIX TO USE INVALID QR CODES
+                if ACCEPT_INVALID_QR:
+                    currMsg = STATION_KEY + str([int(1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                else:
+                    currMsg = STATION_KEY + str([int(-1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
                 msg += [currMsg]
             #udp send socket
         except:
