@@ -111,8 +111,12 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
+    public bool ENABLE_LOG = false;
     public void OnMsgRcv(byte[] msg)
     {
+        //disable Debug.Log for this object
+        Debug.unityLogger.logEnabled = ENABLE_LOG;
+
         int[] bytesAsInts = new int[arraySize];
         Buffer.BlockCopy(msg, 0, bytesAsInts, 0, msg.Length);
         //log bytesAsInts
@@ -164,6 +168,7 @@ public class LidarManager : Monosingleton<LidarManager>
                 _wallCount = 0;
             }
         }
+        Debug.unityLogger.logEnabled = true;
     }
 
     private int _wallCount = 0;

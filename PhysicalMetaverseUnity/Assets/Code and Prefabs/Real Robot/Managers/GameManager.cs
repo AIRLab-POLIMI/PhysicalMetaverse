@@ -15,6 +15,9 @@ public class GameManager : Monosingleton<GameManager>
     private GameObject _environment;
     public void Start()
     {
+        //enable vsync
+        QualitySettings.vSyncCount = 1;
+        
         _setup = GameObject.FindGameObjectWithTag("Setup");
         _environment = GameObject.FindGameObjectWithTag("Environment");
         

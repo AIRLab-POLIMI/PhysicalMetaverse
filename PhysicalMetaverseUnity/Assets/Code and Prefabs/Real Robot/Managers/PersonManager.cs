@@ -32,8 +32,12 @@ public class PersonManager : MonoBehaviour
 
     //prev rcv time
     private float prevRcvTime = 0f;
+    
+    public bool ENABLE_LOG = false;
     public void OnMsgRcv(byte[] msg)
     {
+        //disable Debug.Log for this object
+        Debug.unityLogger.logEnabled = ENABLE_LOG;
         data = msg;
         char[] bytesAsChars = new char[msg.Length];
         for (int i = 0; i < msg.Length; i++)
@@ -46,6 +50,7 @@ public class PersonManager : MonoBehaviour
         //log difference between times
         Debug.Log(Time.time - prevRcvTime);
         prevRcvTime = Time.time;
+        Debug.unityLogger.logEnabled = true;
     }
     void Start()
     {

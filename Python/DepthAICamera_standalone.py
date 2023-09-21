@@ -153,7 +153,7 @@ q = None
 
 def main():
         global sock, qr_tracker, qr_decoder, q
-        print("CAMERA STARTED")
+        ####print("CAMERA STARTED")
         #setup udp socket
         import socket
         import time
@@ -206,7 +206,7 @@ def loop(sock):#,camera):
         frame, body = tracker.next_frame()
         #draw skeleton on frame
         #frame = renderer.draw(frame, body)
-        #print("Pose detection time " + str(time.time() - start))
+        #####print("Pose detection time " + str(time.time() - start))
         #MOVED TO QR THREAD
         ###if frame is not None:
         ###    #frame is <class 'numpy.ndarray'>
@@ -216,7 +216,7 @@ def loop(sock):#,camera):
         ###        cv2.imshow("frame", detectQR(frame,sock))
         ###        cv2.waitKey(1)
         ###    except:
-        ###        print("error")
+        ###        ####print("error")
         ###        traceback.print_exc()
 
 
@@ -236,7 +236,7 @@ def loop(sock):#,camera):
         if body is not None:
             #start = time.time()
             #print(body.landmarks)
-            #print("sent")
+            #####print("sent")
             #send body landmarks via udp
             #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
             #body.landmarks string
@@ -246,19 +246,19 @@ def loop(sock):#,camera):
             
             #udp send socket
             sock.sendto(to_send, (DEST_IP, DEST_PORT))
-            #print("Udp send time " + str(time.time() - start))
-            print("SENT CAMERA ")# + str(body.landmarks))
+            #####print("Udp send time " + str(time.time() - start))
+            ####print("SENT CAMERA ")# + str(body.landmarks))
 
     #print exception
     except:
-        print("error")
+        ####print("error")
         traceback.print_exc()
     
     # Show 2d skeleton
     #key = renderer.waitKey(delay=1)
     #if key == 27 or key == ord('q'):
-        #print("keybreak")
-    print("Loop time " + str(time.time() - start))
+        #####print("keybreak")
+    ####print("Loop time " + str(time.time() - start))
 
 def loop2(sock):#,camera):
     global frame
@@ -268,7 +268,7 @@ def loop2(sock):#,camera):
         #start = time.time()
         # Run blazepose on next frame
         frame, body = tracker.next_frame()
-        #print("Pose detection time " + str(time.time() - start))
+        #####print("Pose detection time " + str(time.time() - start))
         #MOVED TO QR THREAD
         ###if frame is not None:
         ###    #frame is <class 'numpy.ndarray'>
@@ -278,7 +278,7 @@ def loop2(sock):#,camera):
         ###        cv2.imshow("frame", detectQR(frame,sock))
         ###        cv2.waitKey(1)
         ###    except:
-        ###        print("error")
+        ###        ####print("error")
         ###        traceback.print_exc()
 
 
@@ -298,7 +298,7 @@ def loop2(sock):#,camera):
         if body is not None:
             #start = time.time()
             #print(body.landmarks)
-            #print("sent")
+            #####print("sent")
             #send body landmarks via udp
             #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
             #body.landmarks string
@@ -308,50 +308,91 @@ def loop2(sock):#,camera):
             
             #udp send socket
             sock.sendto(to_send, (DEST_IP, DEST_PORT))
-            #print("Udp send time " + str(time.time() - start))
-            print("SENT CAMERA ")# + str(body.landmarks))
+            #####print("Udp send time " + str(time.time() - start))
+            ####print("SENT CAMERA ")# + str(body.landmarks))
 
     #print exception
     except:
-        print("error")
+        ####print("error")
         traceback.print_exc()
     
     # Show 2d skeleton
     #key = renderer.waitKey(delay=1)
     #if key == 27 or key == ord('q'):
-        #print("keybreak")
-    print("Loop time " + str(time.time() - start))
+        #####print("keybreak")
+    ####print("Loop time " + str(time.time() - start))
 
 #function to detect qr position and size in frame
 import pyzbar.pyzbar as pyzbar
 def detectQR():
     global frame, sock
-    qr = pyzbar.decode(frame)
-    if len(qr) > 0:
-        #print qr position and size
-        #print(qr[0].rect)
-        #print qr data
-        #print(qr[0].data)
-        rectangle = qr[0].rect
-        rectangle_size = rectangle[2] * rectangle[3]
-        #print("rectangle size: " + str(rectangle_size))
-        #draw a rectangle around qr
-        cv2.rectangle(frame, (qr[0].rect[0], qr[0].rect[1]), (qr[0].rect[0] + qr[0].rect[2], qr[0].rect[1] + qr[0].rect[3]), (0, 0, 255), 2)
-        #find rectangle distance in depthFrame, scale coordinates from frame
-        frameToDepthShape0Ratio = depthFrame.shape[0] / frame.shape[0]
-        frameToDepthShape1Ratio = depthFrame.shape[1] / frame.shape[1]
-        depthRectangle = [int(qr[0].rect[0] * frameToDepthShape1Ratio), int(qr[0].rect[1] * frameToDepthShape0Ratio), int(qr[0].rect[2] * frameToDepthShape1Ratio), int(qr[0].rect[3] * frameToDepthShape0Ratio)]
-        #find central value of depth rectangle in depthframe
-        depthRectangleCenter = [int(depthRectangle[0] + depthRectangle[2] / 2), int(depthRectangle[1] + depthRectangle[3] / 2)]
-        #print("depth rectangle center: " + str(depthRectangleCenter))
-        depthFrameCenterValue = depthFrame[depthRectangleCenter[1]][depthRectangleCenter[0]]
-        print("depth frame center value: " + str(depthFrameCenterValue))
-        print("rectangle size: " + str(rectangle_size))
-        #send qr x,y, size
-        #append key
-        msg = STATION_KEY + str([qr[0].rect[0], qr[0].rect[1], int(rectangle_size)]).encode()
-        #udp send socket
-        sock.sendto(msg, (DEST_IP, DEST_PORT))
+    msg = []
+    for barcode in decode(frame):
+        text = barcode.data.decode('utf-8')
+        text=str(text)
+        color=(0,0,255)
+        polygon_Points = np.array([barcode.polygon], np.int32)
+        polygon_Points=polygon_Points.reshape(-1,1,2)
+        rect_Points= barcode.rect
+        cv2.polylines(frame,[polygon_Points],True,color, 3)
+        cv2.putText(frame, barcode.data.decode('utf-8') , (rect_Points[0],rect_Points[1]), cv2.FONT_HERSHEY_PLAIN, 0.9, color, 2)
+
+        #draw the 4 points as big dots
+        #for point in polygon_Points:
+        #    cv2.circle(frame, (point[0][0], point[0][1]), 10, (0, 0, 255), -1)
+        ##draw the first and third point in green from polygon_Points
+        #cv2.circle(frame, (polygon_Points[0][0][0], polygon_Points[0][0][1]), 10, (0, 255, 0), -1)
+        #cv2.circle(frame, (polygon_Points[2][0][0], polygon_Points[2][0][1]), 10, (0, 255, 0), -1)
+        try:
+            rectangle_diagonal = np.sqrt((polygon_Points[0][0][0] - polygon_Points[2][0][0]) ** 2 + (polygon_Points[0][0][1] - polygon_Points[2][0][1]) ** 2)
+            #draw rectangle diagonal
+            cv2.line(frame, (polygon_Points[0][0][0], polygon_Points[0][0][1]), (polygon_Points[2][0][0], polygon_Points[2][0][1]), (255, 0, 0), 2)
+            #rectangle center
+            rect_center = (int((polygon_Points[0][0][0] + polygon_Points[2][0][0]) / 2), int((polygon_Points[0][0][1] + polygon_Points[2][0][1]) / 2))
+            #draw
+            cv2.circle(frame, rect_center, 10, (255, 0, 0), -1)
+            #####print("depth frame center value: " + str(depthFrameCenterValue))
+            ####print("rectangle height: " + str(rectangle_diagonal))
+            import math
+
+            # Diagonal length of the square in pixels
+            diagonal_length_pixels = rectangle_diagonal  # Replace this with the actual measurement
+
+            # Focal length of the camera in millimeters
+            focal_length_mm = 4.81
+
+            # Actual size of the square in the real world (e.g., in meters)
+            actual_square_size_meters = 0.2  # Replace this with the actual measurement
+
+            # Calculate the angular size in radians
+            angular_size_rad = 2 * math.atan(diagonal_length_pixels / (2 * focal_length_mm))
+
+            # Calculate the distance using the formula
+            distance_meters = (actual_square_size_meters / 2) / math.tan(angular_size_rad / 2)
+            distance_meters = distance_meters*100* 33/13
+            #print("Distance from camera to square: {:.2f} meters".format(distance_meters))
+            distance_meters *= 100
+            #send qr x,y, size
+            #append key
+            #MSG FORMAT: [barcode, x, y, size(diagonal)]
+            try:
+                currMsg = STATION_KEY + str([int(barcode.data), rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                msg += [currMsg]
+            except:
+                currMsg = STATION_KEY + str([int(-1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                msg += [currMsg]
+            #udp send socket
+        except:
+            print(traceback.print_exc())
+    
+    #aggregate all messages into one
+    stringMsg = b''
+    for m in msg:
+        stringMsg += m
+        
+    if stringMsg != b'':
+        sock.sendto(stringMsg , (DEST_IP, DEST_PORT))
+        print("SENT MSG " + str(stringMsg))
     return frame
 
 from pyzbar.pyzbar import decode
@@ -450,7 +491,7 @@ def showOnlyBlue(frame, connection):
         cy = int(M['m01']/M['m00'])
         cv2.circle(output_img, (cx, cy), 10, (0, 0, 255), -1)
         blob_size = cv2.contourArea(biggestContour)
-        print("Blob size:", blob_size)
+        ####print("Blob size:", blob_size)
         #multiply by 20 to upscale
         cx = cx * 10
         cy = cy * 10
