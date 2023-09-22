@@ -42,6 +42,12 @@ IPAddress defaultDestinationIP(192, 168, 0, 104);
 std::string KEY_1 = "KEY1";
 std::string KEY_2 = "KEY2";
 
+const uint8_t green_pin = 27;
+const uint8_t red_pin = 12;
+const uint8_t blue_pin = 26;
+
+const bool CORRECT_STATION = true;
+
 // define the ESPUDP object. 
 // Depending on the device (either ESP32 or ESP8266), 
 // it will use different dependancies and implement some methods slightly differently
@@ -144,6 +150,15 @@ bool checkKeyValueMessages()
 }
 
 
+
+
+//bool toggle pin
+bool togglePin = false;
+//enum
+enum { IDLE, BLINKING, ACTIVATED } blinking_state;
+
+void setup_variables();
+
 bool getUDPMessage() {
 
     // MAIN "RECEIVE" method, used in the LOOP. 
@@ -155,11 +170,32 @@ bool getUDPMessage() {
     if (!espUdp.read_udp_non_blocking())
         return false;
 
-    // 2 : check if the incoming UDP message is a PURE MESSAGE. 
-    //     if it is, the response is called directly from the "checkPureMessages" method, which will
-    //     in that case return true; otherwise proceed.
-    if (checkPureMessages())
-        return true;
+    //if received value is "BLINK"
+    if (espUdp.udp_msg_equals_to("BLINK")) {
+        Serial.println("BLINK");
+        if (blinking_state == IDLE) {
+            blinking_state = BLINKING;
+        }
+    }
+
+    //if received value is "RESET"
+    if (espUdp.udp_msg_equals_to("RESET")) {
+        Serial.println("RESET");
+        setup_variables();
+    }
+
+    togglePin = !togglePin;
+    //turn on led 27
+    /*
+    if (togglePin) {
+        digitalWrite(green_pin, HIGH);
+        digitalWrite(red_pin, LOW);
+    }
+    else {
+        digitalWrite(green_pin, LOW);
+        digitalWrite(red_pin, HIGH);
+    }
+    */
 
     // 3 : check if the incoming UDP message is a KEY-VALUE MESSAGE. 
     //     if it is, the response is called directly from the "checkKeyValueMessages" method, which will
@@ -168,11 +204,54 @@ bool getUDPMessage() {
     return checkKeyValueMessages();
 }
 
+void blink() {
+    if (CORRECT_STATION) {
+        //blink green pin every 300ms for 4 times
+        for (int i = 0; i < 4; i++) {
+            digitalWrite(green_pin, HIGH);
+            delay(300);
+            digitalWrite(green_pin, LOW);
+            delay(300);
+        }
+    }
+    else {
+        //blink red pin every 300ms for 4 times
+        for (int i = 0; i < 4; i++) {
+            digitalWrite(red_pin, HIGH);
+            delay(300);
+            digitalWrite(red_pin, LOW);
+            delay(300);
+        }
+    }
+    //set blinking state to ACTIVATED
+    blinking_state = ACTIVATED;
+    //turn off red and green
+    digitalWrite(red_pin, LOW);
+    digitalWrite(green_pin, LOW);
+    //turn on blue pin
+    digitalWrite(blue_pin, HIGH);
+}
+
 
 // ______________________________________________________________________________________________MAIN
 
 void setup_variables() {
     // setup your variables here
+    // turn off all leds
+    pinMode(green_pin, OUTPUT);
+    pinMode(red_pin, OUTPUT);
+    pinMode(blue_pin, OUTPUT);
+    digitalWrite(green_pin, LOW);
+    digitalWrite(red_pin, LOW);
+    digitalWrite(blue_pin, LOW);
+    //turn on green if correct else
+    if (CORRECT_STATION) {
+        digitalWrite(green_pin, HIGH);
+    }
+    else {
+        digitalWrite(red_pin, HIGH);
+    }
+    blinking_state = IDLE;
 }
 
 void setup()
@@ -182,14 +261,15 @@ void setup()
     delay(200);
     Serial.println("[SETUP] ______________________ BEGIN");
 
-    // setup variables
-    setup_variables();
-
     // SETUP ESP UDP (leds + UDP)
     espUdp.setup();
 
     // setup completed
     Serial.println("[SETUP] ______________________ COMPLETE");
+
+    // setup variables
+    setup_variables();
+
 }
 
 void loop() 
@@ -198,15 +278,17 @@ void loop()
     // Otherwise return false;
     bool isValidMsg = getUDPMessage();
 
-    // if a UDP message was received in general, respond to the sender.
-    // the second parameter "true" means that the msg will be a RESPONSE: sent back to the last sender. 
-    // if it were FALSE, the msg would have been sent to the DEFAULT DESTINATION;
-    // to specify a destination (ip, port), use the corresponsing method overload with three inputs (char *, IPAddress, int)
-    if (espUdp.received) 
-      espUdp.write_char_udp("thanks for the message!", true);
-
-    // write to udp
-    espUdp.write_char_udp("hello world!", true);
+    //case
+    switch (blinking_state) {
+    case ACTIVATED:
+        break;
+    case IDLE:
+        break;
+    case BLINKING:
+        //blink
+        blink();
+        break;
+    }
     //wait 100ms
     delay(100);
     // you can add a DELAY if you don't want to force high frequency check and eventual response

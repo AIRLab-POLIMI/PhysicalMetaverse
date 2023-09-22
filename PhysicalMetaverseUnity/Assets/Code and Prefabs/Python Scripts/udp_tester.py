@@ -1,8 +1,8 @@
 import socket
 import time
 
-UDP_IP = "192.168.0.103"  # Unity IP address
-UDP_PORT = 5020  # Unity port
+UDP_IP = "192.168.0.59"  # Unity IP address
+UDP_PORT = 4210  # Unity port
 
 # Handshake messages
 setup_message = "MetaverseSetup 192.168.0.103"

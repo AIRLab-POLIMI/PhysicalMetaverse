@@ -12,10 +12,8 @@ using System.Collections.Generic;
 public class StationManager : MonoBehaviour
 {
     public GameObject _stationPrefab;
-    //listen for udp messages on port 5004
-    static int port = 5004;
-    //udpclient object
-    private UdpClient client;
+    //public station ips strings list
+    public List<string> _stationIps = new List<string>();
     //udp packet storage
     private byte[] data;
     public static int _totalStations = 2;
@@ -138,12 +136,14 @@ public class StationManager : MonoBehaviour
             station.transform.localScale = new Vector3(_scale, _scale, _scale);
             //random color
             station.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0, 1f));
-            station.transform.position = new Vector3(0, 0, 0);
+            station.transform.position = new Vector3(0, 0, 50);
             //disable
             station.SetActive(false);
             station.name = "Station " + i;
             //set father to this gameobject
             station.transform.parent = this.transform;
+            //set ip
+            station.GetComponent<SingleStationManager>().SetIp(_stationIps[i]);
         }
         spawned = true;
     }

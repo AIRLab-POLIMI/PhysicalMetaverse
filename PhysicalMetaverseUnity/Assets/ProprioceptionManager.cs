@@ -32,9 +32,8 @@ public class ProprioceptionManager : MonoBehaviour
             {
                 _currentStations.Add(other.gameObject.transform.parent.gameObject);
             }
-            Debug.Log(other.gameObject.transform.parent.gameObject.name + "entered");
-            StationEnterEvent();
-            
+            //call EnterStation of the station
+            other.gameObject.transform.parent.gameObject.GetComponent<SingleStationManager>().EnterStation();
         }
     }
 
@@ -46,12 +45,8 @@ public class ProprioceptionManager : MonoBehaviour
             _currentStations.Remove(other.gameObject.transform.parent.gameObject);
             Debug.Log(other.gameObject.transform.parent.gameObject.name + "exited");
         }
-    }
-
-    private void StationEnterEvent()
-    {
-        //key is (char)195
-        NetworkingManager.Instance.Send(new byte[]{0x01}, 0xc3);
+        //call ExitStation of the station
+        other.gameObject.transform.parent.gameObject.GetComponent<SingleStationManager>().ExitStation();
     }
 
 }

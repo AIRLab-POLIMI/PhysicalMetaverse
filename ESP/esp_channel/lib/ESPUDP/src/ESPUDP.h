@@ -32,7 +32,7 @@ IPAddress default_secondaryDNS(8, 8, 8, 8);  // DNS 2
 #define WIFI_SSID "Physical Metaverse 2.4GHz"
 #define WIFI_PSW "earthbound"
 // UDP
-#define MY_UDP_PORT 4210
+#define MY_UDP_PORT 25666
 #define IN_SIZE 255
 #define OUT_SIZE 255
 // COMMUNICATION
@@ -43,7 +43,7 @@ IPAddress default_secondaryDNS(8, 8, 8, 8);  // DNS 2
 
 // DEFAULT LED PINS
 #ifdef ESP32
-    const uint8_t default_ledPinOn = 27;    // digital GPIO27
+    const uint8_t default_ledPinOn = 2;    // digital GPIO27
     const uint8_t default_ledPinWiFi = 14;  // digital GPIO14
     const uint8_t default_ledPinFunction = 12; // digital GPIO12
 #else 

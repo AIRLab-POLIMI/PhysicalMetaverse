@@ -546,16 +546,20 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         _tcpClient?.Close();
     }
 
-    public void Send(byte[] data, byte key)
+    public void SendString(string data, string ip)
     {
+        byte[] bytes = new byte[data.Length];
+        for (int i = 0; i < data.Length; i++)
+        {
+            bytes[i] = (byte)data[i];
+        }
         byte[] bytes2 = new byte[data.Length + 1];
-        bytes2[0] = key;
-        Array.Copy(data, 0, bytes2, 1, data.Length);
+        //bytes2[0] = key;
+        //Array.Copy(data, 0, bytes2, 1, data.Length);
         //new broadcast endpoint
-        IPEndPoint broadcast = new IPEndPoint(IPAddress.Broadcast, myUdpPort);
-        //endpoint 192.168.0.100
-        broadcast = new IPEndPoint(IPAddress.Parse("192.168.0.100"), myUdpPort);
-        _udpMessenger.SendUdp(bytes2, broadcast);
+        //endpoint
+        IPEndPoint sendTo = new IPEndPoint(IPAddress.Parse(ip), myUdpPort);
+        _udpMessenger.SendUdp(bytes, sendTo);
     }
 
     #endregion
