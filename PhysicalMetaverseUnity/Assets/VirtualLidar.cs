@@ -22,14 +22,18 @@ public class VirtualLidar : MonoBehaviour
     public float _noiseMagnitude = 0.2f;
     [Range(0f, 1.0f)]
     public float _missChance = 0.023f;
+    public bool _lidarSeamFix = false;
     public List<GameObject> _lidarSeamFixObjects = new List<GameObject>();
     // Start is called before the first frame update
     void Start()
     {
-        foreach(GameObject toRotate in _lidarSeamFixObjects)
+        if (_lidarSeamFix)
         {
-            //set rotation to same plus 180 on y axis
-            toRotate.transform.rotation = Quaternion.Euler(toRotate.transform.rotation.eulerAngles.x, toRotate.transform.rotation.eulerAngles.y + 180, toRotate.transform.rotation.eulerAngles.z);
+            foreach(GameObject toRotate in _lidarSeamFixObjects)
+            {
+                //set rotation to same plus 180 on y axis
+                toRotate.transform.rotation = Quaternion.Euler(toRotate.transform.rotation.eulerAngles.x, toRotate.transform.rotation.eulerAngles.y + 180, toRotate.transform.rotation.eulerAngles.z);
+            }
         }
     }
 

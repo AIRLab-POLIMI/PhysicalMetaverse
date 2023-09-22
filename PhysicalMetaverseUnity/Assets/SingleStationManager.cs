@@ -17,6 +17,8 @@ public class SingleStationManager : MonoBehaviour
     public StationState _stationState;
 
     public bool _correctStation = true;
+    //transform orientationtransform
+    private Transform _orientationTransform;
     //station color
     public Color _stationColor = Color.green;
     // Start is called before the first frame update
@@ -62,6 +64,12 @@ public class SingleStationManager : MonoBehaviour
         
     }
 
+    void FixedUpdate()
+    {
+        //locally rotate according to orientation transform y angle
+        transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x , _orientationTransform.rotation.eulerAngles.y, transform.localRotation.eulerAngles.z);
+    }
+
     public void EnterStation()
     {   
         Debug.Log("Entered " + gameObject.name);
@@ -93,6 +101,10 @@ public class SingleStationManager : MonoBehaviour
         _stationIp = ip;
     }
 
+    public void SetOrientationTransform(Transform orientationTransform)
+    {
+        _orientationTransform = orientationTransform;
+    }
     private void CheckCompletion()
     {
         //if space is pressed complete station
@@ -110,12 +122,16 @@ public class SingleStationManager : MonoBehaviour
     }
     public void CompleteStation()
     {
-        //data is "BLINK" in bytes
-        string data = "BLINK";
+        //if not already interacted
+        if (_stationState != StationState.INTERACTED && _stationState != StationState.ACTIVATED)
+        {
+            //data is "BLINK" in bytes
+            string data = "BLINK";
 
-        //key is (char)195
-        NetworkingManager.Instance.SendString(data, _stationIp);
-        _stationState = StationState.INTERACTED;
+            //key is (char)195
+            NetworkingManager.Instance.SendString(data, _stationIp);
+            _stationState = StationState.INTERACTED;
+        }
     }
 
     //private prev time

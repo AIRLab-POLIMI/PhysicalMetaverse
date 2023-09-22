@@ -11,6 +11,7 @@ TagManager:
   - RobotViz
   - PoseTracker
   - Station
+  - Hole
   layers:
   - Default
   - TransparentFX

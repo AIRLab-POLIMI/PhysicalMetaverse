@@ -17,6 +17,7 @@ public class StationManager : MonoBehaviour
     //udp packet storage
     private byte[] data;
     public static int _totalStations = 2;
+    public Transform _orientationTransform;
     private float[] _lastPingTimes = new float[_totalStations];
     //stations list
     public List<int[]> _stationsData = new List<int[]>();
@@ -117,12 +118,12 @@ public class StationManager : MonoBehaviour
     public float _scale = 2f;
     [Range(1f, 500f)]
     public float _imageFrameScale = 500;
-    [Range(-100f, 100f)]
+    [Range(-15f, 15)]
     public float zOffset = 0f;
 
-    [Range(-100f, 100f)]
+    [Range(-15f, 15)]
     public float yOffset = 0f;
-    [Range(-100f, 100f)]
+    [Range(-15f, 15)]
     public float xOffset = 0f;
 
     private GameObject _sphere;
@@ -144,6 +145,8 @@ public class StationManager : MonoBehaviour
             station.transform.parent = this.transform;
             //set ip
             station.GetComponent<SingleStationManager>().SetIp(_stationIps[i]);
+            //set orientation transform
+            station.GetComponent<SingleStationManager>().SetOrientationTransform(_orientationTransform);
         }
         spawned = true;
     }

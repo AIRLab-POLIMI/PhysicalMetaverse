@@ -1,0 +1,54 @@
+{
+    "name": "player",
+    "maps": [
+        {
+            "name": "player",
+            "id": "e9ae3be4-d4d6-49ec-a83d-ce459b2241ae",
+            "actions": [
+                {
+                    "name": "trig",
+                    "type": "Button",
+                    "id": "b716ab52-1506-4848-8516-b45fb5f14076",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "grab",
+                    "type": "Button",
+                    "id": "5a457a16-5ec8-46ff-849a-c265767216af",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ad2b4ae6-3b16-4c1c-8ad7-91259a0b801e",
+                    "path": "<XRSimulatedController>{RightHand}/triggerButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "trig",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c0f5952e-cf97-4f8f-83d6-2d6ce9826f3d",
+                    "path": "<XRSimulatedController>{RightHand}/gripButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "grab",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
