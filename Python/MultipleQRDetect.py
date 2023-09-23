@@ -119,7 +119,6 @@ def VirtualQR():
 
     return frame
     
-
 while True:
   #success, frame = vid.read()
   frame = VirtualQR()

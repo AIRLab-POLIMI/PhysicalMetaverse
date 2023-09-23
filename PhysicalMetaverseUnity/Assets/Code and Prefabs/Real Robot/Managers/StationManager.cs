@@ -149,6 +149,9 @@ public class StationManager : MonoBehaviour
         {
             GameObject station = Instantiate(_stationPrefab);
             _stations.Add(station);
+            //set station's untrackedParent to untrackedStation
+            station.GetComponent<SingleStationManager>()._untrackedParent = _untrackedStations[i];
+            station.GetComponent<SingleStationManager>()._stationManager = this.transform;
             station.transform.localScale = new Vector3(_scale, _scale, _scale);
             //random color
             station.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0, 1f));
@@ -199,34 +202,6 @@ public class StationManager : MonoBehaviour
                         //lerp
                         station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);
                     }
-                }
-            }
-            //for each station if untracked set parent to corresponding untracked station
-            for (int i = 0; i < _stations.Count; i++)
-            {
-                if (!_stations[i].GetComponent<SingleStationManager>()._tracked)
-                {
-                    _stations[i].transform.parent = _untrackedStations[i];
-                    //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y lerp
-                    //_untrackedStations[i].transform.localRotation = Quaternion.Lerp(_untrackedStations[i].transform.localRotation, Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0), _speed);
-                    //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y
-                    //_untrackedStations[i].transform.localRotation = Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0);
-                    //diff angle -(_untrackedAngles[i] - _sun.transform.eulerAngles.y)
-                    float diffAngle = -(_untrackedAngles[i] - _sun.transform.eulerAngles.y);
-                    diffAngle = diffAngle % 360;
-                    //avoid lerp skip
-                    if (diffAngle > 180)
-                        diffAngle -= 360;
-                    else if (diffAngle < -180)
-                        diffAngle += 360;
-                    //lerp
-                    _untrackedStations[i].transform.localRotation = Quaternion.Lerp(_untrackedStations[i].transform.localRotation, Quaternion.Euler(0, diffAngle, 0), _speed);
-                }
-                else
-                {
-                    _stations[i].transform.parent = this.transform;
-                    //_untrackedStations[i].transform.localRotation set to sun
-                    _untrackedAngles[i] = _sun.transform.eulerAngles.y;
                 }
             }
         }

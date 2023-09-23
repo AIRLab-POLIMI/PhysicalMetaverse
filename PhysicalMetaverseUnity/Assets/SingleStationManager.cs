@@ -21,6 +21,7 @@ public class SingleStationManager : MonoBehaviour
     //transform orientationtransform
     private Transform _orientationTransform;
     public Transform _untrackedParent;
+    public Transform _stationManager;
     //station color
     public Color _stationColor = Color.green;
     // Start is called before the first frame update
@@ -68,24 +69,59 @@ public class SingleStationManager : MonoBehaviour
     }
 
     public int _untrackedAngle = 0;
+    public bool _prevTracked = false;
+    private float _resetAngle = 0;
     private void Odometry()
     {
         if (_tracked)
         {
+            transform.parent = _stationManager;
+            //only rotate the station on its own axis, movement is done by StationManager looking at the camera
             //locally rotate according to orientation transform y angle
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x , _orientationTransform.rotation.eulerAngles.y, transform.localRotation.eulerAngles.z);
-            _untrackedAngle = (int)_orientationTransform.transform.eulerAngles.y;
+            float positiveOrientation = _orientationTransform.transform.eulerAngles.y;
+            if (positiveOrientation < 0)
+                positiveOrientation += 360;
+            _untrackedAngle = (int)positiveOrientation;
+            _prevTracked = true;
+            _untrackedParent.transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
-        /*else
+        else
         {
-            //if untracked rotate around
-            transform.RotateAround(Vector3.zero, Vector3.up, -(_untrackedAngle - (int)_orientationTransform.transform.eulerAngles.y));
-        }*/
+            transform.parent = _untrackedParent;
+            //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y lerp
+            //_untrackedStations[i].transform.localRotation = Quaternion.Lerp(_untrackedStations[i].transform.localRotation, Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0), _speed);
+            //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y
+            //_untrackedStations[i].transform.localRotation = Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0);
+            //diff angle -(_untrackedAngles[i] - _sun.transform.eulerAngles.y)
+            //get positive value of _orientationTransform
+            float positiveOrientation = _orientationTransform.transform.eulerAngles.y;
+            if (positiveOrientation < 0)
+                positiveOrientation += 360;
+            float diffAngle = -(_untrackedAngle - positiveOrientation);
+            diffAngle = diffAngle % 360;
+            //avoid lerp skip
+            if (diffAngle > 180)
+                diffAngle -= 360;
+            else if (diffAngle < -180)
+                diffAngle += 360;
+            //if tracked changed dont lerp
+            if (!_prevTracked)
+                _untrackedParent.transform.localRotation = Quaternion.Lerp(_untrackedParent.transform.localRotation, Quaternion.Euler(0, diffAngle, 0), 0.1f);
+                //no lerp
+                //_untrackedParent.transform.localRotation = Quaternion.Euler(0, diffAngle, 0);
+            
+            _prevTracked = false;
+        }
     }
 
     public void SetTracked(bool tracked)
     {
         _tracked = tracked;
+    }
+    public void SetUntrackedParent(Transform untrackedParent)
+    {
+        _untrackedParent = untrackedParent;
     }
     public void EnterStation()
     {   

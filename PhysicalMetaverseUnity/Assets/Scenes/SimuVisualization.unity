@@ -19541,6 +19541,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stationPrefab: {fileID: 6699460793187042399, guid: 670ff607560aedb4e9707afb7a1d6df9,
     type: 3}
+  _untrackedAngles: []
   _stationIps:
   - 192.168.0.59
   - 192.168.0.60
@@ -19555,9 +19556,9 @@ MonoBehaviour:
   ENABLE_LOG: 0
   _scale: 1
   _imageFrameScale: 100
-  zOffset: -8.4
+  zOffset: -6.4
   yOffset: -7.6
-  xOffset: -4.4
+  xOffset: -3
   _speed: 0.1
   _untrackedAngle: 0
   _sun: {fileID: 835397783}
@@ -19593,7 +19594,7 @@ PrefabInstance:
     - target: {fileID: 3313468184526816478, guid: 670ff607560aedb4e9707afb7a1d6df9,
         type: 3}
       propertyPath: m_VersionIndex
-      value: 1145
+      value: 1151
       objectReference: {fileID: 0}
     - target: {fileID: 4406743316221429544, guid: 670ff607560aedb4e9707afb7a1d6df9,
         type: 3}
