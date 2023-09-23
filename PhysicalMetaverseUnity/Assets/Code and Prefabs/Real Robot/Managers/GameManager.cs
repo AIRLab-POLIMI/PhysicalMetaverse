@@ -10,6 +10,7 @@ public class GameManager : Monosingleton<GameManager>
 {
 
     [SerializeField] private InputActionReference _InputActionReferenceSceneRestart;
+    
 
     private GameObject _setup;
     private GameObject _environment;
@@ -37,4 +38,5 @@ public class GameManager : Monosingleton<GameManager>
         NetworkingManager.Instance.CloseConnections();
         SceneManager.LoadScene(0);
     }
+
 }

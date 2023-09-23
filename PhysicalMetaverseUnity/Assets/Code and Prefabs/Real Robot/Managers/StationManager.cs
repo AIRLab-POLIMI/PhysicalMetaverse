@@ -12,6 +12,10 @@ using System.Collections.Generic;
 public class StationManager : MonoBehaviour
 {
     public GameObject _stationPrefab;
+    //transforms list _untrackedStations
+    private List<Transform> _untrackedStations = new List<Transform>();
+    //float list untrackedangles
+    public List<float> _untrackedAngles = new List<float>();
     //public station ips strings list
     public List<string> _stationIps = new List<string>();
     //udp packet storage
@@ -23,6 +27,7 @@ public class StationManager : MonoBehaviour
     public List<int[]> _stationsData = new List<int[]>();
     //gameobject station list
     public List<GameObject> _stations = new List<GameObject>();
+    
 
     //spawned
     private bool spawned = false;
@@ -49,6 +54,15 @@ public class StationManager : MonoBehaviour
     }   
     void Start()
     {
+        //create an untracked gameobject for each station add it to _untrackedStations, parent is this object
+        for (int i = 0; i < _totalStations; i++)
+        {
+            GameObject untrackedStation = new GameObject();
+            untrackedStation.transform.parent = this.transform;
+            untrackedStation.name = "Untracked Station " + i;
+            _untrackedStations.Add(untrackedStation.transform);
+            _untrackedAngles.Add(0f);
+        }
     }
 
     //a receive looks like
@@ -77,6 +91,7 @@ public class StationManager : MonoBehaviour
             }
             _stationsData.Add(parsedData);
             _lastPingTimes[parsedData[0]] = Time.time;
+            _stations[parsedData[0]].GetComponent<SingleStationManager>().SetTracked(true);
         }
         //log stations
         foreach (int[] station in _stationsData)
@@ -159,6 +174,8 @@ public class StationManager : MonoBehaviour
     private float _lastPingTime = 0f;
     //public STATIONS_DECAY_TIME
     public float STATIONS_DECAY_TIME = 0.3f; //TODO REPLACE WITH DRIFTED TOO MUCH AWAY WITHOUT SEEING AGAIN
+    //public TRACKING_DECAY_TIME
+    public float TRACKING_DECAY_TIME = 0.1f;
     private void MoveStations()
     {
         try
@@ -169,14 +186,47 @@ public class StationManager : MonoBehaviour
                 //log station data
                 //Debug.Log("Station " + i + " data: " + ((int[])_stationsData[i])[0] + " " + ((int[])_stationsData[i])[1]);
                 int stationCode = ((int[])_stationsData[i])[0];
+                GameObject station = (GameObject)_stations[stationCode];
                 if (stationCode >= 0 && stationCode < _totalStations)
                 {
                     //eanble station
-                    ((GameObject)_stations[stationCode]).SetActive(true);
+                    station.SetActive(true);
                     //set station position, data is formatted as [station code, x, y, size(diagonal)]
                     //((GameObject)_stations[i]).transform.localPosition = new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3]/10.0f + zOffset);
+                    //if _stations[i].GetComponent<SingleStationManager>()._tracked
+                    if (station.GetComponent<SingleStationManager>()._tracked)
+                    {
+                        //lerp
+                        station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);
+                    }
+                }
+            }
+            //for each station if untracked set parent to corresponding untracked station
+            for (int i = 0; i < _stations.Count; i++)
+            {
+                if (!_stations[i].GetComponent<SingleStationManager>()._tracked)
+                {
+                    _stations[i].transform.parent = _untrackedStations[i];
+                    //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y lerp
+                    //_untrackedStations[i].transform.localRotation = Quaternion.Lerp(_untrackedStations[i].transform.localRotation, Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0), _speed);
+                    //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y
+                    //_untrackedStations[i].transform.localRotation = Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0);
+                    //diff angle -(_untrackedAngles[i] - _sun.transform.eulerAngles.y)
+                    float diffAngle = -(_untrackedAngles[i] - _sun.transform.eulerAngles.y);
+                    diffAngle = diffAngle % 360;
+                    //avoid lerp skip
+                    if (diffAngle > 180)
+                        diffAngle -= 360;
+                    else if (diffAngle < -180)
+                        diffAngle += 360;
                     //lerp
-                    ((GameObject)_stations[stationCode]).transform.localPosition = Vector3.Lerp(((GameObject)_stations[stationCode]).transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);
+                    _untrackedStations[i].transform.localRotation = Quaternion.Lerp(_untrackedStations[i].transform.localRotation, Quaternion.Euler(0, diffAngle, 0), _speed);
+                }
+                else
+                {
+                    _stations[i].transform.parent = this.transform;
+                    //_untrackedStations[i].transform.localRotation set to sun
+                    _untrackedAngles[i] = _sun.transform.eulerAngles.y;
                 }
             }
         }
@@ -187,9 +237,12 @@ public class StationManager : MonoBehaviour
         //for each lastpingtimes disable object if decay time passed
         for (int i = 0; i < _lastPingTimes.Length; i++)
         {
-            if (Time.time - _lastPingTimes[i] > STATIONS_DECAY_TIME)
+            float _elapsedTime = Time.time - _lastPingTimes[i];
+            if (_elapsedTime > TRACKING_DECAY_TIME)
             {
-                _stations[i].SetActive(false);
+                _stations[i].GetComponent<SingleStationManager>().SetTracked(false);
+                if (_elapsedTime > STATIONS_DECAY_TIME)
+                    _stations[i].SetActive(false);
             }
         }
     }

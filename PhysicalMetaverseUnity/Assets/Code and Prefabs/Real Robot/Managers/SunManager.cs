@@ -47,7 +47,7 @@ public class SunManager : Monosingleton<SunManager>
     }
 
     //gradually rotate y angle of sun to received angle keeping x and z angle the same
-    void FixedUpdate()
+    void Update()
     {
         //set sun angle to received angle
         directionalLight.transform.eulerAngles = new Vector3(xAngle, -receivedSunAngle, 0);

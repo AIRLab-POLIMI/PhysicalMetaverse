@@ -17,8 +17,10 @@ public class SingleStationManager : MonoBehaviour
     public StationState _stationState;
 
     public bool _correctStation = true;
+    public bool _tracked = false;
     //transform orientationtransform
     private Transform _orientationTransform;
+    public Transform _untrackedParent;
     //station color
     public Color _stationColor = Color.green;
     // Start is called before the first frame update
@@ -45,6 +47,7 @@ public class SingleStationManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Odometry();
         //case
         switch (_stationState)
         {
@@ -64,12 +67,26 @@ public class SingleStationManager : MonoBehaviour
         
     }
 
-    void FixedUpdate()
+    public int _untrackedAngle = 0;
+    private void Odometry()
     {
-        //locally rotate according to orientation transform y angle
-        transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x , _orientationTransform.rotation.eulerAngles.y, transform.localRotation.eulerAngles.z);
+        if (_tracked)
+        {
+            //locally rotate according to orientation transform y angle
+            transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x , _orientationTransform.rotation.eulerAngles.y, transform.localRotation.eulerAngles.z);
+            _untrackedAngle = (int)_orientationTransform.transform.eulerAngles.y;
+        }
+        /*else
+        {
+            //if untracked rotate around
+            transform.RotateAround(Vector3.zero, Vector3.up, -(_untrackedAngle - (int)_orientationTransform.transform.eulerAngles.y));
+        }*/
     }
 
+    public void SetTracked(bool tracked)
+    {
+        _tracked = tracked;
+    }
     public void EnterStation()
     {   
         Debug.Log("Entered " + gameObject.name);

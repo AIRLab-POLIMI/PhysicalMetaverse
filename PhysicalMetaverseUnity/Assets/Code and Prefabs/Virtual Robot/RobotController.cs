@@ -129,6 +129,10 @@ public class RobotController : MonoBehaviour
     }
 
     public bool ENABLE_LOG = false;
+    
+    [SerializeField] private InputActionReference _InputActionReferenceAnalog;
+    [SerializeField] private InputActionReference _InputActionReferenceAnalogRotation;
+    public bool _VREnabled = true;
     void FixedUpdate(){
         //disable Debug.Log for this object
         Debug.unityLogger.logEnabled = ENABLE_LOG;
@@ -190,6 +194,50 @@ public class RobotController : MonoBehaviour
         if (Input.GetKey(KeyCode.RightArrow))
         {
             _thirdPersonCamera.transform.RotateAround(transform.position, Vector3.up, -1f);
+        }
+
+        if (_VREnabled){
+            //move robot
+            //get value of analog stick axes
+            Vector2 currentAnalogVal = _InputActionReferenceAnalog.action.ReadValue<Vector2>();
+            //rotate robot
+            //get value of left analog stick axes
+            Vector2 currentAnalogRotationVal = _InputActionReferenceAnalogRotation.action.ReadValue<Vector2>();
+            //x axis
+            if (currentAnalogVal.x > 0.5f)
+            {
+                //move right
+                controller.Move(-transform.right * currentAnalogVal.x / _moveUpdate);
+            }
+            else if (currentAnalogVal.x < -0.5f)
+            {
+                //move left
+                controller.Move(-transform.right * currentAnalogVal.x / _moveUpdate);
+            }
+            //y axis
+            if (currentAnalogVal.y > 0.5f)
+            {
+                //move forward
+                controller.Move(transform.forward * currentAnalogVal.y / _moveUpdate);
+            }
+            else if (currentAnalogVal.y < -0.5f)
+            {
+                //move backward
+                controller.Move(transform.forward * currentAnalogVal.y / _moveUpdate);
+            }
+            if (currentAnalogRotationVal.x > 0.5f)
+            {
+                //rotate right
+                controller.transform.eulerAngles += new Vector3(0, currentAnalogRotationVal.x / _angleUpdate, 0);
+            }
+            else if (currentAnalogRotationVal.x < -0.5f)
+            {
+                //rotate left
+                controller.transform.eulerAngles += new Vector3(0, currentAnalogRotationVal.x / _angleUpdate, 0);
+            }
+            //log analog
+            Debug.Log("Analog " + currentAnalogVal);
+            
         }
         Debug.unityLogger.logEnabled = true;
     }

@@ -5,12 +5,22 @@ using UnityEngine.InputSystem;
 
 public class HandOrbManager : MonoBehaviour
 {
+    [SerializeField] private InputActionReference _InputActionReferencePressTrigger;
     // Start is called before the first frame update
     void Start()
     {
         
     }
 
+    public float _sphereScale = 0.5f;
+    void Update()
+    {
+        float currentTrigVal = _InputActionReferencePressTrigger.action.ReadValue<float>();
+        // The trigger is being pressed
+        Debug.Log("Orb trigger value " + currentTrigVal);
+        //scale
+        transform.localScale = new Vector3(_sphereScale-currentTrigVal*_sphereScale, _sphereScale-currentTrigVal*_sphereScale, _sphereScale-currentTrigVal*_sphereScale);
+    }
     public void OrbResize(InputAction.CallbackContext context)
     {
         float currentTrigVal = context.action.ReadValue<float>();
