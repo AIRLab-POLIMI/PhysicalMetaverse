@@ -16678,7 +16678,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _actionBasedController: {fileID: 1604607845}
-  _ENABLELOG: 1
+  _ENABLELOG: 0
 --- !u!1 &1628122286
 GameObject:
   m_ObjectHideFlags: 0
@@ -19498,7 +19498,7 @@ MonoBehaviour:
   ENABLE_LOG: 0
   _scale: 169
   zOffset: 10
-  yOffset: -2
+  yOffset: 1
   xOffset: -2
   zMultiplier: 1
   _speed: 0

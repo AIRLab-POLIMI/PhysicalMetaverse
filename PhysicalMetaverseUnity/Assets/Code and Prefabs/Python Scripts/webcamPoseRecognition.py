@@ -7,7 +7,7 @@ import json
 #camera types:
 #internal - internal webcam
 #remote - ip camera at http://192.168.1.7:8080/video
-CAMERA_TYPE = "remote"
+CAMERA_TYPE = "internal"
 
 SHOW = True
 DISTANCE_MULTIPLIER = 60
