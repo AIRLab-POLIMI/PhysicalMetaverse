@@ -12,6 +12,7 @@ using System.Collections.Generic;
 public class StationManager : MonoBehaviour
 {
     public GameObject _stationPrefab;
+    public OdometryManager _odometryManager;
     //transforms list _untrackedStations
     private List<Transform> _untrackedStations = new List<Transform>();
     //float list untrackedangles
@@ -152,6 +153,7 @@ public class StationManager : MonoBehaviour
             //set station's untrackedParent to untrackedStation
             station.GetComponent<SingleStationManager>()._untrackedParent = _untrackedStations[i];
             station.GetComponent<SingleStationManager>()._stationManager = this.transform;
+            station.GetComponent<SingleStationManager>()._odometryManager = _odometryManager;
             station.transform.localScale = new Vector3(_scale, _scale, _scale);
             //random color
             station.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0, 1f));

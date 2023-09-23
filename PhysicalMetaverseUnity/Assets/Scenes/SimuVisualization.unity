@@ -8608,6 +8608,57 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 966517547}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &975876600
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 975876601}
+  - component: {fileID: 975876602}
+  m_Layer: 0
+  m_Name: OdometryManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &975876601
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975876600}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1421010081}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &975876602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975876600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65ecd6c208a1426458ecd8747354f817, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _forward: 0
+  _backward: 0
+  _left: 0
+  _right: 0
+  _rotateLeft: 0
+  _rotateRight: 0
+  _speed: 1
 --- !u!1 &977942186
 GameObject:
   m_ObjectHideFlags: 0
@@ -11190,6 +11241,7 @@ MonoBehaviour:
   - Right Stick Button
   - Left Stick Button
   - Right Stick Button
+  _odometryManager: {fileID: 975876602}
 --- !u!114 &1229328136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14612,6 +14664,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1078879952}
+  - {fileID: 975876601}
   m_Father: {fileID: 74856522}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
@@ -19541,6 +19594,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stationPrefab: {fileID: 6699460793187042399, guid: 670ff607560aedb4e9707afb7a1d6df9,
     type: 3}
+  _odometryManager: {fileID: 975876602}
   _untrackedAngles: []
   _stationIps:
   - 192.168.0.59
@@ -19594,7 +19648,7 @@ PrefabInstance:
     - target: {fileID: 3313468184526816478, guid: 670ff607560aedb4e9707afb7a1d6df9,
         type: 3}
       propertyPath: m_VersionIndex
-      value: 1151
+      value: 1181
       objectReference: {fileID: 0}
     - target: {fileID: 4406743316221429544, guid: 670ff607560aedb4e9707afb7a1d6df9,
         type: 3}

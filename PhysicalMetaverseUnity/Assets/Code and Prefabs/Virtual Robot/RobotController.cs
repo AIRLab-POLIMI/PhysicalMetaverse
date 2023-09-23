@@ -243,8 +243,15 @@ public class RobotController : MonoBehaviour
     }
 
     void KeyboardUpdate(){
+        //set all _odometryManager to false
+        _odometryManager._forward = false;
+        _odometryManager._backward = false;
+        _odometryManager._left = false;
+        _odometryManager._right = false;
+        
         if (Input.anyKey)
         {
+            
             // Loop through all the possible key codes and check if the key is pressed
             foreach (KeyCode keyCode in System.Enum.GetValues(typeof(KeyCode)))
             {
@@ -274,12 +281,18 @@ public class RobotController : MonoBehaviour
                                 {
                                     //move odile right
                                     controller.Move(transform.right * (index % 2 == 0 ? 1 : -1) / _moveUpdate);
+                                    //set odometry right or left to true
+                                    _odometryManager._right = index % 2 == 0 ? true : false;
+                                    _odometryManager._left = index % 2 == 0 ? false : true;
                                 }
                                 //if direction is MoveForward
                                 if (_robotJointsArmsDict[index / 2].direction == "MoveForward")
                                 {
                                     //move odile forward
                                     controller.Move(transform.forward * (index % 2 == 0 ? 1 : -1) / _moveUpdate);
+                                    //set odometry forward or backward to true
+                                    _odometryManager._forward = index % 2 == 0 ? true : false;
+                                    _odometryManager._backward = index % 2 == 0 ? false : true;
                                 }
                                 //if direction is MoveRotate
                                 if (_robotJointsArmsDict[index / 2].direction == "MoveRotateRight")
@@ -596,6 +609,7 @@ public class RobotController : MonoBehaviour
     public List<bool> showOptions = new List<bool>(); // List of booleans to show/hide the options
     private bool listSetup = false; // Boolean to check if the list has been setup
     public string[] options = { "Right Stick X", "Right Stick Y", "Left Stick X", "Left Stick Y", "Right Trigger", "Left Trigger", "D-Pad X", "D-Pad Y", "Right Bumper", "Left Bumper", "A", "B", "X", "Y", "Start", "Select", "Left Stick Button", "Right Stick Button", "Left Stick Button", "Right Stick Button", "None" };
+    public OdometryManager _odometryManager;
     private bool _hideGui = false;
     private void OnGUI()
     {

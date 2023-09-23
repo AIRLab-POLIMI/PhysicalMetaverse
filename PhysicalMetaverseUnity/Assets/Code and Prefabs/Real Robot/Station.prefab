@@ -247,7 +247,14 @@ MonoBehaviour:
   _stationIp: 
   _stationState: 0
   _correctStation: 1
+  _tracked: 0
+  _odometryManager: {fileID: 0}
+  _untrackedParent: {fileID: 0}
+  _stationManager: {fileID: 0}
   _stationColor: {r: 0, g: 1, b: 0, a: 1}
+  _untrackedAngle: 0
+  _prevTracked: 0
+  _fadeSpeed: 0.0019
   _totalBlinks: 4
   _blinkTime: 0.3
 --- !u!114 &3313468184526816478

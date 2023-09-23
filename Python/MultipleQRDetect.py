@@ -120,8 +120,8 @@ def VirtualQR():
     return frame
     
 while True:
-  #success, frame = vid.read()
-  frame = VirtualQR()
+  success, frame = vid.read()
+  #frame = VirtualQR()
   frame = detectQR()
   cv2.imshow("Video", frame)
   cv2.waitKey(1)

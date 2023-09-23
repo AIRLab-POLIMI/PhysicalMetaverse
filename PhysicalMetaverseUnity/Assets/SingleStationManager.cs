@@ -18,6 +18,7 @@ public class SingleStationManager : MonoBehaviour
 
     public bool _correctStation = true;
     public bool _tracked = false;
+    public OdometryManager _odometryManager;
     //transform orientationtransform
     private Transform _orientationTransform;
     public Transform _untrackedParent;
@@ -71,6 +72,8 @@ public class SingleStationManager : MonoBehaviour
     public int _untrackedAngle = 0;
     public bool _prevTracked = false;
     private float _resetAngle = 0;
+    [Range(0.001f, 0.02f)]
+    public float _fadeSpeed = 0.1f;
     private void Odometry()
     {
         if (_tracked)
@@ -85,6 +88,12 @@ public class SingleStationManager : MonoBehaviour
             _untrackedAngle = (int)positiveOrientation;
             _prevTracked = true;
             _untrackedParent.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            if(!_prevTracked)
+                //reset position to 0
+                transform.position = Vector3.zero;
+                //set alpha to 1
+                gameObject.GetComponent<Renderer>().material.color = new Color(_stationColor.r, _stationColor.g, _stationColor.b, 1);
+
         }
         else
         {
@@ -112,9 +121,38 @@ public class SingleStationManager : MonoBehaviour
                 //_untrackedParent.transform.localRotation = Quaternion.Euler(0, diffAngle, 0);
             
             _prevTracked = false;
+
+            //check if something is true in odometry manager
+            if (_odometryManager._forward)
+            {
+                transform.position -= Vector3.forward * _odometryManager._speed * Time.deltaTime;
+                //fade material alpha a bit, no lerp
+                FadeOut();
+            }
+            if (_odometryManager._backward)
+            {
+                transform.position += Vector3.forward * _odometryManager._speed * Time.deltaTime;
+                FadeOut();
+            }
+            if (_odometryManager._left)
+            {
+                transform.position += Vector3.right * _odometryManager._speed * Time.deltaTime;
+                FadeOut();
+            }
+            if (_odometryManager._right)
+            {
+                transform.position -= Vector3.right * _odometryManager._speed * Time.deltaTime;
+                FadeOut();
+            }
         }
     }
 
+    public void FadeOut(){
+        if (gameObject.GetComponent<Renderer>().material.color.a > 0)
+            gameObject.GetComponent<Renderer>().material.color = new Color(_stationColor.r, _stationColor.g, _stationColor.b, gameObject.GetComponent<Renderer>().material.color.a - _fadeSpeed);
+        else
+            gameObject.GetComponent<Renderer>().material.color = new Color(_stationColor.r, _stationColor.g, _stationColor.b, 0);
+    }
     public void SetTracked(bool tracked)
     {
         _tracked = tracked;
