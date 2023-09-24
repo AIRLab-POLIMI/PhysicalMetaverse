@@ -98,7 +98,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(('127.0.0.1', 25667))
 
 #set timeout
-sock.settimeout(50)
+sock.settimeout(5)
 ACCEPT_INVALID_QR = True
 STATION_KEY = b'\xc3'
 

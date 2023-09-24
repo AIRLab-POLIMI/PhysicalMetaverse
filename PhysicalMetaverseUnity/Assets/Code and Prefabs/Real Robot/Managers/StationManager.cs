@@ -190,6 +190,7 @@ public class StationManager : MonoBehaviour
     //public TRACKING_DECAY_TIME
     public float TRACKING_DECAY_TIME = 0.1f;
     public float _yPosition = -0.8f;
+    public bool _lerp = false;
     private void MoveStations()
     {
         try
@@ -216,7 +217,10 @@ public class StationManager : MonoBehaviour
                         //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, (((int[])_stationsData[i])[2] / _imageFrameScale * _imageRatio ) + yOffset, ((int[])_stationsData[i])[3] / _zScale + zOffset), _speed);
                         float currentZ = ((int[])_stationsData[i])[3] / _zScale + zOffset;
                         //block Y to -0.8
-                        station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, _yPosition, currentZ), _speed);
+                        if(_lerp)
+                            station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, _yPosition, currentZ), _speed);
+                        else
+                            station.transform.localPosition = new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, _yPosition, currentZ);
                     }
                 }
             }

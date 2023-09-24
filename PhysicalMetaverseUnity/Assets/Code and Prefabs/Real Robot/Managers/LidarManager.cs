@@ -112,6 +112,7 @@ public class LidarManager : Monosingleton<LidarManager>
     }
 
     public bool ENABLE_LOG = false;
+
     public void OnMsgRcv(byte[] msg)
     {
         //disable Debug.Log for this object
@@ -123,7 +124,7 @@ public class LidarManager : Monosingleton<LidarManager>
         //Debug.Log(bytesAsInts);
 
         trackedCameraDegrees = CopyTrackedDegrees(bytesAsInts, nOfLidarDegrees);
-        
+
         //var sb = new StringBuilder("new int[] { ");
 
         int i = 0;

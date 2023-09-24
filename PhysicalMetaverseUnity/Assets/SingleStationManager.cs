@@ -77,6 +77,7 @@ public class SingleStationManager : MonoBehaviour
     public float _fadeSpeed = 0.1f;
     //gameObject.GetComponent<Renderer>().material.color
     private Color _thisColor;
+    public bool _lerp = false;
     private void Odometry()
     {
         if (_tracked)
@@ -119,7 +120,12 @@ public class SingleStationManager : MonoBehaviour
                 diffAngle += 360;
             //if tracked changed dont lerp
             if (!_prevTracked)
-                _untrackedParent.transform.localRotation = Quaternion.Lerp(_untrackedParent.transform.localRotation, Quaternion.Euler(0, diffAngle, 0), 0.1f);
+            {
+                if(_lerp)
+                    _untrackedParent.transform.localRotation = Quaternion.Lerp(_untrackedParent.transform.localRotation, Quaternion.Euler(0, diffAngle, 0), 0.1f);
+                else
+                    _untrackedParent.transform.localRotation = Quaternion.Euler(0, diffAngle, 0);
+            }
                 //no lerp
                 //_untrackedParent.transform.localRotation = Quaternion.Euler(0, diffAngle, 0);
             
