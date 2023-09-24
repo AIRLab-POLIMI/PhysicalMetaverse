@@ -28,11 +28,12 @@ public class SingleStationManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _thisColor = gameObject.GetComponent<Renderer>().material.color;
         ResetStation();
         if (_correctStation)
         {
             _stationColor = Color.green;
-            gameObject.GetComponent<Renderer>().material.color = _stationColor;
+            _thisColor = _stationColor;
         }
         else
         {
@@ -74,6 +75,8 @@ public class SingleStationManager : MonoBehaviour
     private float _resetAngle = 0;
     [Range(0.001f, 0.02f)]
     public float _fadeSpeed = 0.1f;
+    //gameObject.GetComponent<Renderer>().material.color
+    private Color _thisColor;
     private void Odometry()
     {
         if (_tracked)
@@ -92,7 +95,7 @@ public class SingleStationManager : MonoBehaviour
                 //reset position to 0
                 transform.position = Vector3.zero;
                 //set alpha to 1
-                gameObject.GetComponent<Renderer>().material.color = new Color(_stationColor.r, _stationColor.g, _stationColor.b, 1);
+                gameObject.GetComponent<Renderer>().material.color = new Color(gameObject.GetComponent<Renderer>().material.color.r, gameObject.GetComponent<Renderer>().material.color.g, gameObject.GetComponent<Renderer>().material.color.b, 1);
 
         }
         else
@@ -149,9 +152,12 @@ public class SingleStationManager : MonoBehaviour
 
     public void FadeOut(){
         if (gameObject.GetComponent<Renderer>().material.color.a > 0)
-            gameObject.GetComponent<Renderer>().material.color = new Color(_stationColor.r, _stationColor.g, _stationColor.b, gameObject.GetComponent<Renderer>().material.color.a - _fadeSpeed);
+            gameObject.GetComponent<Renderer>().material.color = new Color(gameObject.GetComponent<Renderer>().material.color.r, gameObject.GetComponent<Renderer>().material.color.g, gameObject.GetComponent<Renderer>().material.color.b, gameObject.GetComponent<Renderer>().material.color.a - _fadeSpeed);
         else
-            gameObject.GetComponent<Renderer>().material.color = new Color(_stationColor.r, _stationColor.g, _stationColor.b, 0);
+        {
+            gameObject.GetComponent<Renderer>().material.color = new Color(gameObject.GetComponent<Renderer>().material.color.r, gameObject.GetComponent<Renderer>().material.color.g, gameObject.GetComponent<Renderer>().material.color.b, 0);
+            gameObject.SetActive(false);
+        }
     }
     public void SetTracked(bool tracked)
     {

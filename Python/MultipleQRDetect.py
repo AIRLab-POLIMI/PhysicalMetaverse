@@ -5,6 +5,8 @@ import cv2
 #Scanning QR Code from Camera Feed
 vid = cv2.VideoCapture(0)
 
+CAMERA = "remote" #"webcam", "remote", "virtual"
+
 def detectQR():
     global frame, sock
     msg = []
@@ -26,8 +28,11 @@ def detectQR():
         #cv2.circle(frame, (polygon_Points[2][0][0], polygon_Points[2][0][1]), 10, (0, 255, 0), -1)
         try:
             rectangle_diagonal = np.sqrt((polygon_Points[0][0][0] - polygon_Points[2][0][0]) ** 2 + (polygon_Points[0][0][1] - polygon_Points[2][0][1]) ** 2)
+            #other diagonal
+            other_rectangle_diagonal = np.sqrt((polygon_Points[1][0][0] - polygon_Points[3][0][0]) ** 2 + (polygon_Points[1][0][1] - polygon_Points[3][0][1]) ** 2)
             #draw rectangle diagonal
             cv2.line(frame, (polygon_Points[0][0][0], polygon_Points[0][0][1]), (polygon_Points[2][0][0], polygon_Points[2][0][1]), (255, 0, 0), 2)
+            cv2.line(frame, (polygon_Points[1][0][0], polygon_Points[1][0][1]), (polygon_Points[3][0][0], polygon_Points[3][0][1]), (255, 0, 0), 2)
             #rectangle center
             rect_center = (int((polygon_Points[0][0][0] + polygon_Points[2][0][0]) / 2), int((polygon_Points[0][0][1] + polygon_Points[2][0][1]) / 2))
             #draw
@@ -38,6 +43,8 @@ def detectQR():
 
             # Diagonal length of the square in pixels
             diagonal_length_pixels = rectangle_diagonal  # Replace this with the actual measurement
+            other_diagonal_length_pixels = other_rectangle_diagonal
+            length_to_measure = (diagonal_length_pixels + other_diagonal_length_pixels) / 2
 
             # Focal length of the camera in millimeters
             focal_length_mm = 4.81
@@ -46,7 +53,7 @@ def detectQR():
             actual_square_size_meters = 0.2  # Replace this with the actual measurement
 
             # Calculate the angular size in radians
-            angular_size_rad = 2 * math.atan(diagonal_length_pixels / (2 * focal_length_mm))
+            angular_size_rad = 2 * math.atan(length_to_measure / (2 * focal_length_mm))
 
             # Calculate the distance using the formula
             distance_meters = (actual_square_size_meters / 2) / math.tan(angular_size_rad / 2)
@@ -88,6 +95,10 @@ import traceback
 DEST_IP = "127.0.0.1"
 DEST_PORT = 25666
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(('127.0.0.1', 25667))
+
+#set timeout
+sock.settimeout(50)
 ACCEPT_INVALID_QR = True
 STATION_KEY = b'\xc3'
 
@@ -95,18 +106,6 @@ def QrFromFile():
     global qr_png
     qr_png = cv2.imread("qrcode.png")
     return qr_png
-
-qr_x = 0
-qr_y = 0
-qr_size = 0
-
-def mouse_callback(event, x, y, flags, param):
-    global qr_x, qr_y, qr_size
-    if event == cv2.EVENT_LBUTTONDOWN:
-        qr_x = x
-        qr_y = y
-    elif event == cv2.EVENT_MOUSEMOVE:
-        qr_size = x - qr_x
 
 from PIL import ImageGrab
 
@@ -118,13 +117,39 @@ def VirtualQR():
     frame = cv2.resize(frame, (0,0), fx=0.4, fy=0.4)
 
     return frame
-    
+
+def QrFromUdp():
+    #receive a list from udp containing width, height, and frame
+    global frame, sock
+    try:
+        data, addr = sock.recvfrom(65536)
+        data, addr = sock.recvfrom(65536)
+        #print
+        #print("RECEIVED MSG " + str(data))
+        data = np.frombuffer(data, dtype=np.uint8)
+        frame = cv2.imdecode(data, 1)
+        return frame
+    except:
+        print("No image received")
+        return frame
+
+import time
+
 while True:
-  success, frame = vid.read()
-  #frame = VirtualQR()
-  frame = detectQR()
-  cv2.imshow("Video", frame)
-  cv2.waitKey(1)
+    if CAMERA == "webcam":
+        success, frame = vid.read()
+    elif CAMERA == "remote":
+        frame = QrFromUdp()
+    elif CAMERA == "virtual":
+        frame = VirtualQR()
+    else:
+        print("INVALID CAMERA")
+        break
+    frame = detectQR()
+    cv2.imshow("Video", frame)
+    cv2.waitKey(1)
+    #sleep 0.05
+    time.sleep(0.05)
 
 
 

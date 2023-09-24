@@ -133,7 +133,12 @@ public class StationManager : MonoBehaviour
     [Range(1f, 100f)]
     public float _scale = 2f;
     [Range(1f, 500f)]
-    public float _imageFrameScale = 500;
+    public float _imageFrameScale = 480f;
+    public float _imageRatio = 4f/3f;
+    
+    [Range(10f, 100f)]
+    public float _zScale = 1f;
+
     [Range(-15f, 15)]
     public float zOffset = 0f;
 
@@ -141,6 +146,9 @@ public class StationManager : MonoBehaviour
     public float yOffset = 0f;
     [Range(-15f, 15)]
     public float xOffset = 0f;
+    
+    [Range(0.01f, 2f)]
+    public float _cameraSidesCorrection = 1f;
 
     private GameObject _sphere;
     //spawn spheres
@@ -181,6 +189,7 @@ public class StationManager : MonoBehaviour
     public float STATIONS_DECAY_TIME = 0.3f; //TODO REPLACE WITH DRIFTED TOO MUCH AWAY WITHOUT SEEING AGAIN
     //public TRACKING_DECAY_TIME
     public float TRACKING_DECAY_TIME = 0.1f;
+    public float _yPosition = -0.8f;
     private void MoveStations()
     {
         try
@@ -202,7 +211,12 @@ public class StationManager : MonoBehaviour
                     if (station.GetComponent<SingleStationManager>()._tracked)
                     {
                         //lerp
-                        station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);
+                        //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);
+                        //switch x and y
+                        //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, (((int[])_stationsData[i])[2] / _imageFrameScale * _imageRatio ) + yOffset, ((int[])_stationsData[i])[3] / _zScale + zOffset), _speed);
+                        float currentZ = ((int[])_stationsData[i])[3] / _zScale + zOffset;
+                        //block Y to -0.8
+                        station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, _yPosition, currentZ), _speed);
                     }
                 }
             }

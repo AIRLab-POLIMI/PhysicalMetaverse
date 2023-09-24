@@ -197,6 +197,11 @@ public class RobotController : MonoBehaviour
         }
 
         if (_VREnabled){
+            //set all _odometryManager to false
+            _odometryManager._forward = false;
+            _odometryManager._backward = false;
+            _odometryManager._left = false;
+            _odometryManager._right = false;
             //move robot
             //get value of analog stick axes
             Vector2 currentAnalogVal = _InputActionReferenceAnalog.action.ReadValue<Vector2>();
@@ -208,22 +213,30 @@ public class RobotController : MonoBehaviour
             {
                 //move right
                 controller.Move(-transform.right * currentAnalogVal.x / _moveUpdate);
+                //set odometry
+                _odometryManager._left = true;
             }
             else if (currentAnalogVal.x < -0.5f)
             {
                 //move left
                 controller.Move(-transform.right * currentAnalogVal.x / _moveUpdate);
+                //set odometry
+                _odometryManager._right = true;
             }
             //y axis
             if (currentAnalogVal.y > 0.5f)
             {
                 //move forward
                 controller.Move(transform.forward * currentAnalogVal.y / _moveUpdate);
+                //set odometry
+                _odometryManager._forward = true;
             }
             else if (currentAnalogVal.y < -0.5f)
             {
                 //move backward
                 controller.Move(transform.forward * currentAnalogVal.y / _moveUpdate);
+                //set odometry
+                _odometryManager._backward = true;
             }
             if (currentAnalogRotationVal.x > 0.5f)
             {
