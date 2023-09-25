@@ -130,7 +130,7 @@ DEST_PORT = 25666
 KEY_VALUE = True
 POSE_KEY = b'\xf2'
 STATION_KEY = b'\xc3'
-RENDER = False
+RENDER = True
 
 import traceback
 
@@ -159,8 +159,8 @@ def main():
         import time
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         #setup qr thread as daemon
-        qr = threading.Thread(target=qrThread, daemon=True)
-        qr.start()
+        #qr = threading.Thread(target=qrThread, daemon=True)
+        #qr.start()
 
         #init camera
         #camera = cv2.VideoCapture(1)
@@ -227,6 +227,7 @@ def loop(sock):#,camera):
         if frame is not None and RENDER:
             # Draw 2d skeleton
             frame = renderer.draw(frame, body)
+            cv2.imshow("frame", frame)
     #type of frame is numpy.ndarray
     #showOnlyBlue(frame, connection)
     

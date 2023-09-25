@@ -66,6 +66,10 @@ def encode_msg(msgtype, data):
     elif msgtype == COLOR_KEY :
         msg = msgtype + data
         return msg
+    
+    elif msgtype == "" :
+        msg = data
+        return msg
         
 
 

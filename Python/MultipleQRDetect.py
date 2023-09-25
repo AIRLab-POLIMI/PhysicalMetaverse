@@ -5,7 +5,7 @@ import cv2
 #Scanning QR Code from Camera Feed
 vid = cv2.VideoCapture(0)
 
-CAMERA = "remote" #"webcam", "remote", "virtual"
+CAMERA = "webcam" #"webcam", "remote", "virtual"
 
 def detectQR():
     global frame, sock

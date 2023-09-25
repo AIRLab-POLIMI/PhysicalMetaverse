@@ -5,7 +5,7 @@ from networkStuff.connection import Connection
 import multiprocessing
 import DepthAICamera
 
-WINDOWS = 1
+WINDOWS = 0
 
 if not WINDOWS:
     import Jetson.GPIO as GPIO
@@ -17,7 +17,7 @@ if not WINDOWS:
     GPIO.setup(third_pin, GPIO.OUT, initial=GPIO.LOW)
 
 # LIDAR SETTINGS
-LIDAR_TOLERANCE = 50
+LIDAR_TOLERANCE = 10
 LIDAR_TIMEOUT_INVALIDATE = 3 # after this amount of invalid or missing readings, the stored value gets invalidated
 LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 
@@ -25,11 +25,12 @@ LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 0
-GYRO_ENABLED = 0
+LIDAR_ENABLED = 1
+GYRO_ENABLED = 1
 POSE_D_ENABLED = 0
 CONTROLLER_ENABLED = 0
 CAMERA_ENABLED = 1
+QR_ENABLED = 1
 
 #Enable/disable display output
 POSE_SCREENLESS_MODE = 1
@@ -62,6 +63,10 @@ if POSE_D_ENABLED:
     pose = PoseDetector()
 connection.set_pose_ready(True)
 
+if QR_ENABLED:
+    import MultipleQRDetectReal as qrdetector #not a class sorry
+connection.set_qr_ready(True)
+
 if not WINDOWS:
     GPIO.output(setup_pin, GPIO.LOW)
 
@@ -93,12 +98,16 @@ class Main:
             self.lidar_process = multiprocessing.Process(target=lidar.update_measurements,
                                                    args=[lidarQueue, LIDAR_TOLERANCE, LIDAR_TIMEOUT_INVALIDATE,
                                                          LIDAR_MAX_DIST_INVALIDATE, connection])
+            #set daemon
+            self.lidar_process.daemon = True
             self.lidar_process.start()
 
 
         if GYRO_ENABLED:
             print("setting up serial communication...")
             self.gyro_process = multiprocessing.Process(target=gyro.start_update, args=[GYRO_TOLERANCE, connection])
+            #set daemon
+            self.gyro_process.daemon = True
             self.gyro_process.start()
 
 
@@ -115,7 +124,17 @@ class Main:
         if CONTROLLER_ENABLED:
             import Controller
             controller_process = multiprocessing.Process(target=Controller.main, args=[])
+            #set daemon
+            controller_process.daemon = True
             controller_process.start()
+
+        if QR_ENABLED:
+            print("setting up QR code detection...")
+            qr_process = multiprocessing.Process(target=qrdetector.start, args=[connection])
+            #set daemon
+            qr_process.daemon = True
+            qr_process.start()
+
 
         print("Setup COMPLETED =)")
 

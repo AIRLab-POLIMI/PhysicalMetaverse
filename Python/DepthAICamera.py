@@ -150,7 +150,7 @@ def loop(connection):
         to_send = str(body.landmarks).encode()
         
         connection.send(POSE_KEY, to_send)
-        print("SENT CAMERA ")# + str(body.landmarks))
+        #print("SENT CAMERA " + str(to_send))# + str(body.landmarks))
 
     #print exception
     except Exception as e:

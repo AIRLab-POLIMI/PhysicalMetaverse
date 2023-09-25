@@ -90,6 +90,9 @@ class Connection:
     def set_lidar_ready(self, value):
         self.LIDAR_READY = value
 
+    def set_qr_ready(self, value):
+        self.QR_READY = value
+
     def set_lidar_queue(self, queue):
         self.lidar_queue = queue
     def are_sensors_ready(self):
