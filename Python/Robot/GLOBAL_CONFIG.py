@@ -8,7 +8,7 @@ DEFAULT_UNITY_IP = "192.168.0.101" #used by connection.py
 TCP_PRESENTATIONS = 0 #used by connection.py
 
 #  ODILE STUFF  ######################################
-ODILE_ARDUINO_PLUGGED = False
+ODILE_ARDUINO_PLUGGED = True
 BASE_ONLY = True
 SKIP_ARDUINO_SETUP = False
 serial_default_port = "/dev/ttyACM0_DEFAULT"
