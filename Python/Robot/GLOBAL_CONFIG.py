@@ -1,4 +1,6 @@
 #GLOBAL_CONFIG
+WINDOWS = 1
+
 UNITY_TIMEOUT = 999 #used by unity_channel.py
 NETWORKING_TIMEOUT = 999 #used by networking_channel.py
 VR_IP = "192.168.1.13" #used by controllers in main_control.py
@@ -13,13 +15,13 @@ odile_ip = '127.0.0.1'
 
 #  ROBOT FEATURES  ###################################
 
-LIDAR_ENABLED = 0
-GYRO_ENABLED = 0
-POSE_D_ENABLED = 0
-CONTROLLER_ENABLED = 0
-VR_CONTROLLER_ENABLED = 1
-CAMERA_ENABLED = 0
-QR_ENABLED = 0
+LIDAR_ENABLED = 0 #Lidar.py
+GYRO_ENABLED = 0 #GyroSerial.py
+OLD_POSE_ENABLED = 0
+LOGITECH_ENABLED = 0
+KEYVALUE_RECEIVE_ENABLED = 1
+DEPTHAI_ENABLED = 0 #DepthAICamera.py
+QR_ENABLED = 0 #MultipleQRDetectReal.py
 
 ####################################################
 

@@ -2,6 +2,7 @@ import GLOBAL_CONFIG
 from networkStuff.networking_channel import NetworkingChannel
 from networkStuff.unity_channel import UnityChannel
 from networkStuff.utils import encode_msg, decode_msg
+import time
 
 TCP_PRESENTATIONS = GLOBAL_CONFIG.TCP_PRESENTATIONS
 DEFAULT_UNITY_IP = GLOBAL_CONFIG.DEFAULT_UNITY_IP
@@ -51,6 +52,8 @@ class Connection:
                 raise ConnectionError
 
                 #self.retry_connection()
+            #sleep 1ms
+            #time.sleep(0.001)
 
 
     def retry_connection(self):
