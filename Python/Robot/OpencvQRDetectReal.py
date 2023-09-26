@@ -7,6 +7,7 @@ import traceback
 #CAMERA = "webcam" #"webcam", "remote", "virtual"
 
 SHOW = False
+OFFLINE = False
 
 def loop(connection, vid, qcd):
     global frame
@@ -14,18 +15,93 @@ def loop(connection, vid, qcd):
     msg = []
     #downscale frame to half
     frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
-    ret_qr, decoded_info, points, _ = qcd.detectAndDecodeMulti(frame)
+    try:
+        ret_qr, decoded_info, points, _ = qcd.detectAndDecodeMulti(frame)
+    except:
+        traceback.print_exc()
+        ret_qr = False
     if ret_qr:
-            for s, p in zip(decoded_info, points):
-                if s:
-                    print(s)
-                    color = (0, 255, 0)
-                else:
-                    color = (0, 0, 255)
-                frame = cv2.polylines(frame, [p.astype(int)], True, color, 8)
+        for s, p in zip(decoded_info, points):
+            if s:
+                print(s)
+                color = (0, 255, 0)
+            else:
+                color = (0, 0, 255)
+            frame = cv2.polylines(frame, [p.astype(int)], True, color, 8)
+            try:
+                """print(type(points))
+        # <class 'numpy.ndarray'>
+
+        print(points)
+        # [[[290.9108    106.20954  ]
+        #   [472.8162      0.8958926]
+        #   [578.5836    184.1002   ]
+        #   [396.0495    287.81277  ]]
+        # 
+        #  [[620.         40.       ]
+        #   [829.         40.       ]
+        #   [829.        249.       ]
+        #   [620.        249.       ]]
+        # 
+        #  [[ 40.         40.       ]
+        #   [249.         40.       ]
+        #   [249.        249.       ]
+        #   [ 40.        249.       ]]]
+
+        print(points.shape)
+        # (3, 4, 2)"""
+                #rect_center given the above information
+                rect_center = (int((points[0][0][0] + points[0][2][0]) / 2), int((points[0][0][1] + points[0][2][1]) / 2))
+                
+                if SHOW:
+                    cv2.circle(frame, rect_center, 10, (255, 0, 0), -1)
+                rectangle_diagonal = np.sqrt((points[0][0][0] - points[0][2][0]) ** 2 + (points[0][0][1] - points[0][2][1]) ** 2)
+                other_rectangle_diagonal = np.sqrt((points[0][1][0] - points[0][3][0]) ** 2 + (points[0][1][1] - points[0][3][1]) ** 2)
+
+                import math
+
+                # Diagonal length of the square in pixels
+                diagonal_length_pixels = rectangle_diagonal  # Replace this with the actual measurement
+                other_diagonal_length_pixels = other_rectangle_diagonal
+                length_to_measure = (diagonal_length_pixels + other_diagonal_length_pixels) / 2
+
+                # Focal length of the camera in millimeters
+                focal_length_mm = 4.81
+
+                # Actual size of the square in the real world (e.g., in meters)
+                actual_square_size_meters = 0.2  # Replace this with the actual measurement
+
+                # Calculate the angular size in radians
+                angular_size_rad = 2 * math.atan(length_to_measure / (2 * focal_length_mm))
+
+                # Calculate the distance using the formula
+                distance_meters = (actual_square_size_meters / 2) / math.tan(angular_size_rad / 2)
+                distance_meters = distance_meters*100* 33/13
+                #print("Distance from camera to square: {:.2f} meters".format(distance_meters))
+                distance_meters *= 100
+                #send qr x,y, size
+                #append key
+                #MSG FORMAT: [barcode, x, y, size(diagonal)]
+                msg = []
+                try:
+                    currMsg = STATION_KEY + str([int(decoded_info) , rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                    msg += [currMsg]
+                except:
+                    #DIRTY FIX TO USE INVALID QR CODES
+                    if ACCEPT_INVALID_QR:
+                        currMsg = STATION_KEY + str([int(1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                    else:
+                        currMsg = STATION_KEY + str([int(-1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                    msg += [currMsg]
+                print(msg)
+            except:
+                #print stacktrace
+                traceback.print_exc()
+            
     if SHOW:
         cv2.imshow("Image", frame)
         cv2.waitKey(1)
+        
 
 #socket sock
 #import socket
@@ -86,6 +162,13 @@ def start(connection):
     while True:
         loop(connection, vid, qcd)
 
+if OFFLINE:
+    #Scanning QR Code from Camera Feed
+    vid = cv2.VideoCapture(0)
+    qcd = cv2.QRCodeDetector()
+    connection = None
+    while True:
+        loop(connection, vid, qcd)
 """
 while True:
     if CAMERA == "webcam":
