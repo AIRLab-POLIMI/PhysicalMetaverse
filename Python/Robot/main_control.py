@@ -8,41 +8,7 @@ import DepthAICamera
 
 #TODO Restore timeouts in unity channel and networking channel
 
-#rasp_odile
-import os
-from classes.control import Control
-from configs.robots.dof import DofName
-from configs.robots.robots import odile
 
-# directory of the file. It's the same dicrectory of the RESTART.SH file
-abs_path = os.path.dirname(os.path.abspath(__file__))
-restart_file_name = "restart.sh"
-path_to_restart = "./" + restart_file_name  # abs_path + "/restart.sh"
-
-VR_ip = GLOBAL_CONFIG.VR_IP #TODO connection already uses pinged ip, use that instead
-robot = odile.odile
-
-
-def add_esp_channels():
-
-    global control
-    #global control_base
-    from configs.esps.esp_types import ESP_VALUE_TYPE_KEYS
-    from configs.robots.dof import DofName
-    
-    control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_TRIG.value, DofName.STRAFE.value.key, True)
-    control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_X.value, DofName.ANGULAR.value.key, True)
-    control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_Y.value, DofName.FORWARD.value.key, True)
-
-    #control.on_new_config_rcv(test_ip_3, ESP_VALUE_TYPE_KEYS.MPX.value, DofName.HEAD_BODY_T.value.key, True)
-    if not GLOBAL_CONFIG.BASE_ONLY:
-        control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_GRAB.value, DofName.HEAD_BF.value.key, True)
-        control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.ANGLE_Y.value, DofName.HEAD_UD.value.key, True)
-        control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.ANGLE_Z.value, DofName.HEAD_LR.value.key, True)
-        control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_TRIG.value, DofName.TAIL_BF.value.key, True)
-        control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_Y.value, DofName.TAIL_UD.value.key, True)
-        control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_X.value, DofName.TAIL_LR.value.key, True)
-#rasp_odile
 
 WINDOWS = GLOBAL_CONFIG.WINDOWS
 
@@ -81,7 +47,7 @@ if not WINDOWS:
     GPIO.output(setup_pin, GPIO.HIGH)
 
 connection = Connection()
-control = Control(robot, path_to_restart, connection.NETWORKING_CHANNEL)
+###control = Control(robot, path_to_restart, connection.NETWORKING_CHANNEL)
 
 if CAMERA_ENABLED:
     import DepthAICamera as camera #not a class sorry
@@ -171,9 +137,9 @@ class Main:
             controller_process.start()
 
         #rasp_odile
-        if VR_CONTROLLER_ENABLED:
-            add_esp_channels()
-            control.setup()
+        ###if VR_CONTROLLER_ENABLED:
+        ###    add_esp_channels()
+        ###    control.setup()
         #rasp_odile
 
         if QR_ENABLED:
@@ -201,8 +167,8 @@ class Main:
                 if POSE_D_ENABLED:
                     pose.getMeasure(connection, POSE_SCREENLESS_MODE)
                 #rasp_odile
-                if VR_CONTROLLER_ENABLED:
-                    control.loop()
+                ###if VR_CONTROLLER_ENABLED:
+                ###    control.loop()
                 #rasp_odile
 
             self.restart()
@@ -257,7 +223,7 @@ if __name__ == '__main__':
     main.setup()
     main.loop()
     #rasp_odile
-    if VR_CONTROLLER_ENABLED:
-        control.cleanup()
+    ###if VR_CONTROLLER_ENABLED:
+    ###    control.cleanup()
     #rasp_odile
     main.close()

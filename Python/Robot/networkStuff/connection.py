@@ -4,6 +4,21 @@ from networkStuff.unity_channel import UnityChannel
 from networkStuff.utils import encode_msg, decode_msg
 import time
 
+import os
+from classes.control import Control
+from configs.robots.dof import DofName
+from configs.robots.robots import odile
+
+#rasp_odile
+
+# directory of the file. It's the same dicrectory of the RESTART.SH file
+abs_path = os.path.dirname(os.path.abspath(__file__))
+restart_file_name = "restart.sh"
+path_to_restart = "./" + restart_file_name  # abs_path + "/restart.sh"
+
+VR_ip = GLOBAL_CONFIG.VR_IP #TODO connection already uses pinged ip, use that instead
+robot = odile.odile
+
 TCP_PRESENTATIONS = GLOBAL_CONFIG.TCP_PRESENTATIONS
 DEFAULT_UNITY_IP = GLOBAL_CONFIG.DEFAULT_UNITY_IP
 class Connection:
@@ -28,6 +43,27 @@ class Connection:
 
         self.lidar_queue = None
 
+        self.control = Control(robot, path_to_restart, self.NETWORKING_CHANNEL)
+
+    def add_esp_channels(self):
+        #global control_base
+        from configs.esps.esp_types import ESP_VALUE_TYPE_KEYS
+        from configs.robots.dof import DofName
+        
+        self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_TRIG.value, DofName.STRAFE.value.key, True)
+        self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_X.value, DofName.ANGULAR.value.key, True)
+        self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_Y.value, DofName.FORWARD.value.key, True)
+
+        #control.on_new_config_rcv(test_ip_3, ESP_VALUE_TYPE_KEYS.MPX.value, DofName.HEAD_BODY_T.value.key, True)
+        if not GLOBAL_CONFIG.BASE_ONLY:
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_GRAB.value, DofName.HEAD_BF.value.key, True)
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.ANGLE_Y.value, DofName.HEAD_UD.value.key, True)
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.ANGLE_Z.value, DofName.HEAD_LR.value.key, True)
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_TRIG.value, DofName.TAIL_BF.value.key, True)
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_Y.value, DofName.TAIL_UD.value.key, True)
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_X.value, DofName.TAIL_LR.value.key, True)
+    #rasp_odile
+    
     def setup(self):
 
         self.NETWORKING_CHANNEL.setup(self.priority_responses)
@@ -42,6 +78,9 @@ class Connection:
 
         self.UNITY_CHANNEL = UnityChannel(networking_channel=self.NETWORKING_CHANNEL, unity_ip=self.UNITY_IP)
 
+        self.add_esp_channels()
+        self.control.setup()
+
     def loop(self):
         while True:
             if not self.UNITY_CHANNEL.loop():
@@ -50,7 +89,7 @@ class Connection:
                 #close connections
                 self.close_all_connections()
                 raise ConnectionError
-
+            self.control.loop()
                 #self.retry_connection()
             #sleep 1ms
             #time.sleep(0.001)
