@@ -1,4 +1,4 @@
-
+import GLOBAL_CONFIG
 
 # --------------------------------------------------------- MESSAGING CONSTANTS
 EMPTY_STRING = " "
@@ -7,8 +7,8 @@ MSG_DELIMITER = '_'
 
 # --------------------------------------------------------- SERIAL
 # DEFAULT serial parameters: SERIAL_ARDUINO class will be initialized with these values if not
-serial_default_port = "/dev/ttyACM0_DEFAULT"
-serial_base_port = "/dev/ttyUSB0_BASE"
+serial_default_port = GLOBAL_CONFIG.serial_default_port #"/dev/ttyACM0_DEFAULT"
+serial_base_port = GLOBAL_CONFIG.serial_base_port #"/dev/ttyUSB0_BASE"
 serial_default_baud = 115200 #500000  # 115200
 serial_default_timeout = 1 # in seconds
 serial_default_delay_after_setup = 1 # in seconds

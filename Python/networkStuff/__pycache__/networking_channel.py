@@ -1,3 +1,4 @@
+import GLOBAL_CONFIG
 import socket
 import time
 from networkStuff.constants import *
@@ -11,7 +12,7 @@ default_jetson_tcp_port = 25777
 default_buffer_size = 1024
 
 PING_INTERVAL = 0.5
-PING_TIMEOUT = 5
+PING_TIMEOUT = GLOBAL_CONFIG.NETWORKING_TIMEOUT
 
 
 # place them all in a list to check whether all are present at UDPEsp object initialization

@@ -1,9 +1,10 @@
+import GLOBAL_CONFIG
 from networkStuff.networking_channel import NetworkingChannel
 from networkStuff.unity_channel import UnityChannel
 from networkStuff.utils import encode_msg, decode_msg
 
-TCP_PRESENTATIONS = False
-DEFAULT_UNITY_IP = "127.0.0.1"
+TCP_PRESENTATIONS = GLOBAL_CONFIG.TCP_PRESENTATIONS
+DEFAULT_UNITY_IP = GLOBAL_CONFIG.DEFAULT_UNITY_IP
 class Connection:
     def __init__(self):
 

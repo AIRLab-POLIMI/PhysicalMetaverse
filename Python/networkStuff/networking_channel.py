@@ -221,7 +221,11 @@ class NetworkingChannel:
         try:
             # save the last rcv message
             self.udp_data = self.s_udp.recvfrom(self.BUFFER_SIZE)
-
+            
+            #if sender is "127.0.0.1" return false
+            if self.udp_data[1][0] == "127.0.0.1":
+                return False
+            
             if self.udp_data:
 
                 # check priority messages first, and respond accordingly

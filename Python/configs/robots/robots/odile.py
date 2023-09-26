@@ -1,3 +1,4 @@
+import GLOBAL_CONFIG
 from configs.robots.robot import Robot
 from configs.robots.dof import DofName
 from utils.constants import serial_default_port, default_rasp_port, serial_base_port
@@ -5,7 +6,7 @@ from utils.constants import serial_default_port, default_rasp_port, serial_base_
 
 odile_name = 'odile'
 
-odile_ip = '127.0.0.1' #192.168.43.131 HONOR 9 LITE
+odile_ip = GLOBAL_CONFIG.odile_ip #192.168.43.131 HONOR 9 LITE
 
 
 odile_arduino_port = serial_default_port

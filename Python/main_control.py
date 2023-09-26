@@ -1,9 +1,12 @@
+import GLOBAL_CONFIG
 import queue
 import time
 from networkStuff.constants import *
 from networkStuff.connection import Connection
 import multiprocessing
 import DepthAICamera
+
+#TODO Restore timeouts in unity channel and networking channel
 
 #rasp_odile
 import os
@@ -16,9 +19,9 @@ abs_path = os.path.dirname(os.path.abspath(__file__))
 restart_file_name = "restart.sh"
 path_to_restart = "./" + restart_file_name  # abs_path + "/restart.sh"
 
-VR_ip = "127.0.0.1" #TODO connection already uses pinged ip, use that instead
+VR_ip = GLOBAL_CONFIG.VR_IP #TODO connection already uses pinged ip, use that instead
 robot = odile.odile
-control = Control(robot, path_to_restart)
+
 
 def add_esp_channels():
 
@@ -54,7 +57,7 @@ if not WINDOWS:
     GPIO.setup(third_pin, GPIO.OUT, initial=GPIO.LOW)
 
 # LIDAR SETTINGS
-LIDAR_TOLERANCE = 10
+LIDAR_TOLERANCE = GLOBAL_CONFIG.LIDAR_TOLERANCE
 LIDAR_TIMEOUT_INVALIDATE = 3 # after this amount of invalid or missing readings, the stored value gets invalidated
 LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 
@@ -62,13 +65,13 @@ LIDAR_MAX_DIST_INVALIDATE = 6000 # maximum distance, set to 0 if greater
 GYRO_TOLERANCE = 0.75
 
 # ENABLE/DISABLE SENSORS
-LIDAR_ENABLED = 0
-GYRO_ENABLED = 0
-POSE_D_ENABLED = 0
-CONTROLLER_ENABLED = 0
-VR_CONTROLLER_ENABLED = 1
-CAMERA_ENABLED = 0
-QR_ENABLED = 0
+LIDAR_ENABLED = GLOBAL_CONFIG.LIDAR_ENABLED
+GYRO_ENABLED = GLOBAL_CONFIG.GYRO_ENABLED
+POSE_D_ENABLED = GLOBAL_CONFIG.POSE_D_ENABLED
+CONTROLLER_ENABLED = GLOBAL_CONFIG.CONTROLLER_ENABLED
+VR_CONTROLLER_ENABLED = GLOBAL_CONFIG.VR_CONTROLLER_ENABLED
+CAMERA_ENABLED = GLOBAL_CONFIG.CAMERA_ENABLED
+QR_ENABLED = GLOBAL_CONFIG.QR_ENABLED
 
 #Enable/disable display output
 POSE_SCREENLESS_MODE = 1
@@ -78,6 +81,7 @@ if not WINDOWS:
     GPIO.output(setup_pin, GPIO.HIGH)
 
 connection = Connection()
+control = Control(robot, path_to_restart, connection.NETWORKING_CHANNEL)
 
 if CAMERA_ENABLED:
     import DepthAICamera as camera #not a class sorry

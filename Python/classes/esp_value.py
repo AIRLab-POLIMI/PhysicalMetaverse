@@ -50,7 +50,7 @@ class EspValue:
         # if operation can't be completed, notify with PRINT and RETURN
         try:
             self.current_value = self.on_msg_received_preprocessing(float(string_msg))
-            print(f"[ESP VALUE][on_msg_received] - dof: '{self.dof}' - msg: '{string_msg}' - cur val: '{self.current_value}'")
+            print(f"[ESP VALUE][on_msg_received] - dof: '{self.dof_name}' - msg: '{string_msg}' - cur val: '{self.current_value}'")
         except Exception as e:
             print(f"[ESP VALUE][on_msg_received] - dof: '{self.dof}' - "
                    f"received MSG: '{string_msg}' "

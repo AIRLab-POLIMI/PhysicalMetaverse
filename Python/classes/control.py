@@ -1,8 +1,8 @@
-
+import GLOBAL_CONFIG
 import time
 from subprocess import call
 from classes.serial_channel import SerialChannel
-from classes.networking_channel import NetworkingChannel
+#from classes.networking_channel import NetworkingChannel
 from classes.esp_channel import SingleValueEspChannel, MultiValueEspChannel
 from classes.esp_value import EspValue
 from utils.util_methods import get_single_msg_for_serial
@@ -26,7 +26,7 @@ def quit_program():
 class Control:
     def __init__(self,
                  robot,
-                 path_to_restart):
+                 path_to_restart, networking_channel):
 
         # -- VARIABLES
         
@@ -38,7 +38,7 @@ class Control:
 
         # -- NETWORKING (with ESP)
         #
-        self.NETWORKING_CHANNEL = NetworkingChannel(self.ROBOT.ip, self.ROBOT.port)
+        self.NETWORKING_CHANNEL = networking_channel
 
         self.priority_responses = {
             net_reset_msg: self.restart_program,
@@ -51,9 +51,10 @@ class Control:
         # it's a STRING-SERIALCHANNEL dict, where the STRING is the SERIAL PORT of that channel
         self.SERIAL_CHANNELS = dict()
 
-        for serial_port in set(self.ROBOT.dof_name_to_serial_port_dict.values()):
-            if serial_port not in self.SERIAL_CHANNELS:
-                self.SERIAL_CHANNELS[serial_port] = SerialChannel(serial_port)
+        if GLOBAL_CONFIG.ODILE_ARDUINO_PLUGGED:
+            for serial_port in set(self.ROBOT.dof_name_to_serial_port_dict.values()):
+                if serial_port not in self.SERIAL_CHANNELS:
+                    self.SERIAL_CHANNELS[serial_port] = SerialChannel(serial_port)
 
         self.last_serial_time = time.time()
 
@@ -154,7 +155,7 @@ class Control:
     def setup(self):
         print(f"[CONTROL][SETUP] ---------------------------------------------- BEGIN")
         # 1:
-        self.NETWORKING_CHANNEL.setup_udp(self.priority_responses)
+        # self.NETWORKING_CHANNEL.setup_udp(self.priority_responses)
         
         # 2:
         for serial_channel in self.SERIAL_CHANNELS.values():
@@ -193,7 +194,7 @@ class Control:
                 if sender_ip in self.ESP_CHANNELS:
                     self.ESP_CHANNELS[sender_ip].on_esp_msg_rcv(string_msg)
                 else:
-                    print("ERROR")
+                    print("Invalid ESP Channel")
 
 
     def write_serial(self):

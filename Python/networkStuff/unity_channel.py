@@ -1,3 +1,4 @@
+import GLOBAL_CONFIG
 import time
 from networkStuff.networking_channel import bytes_to_unicode_str
 from networkStuff.utils import parse_unity_setup_msg
@@ -8,7 +9,7 @@ unity_presentation_response = b"UOKRESP"
 unity_ping_msg = "UP"
 
 PING_INTERVAL = 0.5
-PING_TIMEOUT = 5
+PING_TIMEOUT = GLOBAL_CONFIG.UNITY_TIMEOUT
 
 class UnityChannel:
 
