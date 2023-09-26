@@ -7,7 +7,7 @@ import traceback
 
 #CAMERA = "webcam" #"webcam", "remote", "virtual"
 
-SHOW = False
+SHOW = True
 
 def loop(connection, vid):
     global frame

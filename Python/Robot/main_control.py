@@ -72,7 +72,7 @@ if POSE_D_ENABLED:
 connection.set_pose_ready(True)
 
 if QR_ENABLED:
-    import MultipleQRDetectReal as qrdetector #not a class sorry
+    import OpencvQRDetectReal as qrdetector #not a class sorry
 connection.set_qr_ready(True)
 
 if not WINDOWS:
