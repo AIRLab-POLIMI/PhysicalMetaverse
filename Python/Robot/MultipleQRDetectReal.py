@@ -7,7 +7,7 @@ import traceback
 
 #CAMERA = "webcam" #"webcam", "remote", "virtual"
 
-SHOW = True
+SHOW = False
 
 def loop(connection, vid):
     global frame
@@ -71,6 +71,7 @@ def loop(connection, vid):
             #send qr x,y, size
             #append key
             #MSG FORMAT: [barcode, x, y, size(diagonal)]
+            msg = []
             try:
                 currMsg = STATION_KEY + str([int(barcode.data), rect_center[0], rect_center[1], int(distance_meters)]).encode()
                 msg += [currMsg]
@@ -82,6 +83,7 @@ def loop(connection, vid):
                     currMsg = STATION_KEY + str([int(-1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
                 msg += [currMsg]
             #udp send socket
+            print("send qr " + str(msg))
         except:
             print(traceback.print_exc())
     

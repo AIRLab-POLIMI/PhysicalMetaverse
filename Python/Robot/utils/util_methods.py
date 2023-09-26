@@ -121,7 +121,8 @@ def bytes_to_unicode_str(bytes_msg):
     try:
         return bytes_msg.decode('utf-8')
     except Exception as e:
-        print(f"[NETWORKING CHANNEL][BYTES TO UNICODE STR] - parsing BYTES MSG: '{bytes_msg}' returned an error: '{e}'")
+        #print(f"[NETWORKING CHANNEL][BYTES TO UNICODE STR] - parsing BYTES MSG: '{bytes_msg}' returned an error: '{e}'")
+        
         return None
 
 

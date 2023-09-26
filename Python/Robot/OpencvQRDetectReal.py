@@ -94,9 +94,19 @@ def loop(connection, vid, qcd):
                         currMsg = STATION_KEY + str([int(-1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
                     msg += [currMsg]
                 print(msg)
+                #send qr [b'\xc3[0, 163, 133, 145]']
+                #send qr [b'\xc3[1, 140, 171, 152]']
             except:
                 #print stacktrace
                 traceback.print_exc()
+    #aggregate all messages into one
+    stringMsg = b''
+    for m in msg:
+        stringMsg += m
+        
+    if stringMsg != b'':
+        #print("send qr " + str(stringMsg))
+        connection.send("", stringMsg)
             
     if SHOW:
         cv2.imshow("Image", frame)

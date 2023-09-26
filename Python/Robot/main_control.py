@@ -6,10 +6,13 @@ from networkStuff.connection import Connection
 import multiprocessing
 import DepthAICamera
 
-#TODO Restore timeouts in unity channel and networking channel
+import os, sys
+# Get the absolute path of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
-
-
+# Append the depthai_blazepose folder to the path
+depthai_blazepose_path = os.path.join(script_dir, 'LidarFolder')
+sys.path.append(depthai_blazepose_path)
 WINDOWS = GLOBAL_CONFIG.WINDOWS
 
 
