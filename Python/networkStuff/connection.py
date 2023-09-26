@@ -2,7 +2,8 @@ from networkStuff.networking_channel import NetworkingChannel
 from networkStuff.unity_channel import UnityChannel
 from networkStuff.utils import encode_msg, decode_msg
 
-
+TCP_PRESENTATIONS = False
+DEFAULT_UNITY_IP = "127.0.0.1"
 class Connection:
     def __init__(self):
 
@@ -29,8 +30,11 @@ class Connection:
 
         self.NETWORKING_CHANNEL.setup(self.priority_responses)
 
-        #wait for unity presentation
-        self.UNITY_IP = self.NETWORKING_CHANNEL.wait_for_unity_presentation()
+        if TCP_PRESENTATIONS:
+            #wait for unity presentation
+            self.UNITY_IP = self.NETWORKING_CHANNEL.wait_for_unity_presentation()
+        else:
+            self.UNITY_IP = DEFAULT_UNITY_IP
 
         self.NETWORKING_CHANNEL.set_timeout_tcp(0.33)
 

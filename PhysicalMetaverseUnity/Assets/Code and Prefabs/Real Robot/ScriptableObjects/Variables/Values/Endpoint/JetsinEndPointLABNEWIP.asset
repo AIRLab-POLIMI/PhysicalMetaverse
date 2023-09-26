@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 265430590e3e6724b98ea74b2afa9c63, type: 3}
   m_Name: JetsinEndPointLABNEWIP
   m_EditorClassIdentifier: 
-  stringIP: 192.168.0.102
+  stringIP: 127.0.0.1
   port: 25666
   uiName: LAB New IP
