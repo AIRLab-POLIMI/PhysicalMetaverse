@@ -6,6 +6,8 @@ import queue
 
 from rplidar import RPLidar
 
+import traceback
+
 DEFAULT_INVALID_VALUE = 0
 N_OF_DEGREES = 360
 DEFAULT_TOLERANCE = 0
@@ -84,6 +86,7 @@ class Lidar:
                 #print("\n")
         except:
             try:
+                traceback.print_exc()
                 print("lidar problem")
                 self.sensor.stop()
                 #self.sensor.stop_motor()
