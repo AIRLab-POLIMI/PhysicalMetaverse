@@ -33,7 +33,7 @@ public class SingleStationManager : MonoBehaviour
         if (_correctStation)
         {
             _stationColor = Color.green;
-            _thisColor = _stationColor;
+            gameObject.GetComponent<Renderer>().material.color = _stationColor;
         }
         else
         {

@@ -92,7 +92,16 @@ public class StationManager : MonoBehaviour
             }
             _stationsData.Add(parsedData);
             _lastPingTimes[parsedData[0]] = Time.time;
-            _stations[parsedData[0]].GetComponent<SingleStationManager>().SetTracked(true);
+            float currentZ = parsedData[3] / _zScale + zOffset;
+            //if place 3 of array is more than ztrackedtolerance don't set to true
+            if (_TOLERANCE_CHECK){
+                if (currentZ < _zTrackedTolerance)
+                    _stations[parsedData[0]].GetComponent<SingleStationManager>().SetTracked(false);
+                else
+                    _stations[parsedData[0]].GetComponent<SingleStationManager>().SetTracked(true);
+            }
+            else
+                _stations[parsedData[0]].GetComponent<SingleStationManager>().SetTracked(true);
         }
         //log stations
         foreach (int[] station in _stationsData)
@@ -107,6 +116,10 @@ public class StationManager : MonoBehaviour
         Debug.Log("Total stations: " + messages.Length);
         return _stationsData;
     }
+
+    [Range(0.1f, 3f)]
+    public float _zTrackedTolerance = 1.0f;
+    public bool _TOLERANCE_CHECK = false;
 
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string

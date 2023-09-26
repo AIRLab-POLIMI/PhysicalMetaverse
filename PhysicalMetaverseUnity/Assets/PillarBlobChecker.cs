@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PillarBlobChecker : MonoBehaviour
 {
+    public bool _blobEnabled = true;
+    public bool _disableMesh = true;
+    private bool _prevCollided = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,15 +18,41 @@ public class PillarBlobChecker : MonoBehaviour
     {
         //color this gameobject in yellow
         GetComponent<Renderer>().material.color = Color.yellow;
+        if(!_prevCollided)
+        {
+            //enable mesh
+            GetComponent<MeshRenderer>().enabled = true;
+        }
+        _prevCollided = false;
     }
 
     void OnTriggerStay(Collider other){
+        if(!_blobEnabled){
+            return;
+        }
         //if colliding with "Station" color this gameobject in red
         if(other.gameObject.CompareTag("Station")){
+            //check name of the father, if ends with 1 color green, if 0 color red
             //change color
-            GetComponent<Renderer>().material.color = Color.red;
+            if(other.gameObject.transform.parent.name.EndsWith("1")){
+                //GetComponent<Renderer>().material.color = Color.blue;
+                //disable mesh
+                GetComponent<MeshRenderer>().enabled = !_disableMesh;
+                _prevCollided = true;
+            }else{
+                //GetComponent<Renderer>().material.color = Color.red;
+                //disable mesh
+                GetComponent<MeshRenderer>().enabled = !_disableMesh;
+                _prevCollided = true;
+            }
         }
     }
 
+    /*void OnTriggerExit(Collider other){
+        //color this gameobject in yellow
+        GetComponent<Renderer>().material.color = Color.yellow;
+        //enable mesh
+        GetComponent<MeshRenderer>().enabled = true;
+    }*/
     
 }
