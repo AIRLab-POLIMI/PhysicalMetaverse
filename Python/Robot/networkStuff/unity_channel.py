@@ -83,17 +83,17 @@ class UnityChannel:
             print("sent ping")
             self.last_ping_sent_time = time.time()
 
-        if self.NETWORKING_CHANNEL.read_udp_non_blocking():
-            msg = self.NETWORKING_CHANNEL.udp_data
-            print("[UNITY CHANNEL] Received " + str(msg))
-            if (msg[0] == PING_KEY):
-                self.last_ping_received_time = time.time()
-
         if time.time() > (self.last_ping_received_time + PING_TIMEOUT):
             print("NO PING RECEIVED FOR MORE THAN "+ PING_TIMEOUT + " SECONDS")
             return False
 
         return True
+    
+    def read_udp(self):
+        msg = self.NETWORKING_CHANNEL.udp_data
+        print("[UNITY CHANNEL] Received " + str(msg))
+        if (msg[0] == PING_KEY):
+            self.last_ping_received_time = time.time()
 
 
     def on_ping_rcv(self):

@@ -1,4 +1,4 @@
-
+import GLOBAL_CONFIG
 import serial
 import time
 
@@ -58,16 +58,17 @@ class SerialChannel:
 
         # awaiting ARDUINO
         # if any message is received though serial, it means arduino is UP and RUNNING
-        print("[SERIALCHANNEL][PORT '{self.port}'][SETUP SERIAL] - AWAITING for ARDUINO to complete setup")
-        while True:
-            serial_msg = self.read_serial_blocking()
-            if serial_msg and len(serial_msg) > 0:  # and serial_msg == ARDUINO_OK_FLAG:
-                print("[SERIALCHANNEL][PORT '{self.port}'][SETUP SERIAL] - ARDUINO has completed setup SUCCESSFULLY")
-                break
-            else:
-                print(f"[SETUP SERIAL][PORT '{self.port}'] - "
-                      f"ARDUINO setup is not complete: serial msg is: {serial_msg}. Checking again in 1s..")
-                time.sleep(1)  # sleep time in seconds
+        if not GLOBAL_CONFIG.SKIP_ARDUINO_SETUP:
+            print("[SERIALCHANNEL][PORT '{self.port}'][SETUP SERIAL] - AWAITING for ARDUINO to complete setup")
+            while True:
+                serial_msg = self.read_serial_blocking()
+                if serial_msg and len(serial_msg) > 0:  # and serial_msg == ARDUINO_OK_FLAG:
+                    print("[SERIALCHANNEL][PORT '{self.port}'][SETUP SERIAL] - ARDUINO has completed setup SUCCESSFULLY")
+                    break
+                else:
+                    print(f"[SETUP SERIAL][PORT '{self.port}'] - "
+                        f"ARDUINO setup is not complete: serial msg is: {serial_msg}. Checking again in 1s..")
+                    time.sleep(1)  # sleep time in seconds
 
         # setup complete
         print("[SERIALCHANNEL][PORT '{self.port}'][SETUP SERIAL] - serial setup COMPLETE\n")

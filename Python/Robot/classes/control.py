@@ -176,7 +176,8 @@ class Control:
         #      if it is, call the corresponding 'onMsgRcv' method to process the data accordingly
         #print(bytes_to_unicode_str(self.NETWORKING_CHANNEL.udp_data[0]))
         
-        if self.NETWORKING_CHANNEL.read_udp_non_blocking():
+        #if self.NETWORKING_CHANNEL.read_udp_non_blocking():
+        if True:
             #print(f"sono in get_esp_signals - read_udp_non_blocking")
 
             string_msg = bytes_to_unicode_str(self.NETWORKING_CHANNEL.udp_data[0])

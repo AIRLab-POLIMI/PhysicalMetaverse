@@ -10,8 +10,9 @@ TCP_PRESENTATIONS = 0 #used by connection.py
 #  ODILE STUFF  ######################################
 ODILE_ARDUINO_PLUGGED = True
 BASE_ONLY = True
+SKIP_ARDUINO_SETUP = False
 serial_default_port = "/dev/ttyACM0_DEFAULT"
-serial_base_port = "/dev/ttyACM0"
+serial_base_port = "/dev/ttyACM0" #"/dev/ttyACM0" #"/dev/ttyUSB0" #use ----dmesg | tail---- to find arduino
 odile_ip = '192.168.0.102'
 
 #  ROBOT FEATURES  ###################################

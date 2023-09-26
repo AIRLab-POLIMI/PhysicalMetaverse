@@ -81,7 +81,7 @@ class Connection:
         self.add_esp_channels()
         self.control.setup()
 
-    def loop(self):
+    def loop(self): ###unity channel and control loops have been interleaved because both were reading udp excluding the other
         while True:
             if not self.UNITY_CHANNEL.loop():
                 # IF A PING IS MISSED, SETUP AGAIN
@@ -89,7 +89,12 @@ class Connection:
                 #close connections
                 self.close_all_connections()
                 raise ConnectionError
-            self.control.loop()
+            self.control.serial_communication()
+
+
+            if self.NETWORKING_CHANNEL.read_udp_non_blocking(): #one only udp read per loop, if found message call both
+                self.UNITY_CHANNEL.read_udp()
+                self.control.get_esp_signals()
                 #self.retry_connection()
             #sleep 1ms
             #time.sleep(0.001)
