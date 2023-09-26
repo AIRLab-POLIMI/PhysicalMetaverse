@@ -119,6 +119,8 @@ public class LidarManager : Monosingleton<LidarManager>
         Debug.unityLogger.logEnabled = ENABLE_LOG;
 
         int[] bytesAsInts = new int[arraySize];
+        //print size
+        Debug.Log(msg.Length);
         Buffer.BlockCopy(msg, 0, bytesAsInts, 0, msg.Length);
         //log bytesAsInts
         //Debug.Log(bytesAsInts);
