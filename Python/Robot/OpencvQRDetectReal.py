@@ -84,7 +84,7 @@ def loop(connection, vid, qcd):
                 #MSG FORMAT: [barcode, x, y, size(diagonal)]
                 msg = []
                 try:
-                    currMsg = STATION_KEY + str([int(decoded_info) , rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                    currMsg = STATION_KEY + str([decoded_info[0] , rect_center[0], rect_center[1], int(distance_meters)]).encode()
                     msg += [currMsg]
                 except:
                     #DIRTY FIX TO USE INVALID QR CODES
@@ -100,13 +100,14 @@ def loop(connection, vid, qcd):
                 #print stacktrace
                 traceback.print_exc()
     #aggregate all messages into one
-    stringMsg = b''
-    for m in msg:
-        stringMsg += m
-        
-    if stringMsg != b'':
-        #print("send qr " + str(stringMsg))
-        connection.send("", stringMsg)
+    if not OFFLINE:
+        stringMsg = b''
+        for m in msg:
+            stringMsg += m
+            
+        if stringMsg != b'':
+            #print("send qr " + str(stringMsg))
+            connection.send("", stringMsg)
             
     if SHOW:
         cv2.imshow("Image", frame)

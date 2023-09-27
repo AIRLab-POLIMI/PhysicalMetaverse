@@ -15,7 +15,7 @@ public class VirtualJetson : MonoBehaviour
     IPEndPoint slamEP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25668);
     //public list devices
     public List<GameObject> _devices;
-    public bool _STREAMINGLIDAR = false;
+    public bool _SLAMLIDAR = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,12 +28,8 @@ public class VirtualJetson : MonoBehaviour
     }
 
     public void Send(byte[] data, byte key){
-        byte[] bytes2 = new byte[data.Length + 1];
-        bytes2[0] = key;
-        Array.Copy(data, 0, bytes2, 1, data.Length);
-        client.Send(bytes2, bytes2.Length, remoteEP);
-        //if STREAMINGLIDAR, send slam data
-        if (_STREAMINGLIDAR)
+            //if STREAMINGLIDAR, send slam data
+        if (_SLAMLIDAR)
         {
             if (key == 0xf1)
             {
@@ -66,6 +62,13 @@ public class VirtualJetson : MonoBehaviour
                 client.Send(Encoding.ASCII.GetBytes(dataString), Encoding.ASCII.GetBytes(dataString).Length, slamEP);
             }
         }
+        else{
+            byte[] bytes2 = new byte[data.Length + 1];
+            bytes2[0] = key;
+            Array.Copy(data, 0, bytes2, 1, data.Length);
+            client.Send(bytes2, bytes2.Length, remoteEP);
+        }
+        
         
     }
 }
