@@ -12,6 +12,7 @@ TagManager:
   - PoseTracker
   - Station
   - Hole
+  - InvalidStation
   layers:
   - Default
   - TransparentFX

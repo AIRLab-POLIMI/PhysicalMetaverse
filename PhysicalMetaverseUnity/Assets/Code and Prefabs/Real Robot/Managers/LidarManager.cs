@@ -90,6 +90,15 @@ public class LidarManager : Monosingleton<LidarManager>
     {
         //instantiate blob tracker
         _blobTracker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        //set tag to Station
+        _blobTracker.tag = "Station";
+        //add rigidbody
+        _blobTracker.AddComponent<Rigidbody>();
+        //add trigger mesh collider
+        _blobTracker.AddComponent<MeshCollider>().convex = true;
+        _blobTracker.GetComponent<MeshCollider>().isTrigger = true;
+        //set rigidbody to kinematic
+        _blobTracker.GetComponent<Rigidbody>().isKinematic = true;
         //add object Walls as children and populate it with 150 cube meshes
         GameObject walls = new GameObject("Walls");
         walls.transform.parent = transform;

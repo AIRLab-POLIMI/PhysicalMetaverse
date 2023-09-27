@@ -70,6 +70,18 @@ public class SingleStationManager : MonoBehaviour
         
     }
 
+    void FixedUpdate(){
+        //if tracked set tag to Station if not set to InvalidStation
+        if (_tracked)
+        {
+            gameObject.tag = "Station";
+        }
+        else
+        {
+            gameObject.tag = "InvalidStation";
+        }
+    }
+
     public int _untrackedAngle = 0;
     public bool _prevTracked = false;
     private float _resetAngle = 0;

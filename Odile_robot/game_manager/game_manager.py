@@ -12,7 +12,7 @@ experiment_ID = sys.argv[1]
 csv_file_path = "experiment_results.csv"
 
 # UDP settings
-LOCAL_UDP_IP = "192.168.0.100"
+LOCAL_UDP_IP = "127.0.0.1"
 LOCAL_UDP_PORT = 40616
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
 sock.bind((LOCAL_UDP_IP, LOCAL_UDP_PORT))
