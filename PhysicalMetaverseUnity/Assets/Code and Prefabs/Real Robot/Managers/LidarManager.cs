@@ -68,10 +68,8 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
-    //array of blob booleans
-    public bool[] blobs = new bool[360];
     public void SetBlobAt(int id, bool value){
-        blobs [id] = value;
+        _blobs [id] = value;
     }
 
     [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
@@ -90,6 +88,8 @@ public class LidarManager : Monosingleton<LidarManager>
 
     private void Start()
     {
+        //instantiate blob tracker
+        _blobTracker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         //add object Walls as children and populate it with 150 cube meshes
         GameObject walls = new GameObject("Walls");
         walls.transform.parent = transform;
@@ -179,6 +179,153 @@ public class LidarManager : Monosingleton<LidarManager>
         }
         Debug.unityLogger.logEnabled = true;
     }
+
+    public bool _LIDAR_TRACKING = true;
+    void FixedUpdate()
+    {
+        //disable mesh of _blobTracker
+        _blobTracker.GetComponent<MeshRenderer>().enabled = false;
+        //check blob array and enable mesh of corresponding true values
+        for(int i = 0; i < 360; i++){
+            if(_blobs[i]){
+                _points[i].GetComponent<MeshRenderer>().enabled = false;
+            }
+            else{
+                _points[i].GetComponent<MeshRenderer>().enabled = true;
+            }
+        }
+        if(_LIDAR_TRACKING)
+            LidarTracking();
+    }
+
+    
+    private GameObject _blobTracker;
+    //array of blob booleans
+    public bool[] _blobs = new bool[360];
+    public int _middle = 0;
+    public int count = 0;
+    public int _skippableBlobPoints = 2;
+    public List<int> _blobSizes = new List<int>();
+    public List<int> _blobStarts = new List<int>();
+    void LidarTracking(){
+        //find start of groups of consecutive points and count their size
+        for(int i = 0; i < 360; i++){
+            _skippableBlobPoints = 2;
+            //if true
+            if(_blobs[i]){
+                //count until false
+                count = 0;
+                int j = i;
+                bool seamPassed = false;
+                while(_skippableBlobPoints>0){
+                    if(!_blobs[j]){
+                        _skippableBlobPoints--;
+                    }
+                    else{
+                        _skippableBlobPoints = 2;
+                    }
+                    count++;
+                    j++;
+                    if(j >= 360){
+                        _skippableBlobPoints = -1;
+                    }
+                    /*if(!seamPassed){
+                        //if j is out of range
+                        if(j >= 360){
+                            j -= 360;
+                            seamPassed = true;
+                        }
+                    }
+                    else{
+                        //if j is out of range
+                        if(j >= 180){
+                            _skippableBlobPoints = 1;
+
+                        }
+                    }*/
+                }
+                //add count to sizes
+                _blobSizes.Add(count);
+                _blobStarts.Add(i);
+                //skip to j
+                i = j;
+            }
+        }
+        //choose the biggest blob and spawn cylinder at its middle
+        int max = 0;
+        int maxIndex = 0;
+        for(int i = 0; i < _blobSizes.Count; i++){
+            if(_blobSizes[i] > max){
+                max = _blobSizes[i];
+                maxIndex = i;
+            }
+        }
+        //spawn cylinder at middle of maxIndex
+        int middle = _blobStarts[maxIndex] + max/2;
+        if(middle >= 360){
+            middle -= 360;
+        }
+        Transform point = _points[middle].transform;
+        //lerp blobtracker at point
+        _blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, 0.5f);
+        //enable mesh
+        _blobTracker.GetComponent<MeshRenderer>().enabled = true;
+        //clear lists
+        _blobSizes.Clear();
+        _blobStarts.Clear();
+
+    }
+
+
+    /*
+    
+        //find the first true value in blobs and count until the last consecutive, then take the middle value and spawn _blobTracker pillarTall at the _point position
+        for(int i = 0; i < 360; i++){
+            //if true
+            if(_blobs[i]){
+                //count until false
+                count = 0;
+                int j = i;
+                bool seamPassed = false;
+                while(_skippableBlobPoints>0){
+                    if(!_blobs[j]){
+                        _skippableBlobPoints--;
+                    }
+                    else{
+                        _skippableBlobPoints = 2;
+                    }
+                    count++;
+                    j++;
+                    /*if(!seamPassed){
+                        //if j is out of range
+                        if(j >= 360){
+                            j -= 360;
+                            seamPassed = true;
+                        }
+                    }
+                    else{
+                        //if j is out of range
+                        if(j >= 180){
+                            _skippableBlobPoints = 1;
+                        }
+                    }*//*
+                }
+                //spawn _blobTracker at the middle of the count
+                //get middle
+                _middle = i + count/2;
+                //use _points[] array
+                if(_middle >= 360){
+                    _middle -= 360;
+                }
+                Transform point = _points[_middle].transform;
+                //lerp blobtracker at point
+                _blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, 0.5f);
+                //enable mesh
+                _blobTracker.GetComponent<MeshRenderer>().enabled = true;
+                break;
+            }
+        }
+    */
 
     private int _wallCount = 0;
     void WallsUsingDistances(){
