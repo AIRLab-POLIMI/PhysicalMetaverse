@@ -5,13 +5,11 @@ import cv2
 #Scanning QR Code from Camera Feed
 vid = cv2.VideoCapture(0)
 
-CAMERA = "webcam" #"webcam", "remote", "virtual"
+CAMERA = "remote" #"webcam", "remote", "virtual"
 
 def detectQR():
     global frame, sock
     msg = []
-    #downscale frame to half
-    frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
     for barcode in decode(frame):
         text = barcode.data.decode('utf-8')
         text=str(text)

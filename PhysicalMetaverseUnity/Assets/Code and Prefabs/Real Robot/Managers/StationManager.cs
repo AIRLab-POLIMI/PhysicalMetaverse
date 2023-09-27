@@ -12,6 +12,9 @@ using System.Collections.Generic;
 public class StationManager : MonoBehaviour
 {
     public GameObject _stationPrefab;
+
+    private Transform _cameraStartRotationAngle;
+    public Transform _cameraRotationAngle;
     public OdometryManager _odometryManager;
     //transforms list _untrackedStations
     private List<Transform> _untrackedStations = new List<Transform>();
@@ -64,6 +67,9 @@ public class StationManager : MonoBehaviour
             _untrackedStations.Add(untrackedStation.transform);
             _untrackedAngles.Add(0f);
         }
+        //copy y angle of _cameraRotationAngle to _cameraStartRotationAngle
+        _cameraStartRotationAngle = new GameObject().transform;
+        _cameraStartRotationAngle.eulerAngles = new Vector3(0, _cameraRotationAngle.eulerAngles.y, 0);
     }
 
     //a receive looks like
@@ -121,6 +127,7 @@ public class StationManager : MonoBehaviour
     public float _zTrackedTolerance = 1.0f;
     public bool _TOLERANCE_CHECK = false;
 
+    [Range(-5f, 5f)]    public float _perspectiveRotationCorrection = 1f;
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
     private void FixedUpdate()
@@ -134,7 +141,8 @@ public class StationManager : MonoBehaviour
         {
             SpawnStations();
         }
-
+        //rotate this gameobject like delta y angle of _cameraStartRotationAngle
+        //this.transform.eulerAngles = new Vector3(0, -(_cameraRotationAngle.eulerAngles.y - _cameraStartRotationAngle.eulerAngles.y)*(_currentZ/_perspectiveRotationCorrection), 0);
     }
 
     private void ExpireStations()
@@ -148,6 +156,9 @@ public class StationManager : MonoBehaviour
     [Range(1f, 500f)]
     public float _imageFrameScale = 480f;
     public float _imageRatio = 4f/3f;
+    
+    [Range(1f, 100f)]
+    public float _perspectiveCorrection = 1f;
     
     [Range(10f, 100f)]
     public float _zScale = 1f;
@@ -204,6 +215,7 @@ public class StationManager : MonoBehaviour
     public float TRACKING_DECAY_TIME = 0.1f;
     public float _yPosition = -0.8f;
     public bool _lerp = false;
+    private float _currentZ = 0f;
     private void MoveStations()
     {
         try
@@ -228,12 +240,13 @@ public class StationManager : MonoBehaviour
                         //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);
                         //switch x and y
                         //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, (((int[])_stationsData[i])[2] / _imageFrameScale * _imageRatio ) + yOffset, ((int[])_stationsData[i])[3] / _zScale + zOffset), _speed);
-                        float currentZ = ((int[])_stationsData[i])[3] / _zScale + zOffset;
+                        _currentZ = ((int[])_stationsData[i])[3] / _zScale + zOffset;
+                        float currentX = ((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset)*(_currentZ/_perspectiveCorrection);
                         //block Y to -0.8
                         if(_lerp)
-                            station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, _yPosition, currentZ), _speed);
+                            station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(currentX, _yPosition, _currentZ), _speed);
                         else
-                            station.transform.localPosition = new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, _yPosition, currentZ);
+                            station.transform.localPosition = new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, _yPosition, _currentZ);
                     }
                 }
             }

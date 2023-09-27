@@ -68,6 +68,12 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
+    //array of blob booleans
+    public bool[] blobs = new bool[360];
+    public void SetBlobAt(int id, bool value){
+        blobs [id] = value;
+    }
+
     [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
     private int[] currentPositions;
 
@@ -676,6 +682,9 @@ public class LidarManager : Monosingleton<LidarManager>
             obj.transform.parent = transform;
             //obj.transform.position += obj.transform.forward*8.0f;
             _points[i] = obj;
+            //_points[i] pillar blob checker SetLidarManager and SetPillarId
+            _points[i].GetComponent<PillarBlobChecker>().SetLidarManager(this);
+            _points[i].GetComponent<PillarBlobChecker>().SetPillarId(i);
         }
     }
 
@@ -694,13 +703,13 @@ public class LidarManager : Monosingleton<LidarManager>
             {
                 _points[pos].GetComponent<MeshRenderer>().enabled = false;
             }
-            else
-            {
-                if(!_mergeWalls)
-                    _points[pos].GetComponent<MeshRenderer>().enabled = true;
-                else
-                    _points[pos].GetComponent<MeshRenderer>().enabled = false;
-            }
+            //else //HERE IS CONFLICT WITH BLOB
+            //{
+            //    if(!_mergeWalls)
+            //        _points[pos].GetComponent<MeshRenderer>().enabled = true;
+            //    else
+            //        _points[pos].GetComponent<MeshRenderer>().enabled = false;
+            //}
             
             //float convertedValue = ConvertRange(value);
             float convertedValue = (((float) value) / 100.0f)-0.5f;
