@@ -271,6 +271,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     #region LOOP
 
+    public bool ENABLE_LOG = false;
     private void Update()
     {
         if(!_skipTcp){
@@ -299,7 +300,8 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             foreach (var message in messages)
             {
                 //print the received message
-                Debug.Log("Received UDP " + message.Msg);
+                if (ENABLE_LOG)
+                    Debug.Log("Received UDP " + message.Msg);
                 lastPingReceivedTime = Time.time;
                 CheckKeyValueMessage(message.Msg);
             }

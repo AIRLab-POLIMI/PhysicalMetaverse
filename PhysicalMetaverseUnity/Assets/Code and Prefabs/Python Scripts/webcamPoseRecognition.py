@@ -34,6 +34,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 while True:
     success, img = cap.read()
+    success, img = cap.read()
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = pose.process(imgRGB)
 
@@ -105,6 +106,6 @@ while True:
         cv2.waitKey(1)
 
     #sleep 0.1
-    #time.sleep(0.1)
+    time.sleep(0.001)
     
 sock.close()
