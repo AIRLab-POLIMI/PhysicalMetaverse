@@ -269,6 +269,9 @@ public class LidarManager : Monosingleton<LidarManager>
                 maxIndex = i;
             }
         }
+        if(_blobStarts.Count == 0){
+            return;
+        }
         //spawn cylinder at middle of maxIndex
         int middle = _blobStarts[maxIndex] + max/2;
         if(middle >= 360){
