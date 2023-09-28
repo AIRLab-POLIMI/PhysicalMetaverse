@@ -13,7 +13,7 @@ from configs.esps.esp_types import esp_value_types, ESP_CHANNEL_TYPE
 
 
 DEFAULT_SERIAL_ELAPSED = 0.05
-ESP_CAP_SENSOR = "192.168.0.56" #192.168.0.100
+ESP_CAP_SENSOR = "192.168.0.100"
 CONTROLLER_ENABLED = 1
 
 
@@ -240,15 +240,15 @@ class Control:
                 line = serial_channel.read_serial_non_blocking()
                 if line is not None:
                     print(line)
-                    if line == "touched" or line == ".": 
+                    if line == "touched":
                         counter = 0
-                        while counter < 10 :
+                        while counter < 20 :
                             self.NETWORKING_CHANNEL.write_udp(msg_touched.encode('utf-8'), ESP_CAP_SENSOR, 40616)
                             counter+=1
                         
                     elif line == "released":
                         counter = 0
-                        while counter < 5:
+                        while counter < 10:
                             self.NETWORKING_CHANNEL.write_udp(msg_not_touched.encode('utf-8'), ESP_CAP_SENSOR, 40616)
                             counter+=1                 
                     pass

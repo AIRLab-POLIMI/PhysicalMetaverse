@@ -1,0 +1,139 @@
+FUNZIONA
+
+
+
+FORWARD : -25.49
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -66.22 - dthz123: -155.63 - _forwardSpeedTarget: -25.49 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: 28.82 - speed_target_R: -221.85 - speed_target_L: -89.40 - speed_target_B: -155.63
+[set_wheel_speed] - speed: -50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: -50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: -50.00 - pinA: 10 - pinB: 11
+SEND MSG - 'BB:29.76_BF:-1.18_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BB:29.76_BF:-1.18'
+[UNITY CHANNEL] Received (b'Ljx:253_Ljy:149', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljx:253_Ljy:149' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.ANGULAR' - msg: '253' - cur val: '29.529411764705884'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '149' - cur val: '16.862745098039213'
+SEND MSG - 'BF:16.86_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:16.86'
+AVAILABLE
+ANGULAR : 29.76
+FORWARD : -1.18
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -3.07 - dthz123: -160.70 - _forwardSpeedTarget: -1.18 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: 29.76 - speed_target_R: -163.77 - speed_target_L: -157.64 - speed_target_B: -160.70
+[set_wheel_speed] - speed: -50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: -50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: -50.00 - pinA: 10 - pinB: 11
+AVAILABLE
+FORWARD : 16.86
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: 43.80 - dthz123: -160.70 - _forwardSpeedTarget: 16.86 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: 29.76 - speed_target_R: -116.90 - speed_target_L: -204.51 - speed_target_B: -160.70
+[set_wheel_speed] - speed: -50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: -50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: -50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljx:254_Ljy:115', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljx:254_Ljy:115' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.ANGULAR' - msg: '254' - cur val: '29.764705882352942'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '115' - cur val: '-9.803921568627459'
+SEND MSG - 'BF:-9.80_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:-9.80'
+[UNITY CHANNEL] Received (b'Ljx:250_Ljy:95', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljx:250_Ljy:95' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.ANGULAR' - msg: '250' - cur val: '28.823529411764703'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '95' - cur val: '-25.490196078431367'
+SEND MSG - 'BB:28.82_BF:-25.49_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BB:28.82_BF:-25.49'
+AVAILABLE
+FORWARD : -9.80
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -25.46 - dthz123: -160.70 - _forwardSpeedTarget: -9.80 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: 29.76 - speed_target_R: -186.17 - speed_target_L: -135.24 - speed_target_B: -160.70
+[set_wheel_speed] - speed: -50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: -50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: -50.00 - pinA: 10 - pinB: 11
+AVAILABLE
+ANGULAR : 28.82
+FORWARD : -25.49
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -66.22 - dthz123: -155.63 - _forwardSpeedTarget: -25.49 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: 28.82 - speed_target_R: -221.85 - speed_target_L: -89.40 - speed_target_B: -155.63
+[set_wheel_speed] - speed: -50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: -50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: -50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljx:254_Ljy:133', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljx:254_Ljy:133' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.ANGULAR' - msg: '254' - cur val: '29.764705882352942'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '133' - cur val: '4.313725490196077'
+SEND MSG - 'BB:29.76_BF:4.31_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BB:29.76_BF:4.31'
+AVAILABLE
+ANGULAR : 29.76
+FORWARD : 4.31
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: 11.20 - dthz123: -160.70 - _forwardSpeedTarget: 4.31 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: 29.76 - speed_target_R: -149.51 - speed_target_L: -171.90 - speed_target_B: -160.70
+[set_wheel_speed] - speed: -50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: -50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: -50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljx:253_Ljy:146', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljx:253_Ljy:146' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.ANGULAR' - msg: '253' - cur val: '29.529411764705884'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '146' - cur val: '14.509803921568633'
+SEND MSG - 'BF:14.51_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:14.51'
+AVAILABLE
+FORWARD : 14.51
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: 37.70 - dthz123: -160.70 - _forwardSpeedTarget: 14.51 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: 29.76 - speed_target_R: -123.01 - speed_target_L: -198.40 - speed_target_B: -160.70
+[set_wheel_speed] - speed: -50.00 - pinA: 3 - pinB: 5
+[UNITY CHANNEL] Received (b'Ljy:106', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljy:106' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '106' - cur val: '-16.862745098039213'
+SEND MSG - 'BF:-16.86_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:-16.86'
+[set_wheel_speed] - speed: -50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: -50.00 - pinA: 10 - pinB: 11
+AVAILABLE
+FORWARD : -16.86
+READ MSG FROM SERIAL
+IS MSG
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

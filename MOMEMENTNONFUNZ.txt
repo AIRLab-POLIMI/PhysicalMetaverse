@@ -1,0 +1,88 @@
+NON FUNZIONA
+
+[set_wheel_speed] - speed: 50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljy:120', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljy:120' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '120' - cur val: '-5.882352941176478'
+SEND MSG - 'BF:-5.88_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:-5.88'
+AVAILABLE
+FORWARD : -5.88
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -15.28 - dthz123: 159.46 - _forwardSpeedTarget: -5.88 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: -29.53 - speed_target_R: 144.19 - speed_target_L: 174.74 - speed_target_B: 159.46
+[set_wheel_speed] - speed: 50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: 50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: 50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljy:117', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljy:117' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '117' - cur val: '-8.235294117647058'
+[UNITY CHANNEL] Received (b'Ljy:114', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljy:114' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '114' - cur val: '-10.588235294117652'
+SEND MSG - 'BF:-10.59_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:-10.59'
+AVAILABLE
+FORWARD : -10.59
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -27.51 - dthz123: 159.46 - _forwardSpeedTarget: -10.59 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: -29.53 - speed_target_R: 131.95 - speed_target_L: 186.98 - speed_target_B: 159.46
+[set_wheel_speed] - speed: 50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: 50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: 50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljx:3_Ljy:95', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljx:3_Ljy:95' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.ANGULAR' - msg: '3' - cur val: '-29.294117647058822'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '95' - cur val: '-25.490196078431367'
+SEND MSG - 'BF:-25.49_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:-25.49'
+sent ping
+AVAILABLE
+FORWARD : -25.49
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -66.22 - dthz123: 159.46 - _forwardSpeedTarget: -25.49 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: -29.53 - speed_target_R: 93.24 - speed_target_L: 225.69 - speed_target_B: 159.46
+[set_wheel_speed] - speed: 50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: 50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: 50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljx:0_Ljy:114', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljx:0_Ljy:114' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.ANGULAR' - msg: '0' - cur val: '-30.0'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '114' - cur val: '-10.588235294117652'
+SEND MSG - 'BF:-10.59_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:-10.59'
+AVAILABLE
+FORWARD : -10.59
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -27.51 - dthz123: 159.46 - _forwardSpeedTarget: -10.59 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: -29.53 - speed_target_R: 131.95 - speed_target_L: 186.98 - speed_target_B: 159.46
+[set_wheel_speed] - speed: 50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: 50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: 50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljy:117', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljy:117' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '117' - cur val: '-8.235294117647058'
+[UNITY CHANNEL] Received (b'Ljy:119', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljy:119' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '119' - cur val: '-6.666666666666671'
+SEND MSG - 'BF:-6.67_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:-6.67'
+[UNITY CHANNEL] Received (b'Ljy:118', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljy:118' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '118' - cur val: '-7.450980392156865'
+AVAILABLE
+FORWARD : -6.67
+READ MSG FROM SERIAL
+IS MSG
+ - _m1_R: -0.20 - _mL_R: -2.70 - _C60_R: 0.10 - _C30_R: 0.17 - dx12: 0.00 - dy12: -17.33 - dthz123: 159.46 - _forwardSpeedTarget: -6.67 - _strafeSpeedTarget: 0.00 - _angularSpeedTarget: -29.53 - speed_target_R: 142.13 - speed_target_L: 176.79 - speed_target_B: 159.46
+[set_wheel_speed] - speed: 50.00 - pinA: 3 - pinB: 5
+[set_wheel_speed] - speed: 50.00 - pinA: 6 - pinB: 9
+[set_wheel_speed] - speed: 50.00 - pinA: 10 - pinB: 11
+[UNITY CHANNEL] Received (b'Ljx:2_Ljy:101', ('192.168.0.101', 25666))
+[CONTROL][get_esp_signals] - msg: 'Ljx:2_Ljy:101' - sender: '192.168.0.101'
+[ESP VALUE][on_msg_received] - dof: 'DofName.ANGULAR' - msg: '2' - cur val: '-29.529411764705884'
+[ESP VALUE][on_msg_received] - dof: 'DofName.FORWARD' - msg: '101' - cur val: '-20.784313725490193'
+SEND MSG - 'BF:-20.78_'
+[SERIALCHANNEL][write_serial] - STARTED ----------------------------- msg: 'BF:-20.78'
+AVAILABLE
+FORWARD : -20.78
