@@ -2080,7 +2080,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh31940
+  m_Name: pb_Mesh30708
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -10421,6 +10421,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbc20c8ad0648eb4fa89d41dec689bb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _smoothWithOdometry: 1
+  _odometryManager: {fileID: 975876602}
+  _odometrySpeed: 0.23
   lidarPoint: {fileID: 9071454379544978574, guid: 5779804919a1b68479b749227bfc2be3,
     type: 3}
   lidarPoint2: {fileID: 9071454379544978574, guid: 43cb5a197d0e5114f877d1a87c853382,

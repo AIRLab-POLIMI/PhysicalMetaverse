@@ -8,6 +8,10 @@ using System.Collections.Generic;
 
 public class LidarManager : Monosingleton<LidarManager>
 {
+    public bool _smoothWithOdometry = true;
+    public OdometryManager _odometryManager;
+    [Range(0.0f, 1.0f)]
+    public float _odometrySpeed = 0.23f;
 
     [SerializeField] private GameObject lidarPoint;
 
@@ -187,6 +191,8 @@ public class LidarManager : Monosingleton<LidarManager>
             }
         }
         Debug.unityLogger.logEnabled = true;
+        //reset transform to 0
+        transform.position = new Vector3(0,0,0);
     }
 
     public bool _LIDAR_TRACKING = true;
@@ -205,6 +211,44 @@ public class LidarManager : Monosingleton<LidarManager>
         }
         if(_LIDAR_TRACKING)
             LidarTracking();
+        
+        if (_smoothWithOdometry)
+            Odometry();
+    }
+
+    void Odometry()
+    {
+        if (_odometryManager._forward)
+        {
+            transform.position -= Vector3.forward * _odometrySpeed * Time.deltaTime;
+            //fade material alpha a bit, no lerp
+            
+        }
+        if (_odometryManager._backward)
+        {
+            transform.position += Vector3.forward * _odometrySpeed * Time.deltaTime;
+            
+        }
+        if (_odometryManager._left)
+        {
+            transform.position += Vector3.right * _odometrySpeed * Time.deltaTime;
+            
+        }
+        if (_odometryManager._right)
+        {
+            transform.position -= Vector3.right * _odometrySpeed * Time.deltaTime;
+            
+        }
+        if (_odometryManager._rotateLeft)
+        {
+            transform.Rotate(Vector3.up * _odometrySpeed * Time.deltaTime);
+            
+        }
+        if (_odometryManager._rotateRight)
+        {
+            transform.Rotate(Vector3.down * _odometrySpeed * Time.deltaTime);
+            
+        }
     }
 
     
