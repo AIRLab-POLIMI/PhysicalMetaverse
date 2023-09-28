@@ -8,7 +8,7 @@ public class InputManager : Monosingleton<InputManager>
     [SerializeField] private List<JoyController> controllers;
     
     // variable to keep track of last sent time
-    public float deltaSendTime = 0.05f;
+    public float deltaSendTime = 0.01f;
     private float _prevSendTime = 0;
     
     // head angles variables
@@ -20,11 +20,11 @@ public class InputManager : Monosingleton<InputManager>
     private float _prevYAngle;
     [SerializeField] public SetupSO setup;
     private EndPointSO _jetsonEndpoint;
-    private string _jetsonIp;
+    public string _jetsonIp;
     
     #region Event Functions
     
-        void FixedUpdate()
+        void Update()
         {
             // Send the camera's X and Y angles via UDP every 0.05 seconds
             if (Time.time - _prevSendTime > deltaSendTime)
@@ -51,6 +51,17 @@ public class InputManager : Monosingleton<InputManager>
 
     #region Compose UDP Mess
 
+    //range 0 255 variable Ljx
+    [Range(0, 255)] public int Ljx = 0;
+    //range 0 255 variable Ljy
+    [Range(0, 255)] public int Ljy = 0;
+
+    //range 0 255 variable Lrx
+    [Range(0, 255)] public int Lrx = 0;
+    //range 0 255 variable Lry
+    [Range(0, 255)] public int Lry = 0;
+    
+
         public string GetUdpMessage()
         {
             var msg = GetHeadAnglesMsg();
@@ -63,6 +74,36 @@ public class InputManager : Monosingleton<InputManager>
             if (msg != "")
                 Debug.Log(msg);
             // if msg is not empty, SendMsg
+            //parse from msg Ljx, Ljy, Lrx, Lry in format  Lrx:161_Lrz:161
+            foreach (string keyVal in msg.Split(Constants.MsgDelimiter))
+            {
+                //split keyVal in key and val
+                string[] keyValSplit = keyVal.Split(Constants.KeyValDelimiter);
+                //if key is Ljx
+                if (keyValSplit[0] == "Ljx")
+                {
+                    //parse val to int
+                    int.TryParse(keyValSplit[1], out Ljx);
+                }
+                //if key is Ljy
+                if (keyValSplit[0] == "Ljy")
+                {
+                    //parse val to int
+                    int.TryParse(keyValSplit[1], out Ljy);
+                }
+                //if key is Lrx
+                if (keyValSplit[0] == "Lrx")
+                {
+                    //parse val to int
+                    int.TryParse(keyValSplit[1], out Lrx);
+                }
+                //if key is Lry
+                if (keyValSplit[0] == "Lry")
+                {
+                    //parse val to int
+                    int.TryParse(keyValSplit[1], out Lry);
+                }
+            }
             return msg;
         }
 

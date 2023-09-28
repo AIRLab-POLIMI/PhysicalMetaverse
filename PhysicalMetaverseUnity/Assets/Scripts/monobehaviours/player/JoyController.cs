@@ -90,13 +90,13 @@ public class JoyController : MonoBehaviour
             var msg = "";
 
             // try to get the message from each sensor value
-            msg = AddMsg(_rx, msg);
-            msg = AddMsg(_ry, msg);
-            msg = AddMsg(_rz, msg);
-            msg = AddMsg(_jx, msg);
-            msg = AddMsg(_jy, msg);
-            msg = AddMsg(_btrig, msg);
-            msg = AddMsg(_bgrab, msg);
+            if (sendAccX) msg = AddMsg(_rx, msg);
+            if (sendAccY) msg = AddMsg(_ry, msg);
+            if (sendAccZ) msg = AddMsg(_rz, msg);
+            if (sendJoyX) msg = AddMsg(_jx, msg);
+            if (sendJoyY) msg = AddMsg(_jy, msg);
+            if (sendIndex) msg = AddMsg(_btrig, msg);
+            if (sendMiddle) msg = AddMsg(_bgrab, msg);
             
             // send the current message
             return msg;
@@ -123,6 +123,7 @@ public class JoyController : MonoBehaviour
         {
             // joypad
             var moveValue = moveInput.action.ReadValue<Vector2>();
+            Debug.Log(moveValue);
             _jx.OnNewValueReceived(moveValue.x);
             _jy.OnNewValueReceived(moveValue.y);
             

@@ -438,9 +438,9 @@
                 {
                     "name": "left",
                     "id": "2f25805f-44a3-4716-983c-532473bcc03c",
-                    "path": "",
+                    "path": "<XRController>{LeftHand}/Primary2DAxis/x",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Clamp(max=1)",
                     "groups": "Generic XR Controller",
                     "action": "Translate Anchor",
                     "isComposite": false,
@@ -449,9 +449,9 @@
                 {
                     "name": "right",
                     "id": "d97ccaa1-79ae-4ca7-b7dd-be5ce92c94a6",
-                    "path": "",
+                    "path": "<XRController>{LeftHand}/Primary2DAxis/x",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "Invert,Clamp(min=-1)",
                     "groups": "Generic XR Controller",
                     "action": "Translate Anchor",
                     "isComposite": false,
@@ -564,6 +564,61 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "2D Vector",
+                    "id": "da4dec93-8c8c-418b-b283-ad7c84411829",
+                    "path": "2DVector(mode=2)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Move",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "4a6a2fab-49ee-49b9-abb0-57b37357a8a8",
+                    "path": "<XRController>{LeftHand}/Primary2DAxis/y",
+                    "interactions": "",
+                    "processors": "Clamp(min=-1),Invert",
+                    "groups": "Generic XR Controller",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "ac71b21e-3822-4271-a602-e17b160477ee",
+                    "path": "<XRController>{LeftHand}/Primary2DAxis/y",
+                    "interactions": "",
+                    "processors": "Clamp(max=1)",
+                    "groups": "Generic XR Controller",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "46c64227-8ea8-4ddb-86fc-85ee4621e2a0",
+                    "path": "<XRController>{LeftHand}/Primary2DAxis/x",
+                    "interactions": "",
+                    "processors": "Clamp(max=1)",
+                    "groups": "Generic XR Controller",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "360a982e-1010-438a-9906-eb13be6df49c",
+                    "path": "<XRController>{LeftHand}/Primary2DAxis/x",
+                    "interactions": "",
+                    "processors": "Clamp(min=-1),Invert",
+                    "groups": "Generic XR Controller",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         },
