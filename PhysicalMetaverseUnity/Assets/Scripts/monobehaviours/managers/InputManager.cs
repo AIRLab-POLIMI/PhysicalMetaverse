@@ -148,6 +148,8 @@ public class InputManager : Monosingleton<InputManager>
                 msg = headYAngleKey + Constants.KeyValDelimiter + yAngle.ToString() + 
                       Constants.MsgDelimiter +
                       headXAngleKey + Constants.KeyValDelimiter + xAngle.ToString();
+                //replace commas with dots
+                msg = msg.Replace(",", ".");
             }
             return msg;
         }
