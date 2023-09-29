@@ -5,10 +5,10 @@ from utils.constants import serial_default_port, default_rasp_port, serial_base_
 
 odile_name = 'odile'
 
-odile_ip = '192.168.0.103' #192.168.43.131 HONOR 9 LITE
+odile_ip = '192.168.0.102' #192.168.43.131 HONOR 9 LITE
 
 
-odile_arduino_port = serial_default_port
+#odile_arduino_port = serial_default_port
 base_arduino_port = serial_base_port
 
 odile_rasp_port = default_rasp_port
@@ -28,15 +28,15 @@ odile_dofs = {
     #DofName.TAIL_NECK_T: odile_arduino_port,
     #DofName.TAIL_BODY_T: odile_arduino_port,
     #DofName.TAIL_BODY_P: odile_arduino_port,
-    DofName.MOODS_KEY: odile_arduino_port,
+    #DofName.MOODS_KEY: odile_arduino_port,
     #DofName.FREQ_KEY: odile_arduino_port,
     #DofName.AMPL_KEY: odile_arduino_port,
-    DofName.HEAD_BF: odile_arduino_port,
-    DofName.HEAD_UD:odile_arduino_port,
-    DofName.HEAD_LR:odile_arduino_port,
-    DofName.TAIL_BF: odile_arduino_port,
-    DofName.TAIL_UD: odile_arduino_port,
-    DofName.TAIL_LR: odile_arduino_port
+    #DofName.HEAD_BF: odile_arduino_port,
+    #DofName.HEAD_UD:odile_arduino_port,
+    #DofName.HEAD_LR:odile_arduino_port,
+    #DofName.TAIL_BF: odile_arduino_port,
+    #DofName.TAIL_UD: odile_arduino_port,
+    #DofName.TAIL_LR: odile_arduino_port
     
 }
 

@@ -8,7 +8,7 @@ MSG_DELIMITER = '_'
 # --------------------------------------------------------- SERIAL
 # DEFAULT serial parameters: SERIAL_ARDUINO class will be initialized with these values if not
 serial_default_port = "/dev/ttyACM0_DEFAULT"
-serial_base_port = "/dev/ttyUSB0_BASE"
+serial_base_port = "/dev/ttyUSB0"
 serial_default_baud = 115200 #500000  # 115200
 serial_default_timeout = 1 # in seconds
 serial_default_delay_after_setup = 1 # in seconds
@@ -21,7 +21,7 @@ REQUEST_ARDUINO_RESET = "RESET"
 DEFAULT_ESP_PORT = 4210
 
 # Listen on Port: DEFAULT PORT of the socket connection of the raspberry
-default_rasp_port = 40616 
+default_rasp_port = 25666 
 #base_rasp_port = 40616 #44444
 
 # Size of receive buffer

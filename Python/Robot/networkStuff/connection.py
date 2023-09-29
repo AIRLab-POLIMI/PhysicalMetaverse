@@ -50,12 +50,13 @@ class Connection:
         from configs.esps.esp_types import ESP_VALUE_TYPE_KEYS
         from configs.robots.dof import DofName
         
-        self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_TRIG.value, DofName.STRAFE.value.key, True)
-        self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_X.value, DofName.ANGULAR.value.key, True)
-        self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_Y.value, DofName.FORWARD.value.key, True)
+        if GLOBAL_CONFIG.BASE_ENABLED:
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_TRIG.value, DofName.STRAFE.value.key, True)
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_X.value, DofName.ANGULAR.value.key, True)
+            self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.LEFT_JOY_VR_Y.value, DofName.FORWARD.value.key, True)
 
         #control.on_new_config_rcv(test_ip_3, ESP_VALUE_TYPE_KEYS.MPX.value, DofName.HEAD_BODY_T.value.key, True)
-        if not GLOBAL_CONFIG.BASE_ONLY:
+        if GLOBAL_CONFIG.ARMS_ENABLED:
             self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.JOY_VR_GRAB.value, DofName.HEAD_BF.value.key, True)
             self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.ANGLE_Y.value, DofName.HEAD_UD.value.key, True)
             self.control.on_new_config_rcv(VR_ip, ESP_VALUE_TYPE_KEYS.ANGLE_Z.value, DofName.HEAD_LR.value.key, True)
