@@ -4,7 +4,7 @@ WINDOWS = 1
 UNITY_TIMEOUT = 999 #used by unity_channel.py
 NETWORKING_TIMEOUT = 999 #used by networking_channel.py
 VR_IP = "192.168.0.101" #used by controllers in main_control.py
-DEFAULT_UNITY_IP = "192.168.0.101" #used by connection.py
+DEFAULT_UNITY_IP = VR_IP #used by connection.py
 TCP_PRESENTATIONS = 0 #used by connection.py
 
 #  ODILE STUFF  ######################################
@@ -18,13 +18,13 @@ odile_ip = '192.168.0.102'
 
 #  ROBOT FEATURES  ###################################
 
-LIDAR_ENABLED = 0 #Lidar.py
+LIDAR_ENABLED = 1 #Lidar.py
 GYRO_ENABLED = 0 #GyroSerial.py
 OLD_POSE_ENABLED = 0
 LOGITECH_ENABLED = 0
 KEYVALUE_RECEIVE_ENABLED = 1
-DEPTHAI_ENABLED = 0 #DepthAICamera.py
-QR_ENABLED = 0 #MultipleQRDetectReal.py
+DEPTHAI_ENABLED = 1 #DepthAICamera.py
+QR_ENABLED = 1 #MultipleQRDetectReal.py
 
 ####################################################
 

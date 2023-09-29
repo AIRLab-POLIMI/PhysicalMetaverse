@@ -84,7 +84,7 @@ def loop(connection, vid, qcd):
                 #MSG FORMAT: [barcode, x, y, size(diagonal)]
                 msg = []
                 try:
-                    currMsg = STATION_KEY + str([decoded_info[0] , rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                    currMsg = STATION_KEY + str([int(1) , rect_center[0], rect_center[1], int(distance_meters)]).encode()
                     msg += [currMsg]
                 except:
                     #DIRTY FIX TO USE INVALID QR CODES
