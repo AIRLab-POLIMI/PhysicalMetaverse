@@ -128,6 +128,11 @@ public class LidarManager : Monosingleton<LidarManager>
             Destroy(wall.GetComponent<CapsuleCollider>());
             _cylinders.Add(wall);
         }
+        //init _blobs to -1
+        _blobs = new int[arraySize];
+        for(int i = 0; i < arraySize; i++){
+            _blobs[i] = -1;
+        }
     }
 
     public bool ENABLE_LOG = false;
