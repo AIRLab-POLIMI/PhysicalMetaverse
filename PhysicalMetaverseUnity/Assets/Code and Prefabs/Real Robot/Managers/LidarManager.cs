@@ -72,7 +72,7 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
-    public void SetBlobAt(int id, bool value){
+    public void SetBlobAt(int id, int value){
         _blobs [id] = value;
     }
 
@@ -200,9 +200,13 @@ public class LidarManager : Monosingleton<LidarManager>
     {
         //disable mesh of _blobTracker
         _blobTracker.GetComponent<MeshRenderer>().enabled = false;
+        //disable _blobTrackers meshes
+        foreach(GameObject blob in _blobTrackers.Values){
+            blob.GetComponent<MeshRenderer>().enabled = false;
+        }
         //check blob array and enable mesh of corresponding true values
         for(int i = 0; i < 360; i++){
-            if(_blobs[i]){
+            if(_blobs[i] >= 0){
                 _points[i].GetComponent<MeshRenderer>().enabled = false;
             }
             else{
@@ -254,24 +258,55 @@ public class LidarManager : Monosingleton<LidarManager>
     
     private GameObject _blobTracker;
     //array of blob booleans
-    public bool[] _blobs = new bool[360];
+    public int[] _blobs = new int[360];
     public int _middle = 0;
     public int count = 0;
     public int _skippableBlobPoints = 2;
     public List<int> _blobSizes = new List<int>();
     public List<int> _blobStarts = new List<int>();
+    public List<int> _blobIds = new List<int>();
+    //dictionary of string gameobject blobtrackers
+    public Dictionary<int, GameObject> _blobTrackers = new Dictionary<int, GameObject>();
+    public void SpawnLidarBlobs(){
+        StationManager stationManager = FindObjectOfType<StationManager>();
+        foreach(GameObject station in stationManager._stations){
+            //spawn blob at station position
+            GameObject blob = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            //name it like corresponding station
+            blob.name = station.name;
+            blob.transform.position = station.transform.position;
+            blob.GetComponent<MeshRenderer>().enabled = false;
+            blob.tag = "Station";
+            //add rigidbody
+            blob.AddComponent<Rigidbody>();
+            //add trigger mesh collider
+            blob.AddComponent<MeshCollider>().convex = true;
+            blob.GetComponent<MeshCollider>().isTrigger = true;
+            //set rigidbody to kinematic
+            blob.GetComponent<Rigidbody>().isKinematic = true;
+            //add to list, get key from last digit of station name
+            _blobTrackers.Add(int.Parse(station.name.Substring(station.name.Length - 1)), blob);
+            //red if 0 blue if 1
+            if(station.name.EndsWith("0")){
+                blob.GetComponent<MeshRenderer>().material.color = Color.red;
+            }
+            else{
+                blob.GetComponent<MeshRenderer>().material.color = Color.blue;
+            }
+        }
+    }
     void LidarTracking(){
         //find start of groups of consecutive points and count their size
         for(int i = 0; i < 360; i++){
             _skippableBlobPoints = 2;
             //if true
-            if(_blobs[i]){
+            if(_blobs[i] >= 0){
                 //count until false
                 count = 0;
                 int j = i;
                 bool seamPassed = false;
                 while(_skippableBlobPoints>0){
-                    if(!_blobs[j]){
+                    if(_blobs[j] < 0){
                         _skippableBlobPoints--;
                     }
                     else{
@@ -300,38 +335,60 @@ public class LidarManager : Monosingleton<LidarManager>
                 //add count to sizes
                 _blobSizes.Add(count);
                 _blobStarts.Add(i);
+                _blobIds.Add(_blobs[i]);
                 //skip to j
                 i = j;
             }
         }
         //choose the biggest blob and spawn cylinder at its middle
-        int max = 0;
-        int maxIndex = 0;
-        for(int i = 0; i < _blobSizes.Count; i++){
-            if(_blobSizes[i] > max){
-                max = _blobSizes[i];
-                maxIndex = i;
+        //int max = 0;
+        //int maxIndex = 0;
+        //for(int i = 0; i < _blobSizes.Count; i++){
+        //    if(_blobSizes[i] > max){
+        //        max = _blobSizes[i];
+        //        maxIndex = i;
+        //    }
+        //}
+        //if(_blobStarts.Count == 0){
+        //    return;
+        //}
+        //for each blob spawn corresponding cylinder at middle
+        for(int i = 0; i < _blobStarts.Count; i++){
+            //spawn cylinder at middle of maxIndex
+            int middle = _blobStarts[i] + _blobSizes[i]/2;
+            if(middle >= 360){
+                middle -= 360;
             }
+            Transform point = _points[middle].transform;
+            //lerp corresponding blobtracker at point
+            //_blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, _lidarTrackingLerp);
+            _blobTrackers[_blobIds[i]].transform.position = Vector3.Lerp(_blobTrackers[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
+            //enable mesh
+            //_blobTracker.GetComponent<MeshRenderer>().enabled = true;
+            _blobTrackers[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
         }
-        if(_blobStarts.Count == 0){
-            return;
-        }
-        //spawn cylinder at middle of maxIndex
-        int middle = _blobStarts[maxIndex] + max/2;
-        if(middle >= 360){
-            middle -= 360;
-        }
-        Transform point = _points[middle].transform;
-        //lerp blobtracker at point
-        _blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, 0.5f);
-        //enable mesh
-        _blobTracker.GetComponent<MeshRenderer>().enabled = true;
+        ////spawn cylinder at middle of maxIndex
+        //int middle = _blobStarts[maxIndex] + max/2;
+        //if(middle >= 360){
+        //    middle -= 360;
+        //}
+        //Transform point = _points[middle].transform;
+        ////lerp corresponding blobtracker at point
+        ////_blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, _lidarTrackingLerp);
+        //_blobTrackers[_blobIds[maxIndex]].transform.position = Vector3.Lerp(_blobTrackers[_blobIds[maxIndex]].transform.position, point.position, _lidarTrackingLerp);
+        ////enable mesh
+        ////_blobTracker.GetComponent<MeshRenderer>().enabled = true;
+        //_blobTrackers[_blobIds[maxIndex]].GetComponent<MeshRenderer>().enabled = true;
         //clear lists
         _blobSizes.Clear();
         _blobStarts.Clear();
+        _blobIds.Clear();
 
     }
 
+    //range 0 1 public float lidar tracking lerp
+    [Range(0.0f, 1.0f)]
+    public float _lidarTrackingLerp = 0.5f;
 
     /*
     

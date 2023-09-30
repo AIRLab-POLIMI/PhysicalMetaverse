@@ -9,6 +9,7 @@ public class PillarBlobChecker : MonoBehaviour
     private bool _prevCollided = false;
     private LidarManager _lidarManager;
     public int _pillarId = 0;
+    public int _stationId = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +29,8 @@ public class PillarBlobChecker : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        _lidarManager.SetBlobAt(_pillarId, false);
+        _stationId = -1;
+        _lidarManager.SetBlobAt(_pillarId, -1);
         /*
         //color this gameobject in yellow
         GetComponent<Renderer>().material.color = Color.yellow;
@@ -46,7 +48,14 @@ public class PillarBlobChecker : MonoBehaviour
         }
         //if colliding with "Station" color this gameobject in red
         if(other.gameObject.CompareTag("Station")){
-            _lidarManager.SetBlobAt(_pillarId, true);
+            //get station id from last character of name of parent
+            //if gameobject has a parent
+            if(other.gameObject.transform.parent == null){
+                return;
+            }
+            string stationName = other.gameObject.transform.parent.name;
+            _stationId = int.Parse(stationName.Substring(stationName.Length - 1));
+            _lidarManager.SetBlobAt(_pillarId, _stationId);
             /*
             //check name of the father, if ends with 1 color green, if 0 color red
             //change color

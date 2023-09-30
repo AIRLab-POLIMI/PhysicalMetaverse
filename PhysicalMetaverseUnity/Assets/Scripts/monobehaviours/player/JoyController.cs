@@ -123,7 +123,7 @@ public class JoyController : MonoBehaviour
         {
             // joypad
             var moveValue = moveInput.action.ReadValue<Vector2>();
-            Debug.Log(moveValue);
+            //Debug.Log(moveValue);
             _jx.OnNewValueReceived(moveValue.x);
             _jy.OnNewValueReceived(moveValue.y);
             

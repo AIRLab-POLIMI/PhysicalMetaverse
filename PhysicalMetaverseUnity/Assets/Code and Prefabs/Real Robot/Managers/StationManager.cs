@@ -31,6 +31,7 @@ public class StationManager : MonoBehaviour
     public List<int[]> _stationsData = new List<int[]>();
     //gameobject station list
     public List<GameObject> _stations = new List<GameObject>();
+    public LidarManager _lidarManager;
     
 
     //spawned
@@ -139,6 +140,8 @@ public class StationManager : MonoBehaviour
         }
         else
         {
+            //get lidar manager instance
+            _lidarManager = LidarManager.Instance;
             SpawnStations();
         }
         //rotate this gameobject like delta y angle of _cameraStartRotationAngle
@@ -201,6 +204,8 @@ public class StationManager : MonoBehaviour
             station.GetComponent<SingleStationManager>().SetOrientationTransform(_orientationTransform);
         }
         spawned = true;
+        //call LidarManager method SpawnLidarBlobs
+        _lidarManager.SpawnLidarBlobs();
     }
     [Range(0.01f, 2f)]
     public float _speed = 0.1f;
