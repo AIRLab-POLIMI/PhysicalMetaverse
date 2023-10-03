@@ -300,7 +300,13 @@ public class LidarManager : Monosingleton<LidarManager>
             }
         }
     }
+
+    public float _maxJumpDistance = 3f;
     void LidarTracking(){
+        //disable _stationList meshes
+        foreach(GameObject station in _stationList){
+            station.GetComponent<MeshRenderer>().enabled = false;
+        }
         //find start of groups of consecutive points and count their size
         for(int i = 0; i < 360; i++){
             _skippableBlobPoints = 2;
@@ -371,8 +377,16 @@ public class LidarManager : Monosingleton<LidarManager>
             //enable mesh
             //_blobTracker.GetComponent<MeshRenderer>().enabled = true;
             ////_blobTrackers[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
-            //lerp corresponding station in _stationList to cylinder
-            _stationList[_blobIds[i]].transform.position = Vector3.Lerp(_stationList[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
+            //lerp corresponding station in _stationList to cylinder only if it is not further than _maxJumpDistance
+            _stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
+            if(Vector3.Distance(_stationList[_blobIds[i]].transform.position, point.position) < _maxJumpDistance){
+                _stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
+                _stationList[_blobIds[i]].transform.position = Vector3.Lerp(_stationList[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
+            }
+            else{
+                //move without lerp
+                _stationList[_blobIds[i]].transform.position = point.position;
+            }
         }
         ////spawn cylinder at middle of maxIndex
         //int middle = _blobStarts[maxIndex] + max/2;
