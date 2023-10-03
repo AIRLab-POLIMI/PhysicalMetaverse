@@ -10446,6 +10446,9 @@ MonoBehaviour:
   _blobSizes: 
   _blobStarts: 
   _blobIds: 
+  _stationInteractionPrefab: {fileID: 6699460793187042399, guid: 99cd22897444b6e4a98928d80245ce41,
+    type: 3}
+  _stationList: []
   _lidarTrackingLerp: 0.5
   _wallCylinderThreshold: 3
   _wallSizeMultiplier: 1.2
@@ -19664,7 +19667,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1786909778
 Transform:
   m_ObjectHideFlags: 0
@@ -19674,7 +19677,7 @@ Transform:
   m_GameObject: {fileID: 1786909777}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.27942222, y: -30.15, z: 0.83172894}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1538531762}
@@ -21994,7 +21997,7 @@ MonoBehaviour:
   xOffset: -2
   zMultiplier: 1
   _speed: 0
-  _rotate90: 0
+  _rotate90: 1
 --- !u!1 &2086756733
 GameObject:
   m_ObjectHideFlags: 0
@@ -22109,9 +22112,9 @@ MonoBehaviour:
   _scale: 1
   _imageFrameScale: 100
   _imageRatio: 1.3333334
-  _perspectiveCorrection: 5.8
-  _zScale: 77.5
-  zOffset: -1.2
+  _perspectiveCorrection: 3
+  _zScale: 91
+  zOffset: 2
   yOffset: -3.6
   xOffset: -1.8
   _cameraSidesCorrection: 1
@@ -22119,9 +22122,9 @@ MonoBehaviour:
   _untrackedAngle: 0
   _sun: {fileID: 835397783}
   STATIONS_DECAY_TIME: 1e+9
-  TRACKING_DECAY_TIME: 0.1
+  TRACKING_DECAY_TIME: 0.2
   _yPosition: -0.8
-  _lerp: 1
+  _lerp: 0
 --- !u!1 &2099279335
 GameObject:
   m_ObjectHideFlags: 0
@@ -22907,20 +22910,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45e3f69b7e8fd3b4095b5e08bdc8c4af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _stationIp: 
-  _stationState: 0
-  _correctStation: 1
   _tracked: 0
   _odometryManager: {fileID: 0}
   _untrackedParent: {fileID: 0}
   _stationManager: {fileID: 0}
-  _stationColor: {r: 0, g: 1, b: 0, a: 1}
   _untrackedAngle: 0
   _prevTracked: 0
   _fadeSpeed: 0.0015
   _lerp: 0
-  _totalBlinks: 4
-  _blinkTime: 0.3
+  _lidarTracking: 0
+  _interactionGameObject: {fileID: 0}
 --- !u!4 &1352301420269840021
 Transform:
   m_ObjectHideFlags: 0
@@ -23351,20 +23350,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45e3f69b7e8fd3b4095b5e08bdc8c4af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _stationIp: 
-  _stationState: 0
-  _correctStation: 1
   _tracked: 0
   _odometryManager: {fileID: 0}
   _untrackedParent: {fileID: 0}
   _stationManager: {fileID: 0}
-  _stationColor: {r: 0, g: 1, b: 0, a: 1}
   _untrackedAngle: 0
   _prevTracked: 0
   _fadeSpeed: 0.0015
   _lerp: 0
-  _totalBlinks: 4
-  _blinkTime: 0.3
+  _lidarTracking: 0
+  _interactionGameObject: {fileID: 0}
 --- !u!114 &7414534390112095357
 MonoBehaviour:
   m_ObjectHideFlags: 0

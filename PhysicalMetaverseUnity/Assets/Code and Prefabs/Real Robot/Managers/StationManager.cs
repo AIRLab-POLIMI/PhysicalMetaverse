@@ -185,6 +185,7 @@ public class StationManager : MonoBehaviour
         {
             GameObject station = Instantiate(_stationPrefab);
             _stations.Add(station);
+            _lidarManager.AddStationInteraction(station);
             //set station's untrackedParent to untrackedStation
             station.GetComponent<SingleStationManager>()._untrackedParent = _untrackedStations[i];
             station.GetComponent<SingleStationManager>()._stationManager = this.transform;
@@ -251,7 +252,7 @@ public class StationManager : MonoBehaviour
                         if(_lerp)
                             station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(currentX, _yPosition, _currentZ), _speed);
                         else
-                            station.transform.localPosition = new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, _yPosition, _currentZ);
+                            station.transform.localPosition = new Vector3(currentX, _yPosition, _currentZ);
                     }
                 }
             }

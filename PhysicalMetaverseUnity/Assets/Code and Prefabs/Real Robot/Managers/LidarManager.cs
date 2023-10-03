@@ -370,7 +370,9 @@ public class LidarManager : Monosingleton<LidarManager>
             _blobTrackers[_blobIds[i]].transform.position = Vector3.Lerp(_blobTrackers[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
             //enable mesh
             //_blobTracker.GetComponent<MeshRenderer>().enabled = true;
-            _blobTrackers[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
+            ////_blobTrackers[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
+            //lerp corresponding station in _stationList to cylinder
+            _stationList[_blobIds[i]].transform.position = Vector3.Lerp(_stationList[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
         }
         ////spawn cylinder at middle of maxIndex
         //int middle = _blobStarts[maxIndex] + max/2;
@@ -391,6 +393,30 @@ public class LidarManager : Monosingleton<LidarManager>
 
     }
 
+    public void LidarTrack(GameObject station){
+        //move station to corresponding cylinder position using id
+        //get id from station name
+        int id = int.Parse(station.name.Substring(station.name.Length - 1));
+        //get cylinder position
+        Vector3 position = _blobTrackers[id].transform.position;
+        //lerp station position to cylinder position
+        station.transform.position = Vector3.Lerp(station.transform.position, position, _lidarTrackingLerp);
+
+    }
+    
+    public GameObject _stationInteractionPrefab;
+    public List<GameObject> _stationList;
+    public void AddStationInteraction(GameObject station){
+        //add a _stationInteractionPrefab to list
+        GameObject newStation = Instantiate(_stationInteractionPrefab);
+        //set stations _interactionGameObject to newStation
+        station.GetComponent<SingleStationManager>()._interactionGameObject = newStation;
+        //newStation.GetComponent<SingleStationManager>().enabled = false;
+        //disable its Collider child
+        //newStation.transform.GetChild(0).gameObject.SetActive(false);
+        //add a new station to _stationList
+        _stationList.Add(newStation);
+    }
     //range 0 1 public float lidar tracking lerp
     [Range(0.0f, 1.0f)]
     public float _lidarTrackingLerp = 0.5f;

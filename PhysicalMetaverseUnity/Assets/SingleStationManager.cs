@@ -4,69 +4,28 @@ using UnityEngine;
 
 public class SingleStationManager : MonoBehaviour
 {
-    //enum IDLE, INTERACTABLE, ANIMATED, ACTIVATED
-    public enum StationState
-    {
-        IDLE,
-        INTERACTABLE,
-        INTERACTED,
-        ACTIVATED
-    }
-
-    public string _stationIp;
-    public StationState _stationState;
-
-    public bool _correctStation = true;
     public bool _tracked = false;
     public OdometryManager _odometryManager;
     //transform orientationtransform
     private Transform _orientationTransform;
     public Transform _untrackedParent;
     public Transform _stationManager;
-    //station color
-    public Color _stationColor = Color.green;
+    //private lidar manager
+    private LidarManager _lidarManager;
     // Start is called before the first frame update
     void Start()
     {
-        _thisColor = gameObject.GetComponent<Renderer>().material.color;
-        ResetStation();
-        if (_correctStation)
-        {
-            _stationColor = Color.green;
-            gameObject.GetComponent<Renderer>().material.color = _stationColor;
-        }
-        else
-        {
-            _stationColor = Color.red;
-            gameObject.GetComponent<Renderer>().material.color = _stationColor;
-        }
-        //add station color to list of colors
-        _colors.Add(_stationColor);
+        //get lidar manager mono instance
+        _lidarManager = LidarManager.Instance;
 
-        //reset udp station
-
+        //disable mesh
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         Odometry();
-        //case
-        switch (_stationState)
-        {
-            case StationState.IDLE:
-                //do nothing
-                break;
-            case StationState.INTERACTABLE:
-                CheckCompletion();
-                break;
-            case StationState.INTERACTED:
-                BlinkNonBlocking();
-                break;
-            case StationState.ACTIVATED:
-                //do nothing
-                break;
-        }
         
     }
 
@@ -87,9 +46,9 @@ public class SingleStationManager : MonoBehaviour
     private float _resetAngle = 0;
     [Range(0.001f, 0.02f)]
     public float _fadeSpeed = 0.1f;
-    //gameObject.GetComponent<Renderer>().material.color
-    private Color _thisColor;
     public bool _lerp = false;
+    public bool _lidarTracking = false;
+    public GameObject _interactionGameObject;
     private void Odometry()
     {
         if (_tracked)
@@ -113,57 +72,62 @@ public class SingleStationManager : MonoBehaviour
         }
         else
         {
-            transform.parent = _untrackedParent;
-            //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y lerp
-            //_untrackedStations[i].transform.localRotation = Quaternion.Lerp(_untrackedStations[i].transform.localRotation, Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0), _speed);
-            //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y
-            //_untrackedStations[i].transform.localRotation = Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0);
-            //diff angle -(_untrackedAngles[i] - _sun.transform.eulerAngles.y)
-            //get positive value of _orientationTransform
-            float positiveOrientation = _orientationTransform.transform.eulerAngles.y;
-            if (positiveOrientation < 0)
-                positiveOrientation += 360;
-            float diffAngle = -(_untrackedAngle - positiveOrientation);
-            diffAngle = diffAngle % 360;
-            //avoid lerp skip
-            if (diffAngle > 180)
-                diffAngle -= 360;
-            else if (diffAngle < -180)
-                diffAngle += 360;
-            //if tracked changed dont lerp
-            if (!_prevTracked)
-            {
-                if(_lerp)
-                    _untrackedParent.transform.localRotation = Quaternion.Lerp(_untrackedParent.transform.localRotation, Quaternion.Euler(0, diffAngle, 0), 0.1f);
-                else
-                    _untrackedParent.transform.localRotation = Quaternion.Euler(0, diffAngle, 0);
-            }
-                //no lerp
-                //_untrackedParent.transform.localRotation = Quaternion.Euler(0, diffAngle, 0);
-            
-            _prevTracked = false;
+            if(!_lidarTracking){
+                transform.parent = _untrackedParent;
+                //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y lerp
+                //_untrackedStations[i].transform.localRotation = Quaternion.Lerp(_untrackedStations[i].transform.localRotation, Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0), _speed);
+                //set _untrackedStations rotation to _untrackedAngles[i] + _sun.transform.eulerAngles.y
+                //_untrackedStations[i].transform.localRotation = Quaternion.Euler(0, -(_untrackedAngles[i] - _sun.transform.eulerAngles.y), 0);
+                //diff angle -(_untrackedAngles[i] - _sun.transform.eulerAngles.y)
+                //get positive value of _orientationTransform
+                float positiveOrientation = _orientationTransform.transform.eulerAngles.y;
+                if (positiveOrientation < 0)
+                    positiveOrientation += 360;
+                float diffAngle = -(_untrackedAngle - positiveOrientation);
+                diffAngle = diffAngle % 360;
+                //avoid lerp skip
+                if (diffAngle > 180)
+                    diffAngle -= 360;
+                else if (diffAngle < -180)
+                    diffAngle += 360;
+                //if tracked changed dont lerp
+                if (!_prevTracked)
+                {
+                    if(_lerp)
+                        _untrackedParent.transform.localRotation = Quaternion.Lerp(_untrackedParent.transform.localRotation, Quaternion.Euler(0, diffAngle, 0), 0.1f);
+                    else
+                        _untrackedParent.transform.localRotation = Quaternion.Euler(0, diffAngle, 0);
+                }
+                    //no lerp
+                    //_untrackedParent.transform.localRotation = Quaternion.Euler(0, diffAngle, 0);
+                
+                _prevTracked = false;
 
-            //check if something is true in odometry manager
-            if (_odometryManager._forward)
-            {
-                transform.position -= Vector3.forward * _odometryManager._speed * Time.deltaTime;
-                //fade material alpha a bit, no lerp
-                FadeOut();
+                //check if something is true in odometry manager
+                if (_odometryManager._forward)
+                {
+                    transform.position -= Vector3.forward * _odometryManager._speed * Time.deltaTime;
+                    //fade material alpha a bit, no lerp
+                    FadeOut();
+                }
+                if (_odometryManager._backward)
+                {
+                    transform.position += Vector3.forward * _odometryManager._speed * Time.deltaTime;
+                    FadeOut();
+                }
+                if (_odometryManager._left)
+                {
+                    transform.position += Vector3.right * _odometryManager._speed * Time.deltaTime;
+                    FadeOut();
+                }
+                if (_odometryManager._right)
+                {
+                    transform.position -= Vector3.right * _odometryManager._speed * Time.deltaTime;
+                    FadeOut();
+                }
             }
-            if (_odometryManager._backward)
-            {
-                transform.position += Vector3.forward * _odometryManager._speed * Time.deltaTime;
-                FadeOut();
-            }
-            if (_odometryManager._left)
-            {
-                transform.position += Vector3.right * _odometryManager._speed * Time.deltaTime;
-                FadeOut();
-            }
-            if (_odometryManager._right)
-            {
-                transform.position -= Vector3.right * _odometryManager._speed * Time.deltaTime;
-                FadeOut();
+            else{
+                _lidarManager.LidarTrack(this.gameObject);
             }
         }
     }
@@ -185,97 +149,26 @@ public class SingleStationManager : MonoBehaviour
     {
         _untrackedParent = untrackedParent;
     }
-    public void EnterStation()
-    {   
-        Debug.Log("Entered " + gameObject.name);
-        //if IDLE
-        if (_stationState == StationState.IDLE)
-        {
-            //set INTERACTABLE
-            _stationState = StationState.INTERACTABLE;
-            //set color to PINK
-            gameObject.GetComponent<Renderer>().material.color = Color.yellow;
-        }
-    }
 
-    public void ExitStation()
-    {
-        Debug.Log("Exited " + gameObject.name);
-        //if INTERACTABLE
-        if (_stationState == StationState.INTERACTABLE)
-        {
-            //set IDLE
-            _stationState = StationState.IDLE;
-            //set color to station color
-            gameObject.GetComponent<Renderer>().material.color = _stationColor;
-        }
-    }
-
-    public void SetIp(string ip)
-    {
-        _stationIp = ip;
-    }
 
     public void SetOrientationTransform(Transform orientationTransform)
     {
         _orientationTransform = orientationTransform;
     }
-    private void CheckCompletion()
-    {
-        //if space is pressed complete station
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            CompleteStation();
-        }
-    }
-    
-    public void ResetStation()
-    {
-        string data = "RESET";
-        NetworkingManager.Instance.SendString(data, _stationIp);
-        _stationState = StationState.IDLE;
-    }
-    public void CompleteStation()
-    {
-        //if not already interacted
-        if (_stationState != StationState.INTERACTED && _stationState != StationState.ACTIVATED)
-        {
-            //data is "BLINK" in bytes
-            string data = "BLINK";
 
-            //key is (char)195
-            NetworkingManager.Instance.SendString(data, _stationIp);
-            _stationState = StationState.INTERACTED;
-        }
+    public void CompleteStation(){
+        _interactionGameObject.GetComponent<StationInteractionManager>().CompleteStation();
     }
 
-    //private prev time
-    private float _prevTime = 0f;
-    //private colors gray
-    private List<Color> _colors = new List<Color> {Color.gray};
-    //public total blinks = 4
-    public int _totalBlinks = 4;
-    public float _blinkTime = 0.3f;
-    //blink amount
-    private int _blinkAmount = 0;
-    private void BlinkNonBlocking()
-    {
-        //if time passed is greater than 1 second
-        if (Time.time - _prevTime > _blinkTime)
-        {
-            //set prev time to current time
-            _prevTime = Time.time;
-            //increment blink amount
-            _blinkAmount++;
-            //set color to the other color
-            gameObject.GetComponent<Renderer>().material.color = _colors[_blinkAmount % 2];
-        }
-        if (_blinkAmount/2 == _totalBlinks)
-        {
-            //set ACTIVATED
-            _stationState = StationState.ACTIVATED;
-            //set color to GREEN
-            gameObject.GetComponent<Renderer>().material.color = Color.blue;
-        }
+    public void ExitStation(){
+        _interactionGameObject.GetComponent<StationInteractionManager>().ExitStation();
+    }
+
+    public void SetIp(string ip){
+        _interactionGameObject.GetComponent<StationInteractionManager>().SetIp(ip);
+    }
+
+    public void EnterStation(){
+        _interactionGameObject.GetComponent<StationInteractionManager>().EnterStation();
     }
 }

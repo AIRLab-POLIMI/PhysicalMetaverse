@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 7027651145741431193}
   m_Layer: 0
   m_Name: Collider
-  m_TagString: Station
+  m_TagString: StationInteraction
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -125,7 +125,7 @@ Transform:
   m_GameObject: {fileID: 2672994432054193261}
   m_LocalRotation: {x: 1.110223e-17, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.852363, y: 4.852363, z: 4.852363}
+  m_LocalScale: {x: 3.6322803, y: 3.6322803, z: 3.6322803}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4406743316221429544}
@@ -203,14 +203,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4406743316221429544}
-  - component: {fileID: -6906719558056918880}
   - component: {fileID: 3313468184526816478}
+  - component: {fileID: 1143581594517108822}
   - component: {fileID: 2580561700585316775}
   - component: {fileID: 5709436448999465598}
   - component: {fileID: 1057687789755986331}
   m_Layer: 0
-  m_Name: Station
-  m_TagString: Station
+  m_Name: StationInteraction
+  m_TagString: StationInteraction
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -232,28 +232,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-6906719558056918880
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6699460793187042399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e3f69b7e8fd3b4095b5e08bdc8c4af, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tracked: 0
-  _odometryManager: {fileID: 0}
-  _untrackedParent: {fileID: 0}
-  _stationManager: {fileID: 0}
-  _untrackedAngle: 0
-  _prevTracked: 0
-  _fadeSpeed: 0.0015
-  _lerp: 0
-  _lidarTracking: 1
-  _interactionGameObject: {fileID: 0}
 --- !u!114 &3313468184526816478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -789,6 +767,24 @@ MonoBehaviour:
   m_SelectedFaces: 
   m_SelectedEdges: []
   m_SelectedVertices: 
+--- !u!114 &1143581594517108822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6699460793187042399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a48a11dc15b2f2a46bd0b56ef923404e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _correctStation: 1
+  _stationState: 0
+  _stationIp: 
+  _stationColor: {r: 0, g: 1, b: 0, a: 1}
+  _totalBlinks: 4
+  _blinkTime: 0.3
 --- !u!114 &2580561700585316775
 MonoBehaviour:
   m_ObjectHideFlags: 0
