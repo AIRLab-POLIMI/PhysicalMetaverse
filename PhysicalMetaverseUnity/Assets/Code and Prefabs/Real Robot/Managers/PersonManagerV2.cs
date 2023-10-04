@@ -119,11 +119,24 @@ public class PersonManagerV2 : MonoBehaviour
 [  29  437    0]
 [ 331   10    0]]
  */
+    public float _zDistance = 0.1f;
+    [Range (0.1f, 100f)]
+    public float _zDistanceMultiplier = 1f;
+    [Range (0.1f, 100f)]
+    public float _yDistanceMultiplier = 1f;
+    [Range (0.1f, 100f)]
+    public float _distanceScaleMultiplier = 1f;
     //function to parse it into an array of arrays of 3 integers
     private int[][] ParseData(string data)
     {
+        //string ending float, read chars from length - 5 to length - 1
+        string endingFloat = data.Substring(data.Length - 6, 6);
+        _zDistance = float.Parse(endingFloat);
+        _zDistance /= 1000;
+        Debug.Log(_zDistance);
+        string dataWithoutEndingFloat = data.Substring(0, data.Length - 6);
         //split the data into lines
-        string[] lines = data.Split('\n');
+        string[] lines = dataWithoutEndingFloat.Split('\n');
         //create an array of arrays of 3 integers
         int[][] parsedData = new int[lines.Length][];
         //for each line
@@ -313,6 +326,15 @@ public class PersonManagerV2 : MonoBehaviour
     [Range(-100f, 100f)]
     public float xOffset = -10f;
 
+    [Range(0.1f, 10f)]
+    public float _xScale = 1f;
+    [Range(0.1f, 10f)]
+    public float _perspectiveCorrection = 1f;
+    [Range(0.1f, 10f)]
+    public float _yScale = 1f;
+    [Range(0.1f, 10f)]
+    public float _zScale = 1f;
+
     [Range(0f, 100f)]
     public float zMultiplier = 1f;
     private GameObject newObject;
@@ -370,6 +392,7 @@ public class PersonManagerV2 : MonoBehaviour
         }
     }
 
+    public bool _rotate90 = false;
     private void MoveSpheres()
     {
         try{
@@ -381,7 +404,10 @@ public class PersonManagerV2 : MonoBehaviour
                 //set positions
                 //sphere.transform.localPosition = new Vector3(parsedData[i][1], parsedData[i][0], parsedData[i][2]);
                 //should rotate z by 45 degrees. if a point has y = 0 z is unchanged, if a point has y = 100, z is brought closer
-                sphere.transform.localPosition = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
+                if (_rotate90)
+                    sphere.transform.localPosition = new Vector3(-parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
+                else
+                    sphere.transform.localPosition = new Vector3(-parsedData[i][0]/_scale, parsedData[i][1]/_scale, parsedData[i][2]/_scale);
                 sphere.transform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
                 //rotate spheres position by 45 degrees with fulcrum at 
                 Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
@@ -393,7 +419,7 @@ public class PersonManagerV2 : MonoBehaviour
                 // Rotate the sphere around the center of rotation
                 sphere.transform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
                 //move sphere by Offset
-                sphere.transform.localPosition = new Vector3(sphere.transform.localPosition.x + xOffset, sphere.transform.localPosition.y + yOffset, sphere.transform.localPosition.z + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
+                sphere.transform.localPosition = new Vector3(((sphere.transform.localPosition.x * _xScale) + xOffset), (sphere.transform.localPosition.y * _yScale) + yOffset, (sphere.transform.localPosition.z * _zScale) + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
                 //move gradually
                 //sphere.transform.localPosition = Vector3.Lerp(sphere.transform.localPosition, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
 
@@ -409,6 +435,17 @@ public class PersonManagerV2 : MonoBehaviour
             //log spheres size
             Debug.Log(_spheres.Length);
         }
+        //find y of bottom left foot
+        float footY = _spheres[23].transform.localPosition.y;
+        float footX = _spheres[23].transform.localPosition.x;
+        //move father z like _zDistance * _zDistanceMultiplier
+        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, _zDistance * _zDistanceMultiplier);
+        //move father y to make it so _spheres[23].transform.localPosition.y; goes to absolute 0
+        transform.localPosition = new Vector3(transform.localPosition.x, -footY, transform.localPosition.z);
+        //use footX and perspective correction to move father x
+        transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
+        //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
+        
     }
 }
 

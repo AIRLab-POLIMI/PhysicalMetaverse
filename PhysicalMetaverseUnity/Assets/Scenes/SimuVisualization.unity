@@ -15223,6 +15223,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2065342268}
   - {fileID: 2086756734}
   - {fileID: 1341182829}
   - {fileID: 2062641270}
@@ -15745,9 +15746,8 @@ Transform:
   m_Children:
   - {fileID: 1388084450}
   - {fileID: 164278171}
-  - {fileID: 2065342268}
   m_Father: {fileID: 1274012765}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1341182830
 MonoBehaviour:
@@ -18257,7 +18257,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1274012765}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1604607842
 MonoBehaviour:
@@ -21348,7 +21348,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1274012765}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2062641271
 MonoBehaviour:
@@ -21931,8 +21931,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1341182829}
-  m_RootOrder: 2
+  m_Father: {fileID: 1274012765}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2065342269
 MonoBehaviour:
@@ -21968,7 +21968,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2065342270}
-        m_TargetAssemblyTypeName: PersonManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: PersonManagerV2, Assembly-CSharp
         m_MethodName: OnMsgRcv
         m_Mode: 0
         m_Arguments:
@@ -21988,18 +21988,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 2065342267}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85c0a2c30681230438c19dc4c076d9ed, type: 3}
+  m_Script: {fileID: 11500000, guid: f877d8e9f67cdd14aa409814c8c0ace8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   rotationAngle: -20
+  _spawned: 0
+  _spheres: []
   ENABLE_LOG: 0
+  _poseJoints: []
+  _zDistance: 0.1
+  _zDistanceMultiplier: 11.5
+  _yDistanceMultiplier: 1
+  _distanceScaleMultiplier: 1
   _scale: 169
-  zOffset: 10
+  zOffset: 0
   yOffset: 1
-  xOffset: -2
+  xOffset: 3.4
   zMultiplier: 1
-  _speed: 0
-  _rotate90: 1
+  _speed: 0.01
+  _rotate90: 0
 --- !u!1 &2086756733
 GameObject:
   m_ObjectHideFlags: 0
@@ -22031,7 +22038,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1274012765}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2086756735
 MonoBehaviour:

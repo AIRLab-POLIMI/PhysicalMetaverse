@@ -96,11 +96,25 @@ public class PersonManager : MonoBehaviour
 [  29  437    0]
 [ 331   10    0]]
  */
+    public float _zDistance = 0.1f;
+    [Range (0.1f, 100f)]
+    public float _zDistanceMultiplier = 1f;
+    [Range (0.1f, 100f)]
+    public float _yDistanceMultiplier = 1f;
+    [Range (0.1f, 100f)]
+    public float _distanceScaleMultiplier = 1f;
+    
     //function to parse it into an array of arrays of 3 integers
     private int[][] ParseData(string data)
     {
+        //string ending float, read chars from length - 5 to length - 1
+        string endingFloat = data.Substring(data.Length - 6, 6);
+        _zDistance = float.Parse(endingFloat);
+        _zDistance /= 1000;
+        Debug.Log(_zDistance);
+        string dataWithoutEndingFloat = data.Substring(0, data.Length - 6);
         //split the data into lines
-        string[] lines = data.Split('\n');
+        string[] lines = dataWithoutEndingFloat.Split('\n');
         //create an array of arrays of 3 integers
         int[][] parsedData = new int[lines.Length][];
         //for each line
@@ -314,6 +328,8 @@ public class PersonManager : MonoBehaviour
     private void MoveSpheres()
     {
         try{
+            //move father z like _zDistance * _zDistanceMultiplier
+            transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, _zDistance * _zDistanceMultiplier);
             //for each sphere
             for (int i = 0; i < parsedData.Length; i++)
             {
