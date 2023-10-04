@@ -122,10 +122,13 @@ public class InputManager : Monosingleton<InputManager>
         
         private string GetHeadAnglesMsg()
         {
+            // vector3 head.eulerAngles + 180 on y angle
+            Vector3 head180 = head.eulerAngles;
+            head180.y += 180;
             _headAngles = RotationHelper.SubtractAllAngles(
-                head.eulerAngles, 
+                head180, 
                 Constants.JoystickAngleNormalisation);
-
+            
             // rescale from 0-180 to -3-3 and clamp
             var xAngle = Mathf.Clamp(
                 MathHelper.MapRange(_headAngles.x, 0, 180, -3, 3),
@@ -150,6 +153,7 @@ public class InputManager : Monosingleton<InputManager>
                       headXAngleKey + Constants.KeyValDelimiter + xAngle.ToString();
                 //replace commas with dots
                 msg = msg.Replace(",", ".");
+                Debug.Log("msg: " + msg);
             }
             return msg;
         }

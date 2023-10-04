@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import os
-from networkStuff.constants import *
+#from networkStuff.constants import *
 import cv2
 import time
 showing = True
@@ -152,7 +152,7 @@ def qrThread():
 q = None
 
 def main():
-        global sock, qr_tracker, qr_decoder, q
+        global sock, qr_tracker, qr_decoder, q, cam_control, q_control
         ####print("CAMERA STARTED")
         #setup udp socket
         import socket
@@ -174,13 +174,66 @@ def main():
         #qr_tracker = cv2.TrackerKCF_create()
         # Output queue will be used to get the disparity frames from the outputs defined above
         q = tracker.device.getOutputQueue(name="disparity", maxSize=4, blocking=False)
+
+        q_control = tracker.device.getInputQueue("cam_control")
+        
+        
+        #add slider 0 255 and button to window, if button is pressed do 
+        #cam_control.setManualFocus(value)
+        #cam_control.setAutoFocusMode(dai.RawCameraControl.AutoFocusMode.OFF)
+        #q_control.send(cam_control)
+        #sli = cv2.slider("frame", 0, 255, 0, 0, "focus")
+        #cv2.button("frame", 0, 255, 0, 0, "focus", lambda: cam_control.setManualFocus(sli))
+        #create slider
+        #create frame window
+        cv2.namedWindow("frame")
+        cv2.createTrackbar("focus", "frame", 0, 255, lambda x: setFocus(cv2.getTrackbarPos("focus", "frame")))
+        #start thread with tkinter button to send trackbar value
+        ###import tkinter as tk
+        ###root = tk.Tk()
+        ###root.title("Focus")
+        ###root.geometry("200x50")
+        ###def sendFocus():
+        ###    value = cv2.getTrackbarPos("focus", "frame")
+        ###    setFocus(value)
+        ###button = tk.Button(root, text="Send Focus", command=sendFocus)
+        ###button.pack()
+        ###import threading
+        ###def threadTkinter():
+        ###    root.mainloop()
+        ###t = threading.Thread(target=threadTkinter, daemon=True)
+        ###t.start()
+        
         while True:
             loop(sock)#,camera)
         renderer.exit()
         tracker.exit()
     #import traceback
 
+def setFocus(value):
+    global cam_control, q_control
+    cam_control = dai.CameraControl()
+    #cam_control.setManualFocus(int(value))
+    #if odd
+    ###if value % 2 == 1:
+    ###    cam_control.setEffectMode(dai.RawCameraControl.EffectMode.NEGATIVE)
+    ###else:
+    ###    cam_control.setEffectMode(dai.RawCameraControl.EffectMode.OFF)
+    cam_control.setSaturation(int(value))
+    ##cam_control.setAutoFocusMode(dai.RawCameraControl.AutoFocusMode.MACRO)
+    ##cam_control.setManualFocus(int(value))
+    # request_af_trigger
+    cam_control.setAutoFocusMode(dai.RawCameraControl.AutoFocusMode.CONTINUOUS_PICTURE)
+    ##cam_control.se
+
+
+
+    q_control.send(cam_control)
+
 depthFrame = None
+q_control = None
+cam_control = None
+
 
 def loop(sock):#,camera):
     global frame, depthFrame
@@ -228,6 +281,7 @@ def loop(sock):#,camera):
             # Draw 2d skeleton
             frame = renderer.draw(frame, body)
             cv2.imshow("frame", frame)
+            
     #type of frame is numpy.ndarray
     #showOnlyBlue(frame, connection)
     

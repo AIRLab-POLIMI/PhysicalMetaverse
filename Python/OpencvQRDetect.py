@@ -100,7 +100,7 @@ def loop(connection, vid, qcd):
                     if ACCEPT_INVALID_QR:
                         currMsg = STATION_KEY + str([int(1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
                     else:
-                        currMsg = STATION_KEY + str([int(-1), rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                        pass
                     msg += [currMsg]
                 print(msg)
                 #send qr [b'\xc3[0, 163, 133, 145]']
@@ -180,7 +180,7 @@ def loop(connection, vid, qcd):
 
 import time
 
-ACCEPT_INVALID_QR = True
+ACCEPT_INVALID_QR = False
 vid = None
 
 def QrFromUdp():
@@ -218,7 +218,6 @@ if OFFLINE:
     sock.bind(('127.0.0.1', 25667))
     #set timeout
     sock.settimeout(5)
-    ACCEPT_INVALID_QR = True
 
     qcd = cv2.QRCodeDetector()
     connection = None

@@ -478,14 +478,14 @@ void set_servos_pos() {
   //write_serial("-------- ANGLE : " + String(angleToPulse(servos[2])));
   //write_serial("-------- ANGLE BF : " + String(angleToPulse(servos[8])));
   
-  servo_head_beak_t2.write(B_UD_angle, SERVO_SPEED*2, true);
+  servo_head_beak_t2.write(B_UD_angle, SERVO_SPEED*2, false);
   servo_head_body.write(B_BF_angle, SERVO_SPEED, false);
-  servo_head_beak_t1.write(B_TB_angle, SERVO_SPEED, true);
-  servo_head_beak_p.write(B_LR_angle, SERVO_SPEED*2, true);
+  servo_head_beak_t1.write(B_TB_angle, SERVO_SPEED, false);
+  servo_head_beak_p.write(B_LR_angle, SERVO_SPEED*2, false);
   servo_tail_beak_t2.write(T_UD_angle, SERVO_SPEED, false);
-  servo_tail_neck.write(T_TN_angle, SERVO_SPEED*1.5, true);
+  servo_tail_neck.write(T_TN_angle, SERVO_SPEED*1.5, false);
   servo_tail_body.write(T_BF_angle, 10, false);
-  servo_tail_beak_t1.write(T_T1_angle, 10*2, true);
+  servo_tail_beak_t1.write(T_T1_angle, 10*2, false);
   servo_tail_beak_p.write(T_P1_angle, SERVO_SPEED, false);
   servo_tail_body_p.writeMicroseconds(scale2us(T_LR_angle));
   //pwm.setPWM(0, 0, angleToPulse(servos[0]));
@@ -514,7 +514,7 @@ void reset_all_servos() {
   // by default petals are closed
   B_UD_pos = MIN_ANGLE_HEAD_BEAK_T2;
   B_LR_pos = MIN_ANGLE_HEAD_BEAK_P;
-  B_TB_pos = MIN_ANGLE_HEAD_BEAK_T1;
+  B_TB_pos = MAX_ANGLE_HEAD_BEAK_T1;
   B_BF_pos = 90;
 
   T_UD_pos = MIN_ANGLE_TAIL_BEAK_T2;

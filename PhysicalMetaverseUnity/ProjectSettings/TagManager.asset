@@ -13,6 +13,7 @@ TagManager:
   - Station
   - Hole
   - InvalidStation
+  - StationInteraction
   layers:
   - Default
   - TransparentFX

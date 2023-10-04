@@ -310,6 +310,7 @@ public class PersonManager : MonoBehaviour
         }
     }
 
+    public bool _rotate90 = false;
     private void MoveSpheres()
     {
         try{
@@ -321,7 +322,10 @@ public class PersonManager : MonoBehaviour
                 //set positions
                 //sphere.transform.localPosition = new Vector3(parsedData[i][1], parsedData[i][0], parsedData[i][2]);
                 //should rotate z by 45 degrees. if a point has y = 0 z is unchanged, if a point has y = 100, z is brought closer
-                sphere.transform.localPosition = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
+                if (_rotate90)
+                    sphere.transform.localPosition = new Vector3(parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
+                else
+                    sphere.transform.localPosition = new Vector3(parsedData[i][0]/_scale, parsedData[i][1]/_scale, parsedData[i][2]/_scale);
                 sphere.transform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
                 //rotate spheres position by 45 degrees with fulcrum at 
                 Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
