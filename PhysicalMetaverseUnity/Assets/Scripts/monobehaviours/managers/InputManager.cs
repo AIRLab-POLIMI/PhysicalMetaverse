@@ -21,6 +21,7 @@ public class InputManager : Monosingleton<InputManager>
     [SerializeField] public SetupSO setup;
     private EndPointSO _jetsonEndpoint;
     public string _jetsonIp;
+    public Transform _poseRotationTransform;
     
     #region Event Functions
     
@@ -125,6 +126,8 @@ public class InputManager : Monosingleton<InputManager>
             // vector3 head.eulerAngles + 180 on y angle
             Vector3 head180 = head.eulerAngles;
             head180.y += 180;
+            //rotate _poseRotationTransform by y
+            _poseRotationTransform.localRotation = Quaternion.Euler(0, head180.y, 0);
             _headAngles = RotationHelper.SubtractAllAngles(
                 head180, 
                 Constants.JoystickAngleNormalisation);
@@ -136,6 +139,8 @@ public class InputManager : Monosingleton<InputManager>
             var yAngle = Mathf.Clamp(
                 MathHelper.MapRange(_headAngles.y, 0, 180, -3, 3),
                 -3, 3);
+
+            yAngle /= 3;
             
             // if xAngle or yAngle is too close by 'tolerance' to previous value, don't send
             // if xAngle or yAngle are -3 or 3 and their prevAngle value is not exactly -3 or 3, send

@@ -195,6 +195,10 @@ public class PersonManagerV2 : MonoBehaviour
         //return the array of arrays
         return parsedData;
     }
+    
+    //range 0.1 1 _poseDecayTime
+    [Range(0.1f, 1f)]
+    public float _poseDecayTime = 0.4f;
 
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
@@ -210,6 +214,13 @@ public class PersonManagerV2 : MonoBehaviour
             //move spheres to position
             MoveSpheres();
             data = null;
+        }
+
+        //if time since last receive is more than pose decay time move spheres to y = -100
+        if (Time.time - prevRcvTime > _poseDecayTime)
+        {
+            //move transform down 100y
+            transform.localPosition = new Vector3(transform.localPosition.x, -100f, transform.localPosition.z);
         }
 
     }
