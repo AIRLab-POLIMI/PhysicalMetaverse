@@ -8,8 +8,8 @@ DEFAULT_UNITY_IP = VR_IP #used by connection.py
 TCP_PRESENTATIONS = 0 #used by connection.py
 
 #  ODILE STUFF  ######################################
-ODILE_ARDUINO_PLUGGED = True
-BASE_ENABLED = False
+ODILE_ARDUINO_PLUGGED = False
+BASE_ENABLED = True
 ARMS_ENABLED = True
 SKIP_ARDUINO_SETUP = False
 serial_default_port = "/dev/ttyACM0"
@@ -24,7 +24,7 @@ OLD_POSE_ENABLED = 0
 LOGITECH_ENABLED = 0
 KEYVALUE_RECEIVE_ENABLED = 1
 DEPTHAI_ENABLED = 1 #DepthAICamera.py
-QR_ENABLED = 1 #MultipleQRDetectReal.py
+QR_ENABLED = 0 #MultipleQRDetectReal.py
 
 ####################################################
 

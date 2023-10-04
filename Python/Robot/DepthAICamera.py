@@ -130,8 +130,56 @@ def start():
             loop(connection, queue)
         renderer.exit()
         tracker.exit()
-    import traceback
-    
+
+import traceback
+
+def computeDistance(frame, depthFrame, body):
+    frame = renderer.draw(frame, body)
+    #draw pink dot on frame at body.landmarks 23 and 12
+    cv2.circle(frame, (int(body.landmarks[23][0]), int(body.landmarks[23][1])), 10, (255, 0, 255), -1)
+    cv2.circle(frame, (int(body.landmarks[12][0]), int(body.landmarks[12][1])), 10, (255, 0, 255), -1)
+    #store point1 and point2
+    point1 = (int(body.landmarks[23][0]), int(body.landmarks[23][1]))
+    point2 = (int(body.landmarks[12][0]), int(body.landmarks[12][1]))
+    frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
+    #make depthframe rgb
+    depthFrame = cv2.cvtColor(depthFrame, cv2.COLOR_GRAY2RGB)
+    #draw average of point1 and point2 on depthFrame in black
+    #point3 equal to average of point1 and point2
+    point3 = ((point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2)
+    #map point 3 from frame coordinates to depthFrame coordinates using image shape
+    point3 = (int(point3[0] * (depthFrame.shape[1] / frame.shape[1]) / 2), int(point3[1] * (depthFrame.shape[0] / frame.shape[0]) / 2))
+    #if point3[0] is less than depthFrame.shape[1] half, multiply it by 0.6
+    ###if point3[0] < depthFrame.shape[1] / 2:
+    ###    point3 = (int(point3[0] * (point3[0]/(depthFrame.shape[1]/2))), point3[1])
+    ###else:
+    ###    point3 = (int(point3[0] * (point3[0]/(depthFrame.shape[1]/2))), point3[1])
+    center = 2
+    if point3[0] < depthFrame.shape[1] / center:
+        point3 = (int(point3[0] * (point3[0]/(depthFrame.shape[1]/center))), point3[1])
+    #point4 and point5 are point3 plus and minus 50
+    point4 = (point3[0] + 50, point3[1])
+    point5 = (point3[0] - 50, point3[1])
+    #print value of depthFrame at point3 no rgb just one value
+    distance3 = depthFrame[point3[1]][point3[0]][0]
+    distance3 = 1/distance3
+    distance4 = depthFrame[point4[1]][point4[0]][0]
+    distance4 = 1/distance4
+    distance5 = depthFrame[point5[1]][point5[0]][0]
+    distance5 = 1/distance5
+    #distance is min of them
+    distance = min(distance3, distance4, distance5)
+    #print(distance)
+    #draw point3 on depthFrame in orange
+    cv2.circle(depthFrame, point3, 10, (0, 165, 255), -1)
+    #draw point4 and point5 on depthFrame in green and pink
+    cv2.circle(depthFrame, point4, 10, (0, 255, 0), -1)
+    cv2.circle(depthFrame, point5, 10, (255, 0, 255), -1)
+    depthFrame = cv2.resize(depthFrame, (0,0), fx=0.5, fy=0.5)
+    distance = distance * 70
+    return frame, depthFrame, distance
+
+
 def loop(connection, queue):
     # Run blazepose on next frame
     frame, body = tracker.next_frame()
@@ -141,14 +189,6 @@ def loop(connection, queue):
     depthFrame = inDisparity.getFrame()
     # Normalization for better visualization
     depthFrame = (depthFrame * (255 / tracker.depth.initialConfig.getMaxDisparity())).astype(np.uint8)
-    if showing:
-        frame = renderer.draw(frame, body)
-        frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
-        cv2.imshow("frame", frame)
-        depthFrame = cv2.resize(depthFrame, (0,0), fx=0.5, fy=0.5)
-        cv2.imshow("disparity", depthFrame)
-        cv2.waitKey(1)
-
     #type of frame is numpy.ndarray
     #showOnlyBlue(frame, connection)
     # Draw 2d skeleton
@@ -157,22 +197,35 @@ def loop(connection, queue):
     #print(body)
     #print body properly, it is mediapipe_utils.Body
     try:
+        frame, depthFrame, distance = computeDistance(frame, depthFrame, body)
         #print(body.landmarks)
         #print("sent")
         #send body landmarks via udp
         #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
         #body.landmarks string
-        to_send = str(body.landmarks).encode()
+        #make sure distance is a string with 4 decimals
+        distance = str(distance)
+        if len(distance) > 5:
+            distance = distance[:5]
+        elif len(distance) < 5:
+            distance = distance + "0" * (5 - len(distance))
+        to_send = str(body.landmarks) + str(distance) + "."
+        print("SENT POSE " + str(to_send))
+        to_send = to_send.encode()
         
         connection.send(POSE_KEY, to_send)
             
         #print("SENT CAMERA " + str(to_send))# + str(body.landmarks))
-
+        
     #print exception
     except Exception as e:
         print(e)
         #traceback.print_exc()
     
+    if showing:
+        cv2.imshow("frame", frame)
+        cv2.imshow("disparity", depthFrame)
+        cv2.waitKey(1)
     # Show 2d skeleton
     #key = renderer.waitKey(delay=1)
     #if key == 27 or key == ord('q'):
