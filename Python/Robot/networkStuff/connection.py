@@ -88,8 +88,9 @@ class Connection:
                 # IF A PING IS MISSED, SETUP AGAIN
                 #self.interrupt_sensors_send()
                 #close connections
-                self.close_all_connections()
-                raise ConnectionError
+                #####self.close_all_connections()
+                #####raise ConnectionError
+                pass #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             self.control.serial_communication()
 
 

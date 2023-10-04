@@ -84,7 +84,7 @@ class UnityChannel:
             self.last_ping_sent_time = time.time()
 
         if time.time() > (self.last_ping_received_time + PING_TIMEOUT):
-            print("NO PING RECEIVED FOR MORE THAN "+ PING_TIMEOUT + " SECONDS")
+            print("NO PING RECEIVED FOR MORE THAN SECONDS")
             return False
 
         return True
