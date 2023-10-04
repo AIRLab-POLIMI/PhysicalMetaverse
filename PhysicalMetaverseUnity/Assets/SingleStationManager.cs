@@ -39,6 +39,26 @@ public class SingleStationManager : MonoBehaviour
         {
             gameObject.tag = "InvalidStation";
         }
+
+        //if station invalidated fade _interactionGameObject mesh, if not invalidated restore full alpha
+        if (_stationInvalidated)
+        {
+            if (_interactionGameObject.GetComponent<Renderer>().material.color.a > 0)
+                _interactionGameObject.GetComponent<Renderer>().material.color = new Color(_interactionGameObject.GetComponent<Renderer>().material.color.r, _interactionGameObject.GetComponent<Renderer>().material.color.g, _interactionGameObject.GetComponent<Renderer>().material.color.b, _interactionGameObject.GetComponent<Renderer>().material.color.a - _fadeSpeed);
+            else
+            {
+                _interactionGameObject.GetComponent<Renderer>().material.color = new Color(_interactionGameObject.GetComponent<Renderer>().material.color.r, _interactionGameObject.GetComponent<Renderer>().material.color.g, _interactionGameObject.GetComponent<Renderer>().material.color.b, 0);
+                //set this station to false
+                gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            //enable mesh
+            _interactionGameObject.GetComponent<MeshRenderer>().enabled = true;
+            //set alpha to 1
+            _interactionGameObject.GetComponent<Renderer>().material.color = new Color(_interactionGameObject.GetComponent<Renderer>().material.color.r, _interactionGameObject.GetComponent<Renderer>().material.color.g, _interactionGameObject.GetComponent<Renderer>().material.color.b, 1);
+        }
     }
 
     public int _untrackedAngle = 0;
@@ -144,6 +164,8 @@ public class SingleStationManager : MonoBehaviour
     public void SetTracked(bool tracked)
     {
         _tracked = tracked;
+        if(_tracked)
+            _stationInvalidated = false;
     }
     public void SetUntrackedParent(Transform untrackedParent)
     {
@@ -170,5 +192,10 @@ public class SingleStationManager : MonoBehaviour
 
     public void EnterStation(){
         _interactionGameObject.GetComponent<StationInteractionManager>().EnterStation();
+    }
+
+    public bool _stationInvalidated = false;
+    public void InvalidateStation(){
+        _stationInvalidated = true;
     }
 }

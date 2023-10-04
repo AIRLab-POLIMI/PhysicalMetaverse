@@ -250,10 +250,11 @@ MonoBehaviour:
   _stationManager: {fileID: 0}
   _untrackedAngle: 0
   _prevTracked: 0
-  _fadeSpeed: 0.0015
+  _fadeSpeed: 0.0043
   _lerp: 0
   _lidarTracking: 1
   _interactionGameObject: {fileID: 0}
+  _stationInvalidated: 0
 --- !u!114 &3313468184526816478
 MonoBehaviour:
   m_ObjectHideFlags: 0

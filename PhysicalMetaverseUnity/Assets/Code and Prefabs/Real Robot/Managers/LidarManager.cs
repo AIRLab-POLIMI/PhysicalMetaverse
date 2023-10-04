@@ -223,7 +223,7 @@ public class LidarManager : Monosingleton<LidarManager>
         //check blob array and enable mesh of corresponding true values
         for(int i = 0; i < 360; i++){
             if(_blobs[i] >= 0){
-                _points[i].GetComponent<MeshRenderer>().enabled = false;
+                _points[i].GetComponent<MeshRenderer>().enabled = true;
             }
             else{
                 _points[i].GetComponent<MeshRenderer>().enabled = true;
@@ -438,7 +438,7 @@ public class LidarManager : Monosingleton<LidarManager>
             //lerp corresponding station in _stationList to cylinder only if it is not further than _maxJumpDistance
             _stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
             if(Vector3.Distance(_stationList[_blobIds[i]].transform.position, point.position) < _maxJumpDistance){
-                _stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
+                ////_stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
                 _stationList[_blobIds[i]].transform.position = Vector3.Lerp(_stationList[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
             }
             else{
@@ -1059,10 +1059,13 @@ public class LidarManager : Monosingleton<LidarManager>
         }
         else
         {
-            StartCoroutine(FadeInPoint(_points[pos]));
+            //if blob checker id is >0
+            if(_points[pos].GetComponent<PillarBlobChecker>()._stationId < 0){
+                StartCoroutine(FadeInPoint(_points[pos]));
+            }
             if ((ConvertAngleTo360(pos) >= MinConvertedAngle.runtimeValue && ConvertAngleTo360(pos) <= MaxConvertedAngle.runtimeValue) && (MinConvertedAngle.runtimeValue != -1)) //if one of the angles where Pose is
             {
-                _points[pos].GetComponent<MeshRenderer>().enabled = false;
+                _points[pos].GetComponent<MeshRenderer>().enabled = true;
             }
             //else //HERE IS CONFLICT WITH BLOB
             //{

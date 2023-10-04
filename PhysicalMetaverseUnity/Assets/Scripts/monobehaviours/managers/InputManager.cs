@@ -22,6 +22,7 @@ public class InputManager : Monosingleton<InputManager>
     private EndPointSO _jetsonEndpoint;
     public string _jetsonIp;
     public Transform _poseRotationTransform;
+    public bool _rotate180 = true;
     
     #region Event Functions
     
@@ -45,6 +46,9 @@ public class InputManager : Monosingleton<InputManager>
     #endregion
         
         void Start(){
+            //rotate this transform 180 if true
+            if (_rotate180)
+                transform.Rotate(0, 180, 0);
             //get ip string from _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonIp = _jetsonEndpoint.IP.ToString();

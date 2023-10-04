@@ -20,7 +20,7 @@ public class RobotPoseContoller : MonoBehaviour
     public List<Transform> _odileJointTransforms = new List<Transform>();
     //public inverse kinematic gameobject
     public GameObject _handTracker;
-    [Range(0.01f, 1f)]
+    [Range(0.01f, 2f)]
     public float _odileScale = 0.516f;
     
     // Start is called before the first frame update
@@ -74,18 +74,20 @@ public class RobotPoseContoller : MonoBehaviour
             
             return;
         }
-        //orient parent like YDirection("Right Shoulder", "Right Shoulder")
-        //////transform.rotation = Quaternion.LookRotation(YDirection(_joints["Right Shoulder"], _joints["Right Shoulder"]));
-        //set odile wrist to angle between Right shoulder, Right elbow, and Right wrist
-        //_odileWrist.localRotation = Quaternion.Euler(AngleBetweenThreePoints(_joints["Right Wrist"], _joints["Right Elbow"], _joints["Right Shoulder"]), 0, 0);
-        //lerp Right shoulder, Right elbow, and Right wrist
-        //////_odileJoints["VWrist"].localRotation = Quaternion.Lerp(_odileWrist.localRotation, Quaternion.Euler(AngleBetweenThreePoints(_joints["Right Wrist"], _joints["Right Elbow"], _joints["Right Shoulder"]), 0, 0), 0.1f);
-        //set odile arm to angle between Right elbow, Right shoulder, and Right hip
-        //_odileArm.localRotation = Quaternion.Euler(AngleBetweenThreePoints(_joints["Right Elbow"], _joints["Right Shoulder"], _joints["Right Hip"]), 0, 0);
+        //orient parent like YDirection("Left Shoulder", "Left Shoulder")
+        //////transform.rotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Left Shoulder"]));
+        //set odile wrist to angle between Left shoulder, Left elbow, and Left wrist
+        //_odileWrist.localRotation = Quaternion.Euler(AngleBetweenThreePoints(_joints["Left Wrist"], _joints["Left Elbow"], _joints["Left Shoulder"]), 0, 0);
+        //lerp Left shoulder, Left elbow, and Left wrist
+        //////_odileJoints["VWrist"].localRotation = Quaternion.Lerp(_odileWrist.localRotation, Quaternion.Euler(AngleBetweenThreePoints(_joints["Left Wrist"], _joints["Left Elbow"], _joints["Left Shoulder"]), 0, 0), 0.1f);
+        //set odile arm to angle between Left elbow, Left shoulder, and Left hip
+        //_odileArm.localRotation = Quaternion.Euler(AngleBetweenThreePoints(_joints["Left Elbow"], _joints["Left Shoulder"], _joints["Left Hip"]), 0, 0);
         //lerp
-        //////_odileJoints["VArm"].localRotation = Quaternion.Lerp(_odileArm.localRotation, Quaternion.Euler(AngleBetweenThreePoints(_joints["Right Elbow"], _joints["Right Shoulder"], _joints["Right Hip"]), 0, 0), 0.1f);
-        //get the position difference between right wrist and right hip, the place the hand tracker there relative odile's VRotate
-        Vector3 handTrackerPos = _joints["Right Wrist"].position - _joints["Right Hip"].position;
+        //////_odileJoints["VArm"].localRotation = Quaternion.Lerp(_odileArm.localRotation, Quaternion.Euler(AngleBetweenThreePoints(_joints["Left Elbow"], _joints["Left Shoulder"], _joints["Left Hip"]), 0, 0), 0.1f);
+        //get the position difference between Left wrist and Left hip, the place the hand tracker there relative odile's VRotate
+        Vector3 handTrackerPos = _joints["Left Wrist"].position - _joints["Left Hip"].position;
+        //normalize with difference of left shoulder minus left hip
+        handTrackerPos = handTrackerPos / (_joints["Left Shoulder"].position - _joints["Left Hip"].position).magnitude;
         _handTracker.transform.localPosition = handTrackerPos * _odileScale + _odileJoints["VRotate"].localPosition + new Vector3(0, _heightOffset, 0);
         //inverse kinematics of odile joints to get as close as possible to hand tracker
         InverseKinematics();
@@ -130,14 +132,14 @@ public class RobotPoseContoller : MonoBehaviour
         _odileJoints["VWrist"].localRotation = Quaternion.Lerp(_odileJoints["VWrist"].localRotation, Quaternion.Euler(180 - (Mathf.Asin(distance) * Mathf.Rad2Deg)*2, 0, 0), 0.1f);
 
         //VRotate YDirection shoulder and wrist, rotate also -90 on z
-        Vector3 yDirection = YDirection(_joints["Right Shoulder"], _joints["Right Wrist"]);
+        Vector3 yDirection = YDirection(_joints["Left Shoulder"], _joints["Left Wrist"]);
         //only positive y
         //yDirection = new Vector3(yDirection.x, Mathf.Abs(yDirection.y), yDirection.z);
         //invert
         yDirection = -yDirection;
         //only positive y
         yDirection = new Vector3(yDirection.x, Mathf.Abs(yDirection.y), yDirection.z);
-        //_odileJoints["VRotate"].localRotation = Quaternion.LookRotation(YDirection(_joints["Right Shoulder"], _joints["Right Wrist"])) * Quaternion.Euler(0, -90, -90);
+        //_odileJoints["VRotate"].localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Left Wrist"])) * Quaternion.Euler(0, -90, -90);
         //lerp
         _odileJoints["VRotate"].localRotation = Quaternion.Lerp(_odileJoints["VRotate"].localRotation, Quaternion.LookRotation(yDirection) * Quaternion.Euler(0, -90, -90), 0.1f);
         //TODO lerp only through positive y, even if it is longer path

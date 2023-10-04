@@ -59,6 +59,16 @@ public class PillarBlobChecker : MonoBehaviour
             string stationName = other.gameObject.transform.parent.name;
             _stationId = int.Parse(stationName.Substring(stationName.Length - 1));
             _lidarManager.SetBlobAt(_pillarId, _stationId);
+            //if other gameobject has SingleStationManager get alpha of its interaction object and set 1 - alpha to this gameobject
+            SingleStationManager singlestation = other.gameObject.transform.parent.gameObject.GetComponent<SingleStationManager>();
+            if(singlestation != null){
+                //get alpha
+                float alpha = singlestation._interactionGameObject.GetComponent<Renderer>().material.color.a;
+                //set alpha
+                GetComponent<Renderer>().material.color = new Color(GetComponent<Renderer>().material.color.r, GetComponent<Renderer>().material.color.g, GetComponent<Renderer>().material.color.b, 1 - alpha);
+                
+                //GetComponent<MeshRenderer>().enabled = true;
+            }
             /*
             //check name of the father, if ends with 1 color green, if 0 color red
             //change color
