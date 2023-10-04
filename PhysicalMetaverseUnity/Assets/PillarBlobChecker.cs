@@ -29,8 +29,11 @@ public class PillarBlobChecker : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        _stationId = -1;
-        _lidarManager.SetBlobAt(_pillarId, -1);
+        //if frame count is even
+        if(Time.frameCount % 2 == 0){
+            _stationId = -1;
+            _lidarManager.SetBlobAt(_pillarId, -1);
+        }
         /*
         //color this gameobject in yellow
         GetComponent<Renderer>().material.color = Color.yellow;

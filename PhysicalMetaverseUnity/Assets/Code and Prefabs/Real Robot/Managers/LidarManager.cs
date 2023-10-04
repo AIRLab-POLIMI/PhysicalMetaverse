@@ -198,8 +198,19 @@ public class LidarManager : Monosingleton<LidarManager>
         Debug.unityLogger.logEnabled = true;
         //reset transform to 0
         transform.position = new Vector3(0,0,0);
-    }
 
+
+        if(_disableBackPillars){
+            //disable pillars from 0 to 30 and from 330 to 360
+            for(int j = 0; j < 60; j++){
+                _points[j].SetActive(false);
+            }
+            for(int j = 300; j < 360; j++){
+                _points[j].SetActive(false);
+            }
+        }
+    }
+    public bool _disableBackPillars = true;
     public bool _LIDAR_TRACKING = true;
     void FixedUpdate()
     {
@@ -303,30 +314,36 @@ public class LidarManager : Monosingleton<LidarManager>
 
     public float _maxJumpDistance = 3f;
     void LidarTracking(){
+        //clear lists
+        _blobSizes.Clear();
+        _blobStarts.Clear();
+        _blobIds.Clear();
+
+        int skippableBlobPoints = _skippableBlobPoints;
         //disable _stationList meshes
         foreach(GameObject station in _stationList){
             station.GetComponent<MeshRenderer>().enabled = false;
         }
         //find start of groups of consecutive points and count their size
         for(int i = 0; i < 360; i++){
-            _skippableBlobPoints = 2;
+            skippableBlobPoints = _skippableBlobPoints;
             //if true
             if(_blobs[i] >= 0){
                 //count until false
                 count = 0;
                 int j = i;
                 bool seamPassed = false;
-                while(_skippableBlobPoints>0){
+                while(skippableBlobPoints>0){
                     if(_blobs[j] < 0){
-                        _skippableBlobPoints--;
+                        skippableBlobPoints--;
                     }
                     else{
-                        _skippableBlobPoints = 2;
+                        skippableBlobPoints = _skippableBlobPoints;
                     }
                     count++;
                     j++;
                     if(j >= 360){
-                        _skippableBlobPoints = -1;
+                        skippableBlobPoints = -1;
                     }
                     /*if(!seamPassed){
                         //if j is out of range
@@ -343,7 +360,6 @@ public class LidarManager : Monosingleton<LidarManager>
                         }
                     }*/
                 }
-                //add count to sizes
                 _blobSizes.Add(count);
                 _blobStarts.Add(i);
                 _blobIds.Add(_blobs[i]);
@@ -363,6 +379,37 @@ public class LidarManager : Monosingleton<LidarManager>
         //if(_blobStarts.Count == 0){
         //    return;
         //}
+        
+        //TODO try selection of bigger blob when more than one have the same id
+        /*
+        //check blobids, for each duplicate value check size in blobsizes and delete the smaller one, also in blobstarts
+        for(int i = 0; i < _blobIds.Count; i++){
+            for(int j = i+1; j < _blobIds.Count; j++){
+                if(_blobIds[i] == _blobIds[j]){
+                    //if same id, check size
+                    if(_blobSizes[i] > _blobSizes[j]){
+                        //delete j
+                        _blobIds.RemoveAt(j);
+                        _blobSizes.RemoveAt(j);
+                        _blobStarts.RemoveAt(j);
+                        //decrement j
+                        j--;
+                    }
+                    else{
+                        //delete i
+                        _blobIds.RemoveAt(i);
+                        _blobSizes.RemoveAt(i);
+                        _blobStarts.RemoveAt(i);
+                        //decrement i
+                        i--;
+                        //break
+                        break;
+                    }
+                }
+            }
+        }
+        */
+
         //for each blob spawn corresponding cylinder at middle
         for(int i = 0; i < _blobStarts.Count; i++){
             //spawn cylinder at middle of maxIndex
@@ -370,10 +417,21 @@ public class LidarManager : Monosingleton<LidarManager>
             if(middle >= 360){
                 middle -= 360;
             }
+            //if middle id is not valid try next one
+            int id = _blobs[middle];
+            while(id < 0){
+                middle++;
+                if(middle >= 360){
+                    middle -= 360;
+                }
+                id = _blobs[middle];
+            }
             Transform point = _points[middle].transform;
             //lerp corresponding blobtracker at point
             //_blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, _lidarTrackingLerp);
-            _blobTrackers[_blobIds[i]].transform.position = Vector3.Lerp(_blobTrackers[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
+            //_blobTrackers[_blobIds[i]].transform.position = Vector3.Lerp(_blobTrackers[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
+            //no lerp
+            _blobTrackers[_blobIds[i]].transform.position = point.position;
             //enable mesh
             //_blobTracker.GetComponent<MeshRenderer>().enabled = true;
             ////_blobTrackers[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
@@ -400,10 +458,6 @@ public class LidarManager : Monosingleton<LidarManager>
         ////enable mesh
         ////_blobTracker.GetComponent<MeshRenderer>().enabled = true;
         //_blobTrackers[_blobIds[maxIndex]].GetComponent<MeshRenderer>().enabled = true;
-        //clear lists
-        _blobSizes.Clear();
-        _blobStarts.Clear();
-        _blobIds.Clear();
 
     }
 
@@ -414,7 +468,9 @@ public class LidarManager : Monosingleton<LidarManager>
         //get cylinder position
         Vector3 position = _blobTrackers[id].transform.position;
         //lerp station position to cylinder position
-        station.transform.position = Vector3.Lerp(station.transform.position, position, _lidarTrackingLerp);
+        //station.transform.position = Vector3.Lerp(station.transform.position, position, _lidarTrackingLerp);
+        // no lerp
+        station.transform.position = position;
 
     }
     
