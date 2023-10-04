@@ -160,6 +160,9 @@ def computeDistance(frame, depthFrame, body):
     #point4 and point5 are point3 plus and minus 50
     point4 = (point3[0] + 50, point3[1])
     point5 = (point3[0] - 50, point3[1])
+    #if one point is out of frame raise exception and dont send
+    if point4[0] > depthFrame.shape[1] or point5[0] < 0:
+        raise Exception("point out of frame")
     #print value of depthFrame at point3 no rgb just one value
     distance3 = depthFrame[point3[1]][point3[0]][0]
     distance3 = 1/distance3

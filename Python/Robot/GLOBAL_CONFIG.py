@@ -8,8 +8,8 @@ DEFAULT_UNITY_IP = VR_IP #used by connection.py
 TCP_PRESENTATIONS = 0 #used by connection.py
 
 #  ODILE STUFF  ######################################
-ODILE_ARDUINO_PLUGGED = False
-BASE_ENABLED = True
+ODILE_ARDUINO_PLUGGED = True
+BASE_ENABLED = False
 ARMS_ENABLED = True
 SKIP_ARDUINO_SETUP = False
 serial_default_port = "/dev/ttyACM0"
