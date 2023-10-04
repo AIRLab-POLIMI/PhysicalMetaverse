@@ -5,7 +5,7 @@ from networkStuff.constants import *
 import cv2
 import numpy as np
 
-showing = True
+showing = False
 #for this script to work you have to first git clone https://github.com/geaxgx/depthai_blazepose.git
 #in the same folder as this script
 
