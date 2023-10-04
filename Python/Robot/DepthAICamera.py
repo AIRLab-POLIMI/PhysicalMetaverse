@@ -2,6 +2,9 @@
 import sys
 import os
 from networkStuff.constants import *
+import cv2
+import numpy as np
+
 showing = True
 #for this script to work you have to first git clone https://github.com/geaxgx/depthai_blazepose.git
 #in the same folder as this script
@@ -71,11 +74,11 @@ def start():
                 force_detection=args.force_detection,
                 stats=True,
                 trace=args.trace)   
-
-    ###renderer = BlazeposeRenderer(
-    ###                tracker, 
-    ###                show_3d=args.show_3d, 
-    ###                output=args.output)
+    
+    renderer = BlazeposeRenderer(
+                    tracker, 
+                    show_3d=args.show_3d, 
+                    output=args.output)
 
     #start udp server to send body landmarks later
     #import socket
@@ -83,7 +86,6 @@ def start():
     #udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     #udp.bind(("192.168.0.106", 5005))
 
-    import cv2
     import numpy as np
 
     showingColor = 0
@@ -117,23 +119,36 @@ def start():
 
         cv2.imshow("output_img", output_img)
 
-
-    
+    queue = tracker.device.getOutputQueue(name="disparity", maxSize=4, blocking=False)
+    return queue
 
 
 
     def main(connection):
         print("CAMERA STARTED")
         while True:
-            loop(connection)
+            loop(connection, queue)
         renderer.exit()
         tracker.exit()
     import traceback
     
-def loop(connection):
+def loop(connection, queue):
     # Run blazepose on next frame
     frame, body = tracker.next_frame()
     if frame is None: print("framenone")
+
+    inDisparity = queue.get()  # blocking call, will wait until a new data has arrived
+    depthFrame = inDisparity.getFrame()
+    # Normalization for better visualization
+    depthFrame = (depthFrame * (255 / tracker.depth.initialConfig.getMaxDisparity())).astype(np.uint8)
+    if showing:
+        frame = renderer.draw(frame, body)
+        frame = cv2.resize(frame, (0,0), fx=0.5, fy=0.5)
+        cv2.imshow("frame", frame)
+        depthFrame = cv2.resize(depthFrame, (0,0), fx=0.5, fy=0.5)
+        cv2.imshow("disparity", depthFrame)
+        cv2.waitKey(1)
+
     #type of frame is numpy.ndarray
     #showOnlyBlue(frame, connection)
     # Draw 2d skeleton
@@ -150,6 +165,7 @@ def loop(connection):
         to_send = str(body.landmarks).encode()
         
         connection.send(POSE_KEY, to_send)
+            
         #print("SENT CAMERA " + str(to_send))# + str(body.landmarks))
 
     #print exception

@@ -14,7 +14,7 @@ DEFAULT_TOLERANCE = 0
 MAX_SCANS = 20
 
 class Lidar:
-    def __init__(self, port='/dev/ttyUSB0'):
+    def __init__(self, port='/dev/ttyUSB1'):
         self.port = port
         self.sensor = RPLidar(port)
         self.measurements = [DEFAULT_INVALID_VALUE] * N_OF_DEGREES

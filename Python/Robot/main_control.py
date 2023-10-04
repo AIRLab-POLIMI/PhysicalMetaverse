@@ -52,9 +52,11 @@ if not WINDOWS:
 connection = Connection()
 ###control = Control(robot, path_to_restart, connection.NETWORKING_CHANNEL)
 
+QUEUE = None
+
 if CAMERA_ENABLED:
     import DepthAICamera as camera #not a class sorry
-    camera.start()
+    QUEUE = camera.start()
 connection.set_camera_ready(True)
 
 if LIDAR_ENABLED:
@@ -86,6 +88,7 @@ class Main:
     def __init__(self):
         self.lidar_process = None
         self.gyro_process = None
+        self.queue = QUEUE
     def setup(self):
         # setting up the network connection
 
@@ -167,7 +170,7 @@ class Main:
             connection_process.start()
             while connection_process.is_alive():
                 if CAMERA_ENABLED:
-                    DepthAICamera.loop(connection)
+                    DepthAICamera.loop(connection, self.queue)
                 if POSE_D_ENABLED:
                     pose.getMeasure(connection, POSE_SCREENLESS_MODE)
                 #rasp_odile

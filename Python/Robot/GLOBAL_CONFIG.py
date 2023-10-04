@@ -9,7 +9,7 @@ TCP_PRESENTATIONS = 0 #used by connection.py
 
 #  ODILE STUFF  ######################################
 ODILE_ARDUINO_PLUGGED = True
-BASE_ENABLED = True
+BASE_ENABLED = False
 ARMS_ENABLED = True
 SKIP_ARDUINO_SETUP = False
 serial_default_port = "/dev/ttyACM0"
