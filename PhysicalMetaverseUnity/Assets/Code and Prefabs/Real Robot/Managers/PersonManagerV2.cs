@@ -200,6 +200,7 @@ public class PersonManagerV2 : MonoBehaviour
     //range 0.1 1 _poseDecayTime
     [Range(0.1f, 1f)]
     public float _poseDecayTime = 0.4f;
+    public GameObject _odileViz;
 
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
@@ -222,6 +223,8 @@ public class PersonManagerV2 : MonoBehaviour
         {
             //move transform down 100y
             transform.localPosition = new Vector3(transform.localPosition.x, -100f, transform.localPosition.z);
+            //disable _odileViz
+            _odileViz.GetComponent<RobotPoseContoller>().Hide(true);
         }
 
     }
@@ -472,7 +475,9 @@ public class PersonManagerV2 : MonoBehaviour
         //use footX and perspective correction to move father x
         transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
-        
+        //enable _odileViz
+        _odileViz.SetActive(true);
+        _odileViz.GetComponent<RobotPoseContoller>().Hide(false);
     }
 }
 

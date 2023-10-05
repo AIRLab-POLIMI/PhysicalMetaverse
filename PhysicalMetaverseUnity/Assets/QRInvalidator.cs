@@ -24,7 +24,7 @@ public class QRInvalidator : MonoBehaviour
             //call InvalidateStation of the station
             try{
                 //log invalidating station
-                Debug.Log("Invalidating station");
+                //Debug.Log("Invalidating station");
                 //if not tracked
                 if (!other.gameObject.transform.parent.gameObject.GetComponent<SingleStationManager>()._tracked)
                     //invalidate station

@@ -165,6 +165,23 @@ public class RobotPoseContoller : MonoBehaviour
     public float _heightOffset = 0;
     public GameObject _currentHandTracker;
 
+    public bool _prevHide = false;
+    public void Hide(bool setHide){
+        if(setHide){
+            _prevHide = true;
+            //disable gameobject
+            gameObject.SetActive(false);
+        }
+        else{
+            if(_prevHide){
+                Vector3 target = _joints["Left Foot 29"].position;
+                target.y = 0f;
+                //no lerp
+                transform.position = target;
+            }
+            _prevHide = true;
+        }
+    }
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist
     void InverseKinematics(){
         _currentHandTracker = _rightHandTracker;
@@ -175,12 +192,12 @@ public class RobotPoseContoller : MonoBehaviour
         //print distance from VRotate to hand tracker without z component
         //float distance = Vector3.Distance(_odileJoints["VRotate"].position, _handTracker.transform.position);
         float distance = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_currentHandTracker.transform.position.x, _currentHandTracker.transform.position.y, 0));
-        Debug.Log("Distance " + distance);
+        //Debug.Log("Distance " + distance);
         float height = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
         //clamp
         height = Mathf.Clamp(height, -1, 1);
         //log height
-        Debug.Log("Height " + height);
+        //Debug.Log("Height " + height);
         //distance clamp to 0 1
         distance = Mathf.Clamp(distance, 0, 1);
         //height angle, subract 0.5y from distance and get angle using sin-1 on it

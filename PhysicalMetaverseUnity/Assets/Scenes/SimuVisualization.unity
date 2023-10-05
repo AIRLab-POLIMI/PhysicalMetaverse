@@ -15349,7 +15349,7 @@ MonoBehaviour:
   _skippablePoints: 3
   _mergeWalls: 0
   ENABLE_LOG: 0
-  _disableBackPillars: 1
+  _disableBackPillars: 0
   _LIDAR_TRACKING: 1
   _blobs: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   _middle: 0
@@ -17564,10 +17564,13 @@ MonoBehaviour:
   _odileArm: {fileID: 642406437}
   _odileJointNames: []
   _odileJointTransforms: []
-  _handTracker: {fileID: 0}
+  _leftHandTracker: {fileID: 0}
+  _rightHandTracker: {fileID: 0}
   _odileScale: 0.53
   _debugCylinder: {fileID: 1940366048}
   _heightOffset: -0.39
+  _currentHandTracker: {fileID: 0}
+  _prevHide: 0
 --- !u!1001 &1094903907
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23092,7 +23095,7 @@ MonoBehaviour:
   setup: {fileID: 11400000, guid: 722b005341b6c4e5ba894c0711bdf1f4, type: 2}
   _jetsonIp: 
   _poseRotationTransform: {fileID: 1199414983}
-  _rotate180: 1
+  _rotate180: 0
   Ljx: 0
   Ljy: 0
   Lrx: 0
@@ -29567,7 +29570,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1786909778
 Transform:
   m_ObjectHideFlags: 0
@@ -31615,7 +31618,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1940366048}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -33179,7 +33182,8 @@ MonoBehaviour:
   _zDistanceMultiplier: 11.5
   _yDistanceMultiplier: 1
   _distanceScaleMultiplier: 1
-  _poseDecayTime: 0.807
+  _poseDecayTime: 0.219
+  _odileViz: {fileID: 1088018241}
   _scale: 169
   zOffset: -2.7
   yOffset: 1
