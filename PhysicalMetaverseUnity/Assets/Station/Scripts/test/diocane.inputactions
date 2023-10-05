@@ -1,0 +1,34 @@
+{
+    "name": "diocane",
+    "maps": [
+        {
+            "name": "vaffanculo",
+            "id": "d94b77ee-9563-4d35-9891-92f4fb08d3ac",
+            "actions": [
+                {
+                    "name": "porco dio",
+                    "type": "Button",
+                    "id": "1f5d744e-e3e3-483f-b2bc-8935d28dc823",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "834d37f9-b151-489c-8bd7-e2901eb6f45f",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "porco dio",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
