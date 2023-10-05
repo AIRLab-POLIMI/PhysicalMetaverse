@@ -29,6 +29,7 @@ public class SingleStationManager : MonoBehaviour
         
     }
 
+    public float _petalsAlpha = 1f;
     void FixedUpdate(){
         //if tracked set tag to Station if not set to InvalidStation
         if (_tracked)
@@ -43,21 +44,29 @@ public class SingleStationManager : MonoBehaviour
         //if station invalidated fade _interactionGameObject mesh, if not invalidated restore full alpha
         if (_stationInvalidated)
         {
-            if (_interactionGameObject.GetComponent<Renderer>().material.color.a > 0)
-                _interactionGameObject.GetComponent<Renderer>().material.color = new Color(_interactionGameObject.GetComponent<Renderer>().material.color.r, _interactionGameObject.GetComponent<Renderer>().material.color.g, _interactionGameObject.GetComponent<Renderer>().material.color.b, _interactionGameObject.GetComponent<Renderer>().material.color.a - _fadeSpeed);
+            if (_petalsAlpha > 0)
+                _petalsAlpha -= _fadeSpeed;
             else
             {
-                _interactionGameObject.GetComponent<Renderer>().material.color = new Color(_interactionGameObject.GetComponent<Renderer>().material.color.r, _interactionGameObject.GetComponent<Renderer>().material.color.g, _interactionGameObject.GetComponent<Renderer>().material.color.b, 0);
+                ////_interactionGameObject.GetComponent<Renderer>().material.color = new Color(_interactionGameObject.GetComponent<Renderer>().material.color.r, _interactionGameObject.GetComponent<Renderer>().material.color.g, _interactionGameObject.GetComponent<Renderer>().material.color.b, 0);
                 //set this station to false
-                gameObject.SetActive(false);
+                ////gameObject.SetActive(false);
+                _petalsAlpha = 0;
+                Hide();
             }
         }
         else
         {
             //enable mesh
-            _interactionGameObject.GetComponent<MeshRenderer>().enabled = true;
+            ////interactionGameObject.GetComponent<MeshRenderer>().enabled = true;
             //set alpha to 1
-            _interactionGameObject.GetComponent<Renderer>().material.color = new Color(_interactionGameObject.GetComponent<Renderer>().material.color.r, _interactionGameObject.GetComponent<Renderer>().material.color.g, _interactionGameObject.GetComponent<Renderer>().material.color.b, 1);
+            _petalsAlpha = 1f;
+            Show();
+        }
+
+        if (_petalsAlpha == 0)
+        {
+            Hide(); //TODO FIX THIS IS NOT WORKING
         }
     }
 
@@ -179,19 +188,28 @@ public class SingleStationManager : MonoBehaviour
     }
 
     public void CompleteStation(){
-        _interactionGameObject.GetComponent<StationInteractionManager>().CompleteStation();
+        //_interactionGameObject.GetComponent<StationInteractionManager>().CompleteStation();
     }
 
     public void ExitStation(){
-        _interactionGameObject.GetComponent<StationInteractionManager>().ExitStation();
+        //_interactionGameObject.GetComponent<StationInteractionManager>().ExitStation();
     }
 
     public void SetIp(string ip){
-        _interactionGameObject.GetComponent<StationInteractionManager>().SetIp(ip);
+        //_interactionGameObject.GetComponent<StationInteractionManager>().SetIp(ip);
     }
 
     public void EnterStation(){
-        _interactionGameObject.GetComponent<StationInteractionManager>().EnterStation();
+        //_interactionGameObject.GetComponent<StationInteractionManager>().EnterStation();
+
+    }
+
+    public void Show(){
+        _interactionGameObject.GetComponent<StationController>().Show();
+    }
+
+    public void Hide(){
+        _interactionGameObject.GetComponent<StationController>().Hide();
     }
 
     public bool _stationInvalidated = false;

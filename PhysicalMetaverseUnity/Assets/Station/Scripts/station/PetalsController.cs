@@ -36,7 +36,7 @@ public class PetalsController : MonoBehaviour
         
     private PetalController[] _petals;
 
-    private void Awake()
+    public void Init()
     {
         // get component in children for the children petals
         _petals = GetComponentsInChildren<PetalController>();

@@ -322,7 +322,7 @@ public class LidarManager : Monosingleton<LidarManager>
         int skippableBlobPoints = _skippableBlobPoints;
         //disable _stationList meshes
         foreach(GameObject station in _stationList){
-            station.GetComponent<MeshRenderer>().enabled = false;
+            ////station.GetComponent<MeshRenderer>().enabled = false;
         }
         //find start of groups of consecutive points and count their size
         for(int i = 0; i < 360; i++){
@@ -436,7 +436,8 @@ public class LidarManager : Monosingleton<LidarManager>
             //_blobTracker.GetComponent<MeshRenderer>().enabled = true;
             ////_blobTrackers[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
             //lerp corresponding station in _stationList to cylinder only if it is not further than _maxJumpDistance
-            _stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
+            ////_stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
+            _stationList[_blobIds[i]].GetComponent<StationController>().Show();
             if(Vector3.Distance(_stationList[_blobIds[i]].transform.position, point.position) < _maxJumpDistance){
                 ////_stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
                 _stationList[_blobIds[i]].transform.position = Vector3.Lerp(_stationList[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
@@ -479,6 +480,9 @@ public class LidarManager : Monosingleton<LidarManager>
     public void AddStationInteraction(GameObject station){
         //add a _stationInteractionPrefab to list
         GameObject newStation = Instantiate(_stationInteractionPrefab);
+        //set y to -100
+        newStation.transform.position = new Vector3(0,-100,0);
+        newStation.GetComponent<StationController>().Init();
         //set stations _interactionGameObject to newStation
         station.GetComponent<SingleStationManager>()._interactionGameObject = newStation;
         //newStation.GetComponent<SingleStationManager>().enabled = false;

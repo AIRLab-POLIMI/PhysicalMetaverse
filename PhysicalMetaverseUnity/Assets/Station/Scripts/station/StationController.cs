@@ -76,7 +76,7 @@ public class StationController : MonoBehaviour
     public bool isRight;
     
     
-    private void Awake()
+    public void Init()
     {
         _isActivated = false;
         _isInteractable = false;
@@ -89,6 +89,8 @@ public class StationController : MonoBehaviour
         _coverPetals = GetComponentsInChildren<CoverPetalController>();
 
         _isHidden = false;
+        
+        petalsController.Init();
         Hide();
     }
 

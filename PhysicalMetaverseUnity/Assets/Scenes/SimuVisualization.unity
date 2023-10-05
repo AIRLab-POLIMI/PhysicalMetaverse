@@ -15359,7 +15359,7 @@ MonoBehaviour:
   _blobStarts: 
   _blobIds: 
   _maxJumpDistance: 3
-  _stationInteractionPrefab: {fileID: 6699460793187042399, guid: 99cd22897444b6e4a98928d80245ce41,
+  _stationInteractionPrefab: {fileID: 1875384383193128619, guid: 5217c083378f444268130524eeb13cab,
     type: 3}
   _stationList: []
   _lidarTrackingLerp: 0.5
