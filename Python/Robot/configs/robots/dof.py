@@ -41,7 +41,7 @@ class DofName(Enum):
     # --- BASE
     FORWARD = Dof("BF", -100, 100)
     STRAFE = Dof("BS", -100, 100)
-    ANGULAR = Dof("BB", -30, 30)
+    ANGULAR = Dof("BB", -5, 5)
     # --- SIID
     PETALS = Dof("SP", -1, 1)
     LED = DofInt("L", 0, 255)

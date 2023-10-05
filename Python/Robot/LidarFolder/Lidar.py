@@ -3,26 +3,28 @@ import time
 from networkStuff.utils import *
 
 import queue
+import GLOBAL_CONFIG
 
 from rplidar import RPLidar
 
 import traceback
 
-DEFAULT_INVALID_VALUE = 0
+INVALID_ARRAY = 0
+DEFAULT_INVALID_VALUE = 99999
 N_OF_DEGREES = 360
 DEFAULT_TOLERANCE = 0
 MAX_SCANS = 20
 
 class Lidar:
-    def __init__(self, port='/dev/ttyUSB0'):
+    def __init__(self, port=GLOBAL_CONFIG.lidar_port):
         self.port = port
         self.sensor = RPLidar(port)
-        self.measurements = [DEFAULT_INVALID_VALUE] * N_OF_DEGREES
-        self.last_sent_values = [DEFAULT_INVALID_VALUE] * N_OF_DEGREES
+        self.measurements = [INVALID_ARRAY] * N_OF_DEGREES
+        self.last_sent_values = [INVALID_ARRAY] * N_OF_DEGREES
         self.last_time_received = [time.time()] * N_OF_DEGREES
-        self.tmp_measure = [DEFAULT_INVALID_VALUE] * N_OF_DEGREES
+        self.tmp_measure = [INVALID_ARRAY] * N_OF_DEGREES
         self.timeout_array = [0] * N_OF_DEGREES
-        self.to_send = [DEFAULT_INVALID_VALUE] * N_OF_DEGREES
+        self.to_send = [INVALID_ARRAY] * N_OF_DEGREES
 
         self.sendEnabled = True
 
@@ -35,9 +37,9 @@ class Lidar:
         print("thread1")
         #self.sensor.clean_input()
 
-        tmp_measure = [DEFAULT_INVALID_VALUE] * N_OF_DEGREES
+        tmp_measure = [INVALID_ARRAY] * N_OF_DEGREES
         timeout_array = [0] * N_OF_DEGREES
-        to_send = [DEFAULT_INVALID_VALUE] * N_OF_DEGREES
+        to_send = [INVALID_ARRAY] * N_OF_DEGREES
 
 
         try:
@@ -78,6 +80,7 @@ class Lidar:
                     if self.sendEnabled:
                         #print("Sending")
                         connection.send(LIDAR_KEY, to_send)
+                        print(to_send)
 
                 else:
                     print("not sending lidar, changed values < sensitivity")
