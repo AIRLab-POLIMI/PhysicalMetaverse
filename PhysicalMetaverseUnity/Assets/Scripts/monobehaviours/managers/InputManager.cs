@@ -41,7 +41,10 @@ public class InputManager : Monosingleton<InputManager>
 
                 _prevSendTime = Time.time;
             }
+            //rotate pose with speed
+            RotatePoseWithSpeed();
         }
+        
     
     #endregion
         
@@ -124,16 +127,47 @@ public class InputManager : Monosingleton<InputManager>
             return prevMsg + Constants.MsgDelimiter + nextMsg;
         }
         
-        
+        public Vector3 _headYTarget = new Vector3();
+        public Vector3 _headYCurrent = new Vector3();
+        private float _prevTimeYAngle = 0;
+        private float _headYDeltaTime = 0.03f;
+        [Range (0.01f, 180f)]
+        public float _headYServoSpeed = 0.1f;
+
+        private void RotatePoseWithSpeed(){
+            // vector3 head.eulerAngles + 180 on y angle
+            _headYTarget = head.eulerAngles;
+            //log _headYTarget
+            Debug.Log("_headYTarget: " + _headYTarget);
+            _headYTarget.y += 180;
+            _headYTarget.y -= 360;
+            //clamp -89 89
+            _headYTarget.y = Mathf.Clamp(_headYTarget.y, -89, 89);
+            //_poseRotationTransform.localRotation = Quaternion.Euler(0, _headYTarget.y, 0);
+            if (Time.time - _prevTimeYAngle > _headYDeltaTime)
+            {
+                //if close set to same
+                if (Mathf.Abs(_headYCurrent.y - _headYTarget.y) <= _headYServoSpeed)
+                    _headYCurrent.y = _headYTarget.y;
+                else{
+                    if(_headYCurrent.y < _headYTarget.y)
+                        _headYCurrent.y += _headYServoSpeed;
+                    else if(_headYCurrent.y > _headYTarget.y)
+                        _headYCurrent.y -= _headYServoSpeed;
+                }
+                //clamp between -89 and 89
+                _headYCurrent.y = Mathf.Clamp(_headYCurrent.y, -89, 89);
+                //rotate _poseRotationTransform by y
+                _poseRotationTransform.localRotation = Quaternion.Euler(0, _headYTarget.y, 0);
+                _prevTimeYAngle = Time.time;
+            }
+        }
         private string GetHeadAnglesMsg()
         {
-            // vector3 head.eulerAngles + 180 on y angle
-            Vector3 head180 = head.eulerAngles;
-            head180.y += 180;
             //rotate _poseRotationTransform by y
-            _poseRotationTransform.localRotation = Quaternion.Euler(0, head180.y, 0);
+            //_poseRotationTransform.localRotation = Quaternion.Euler(0, _headYTarget.y, 0);
             _headAngles = RotationHelper.SubtractAllAngles(
-                head180, 
+                _headYTarget, 
                 Constants.JoystickAngleNormalisation);
             
             // rescale from 0-180 to -3-3 and clamp

@@ -22958,7 +22958,7 @@ MonoBehaviour:
   deltaSendTime: 0.05
   headXAngleKey: ay
   headYAngleKey: az
-  headAnglesTolerance: 0.053
+  headAnglesTolerance: 0.023
   setup: {fileID: 11400000, guid: 722b005341b6c4e5ba894c0711bdf1f4, type: 2}
   _jetsonIp: 
   _poseRotationTransform: {fileID: 1199414983}
@@ -22967,6 +22967,9 @@ MonoBehaviour:
   Ljy: 0
   Lrx: 0
   Lry: 0
+  _headYTarget: {x: 0, y: 0, z: 0}
+  _headYCurrent: {x: 0, y: 0, z: 0}
+  _headYServoSpeed: 0.1
 --- !u!43 &1291168976
 Mesh:
   m_ObjectHideFlags: 0
@@ -32940,7 +32943,7 @@ MonoBehaviour:
   rotationAngle: -20
   _spawned: 0
   _spheres: []
-  ENABLE_LOG: 1
+  ENABLE_LOG: 0
   _poseJoints: []
   _zDistance: 0.1
   _zDistanceMultiplier: 11.5

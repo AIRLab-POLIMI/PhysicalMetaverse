@@ -91,6 +91,9 @@ public class RobotPoseContoller : MonoBehaviour
         _handTracker.transform.localPosition = handTrackerPos * _odileScale + _odileJoints["VRotate"].localPosition + new Vector3(0, _heightOffset, 0);
         //inverse kinematics of odile joints to get as close as possible to hand tracker
         InverseKinematics();
+        //lerp position to left foot
+        transform.position = Vector3.Lerp(transform.position, _joints["Left Foot 29"].position, 0.1f);
+
     }
 
     //if distance is 1 VArm = 90, VWrist = 0
