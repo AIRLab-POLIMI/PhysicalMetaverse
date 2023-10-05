@@ -118,5 +118,5 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  dayTimeDirectionalAngle: 90
-  nightTimeDirectionalAngle: 210
+  dayTimeDirectionalAngle: 25
+  nightTimeDirectionalAngle: -40

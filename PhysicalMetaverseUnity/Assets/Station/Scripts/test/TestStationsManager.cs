@@ -8,11 +8,7 @@ public class TestStationsManager : MonoBehaviour
 
     [Header("STATIONS")]
     
-    [SerializeField] private Transform stationTransform;
-    
-    [SerializeField] private Transform startPosition;
-    [SerializeField] private Transform targetPosition;
-    [SerializeField] private float duration = 2.0f;
+    [SerializeField] private float durationInSeconds = 2.0f;
     
     [Space]
     
@@ -32,10 +28,6 @@ public class TestStationsManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // continuously lerp the position of the stationTransform between the two vector3 positions with a given duration
-        stationTransform.position = Vector3.Slerp(startPosition.position, targetPosition.position, Mathf.PingPong(Time.time, duration) / duration);
-        // when the ping pong time is greater than the duration, the lerp will be reversed
-
         UpdateTime();
     }
 
