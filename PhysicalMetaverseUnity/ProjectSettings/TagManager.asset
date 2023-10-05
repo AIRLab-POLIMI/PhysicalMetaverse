@@ -15,6 +15,7 @@ TagManager:
   - InvalidStation
   - StationInteraction
   - QRInvalidator
+  - Person
   layers:
   - Default
   - TransparentFX

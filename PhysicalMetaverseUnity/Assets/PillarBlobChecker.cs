@@ -84,6 +84,11 @@ public class PillarBlobChecker : MonoBehaviour
                 _prevCollided = true;
             }*/
         }
+        
+        if(other.gameObject.CompareTag("Person")){
+            //disable mesh
+            GetComponent<MeshRenderer>().enabled = false;
+        }
     }
 
     /*void OnTriggerExit(Collider other){

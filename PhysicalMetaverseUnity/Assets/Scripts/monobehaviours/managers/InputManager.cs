@@ -134,7 +134,7 @@ public class InputManager : Monosingleton<InputManager>
         [Range (0.01f, 180f)]
         public float _headYServoSpeed = 0.1f;
 
-        private void RotatePoseWithSpeed(){
+        private void RotatePoseWithSpeed(){ //TODO NEED TO OVERSHOOT, FRAME IS ALREADY ALIGNED
             // vector3 head.eulerAngles + 180 on y angle
             _headYTarget = head.eulerAngles;
             //log _headYTarget

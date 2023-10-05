@@ -35,6 +35,7 @@ public class PersonManagerV2 : MonoBehaviour
     private float prevRcvTime = 0f;
     
     public bool ENABLE_LOG = false;
+    public bool MESH_ENABLED = false;
     public void OnMsgRcv(byte[] msg)
     {
         //disable Debug.Log for this object
@@ -259,7 +260,13 @@ public class PersonManagerV2 : MonoBehaviour
                     sphere.GetComponent<Renderer>().material.color = Color.black;
                 }
                 else
-                    sphere.name = "Face (" + i + ")";
+                {
+                    //if i 0 call it Nose
+                    if (i == 0)
+                        sphere.name = "Nose";
+                    else
+                        sphere.name = "Face (" + i + ")";
+                }
             }
             if (i >= 11 && i <= 21)
             {
@@ -322,6 +329,15 @@ public class PersonManagerV2 : MonoBehaviour
         foreach (GameObject sphere in _spheres)
         {
             sphere.transform.parent = this.transform;
+        }
+        //if mesh enable, else disable mesh
+        if (!MESH_ENABLED)
+        {
+            //disable mesh of all spheres
+            foreach (GameObject sphere in _spheres)
+            {
+                sphere.GetComponent<MeshRenderer>().enabled = false;
+            }
         }
     }
     //gameobject sphere 34

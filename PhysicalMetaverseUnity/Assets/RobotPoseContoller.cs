@@ -26,6 +26,9 @@ public class RobotPoseContoller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _debugCylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        //scale y a lot
+        _debugCylinder.transform.localScale = new Vector3(1f, 3f, 1f);
         /*foreach (Transform child in transform)
         {
             if (child.name.Contains("Joint"))
@@ -91,9 +94,27 @@ public class RobotPoseContoller : MonoBehaviour
         _handTracker.transform.localPosition = handTrackerPos * _odileScale + _odileJoints["VRotate"].localPosition + new Vector3(0, _heightOffset, 0);
         //inverse kinematics of odile joints to get as close as possible to hand tracker
         InverseKinematics();
+        //target = _joints["Left Foot 29"].position + new Vector3(0, 1f, 0);
+        Vector3 target = _joints["Left Foot 29"].position;
+        target.y = 0f;
         //lerp position to left foot
-        transform.position = Vector3.Lerp(transform.position, _joints["Left Foot 29"].position, 0.1f);
+        transform.position = Vector3.Lerp(transform.position, target, 0.1f);
 
+        //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
+        //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
+        //lerp
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])), 0.1f);
+        HeadAngles();
+
+    }
+
+    GameObject _debugCylinder;
+    void HeadAngles(){
+        //OrthogonalToThreeVectorsPlane nose, left eye, right eye
+        Vector3 noseLeftEyeRightEye = OrthogonalToThreeVectorsPlane(_joints["Nose"], _joints["Left Eye"], _joints["Right Eye"]);
+        //spawn a cylinder with direction noseLeftEyeRightEye position odile VCamTilt
+        _debugCylinder.transform.position = _odileJoints["VCamTilt"].position;
+        _debugCylinder.transform.rotation = Quaternion.LookRotation(noseLeftEyeRightEye);
     }
 
     //if distance is 1 VArm = 90, VWrist = 0
@@ -159,6 +180,21 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 aToB = bPosXZ - aPosXZ;
         Vector3 aToBOrtho = new Vector3(-aToB.z, 0, aToB.x);
         return aToBOrtho;
+    }
+
+    Vector3 OrthogonalToThreeVectorsPlane(Transform a, Transform b, Transform c)
+    {
+        Vector3 aPos = a.position;
+        Vector3 bPos = b.position;
+        Vector3 cPos = c.position;
+        Vector3 aToB = bPos - aPos;
+        Vector3 aToC = cPos - aPos;
+        Vector3 aToBOrtho = new Vector3(-aToB.z, 0, aToB.x);
+        Vector3 aToCOrtho = new Vector3(-aToC.z, 0, aToC.x);
+        Vector3 aToBOrthoNorm = aToBOrtho.normalized;
+        Vector3 aToCOrthoNorm = aToCOrtho.normalized;
+        Vector3 aToBOrthoNormCross = Vector3.Cross(aToBOrthoNorm, aToCOrthoNorm);
+        return aToBOrthoNormCross;
     }
 
     //return the angle between two points with pivot on a third point
