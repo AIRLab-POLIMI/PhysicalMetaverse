@@ -19,16 +19,14 @@ public class RobotPoseContoller : MonoBehaviour
     public List<string> _odileJointNames = new List<string>();
     public List<Transform> _odileJointTransforms = new List<Transform>();
     //public inverse kinematic gameobject
-    public GameObject _handTracker;
+    public GameObject _leftHandTracker;
+    public GameObject _rightHandTracker;
     [Range(0.01f, 2f)]
     public float _odileScale = 0.516f;
     
     // Start is called before the first frame update
     void Start()
     {
-        _debugCylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        //scale y a lot
-        _debugCylinder.transform.localScale = new Vector3(1f, 3f, 1f);
         /*foreach (Transform child in transform)
         {
             if (child.name.Contains("Joint"))
@@ -53,11 +51,27 @@ public class RobotPoseContoller : MonoBehaviour
         }
 
         //initialize hand tracker to a 0.2 sphere
-        _handTracker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        _handTracker.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        _leftHandTracker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        _leftHandTracker.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         //parent to odile's VRotate
-        _handTracker.transform.parent = transform;
-        _handTracker.transform.localPosition = new Vector3(0, 0, 0);
+        _leftHandTracker.transform.parent = transform;
+        _leftHandTracker.transform.localPosition = new Vector3(0, 0, 0);
+        //name
+        _leftHandTracker.name = "Left Hand Tracker";
+        //red
+        _leftHandTracker.GetComponent<Renderer>().material.color = Color.red;
+
+        //initialize hand tracker to a 0.2 sphere
+        _rightHandTracker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        _rightHandTracker.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        //parent to odile's VRotate
+        _rightHandTracker.transform.parent = transform;
+        _rightHandTracker.transform.localPosition = new Vector3(0, 0, 0);
+        //name
+        _rightHandTracker.name = "Right Hand Tracker";
+        //blue
+        _rightHandTracker.GetComponent<Renderer>().material.color = Color.blue;
+
     }
 
     private bool _notPopulated = true;
@@ -91,7 +105,12 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 handTrackerPos = _joints["Left Wrist"].position - _joints["Left Hip"].position;
         //normalize with difference of left shoulder minus left hip
         handTrackerPos = handTrackerPos / (_joints["Left Shoulder"].position - _joints["Left Hip"].position).magnitude;
-        _handTracker.transform.localPosition = handTrackerPos * _odileScale + _odileJoints["VRotate"].localPosition + new Vector3(0, _heightOffset, 0);
+        _leftHandTracker.transform.localPosition = handTrackerPos * _odileScale + _odileJoints["VRotate"].localPosition + new Vector3(0, _heightOffset, 0);
+
+        handTrackerPos = _joints["Right Wrist"].position - _joints["Right Hip"].position;
+        //normalize with difference of left shoulder minus left hip
+        handTrackerPos = handTrackerPos / (_joints["Right Shoulder"].position - _joints["Right Hip"].position).magnitude;
+        _rightHandTracker.transform.localPosition = handTrackerPos * _odileScale + _odileJoints["VRotate"].localPosition + new Vector3(0, _heightOffset, 0);
         //inverse kinematics of odile joints to get as close as possible to hand tracker
         InverseKinematics();
         //target = _joints["Left Foot 29"].position + new Vector3(0, 1f, 0);
@@ -102,19 +121,39 @@ public class RobotPoseContoller : MonoBehaviour
 
         //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
+        //quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) + 180 on y
+        Quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 180, 0);
         //lerp
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])), 0.1f);
-        HeadAngles();
+        transform.localRotation = Quaternion.Lerp(transform.localRotation, destRotation, 0.1f);
+        
+        //HeadAngles(); //TODO
 
     }
 
-    GameObject _debugCylinder;
+    public GameObject _debugCylinder;
     void HeadAngles(){
-        //OrthogonalToThreeVectorsPlane nose, left eye, right eye
-        Vector3 noseLeftEyeRightEye = OrthogonalToThreeVectorsPlane(_joints["Nose"], _joints["Left Eye"], _joints["Right Eye"]);
-        //spawn a cylinder with direction noseLeftEyeRightEye position odile VCamTilt
-        _debugCylinder.transform.position = _odileJoints["VCamTilt"].position;
-        _debugCylinder.transform.rotation = Quaternion.LookRotation(noseLeftEyeRightEye);
+        //store YDirection(_joints["Left Eye"], _joints["Right Eye"])
+        Vector3 eyeDirection = YDirection(_joints["Left Eye"], _joints["Right Eye"]);
+        //switch y with x
+        eyeDirection = new Vector3(eyeDirection.y, eyeDirection.x, eyeDirection.z);
+        //get y angle between left eye and right eye
+        Quaternion destRotation = Quaternion.LookRotation(eyeDirection);
+        //swap x angle and y angle
+        destRotation = Quaternion.Euler(destRotation.eulerAngles.y, destRotation.eulerAngles.x, destRotation.eulerAngles.z);
+        //rotate 90 on x
+        destRotation = destRotation * Quaternion.Euler(90, 0, 0);
+        //set rotation of _debugCylinder to destRotation
+        _debugCylinder.transform.localRotation = destRotation;
+        //subtract transform.localRotation.y to the z angle of cylinder local rotation
+        _debugCylinder.transform.localRotation = Quaternion.Euler(_debugCylinder.transform.localRotation.eulerAngles.x, _debugCylinder.transform.localRotation.eulerAngles.y,  (_debugCylinder.transform.localRotation.eulerAngles.z + transform.localRotation.eulerAngles.y) * 2);
+        //hide mesh of _debugCylinder
+        _debugCylinder.GetComponent<MeshRenderer>().enabled = false;
+        //set x angle of VCamPan to z angle of debug cylinder
+        _odileJoints["VCamPan"].localRotation = _debugCylinder.transform.localRotation;
+        float yan = _debugCylinder.transform.localRotation.eulerAngles.y;
+        //print angles
+        Debug.Log("X: " + destRotation.eulerAngles.x + " Y: " + yan + " Z: " + destRotation.eulerAngles.z);
+
     }
 
     //if distance is 1 VArm = 90, VWrist = 0
@@ -124,18 +163,20 @@ public class RobotPoseContoller : MonoBehaviour
     //public _heightOffset slider with range
     [Range(-1, 1)]
     public float _heightOffset = 0;
+    public GameObject _currentHandTracker;
 
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist
     void InverseKinematics(){
+        _currentHandTracker = _rightHandTracker;
         //get y angle between up vector and hand tracker
         ////float yAngle = Vector3.Angle(Vector3.up, _handTracker.transform.position - _odileJoints["VRotate"].position);
         //set y angle of VRotate to yAngle
         ////_odileJoints["VRotate"].localRotation = Quaternion.Euler(0, yAngle, -90);
         //print distance from VRotate to hand tracker without z component
         //float distance = Vector3.Distance(_odileJoints["VRotate"].position, _handTracker.transform.position);
-        float distance = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_handTracker.transform.position.x, _handTracker.transform.position.y, 0));
+        float distance = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_currentHandTracker.transform.position.x, _currentHandTracker.transform.position.y, 0));
         Debug.Log("Distance " + distance);
-        float height = _odileJoints["VRotate"].position.y - _handTracker.transform.position.y;
+        float height = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
         //clamp
         height = Mathf.Clamp(height, -1, 1);
         //log height
@@ -154,9 +195,12 @@ public class RobotPoseContoller : MonoBehaviour
         //_odileJoints["VWrist"].localRotation = Quaternion.Euler(180 - (Mathf.Asin(distance) * Mathf.Rad2Deg)*2, 0, 0);
         //lerp
         _odileJoints["VWrist"].localRotation = Quaternion.Lerp(_odileJoints["VWrist"].localRotation, Quaternion.Euler(180 - (Mathf.Asin(distance) * Mathf.Rad2Deg)*2, 0, 0), 0.1f);
-
+        Vector3 yDirection;
         //VRotate YDirection shoulder and wrist, rotate also -90 on z
-        Vector3 yDirection = YDirection(_joints["Left Shoulder"], _joints["Left Wrist"]);
+        if(_currentHandTracker == _leftHandTracker)
+            yDirection = YDirection(_joints["Left Shoulder"], _joints["Left Wrist"]);
+        else
+            yDirection = YDirection(_joints["Right Shoulder"], _joints["Right Wrist"]);
         //only positive y
         //yDirection = new Vector3(yDirection.x, Mathf.Abs(yDirection.y), yDirection.z);
         //invert
@@ -164,7 +208,7 @@ public class RobotPoseContoller : MonoBehaviour
         //only positive y
         yDirection = new Vector3(yDirection.x, Mathf.Abs(yDirection.y), yDirection.z);
         //_odileJoints["VRotate"].localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Left Wrist"])) * Quaternion.Euler(0, -90, -90);
-        //lerp
+        //lerp plus transform.localRotation
         _odileJoints["VRotate"].localRotation = Quaternion.Lerp(_odileJoints["VRotate"].localRotation, Quaternion.LookRotation(yDirection) * Quaternion.Euler(0, -90, -90), 0.1f);
         //TODO lerp only through positive y, even if it is longer path
         
@@ -182,19 +226,16 @@ public class RobotPoseContoller : MonoBehaviour
         return aToBOrtho;
     }
 
-    Vector3 OrthogonalToThreeVectorsPlane(Transform a, Transform b, Transform c)
+    //function to return vector orthogonal to plane passing by three transform.positions
+    Vector3 OrthogonalToPlane(Transform a, Transform b, Transform c)
     {
         Vector3 aPos = a.position;
         Vector3 bPos = b.position;
         Vector3 cPos = c.position;
         Vector3 aToB = bPos - aPos;
         Vector3 aToC = cPos - aPos;
-        Vector3 aToBOrtho = new Vector3(-aToB.z, 0, aToB.x);
-        Vector3 aToCOrtho = new Vector3(-aToC.z, 0, aToC.x);
-        Vector3 aToBOrthoNorm = aToBOrtho.normalized;
-        Vector3 aToCOrthoNorm = aToCOrtho.normalized;
-        Vector3 aToBOrthoNormCross = Vector3.Cross(aToBOrthoNorm, aToCOrthoNorm);
-        return aToBOrthoNormCross;
+        Vector3 aToBOrtho = Vector3.Cross(aToB, aToC);
+        return aToBOrtho;
     }
 
     //return the angle between two points with pivot on a third point

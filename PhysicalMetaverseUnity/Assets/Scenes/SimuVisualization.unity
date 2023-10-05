@@ -17566,6 +17566,7 @@ MonoBehaviour:
   _odileJointTransforms: []
   _handTracker: {fileID: 0}
   _odileScale: 0.53
+  _debugCylinder: {fileID: 1940366048}
   _heightOffset: -0.39
 --- !u!1001 &1094903907
 PrefabInstance:
@@ -23084,6 +23085,7 @@ MonoBehaviour:
   - {fileID: 1604607847}
   - {fileID: 2062641275}
   deltaSendTime: 0.05
+  ENABLE_LOG: 0
   headXAngleKey: ay
   headYAngleKey: az
   headAnglesTolerance: 0.023
@@ -31584,14 +31586,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1940366048}
-  m_LocalRotation: {x: 0.70167345, y: 0.00000020861432, z: -0.0000010397009, w: 0.7124987}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2.6882, y: 2.6882, z: 2.6882}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1597719786}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 89.123, y: -0.004, z: -0.004}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!136 &1940366050
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ public class InputManager : Monosingleton<InputManager>
     // variable to keep track of last sent time
     public float deltaSendTime = 0.01f;
     private float _prevSendTime = 0;
+    public bool ENABLE_LOG = false;
     
     // head angles variables
     [SerializeField] private string headXAngleKey = "ay";
@@ -28,6 +29,8 @@ public class InputManager : Monosingleton<InputManager>
     
         void Update()
         {
+            //disable Debug.Log for this object
+            Debug.unityLogger.logEnabled = ENABLE_LOG;
             // Send the camera's X and Y angles via UDP every 0.05 seconds
             if (Time.time - _prevSendTime > deltaSendTime)
             {
@@ -43,6 +46,7 @@ public class InputManager : Monosingleton<InputManager>
             }
             //rotate pose with speed
             RotatePoseWithSpeed();
+            Debug.unityLogger.logEnabled = true;
         }
         
     
