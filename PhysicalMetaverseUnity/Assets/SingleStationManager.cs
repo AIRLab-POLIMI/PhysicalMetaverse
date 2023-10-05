@@ -197,6 +197,7 @@ public class SingleStationManager : MonoBehaviour
 
     public void SetIp(string ip){
         //_interactionGameObject.GetComponent<StationInteractionManager>().SetIp(ip);
+        _interactionGameObject.GetComponent<StationController>().SetIp(ip);
     }
 
     public void EnterStation(){

@@ -77,6 +77,7 @@ public class StationController : MonoBehaviour
     
     public void Init()
     {
+        ResetStation();
         _isActivated = false;
         _isInteractable = false;
         
@@ -211,6 +212,8 @@ public class StationController : MonoBehaviour
     private void OnActivated()
     {
         Debug.Log("StationManager: OnActivated");
+
+        CompleteStation();
         
         _isActivated = true;
 
@@ -317,5 +320,24 @@ public class StationController : MonoBehaviour
             
         
     #endregion
+
+    public void ResetStation()
+    {
+        string data = "RESET";
+        NetworkingManager.Instance.SendString(data, _stationIp);
+    }
+    public void CompleteStation()
+    {
+        //data is "BLINK" in bytes
+        string data = "BLINK";
+
+        //key is (char)195
+        NetworkingManager.Instance.SendString(data, _stationIp);
+    }
+    public void SetIp(string ip)
+    {
+        _stationIp = ip;
+    }
+    public string _stationIp;
     
 }

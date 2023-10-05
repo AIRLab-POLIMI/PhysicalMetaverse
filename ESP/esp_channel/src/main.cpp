@@ -204,10 +204,12 @@ bool getUDPMessage() {
     return checkKeyValueMessages();
 }
 
+int blink_amount = 12;
+
 void blink() {
     if (CORRECT_STATION) {
         //blink green pin every 300ms for 4 times
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < blink_amount; i++) {
             digitalWrite(green_pin, HIGH);
             delay(300);
             digitalWrite(green_pin, LOW);
@@ -216,7 +218,7 @@ void blink() {
     }
     else {
         //blink red pin every 300ms for 4 times
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < blink_amount; i++) {
             digitalWrite(red_pin, HIGH);
             delay(300);
             digitalWrite(red_pin, LOW);
@@ -229,7 +231,7 @@ void blink() {
     digitalWrite(red_pin, LOW);
     digitalWrite(green_pin, LOW);
     //turn on blue pin
-    digitalWrite(blue_pin, HIGH);
+    digitalWrite(blue_pin, LOW);
 }
 
 
