@@ -73,8 +73,7 @@ public class StationController : MonoBehaviour
     
     [Header("Station")] 
 
-    public bool isRight;
-    
+    public bool isRight; //change this boolean to set if station is right or wrong
     
     public void Init()
     {
@@ -242,6 +241,8 @@ public class StationController : MonoBehaviour
         // play the audiosource only once then stop
         audioSource.PlayOneShot(audioSource.clip);
         
+        RoutineController.Instance.Activate();
+        
         // OnInteractableExit(false);
         OnInteractableExit();
     }
@@ -279,13 +280,14 @@ public class StationController : MonoBehaviour
 
         private void CheckInteractable()
         {
+            
             // if its activated, do nothing
             if (_isActivated)
                 return;
             
             // check if the sphere controller is within range of interaction (radius of interactable controller)
             bool inRange = Vector3.Magnitude(
-                SphereController.Instance.transform.position - transform.position) < interactionRangeCollider.radius;
+                SphereController.Instance.transform.position - transform.position) < interactionRangeCollider.radius * transform.localScale.x;
             
             // if it's in range and it WASN't interactable, trigger interactionEnter
             if (inRange && !_isInteractable)
@@ -304,7 +306,7 @@ public class StationController : MonoBehaviour
             
             // check if the sphere controller is within range of activation (radius of activation controller)
             bool inRange = Vector3.Magnitude(
-                SphereController.Instance.transform.position - transform.position) < activationRangeCollider.radius;
+                SphereController.Instance.transform.position - transform.position) < activationRangeCollider.radius * transform.localScale.x;
             
             // Debug.Log($"CheckActivated - inRange: {inRange} - _isInteractable: {_isInteractable}");
             
