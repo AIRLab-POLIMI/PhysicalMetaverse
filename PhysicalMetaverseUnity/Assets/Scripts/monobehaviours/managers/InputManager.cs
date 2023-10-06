@@ -36,25 +36,18 @@ public class InputManager : Monosingleton<InputManager>
             {
                 // NetworkManager.Instance.SendMsg(GetUdpMessage());
                 //UDPManager.Instance.SendStringUpdToDefaultEndpoint(GetUdpMessage());
-
-                /*string udpMessage = RoutineController.Instance.IsRunning 
-                    ? RoutineController.Instance.GetMsg() 
-                    : GetUdpMessage();*/
                 string udpMessage = GetUdpMessage();
+                if(udpMessage != "")
+                    Debug.Log("udp " + udpMessage);
                 //if not null
-                if (udpMessage != ""){
-                    Debug.Log("udpMessage: " + udpMessage);
+                if (udpMessage != "")
                     //send using NetworkManager
                     NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
-                }
 
                 _prevSendTime = Time.time;
             }
-
-
-            /*if(!RoutineController.Instance.IsRunning)
-                //rotate pose with speed
-                RotatePoseWithSpeed();*/
+            //rotate pose with speed
+            RotatePoseWithSpeed();
             Debug.unityLogger.logEnabled = true;
         }
         
@@ -92,8 +85,8 @@ public class InputManager : Monosingleton<InputManager>
                 msg = AddMsg(msg, controller.GetUdpMessage(_headAngles.y));
             
             //log if not empty
-            if (msg != "")
-                Debug.Log(msg);
+            //if (msg != "")
+                //Debug.Log(msg);
             // if msg is not empty, SendMsg
             //parse from msg Ljx, Ljy, Lrx, Lry in format  Lrx:161_Lrz:161
             foreach (string keyVal in msg.Split(Constants.MsgDelimiter))
@@ -103,14 +96,22 @@ public class InputManager : Monosingleton<InputManager>
                 //if key is Ljx
                 if (keyValSplit[0] == "Ljx")
                 {
+                    //int oldLjx = Ljx;
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Ljx);
+                    //if(Ljx == 127){
+                    //    Ljx = oldLjx;
+                    //}
                 }
                 //if key is Ljy
                 if (keyValSplit[0] == "Ljy")
                 {
+                    //int oldLjy = Ljy;
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Ljy);
+                    //if(Ljy == 127){
+                    //    Ljy = oldLjy;
+                    //}
                 }
                 //if key is Lrx
                 if (keyValSplit[0] == "Lrx")
@@ -124,7 +125,7 @@ public class InputManager : Monosingleton<InputManager>
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Lry);
                 }
-            }
+            }   
             return msg;
         }
 

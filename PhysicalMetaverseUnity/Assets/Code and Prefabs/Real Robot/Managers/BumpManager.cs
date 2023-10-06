@@ -23,10 +23,10 @@ public class BumpManager : Monosingleton<BumpManager>
         var value = msg[0];
         if (value == 0x00)
         {
-            Debug.Log("END BUMP");    
+            //Debug.Log("END BUMP");    
         }else if (value == 0x01)
         {
-            Debug.Log("BUMP");
+            //Debug.Log("BUMP");
             _flashImage.StartFlash(0.25f, 0.5f, Color.red);
             numOfBump.runtimeValue++;
         }

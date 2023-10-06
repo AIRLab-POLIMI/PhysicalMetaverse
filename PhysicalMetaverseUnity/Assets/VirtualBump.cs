@@ -22,7 +22,7 @@ public class VirtualBump : MonoBehaviour
         if (collision.gameObject.tag != "Ground")
         {
             _jetson.Send(new byte[]{0x01}, 0xf0);
-            Debug.Log("BUMP");
+            //Debug.Log("BUMP");
             _colliding = true;
         }
     }
@@ -33,7 +33,7 @@ public class VirtualBump : MonoBehaviour
         if (other.gameObject.tag != "Ground")
         {
             _jetson.Send(new byte[]{0x00}, 0xf0);
-            Debug.Log("END BUMP");
+            //Debug.Log("END BUMP");
             _colliding = false;
         }
     }
