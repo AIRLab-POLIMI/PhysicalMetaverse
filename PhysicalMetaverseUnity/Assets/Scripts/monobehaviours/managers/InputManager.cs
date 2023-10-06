@@ -36,7 +36,9 @@ public class InputManager : Monosingleton<InputManager>
             {
                 // NetworkManager.Instance.SendMsg(GetUdpMessage());
                 //UDPManager.Instance.SendStringUpdToDefaultEndpoint(GetUdpMessage());
-                string udpMessage = GetUdpMessage();
+                string udpMessage = RoutineController.Instance.IsRunning 
+                    ? RoutineController.Instance.GetMsg() 
+                    : GetUdpMessage();
                 if(udpMessage != "")
                     Debug.Log("udp " + udpMessage);
                 //if not null
@@ -47,7 +49,9 @@ public class InputManager : Monosingleton<InputManager>
                 _prevSendTime = Time.time;
             }
             //rotate pose with speed
-            RotatePoseWithSpeed();
+            if(!RoutineController.Instance.IsRunning)
+                //rotate pose with speed
+                RotatePoseWithSpeed();
             Debug.unityLogger.logEnabled = true;
         }
         

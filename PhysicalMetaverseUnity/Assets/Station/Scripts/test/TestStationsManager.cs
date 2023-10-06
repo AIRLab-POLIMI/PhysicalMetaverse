@@ -36,7 +36,7 @@ public class TestStationsManager : MonoBehaviour
             // end game
         }   
         AmbientManager.Instance.UpdateLight(_normalisedElapsedTime);
-        if(_normalisedElapsedTime == 1){
+        if(_normalisedElapsedTime > 1){
             //enable _losePanel
             _losePanel.SetActive(true);
         }

@@ -73,6 +73,7 @@ MonoBehaviour:
   hatchOpenSound: {fileID: 8300000, guid: 1863dd6975b624d599c83686ad8d52c1, type: 3}
   hatchCloseSound: {fileID: 8300000, guid: b03c109dd94d9466393b0c2c8f622b1f, type: 3}
   isRight: 1
+  _stationIp: 
 --- !u!82 &1875384384744600654
 AudioSource:
   m_ObjectHideFlags: 0
@@ -230,7 +231,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.71
+  m_Radius: 4
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1875384384056648906
 GameObject:
@@ -433,7 +434,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875384385092366515}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.5}
+  m_LocalPosition: {x: 0, y: 0.3, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

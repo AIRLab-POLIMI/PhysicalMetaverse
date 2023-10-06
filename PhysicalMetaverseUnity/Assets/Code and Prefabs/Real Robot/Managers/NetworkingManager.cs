@@ -91,7 +91,9 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     #region PRESENTATION
 
     public GameObject _winPanel;
+    public GameObject _gameManager;
     public void WinPanel(bool set){
+        _gameManager.SetActive(false);
         //enable win panel
         _winPanel.SetActive(true);
     }
