@@ -21,9 +21,12 @@ public class VirtualBump : MonoBehaviour
     {
         if (collision.gameObject.tag != "Ground")
         {
-            _jetson.Send(new byte[]{0x01}, 0xf0);
-            //Debug.Log("BUMP");
-            _colliding = true;
+            //if collision tag is not FedeHand send
+            if(collision.gameObject.tag != "FedeHand"){
+                _jetson.Send(new byte[]{0x01}, 0xf0);
+                //Debug.Log("BUMP");
+                _colliding = true;
+            }
         }
     }
 

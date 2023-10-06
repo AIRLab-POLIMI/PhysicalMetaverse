@@ -55,7 +55,7 @@ public class StationController : MonoBehaviour
     [SerializeField] private AudioClip hatchCloseSound;
     
     
-    
+    public GameObject _station;
     
     private Material _holeCoverMaterial;
     

@@ -481,11 +481,17 @@ public class LidarManager : Monosingleton<LidarManager>
     public void AddStationInteraction(GameObject station){
         //add a _stationInteractionPrefab to list
         GameObject newStation = Instantiate(_stationInteractionPrefab);
+        //rename to corresponding station id
+        newStation.name = station.name;
         //set y to -100
         newStation.transform.position = new Vector3(0,-100,0);
         newStation.GetComponent<StationController>().Init();
         //set stations _interactionGameObject to newStation
         station.GetComponent<SingleStationManager>()._interactionGameObject = newStation;
+        //set newstation's station to station
+        newStation.GetComponent<StationController>()._station = station;
+        //set child of station
+        newStation.transform.parent = station.transform;
         //newStation.GetComponent<SingleStationManager>().enabled = false;
         //disable its Collider child
         //newStation.transform.GetChild(0).gameObject.SetActive(false);

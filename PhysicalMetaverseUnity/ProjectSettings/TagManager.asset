@@ -16,6 +16,7 @@ TagManager:
   - StationInteraction
   - QRInvalidator
   - Person
+  - FedeHand
   layers:
   - Default
   - TransparentFX

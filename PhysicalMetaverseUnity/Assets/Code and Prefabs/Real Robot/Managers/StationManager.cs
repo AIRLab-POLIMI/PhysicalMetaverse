@@ -11,6 +11,8 @@ using System.Collections.Generic;
 //this manager receives x, y of the biggest blob of one chosen color in image frame and positions a sphere at such coordinates
 public class StationManager : MonoBehaviour
 {
+    
+    public bool _resetStations = true;
     public GameObject _stationPrefab;
 
     private Transform _cameraStartRotationAngle;
@@ -146,6 +148,19 @@ public class StationManager : MonoBehaviour
         }
         //rotate this gameobject like delta y angle of _cameraStartRotationAngle
         //this.transform.eulerAngles = new Vector3(0, -(_cameraRotationAngle.eulerAngles.y - _cameraStartRotationAngle.eulerAngles.y)*(_currentZ/_perspectiveRotationCorrection), 0);
+        if(_resetStations){
+            _resetStations = false;
+            ResetStations();
+        }
+    }
+
+
+    private void ResetStations(){
+        //for each ip send RESET using networking manager
+        foreach (string ip in _stationIps)
+        {
+            NetworkingManager.Instance.SendString("RESET", ip);
+        }
     }
 
     private void ExpireStations()

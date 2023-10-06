@@ -72,6 +72,7 @@ MonoBehaviour:
   activateWrongSound: {fileID: 8300000, guid: 7e81e4c62949b49adbedda57c2535561, type: 3}
   hatchOpenSound: {fileID: 8300000, guid: 1863dd6975b624d599c83686ad8d52c1, type: 3}
   hatchCloseSound: {fileID: 8300000, guid: b03c109dd94d9466393b0c2c8f622b1f, type: 3}
+  _station: {fileID: 0}
   isRight: 1
   _stationIp: 
 --- !u!82 &1875384384744600654
@@ -434,7 +435,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875384385092366515}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2.5}
+  m_LocalPosition: {x: 0, y: 0, z: 2.3}
   m_LocalScale: {x: 2.12, y: 2.12, z: 2.12}
   m_ConstrainProportionsScale: 1
   m_Children:

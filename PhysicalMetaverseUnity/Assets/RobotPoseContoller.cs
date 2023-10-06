@@ -60,6 +60,7 @@ public class RobotPoseContoller : MonoBehaviour
         _leftHandTracker.name = "Left Hand Tracker";
         //red
         _leftHandTracker.GetComponent<Renderer>().material.color = Color.red;
+        _leftHandTracker.GetComponent<MeshRenderer>().enabled = _handTrackerMeshEnabled;
 
         //initialize hand tracker to a 0.2 sphere
         _rightHandTracker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -71,9 +72,10 @@ public class RobotPoseContoller : MonoBehaviour
         _rightHandTracker.name = "Right Hand Tracker";
         //blue
         _rightHandTracker.GetComponent<Renderer>().material.color = Color.blue;
+        _rightHandTracker.GetComponent<MeshRenderer>().enabled = _handTrackerMeshEnabled;
 
     }
-
+    public bool _handTrackerMeshEnabled = false;
     private bool _notPopulated = true;
     // Update is called once per frame
     void FixedUpdate()
@@ -117,7 +119,8 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 target = _joints["Left Foot 29"].position;
         target.y = 0f;
         //lerp position to left foot
-        transform.position = Vector3.Lerp(transform.position, target, 0.1f);
+        if(!_manualMovement)
+            transform.position = Vector3.Lerp(transform.position, target, _lerpSpeed);
 
         //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
@@ -129,6 +132,8 @@ public class RobotPoseContoller : MonoBehaviour
         //HeadAngles(); //TODO
 
     }
+    public bool _manualMovement = false;
+    public float _lerpSpeed = 0.5f;
 
     public GameObject _debugCylinder;
     void HeadAngles(){
@@ -177,9 +182,10 @@ public class RobotPoseContoller : MonoBehaviour
                 Vector3 target = _joints["Left Foot 29"].position;
                 target.y = 0f;
                 //no lerp
-                transform.position = target;
+                if(!_manualMovement)
+                        transform.position = target;
             }
-            _prevHide = true;
+            _prevHide = false;
         }
     }
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist

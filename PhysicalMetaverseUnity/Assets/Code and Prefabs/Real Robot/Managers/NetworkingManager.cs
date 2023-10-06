@@ -583,4 +583,23 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     }
 
     #endregion
+
+    public bool _resetTime = false;
+
+    public void ResetTime(){
+
+    }
+
+    private void FixedUpdate(){
+        if(_resetTime){
+            _resetTime = false;
+            string data = "S:" + _timeString;
+            SendString(data, _gameManagerPythonIP);
+            //gamemanager teststationsmanager set _normalisedElapsedTime 0 gameDurationSeconds time string
+            _gameManager.GetComponent<TestStationsManager>()._normalisedElapsedTime = 0;
+            //parse int from _timeString
+            int timeSend = int.Parse(_timeString);
+            _gameManager.GetComponent<TestStationsManager>().gameDurationSeconds = timeSend;
+        }
+    }
 }

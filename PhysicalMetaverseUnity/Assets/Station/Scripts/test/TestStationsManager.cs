@@ -10,11 +10,10 @@ public class TestStationsManager : MonoBehaviour
     
     [Header("TIME")]
     
-    [SerializeField, Range(0, 600)] private float gameDurationSeconds;
+    [Range(0, 600)] public float gameDurationSeconds;
 
     [Range(0, 1)]
-    [SerializeField]
-    private float _normalisedElapsedTime;
+    public float _normalisedElapsedTime;
 
     private void Start()
     {
