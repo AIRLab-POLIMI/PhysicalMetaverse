@@ -80,10 +80,11 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
         //send start time
         
-        string data = "S:300";
+        string data = "S:" + _timeString;
         SendString(data, _gameManagerPythonIP);
         
     }
+    public string _timeString;
 
     public int _timeDuration;
 

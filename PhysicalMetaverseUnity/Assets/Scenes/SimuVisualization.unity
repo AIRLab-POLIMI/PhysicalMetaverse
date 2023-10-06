@@ -32024,7 +32024,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b4f92aa4925f4743bd9de295e3108c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameDurationSeconds: 480
+  gameDurationSeconds: 350
   _normalisedElapsedTime: 0
   _losePanel: {fileID: 896300954}
 --- !u!1 &1876277657
@@ -32088,6 +32088,7 @@ MonoBehaviour:
   jetsonPingKey: {fileID: 11400000, guid: 85b9b3f28247a79499cfa1b3ffe572ca, type: 2}
   TCP_PRESENTATIONS: 0
   _skipTcp: 1
+  _timeString: 350
   _timeDuration: 0
   _winPanel: {fileID: 1259777777}
   _gameManager: {fileID: 1871652324}
