@@ -14,6 +14,8 @@ using UnityEngine.Serialization;
 using System.Net;
 public class NetworkingManager : Monosingleton<NetworkingManager>
 {
+    public string _gameManagerPythonIP = "192.168.0.222";
+    public int _completedStations = 0;
     [SerializeField] private GameObject _setupScreen;
     
     [SerializeField] public SetupSO setup;
@@ -74,13 +76,25 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             StartCoroutine(CheckOldMessages());
             StartCoroutine(Presentations());
         }
+
+        //send start time
+        
+        string data = "S:300";
+        SendString(data, _gameManagerPythonIP);
         
     }
+
+    public int _timeDuration;
 
     #endregion
 
     #region PRESENTATION
 
+    public GameObject _winPanel;
+    public void WinPanel(bool set){
+        //enable win panel
+        _winPanel.SetActive(true);
+    }
     private IEnumerator Presentations()
     {
         _setupScreen.SetActive(true);

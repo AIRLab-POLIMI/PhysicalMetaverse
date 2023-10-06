@@ -24,7 +24,7 @@ public class StationManager : MonoBehaviour
     public List<string> _stationIps = new List<string>();
     //udp packet storage
     private byte[] data;
-    public static int _totalStations = 2;
+    public static int _totalStations = 7;
     public Transform _orientationTransform;
     private float[] _lastPingTimes = new float[_totalStations];
     //stations list

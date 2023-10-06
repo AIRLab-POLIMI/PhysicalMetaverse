@@ -10,7 +10,7 @@
 // // IP = 192.168.1.60 -> THIS DEVICE
 // // IP = 192.168.1.61 -> OTHER DEVICE (the one you are comm with through UDP)
 
-IPAddress staticIP(192, 168, 0, 61);  // this device static IP
+IPAddress staticIP(192, 168, 0, 57);  // this device static IP
 IPAddress defaultDestinationIP(192, 168, 0, 104);       
                                       // other device IP
                                       // NB you can have as many "other IPs" as you want; 

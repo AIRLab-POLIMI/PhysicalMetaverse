@@ -332,6 +332,28 @@ public class StationController : MonoBehaviour
 
         //key is (char)195
         NetworkingManager.Instance.SendString(data, _stationIp);
+        string gamemanagerIp = NetworkingManager.Instance._gameManagerPythonIP;
+        //id station isright is false send W:10
+        if (!isRight)
+        {
+            data = "W:10";
+            NetworkingManager.Instance.SendString(data, gamemanagerIp);
+        }
+        //else send R:1
+        else
+        {
+            data = "R:1";
+            NetworkingManager.Instance.SendString(data, gamemanagerIp);
+        }
+        //if completed stations is 6 send G:1
+        if(NetworkingManager.Instance._completedStations == 6)
+        {
+            data = "G:1";
+            NetworkingManager.Instance.SendString(data, gamemanagerIp);
+            //pannello win lose
+            NetworkingManager.Instance.WinPanel(true);
+        }
+        
     }
     public void SetIp(string ip)
     {

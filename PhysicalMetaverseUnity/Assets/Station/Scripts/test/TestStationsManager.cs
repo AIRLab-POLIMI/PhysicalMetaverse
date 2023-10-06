@@ -5,16 +5,12 @@ using UnityEngine;
 
 public class TestStationsManager : MonoBehaviour
 {
-
-    [Header("STATIONS")]
-    
-    [SerializeField] private float durationInSeconds = 2.0f;
     
     [Space]
     
     [Header("TIME")]
     
-    [SerializeField, Range(0, 10)] private float gameDurationSeconds;
+    [SerializeField, Range(0, 600)] private float gameDurationSeconds;
 
     [Range(0, 1)]
     [SerializeField]
@@ -31,6 +27,7 @@ public class TestStationsManager : MonoBehaviour
         UpdateTime();
     }
 
+    public GameObject _losePanel;
     void UpdateTime()
     {
         _normalisedElapsedTime += Time.deltaTime/gameDurationSeconds;
@@ -39,5 +36,9 @@ public class TestStationsManager : MonoBehaviour
             // end game
         }   
         AmbientManager.Instance.UpdateLight(_normalisedElapsedTime);
+        if(_normalisedElapsedTime == 1){
+            //enable _losePanel
+            _losePanel.SetActive(true);
+        }
     }
 }

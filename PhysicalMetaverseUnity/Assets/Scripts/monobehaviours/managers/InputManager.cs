@@ -36,9 +36,11 @@ public class InputManager : Monosingleton<InputManager>
             {
                 // NetworkManager.Instance.SendMsg(GetUdpMessage());
                 //UDPManager.Instance.SendStringUpdToDefaultEndpoint(GetUdpMessage());
-                string udpMessage = RoutineController.Instance.IsRunning 
+
+                /*string udpMessage = RoutineController.Instance.IsRunning 
                     ? RoutineController.Instance.GetMsg() 
-                    : GetUdpMessage();
+                    : GetUdpMessage();*/
+                string udpMessage = GetUdpMessage();
                 //if not null
                 if (udpMessage != ""){
                     Debug.Log("udpMessage: " + udpMessage);
@@ -50,9 +52,9 @@ public class InputManager : Monosingleton<InputManager>
             }
 
 
-            if(!RoutineController.Instance.IsRunning)
+            /*if(!RoutineController.Instance.IsRunning)
                 //rotate pose with speed
-                RotatePoseWithSpeed();
+                RotatePoseWithSpeed();*/
             Debug.unityLogger.logEnabled = true;
         }
         
@@ -149,7 +151,7 @@ public class InputManager : Monosingleton<InputManager>
             // vector3 head.eulerAngles + 180 on y angle
             _headYTarget = head.eulerAngles;
             //log _headYTarget
-            Debug.Log("_headYTarget: " + _headYTarget);
+            //Debug.Log("_headYTarget: " + _headYTarget);
             _headYTarget.y += 180;
             _headYTarget.y -= 360;
             //clamp -89 89
@@ -207,7 +209,7 @@ public class InputManager : Monosingleton<InputManager>
                       headXAngleKey + Constants.KeyValDelimiter + xAngle.ToString();
                 //replace commas with dots
                 msg = msg.Replace(",", ".");
-                Debug.Log("msg: " + msg);
+                //Debug.Log("msg: " + msg);
             }
             return msg;
         }
