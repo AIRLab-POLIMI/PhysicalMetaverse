@@ -77,7 +77,6 @@ public class StationController : MonoBehaviour
     
     public void Init()
     {
-        ResetStation();
         _isActivated = false;
         _isInteractable = false;
         
@@ -337,6 +336,7 @@ public class StationController : MonoBehaviour
     public void SetIp(string ip)
     {
         _stationIp = ip;
+        ResetStation();
     }
     public string _stationIp;
     

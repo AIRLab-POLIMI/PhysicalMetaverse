@@ -10,7 +10,7 @@
 // // IP = 192.168.1.60 -> THIS DEVICE
 // // IP = 192.168.1.61 -> OTHER DEVICE (the one you are comm with through UDP)
 
-IPAddress staticIP(192, 168, 0, 61);  // this device static IP
+IPAddress staticIP(192, 168, 0, 79);  // this device static IP
 IPAddress defaultDestinationIP(192, 168, 0, 104);       
                                       // other device IP
                                       // NB you can have as many "other IPs" as you want; 
@@ -46,7 +46,7 @@ const uint8_t green_pin = 27;
 const uint8_t red_pin = 12;
 const uint8_t blue_pin = 26;
 
-const bool CORRECT_STATION = false;
+const bool CORRECT_STATION = true;
 
 // define the ESPUDP object. 
 // Depending on the device (either ESP32 or ESP8266), 

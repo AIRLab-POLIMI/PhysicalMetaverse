@@ -33874,8 +33874,8 @@ MonoBehaviour:
   _odometryManager: {fileID: 975876602}
   _untrackedAngles: []
   _stationIps:
-  - 192.168.157.59
-  - 192.168.157.60
+  - 192.168.1.59
+  - 192.168.1.60
   _orientationTransform: {fileID: 835397783}
   _stations: []
   _lidarManager: {fileID: 0}
@@ -34758,6 +34758,7 @@ MonoBehaviour:
   _odometryManager: {fileID: 0}
   _untrackedParent: {fileID: 0}
   _stationManager: {fileID: 0}
+  _stationId: 0
   _petalsAlpha: 1
   _untrackedAngle: 0
   _prevTracked: 0
@@ -35200,6 +35201,7 @@ MonoBehaviour:
   _odometryManager: {fileID: 0}
   _untrackedParent: {fileID: 0}
   _stationManager: {fileID: 0}
+  _stationId: 0
   _petalsAlpha: 1
   _untrackedAngle: 0
   _prevTracked: 0

@@ -20,8 +20,10 @@ public class SingleStationManager : MonoBehaviour
 
         //disable mesh
         gameObject.GetComponent<MeshRenderer>().enabled = false;
+
     }
 
+    public int _stationId = -1;
     // Update is called once per frame
     void Update()
     {
@@ -31,6 +33,12 @@ public class SingleStationManager : MonoBehaviour
 
     public float _petalsAlpha = 1f;
     void FixedUpdate(){
+        if(_stationId < 0){
+            //parse station id from last char pf name
+            _stationId = int.Parse(gameObject.name.Substring(gameObject.name.Length - 1));
+            //if station id even right true, if odd right false
+            _interactionGameObject.GetComponent<StationController>().isRight = _stationId % 2 == 0 ? true : false;
+        }
         //if tracked set tag to Station if not set to InvalidStation
         if (_tracked)
         {

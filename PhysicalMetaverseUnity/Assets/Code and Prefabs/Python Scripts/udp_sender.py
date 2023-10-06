@@ -17,7 +17,7 @@ def send_udp_message(ip_address, port, message):
         sock.close()
 
 if __name__ == "__main__":
-    udp_address = "192.168.157.60"  # Replace this with the UDP address you want to send the message to
+    udp_address = "192.168.157.79"  # Replace this with the UDP address you want to send the message to
     udp_port = 25666  # Replace this with the UDP port you want to use
     while True:
         input_message = input("Enter the message to send: ")
