@@ -172,20 +172,21 @@ public class RobotPoseContoller : MonoBehaviour
 
     public bool _prevHide = false;
     public void Hide(bool setHide){
-        if(setHide){
-            _prevHide = true;
-            //disable gameobject
-            gameObject.SetActive(false);
-        }
-        else{
-            if(_prevHide){
-                Vector3 target = _joints["Left Foot 29"].position;
-                target.y = 0f;
-                //no lerp
-                if(!_manualMovement)
-                        transform.position = target;
+        if(!_manualMovement){
+            if(setHide){
+                _prevHide = true;
+                //disable gameobject
+                gameObject.SetActive(false);
             }
-            _prevHide = false;
+            else{
+                if(_prevHide){
+                    Vector3 target = _joints["Left Foot 29"].position;
+                    target.y = 0f;
+                    //no lerp
+                    transform.position = target;
+                }
+                _prevHide = false;
+            }
         }
     }
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist

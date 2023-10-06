@@ -202,15 +202,25 @@ public class LidarManager : Monosingleton<LidarManager>
 
         if(_disableBackPillars){
             //disable pillars from 0 to 30 and from 330 to 360
-            for(int j = 0; j < 60; j++){
+            for(int j = 0; j < _disablePillarsRange; j++){
                 _points[j].SetActive(false);
             }
-            for(int j = 300; j < 360; j++){
+            for(int j = 360-_disablePillarsRange; j < 360; j++){
                 _points[j].SetActive(false);
             }
+            //enable pillars from 0 to _savePillarsRange
+            for(int j = 0; j < _savePillarsRange; j++){
+                _points[j].SetActive(true);
+            }
+            for(int j = 360-_savePillarsRange; j < 360; j++){
+                _points[j].SetActive(true);
+            }
+
         }
     }
     public bool _disableBackPillars = true;
+    public int _disablePillarsRange = 60;
+    public int _savePillarsRange = 20;
     public bool _LIDAR_TRACKING = true;
     void FixedUpdate()
     {
@@ -1091,7 +1101,8 @@ public class LidarManager : Monosingleton<LidarManager>
             float circleposition = (float)pos / (float)arraySize;
             float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * convertedValue;
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * convertedValue;
-            _points[pos].transform.position = new Vector3(x, 0.0f, z);
+            Vector3 posit = _points[pos].transform.position;
+            _points[pos].transform.position = new Vector3(x, posit.y, z);
 
             _points[pos].transform.localScale = new Vector3(convertedValue / 10, _points[pos].transform.localScale.y,
                 convertedValue / 10);

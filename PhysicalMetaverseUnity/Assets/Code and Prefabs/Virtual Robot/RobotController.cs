@@ -224,17 +224,17 @@ public class RobotController : MonoBehaviour
                 _odometryManager._right = true;
             }
             //y axis
-            if (currentAnalogVal.y > 0.5f)
+            if (currentAnalogVal.y < -0.5f)
             {
                 //move forward
-                controller.Move(transform.forward * currentAnalogVal.y / _moveUpdate);
+                controller.Move(transform.forward * (-currentAnalogVal.y) / _moveUpdate);
                 //set odometry
                 _odometryManager._forward = true;
             }
-            else if (currentAnalogVal.y < -0.5f)
+            else if (currentAnalogVal.y > 0.5f)
             {
                 //move backward
-                controller.Move(transform.forward * currentAnalogVal.y / _moveUpdate);
+                controller.Move(transform.forward * (-currentAnalogVal.y) / _moveUpdate);
                 //set odometry
                 _odometryManager._backward = true;
             }

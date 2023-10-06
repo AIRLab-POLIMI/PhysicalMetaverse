@@ -34,6 +34,9 @@ public class PillarBlobChecker : MonoBehaviour
             _stationId = -1;
             _lidarManager.SetBlobAt(_pillarId, -1);
         }
+        //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+        //lerp
+        transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, 0, transform.position.z), _pillarLerpSpeed/_backUpReducer);
         /*
         //color this gameobject in yellow
         GetComponent<Renderer>().material.color = Color.yellow;
@@ -87,9 +90,17 @@ public class PillarBlobChecker : MonoBehaviour
         
         if(other.gameObject.CompareTag("Person")){
             //disable mesh
-            GetComponent<MeshRenderer>().enabled = false;
+            //GetComponent<MeshRenderer>().enabled = false;
+            //set y to _personPillarDown
+            //transform.position = new Vector3(transform.position.x, _personPillarDown, transform.position.z);
+            //lerp
+            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, _personPillarDown, transform.position.z), _pillarLerpSpeed);
         }
     }
+
+    public float _personPillarDown = -3f;
+    public float _pillarLerpSpeed = 0.1f;
+    public float _backUpReducer = 3f;
 
     /*void OnTriggerExit(Collider other){
         //color this gameobject in yellow

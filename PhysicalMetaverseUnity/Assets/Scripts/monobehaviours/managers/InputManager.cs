@@ -55,6 +55,23 @@ public class InputManager : Monosingleton<InputManager>
             Debug.unityLogger.logEnabled = true;
         }
         
+        private void FixedUpdate(){
+            Odometry();
+        }
+
+        private void Odometry(){
+            //use Ljx and Ljy to set odometry forward rotateright floats
+            float LjxNorm = NormalizeJoy(Ljx);
+            float LjyNorm = NormalizeJoy(Ljy);
+            //set forward to Ljy, rotate to Ljy
+            _odometryManager._forwardFloat = LjyNorm;
+            _odometryManager._rotateRightFloat = LjxNorm;
+        }
+
+        private float NormalizeJoy(float val){
+            val = (val - 127)/127;
+            return val;
+        }
     
     #endregion
         
@@ -68,6 +85,8 @@ public class InputManager : Monosingleton<InputManager>
         }
 
     #region Compose UDP Mess
+
+    public OdometryManager _odometryManager;
 
     //range 0 255 variable Ljx
     [Range(0, 255)] public int Ljx = 0;
