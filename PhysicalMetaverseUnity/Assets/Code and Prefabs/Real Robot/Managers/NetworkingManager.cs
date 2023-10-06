@@ -16,6 +16,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 {
     public string _gameManagerPythonIP = "192.168.0.222";
     public int _completedStations = 0;
+    public int _AMOUNTOFCOMPLETE = 2;
     [SerializeField] private GameObject _setupScreen;
     
     [SerializeField] public SetupSO setup;

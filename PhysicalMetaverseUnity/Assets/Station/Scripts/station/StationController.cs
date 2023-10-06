@@ -344,9 +344,10 @@ public class StationController : MonoBehaviour
         {
             data = "R:1";
             NetworkingManager.Instance.SendString(data, gamemanagerIp);
+            NetworkingManager.Instance._completedStations++;
         }
         //if completed stations is 6 send G:1
-        if(NetworkingManager.Instance._completedStations == 6)
+        if(NetworkingManager.Instance._completedStations == NetworkingManager.Instance._AMOUNTOFCOMPLETE)
         {
             data = "G:1";
             NetworkingManager.Instance.SendString(data, gamemanagerIp);
@@ -355,6 +356,7 @@ public class StationController : MonoBehaviour
         }
         
     }
+    
     public void SetIp(string ip)
     {
         _stationIp = ip;

@@ -62,7 +62,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2273249937540460545}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -248,6 +248,8 @@ MonoBehaviour:
   _odometryManager: {fileID: 0}
   _untrackedParent: {fileID: 0}
   _stationManager: {fileID: 0}
+  _stationId: -1
+  _petalsAlpha: 1
   _untrackedAngle: 0
   _prevTracked: 0
   _fadeSpeed: 0.0043
