@@ -66,7 +66,7 @@ public class PillarBlobChecker : MonoBehaviour
                 float alpha = singlestation._petalsAlpha;
                 //set alpha
                 GetComponent<Renderer>().material.color = new Color(GetComponent<Renderer>().material.color.r, GetComponent<Renderer>().material.color.g, GetComponent<Renderer>().material.color.b, 1 - alpha);
-                singlestation.Show();
+                //singlestation.Show();
                 //GetComponent<MeshRenderer>().enabled = true;
             }
             /*

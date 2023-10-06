@@ -323,6 +323,7 @@ public class LidarManager : Monosingleton<LidarManager>
         //disable _stationList meshes
         foreach(GameObject station in _stationList){
             ////station.GetComponent<MeshRenderer>().enabled = false;
+            station.GetComponent<StationController>().Hide();
         }
         //find start of groups of consecutive points and count their size
         for(int i = 0; i < 360; i++){
