@@ -22,17 +22,17 @@ public class SensorValue
     
     #region Constructor
     
-    public SensorValue(string key, float min, float max)
+    public SensorValue(string key, float min, float max, float deadzone=0)
     {
         _key = key;
-        _ongoingValue = new OngoingValue(min, max);
+        _ongoingValue = new OngoingValue(min, max, deadzone);
     }
         
-    public SensorValue(string key, float min, float max, float tolerance)
-    {
-        _key = key;
-        _ongoingValue = new OngoingValue(min, max, tolerance);
-    }
+    //public SensorValue(string key, float min, float max, float tolerance)
+    //{
+    //    _key = key;
+    //    _ongoingValue = new OngoingValue(min, max, tolerance);
+    //}
     
     #endregion
     

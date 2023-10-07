@@ -12833,6 +12833,7 @@ MonoBehaviour:
   sendAccZ: 0
   sendIndex: 0
   sendMiddle: 0
+  moveDeadzone: 0
 --- !u!43 &751356616
 Mesh:
   m_ObjectHideFlags: 0
@@ -30924,6 +30925,7 @@ MonoBehaviour:
   sendAccZ: 0
   sendIndex: 0
   sendMiddle: 0
+  moveDeadzone: 39.6
 --- !u!1 &1628122286
 GameObject:
   m_ObjectHideFlags: 0
@@ -37673,6 +37675,7 @@ MonoBehaviour:
   sendAccZ: 0
   sendIndex: 0
   sendMiddle: 0
+  moveDeadzone: 0
 --- !u!1 &2065258343
 GameObject:
   m_ObjectHideFlags: 0

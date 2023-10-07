@@ -36,7 +36,7 @@ public class PillarBlobChecker : MonoBehaviour
         }
         //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         //lerp
-        //transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, 0, transform.position.z), _pillarLerpSpeed/_backUpReducer);
+        transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, 0, transform.position.z), _pillarLerpSpeed/_backUpReducer);
         /*
         //color this gameobject in yellow
         GetComponent<Renderer>().material.color = Color.yellow;

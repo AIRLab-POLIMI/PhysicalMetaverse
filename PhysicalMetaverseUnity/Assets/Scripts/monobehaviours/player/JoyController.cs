@@ -44,6 +44,12 @@ public class JoyController : MonoBehaviour
         public bool sendIndex = true;
         public bool sendMiddle = true;
     
+    [Space]
+    [Header("Deadzone")]
+
+        [Range(0, 100)]
+        public float moveDeadzone;
+
         
         // one SensorValue for each rotation axis  
         private SensorValue _rx;
@@ -70,8 +76,8 @@ public class JoyController : MonoBehaviour
             _ry = new SensorValue("ry", minAccY, maxAccY);
             _rz = new SensorValue("rz", minAccZ, maxAccZ);
             
-            _jx = new SensorValue("jx", -1, 1);
-            _jy = new SensorValue("jy", -1, 1);
+            _jx = new SensorValue("jx", -1, 1, moveDeadzone);
+            _jy = new SensorValue("jy", -1, 1, moveDeadzone);
             
             _btrig = new SensorValue("bt", 0, 1);
             _bgrab = new SensorValue("bg", 0, 1);
