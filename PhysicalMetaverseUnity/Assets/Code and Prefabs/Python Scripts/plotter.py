@@ -11,8 +11,10 @@ data = [
 plt.plot(data)
 
 # Add labels and title
-plt.xlabel('Index')
-plt.ylabel('Value')
+plt.xlabel('Real distance')
+plt.ylabel('Measured distance')
+#range of y axis 0 255
+plt.ylim(0, 100)
 plt.title('Data Plot')
 
 
@@ -35,11 +37,12 @@ data = [x * 700 for x in data]
 x = list(range(len(data)))
 
 # Create the plot
-plt.plot(x, data, marker='o', linestyle='-')
+#plt.plot(x, data, marker='o', linestyle='-')
+plt.plot(data)
 
 # Label the axes
-plt.xlabel('Index')
-plt.ylabel('Values')
+plt.xlabel('Real distance')
+plt.ylabel('Measured distance')
 
 # Title of the plot
 plt.title('Linearized')

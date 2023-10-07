@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e10425ce3c3b4f588a83516c1f55baa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionRangeCollider: {fileID: 1875384383839429402}
-  activationRangeCollider: {fileID: 1875384384806303038}
+  interactionRangeCollider: {fileID: 1522090210662204904}
+  activationRangeCollider: {fileID: 3418042391800132840}
   holeCoverController: {fileID: 7343692741738976169}
   petalsController: {fileID: 1875384384343686020}
   upperSphere: {fileID: 2760838266468829782}
@@ -72,6 +72,7 @@ MonoBehaviour:
   activateWrongSound: {fileID: 8300000, guid: 7e81e4c62949b49adbedda57c2535561, type: 3}
   hatchOpenSound: {fileID: 8300000, guid: 1863dd6975b624d599c83686ad8d52c1, type: 3}
   hatchCloseSound: {fileID: 8300000, guid: b03c109dd94d9466393b0c2c8f622b1f, type: 3}
+  sphereColliderTag: FedeHand
   _station: {fileID: 0}
   isRight: 1
   _stationIp: 
@@ -199,6 +200,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1875384383839429401}
   - component: {fileID: 1875384383839429402}
+  - component: {fileID: 1522090210662204904}
   m_Layer: 0
   m_Name: interactable collider
   m_TagString: Untagged
@@ -214,8 +216,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875384383839429400}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -0.47147, z: -1.8636}
+  m_LocalScale: {x: 0.5283567, y: 0.5283567, z: 0.5283567}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1875384385180172984}
@@ -234,6 +236,18 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 6.13
   m_Center: {x: 0, y: 1, z: 3.54}
+--- !u!114 &1522090210662204904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875384383839429400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 600fd8118045da44d8a4c5359165c917, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1875384384056648906
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,6 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1875384384806303037}
   - component: {fileID: 1875384384806303038}
+  - component: {fileID: 3418042391800132840}
   m_Layer: 0
   m_Name: activate collider
   m_TagString: Untagged
@@ -355,8 +370,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875384384806303036}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.008, z: 0.005}
+  m_LocalScale: {x: 0.25254294, y: 0.25254294, z: 0.25254294}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1875384385180172984}
@@ -375,6 +390,18 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 4.07
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3418042391800132840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1875384384806303036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 600fd8118045da44d8a4c5359165c917, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1875384384824733947
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,7 +462,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1875384385092366515}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2.3}
+  m_LocalPosition: {x: 0, y: -0.46, z: 2.71}
   m_LocalScale: {x: 2.12, y: 2.12, z: 2.12}
   m_ConstrainProportionsScale: 1
   m_Children:

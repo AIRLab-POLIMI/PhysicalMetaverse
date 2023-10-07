@@ -22,7 +22,7 @@ public class GameManager : Monosingleton<GameManager>
         _setup = GameObject.FindGameObjectWithTag("Setup");
         _environment = GameObject.FindGameObjectWithTag("Environment");
         
-        _InputActionReferenceSceneRestart.action.performed += _ => RestartScene();
+        //_InputActionReferenceSceneRestart.action.performed += _ => RestartScene();
         BumpManager.Instance.Setup();
         LidarManager.Instance.Setup();
         //PoseManager.Instance.Setup();

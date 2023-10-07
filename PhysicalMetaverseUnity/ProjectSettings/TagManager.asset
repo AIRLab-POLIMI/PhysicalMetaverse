@@ -17,6 +17,7 @@ TagManager:
   - QRInvalidator
   - Person
   - FedeHand
+  - Sphere
   layers:
   - Default
   - TransparentFX

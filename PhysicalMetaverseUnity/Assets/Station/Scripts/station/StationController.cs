@@ -10,8 +10,8 @@ public class StationController : MonoBehaviour
     // station manager is the scripts on the station gameobject. 
     // it references the colliders, and if the conditions are met, it triggers the methods of all the components: 
     
-    [SerializeField] SphereCollider interactionRangeCollider;
-    [SerializeField] SphereCollider activationRangeCollider;
+    [SerializeField] ColliderController interactionRangeCollider;
+    [SerializeField] ColliderController activationRangeCollider;
     
     [SerializeField] HoleCoverController holeCoverController;
     
@@ -54,6 +54,11 @@ public class StationController : MonoBehaviour
     [SerializeField] private AudioClip hatchOpenSound;
     [SerializeField] private AudioClip hatchCloseSound;
     
+    [Space] 
+    
+    [Header("Collisions")] 
+    
+    [SerializeField] private string sphereColliderTag;
     
     public GameObject _station;
     
@@ -90,6 +95,10 @@ public class StationController : MonoBehaviour
         _isHidden = false;
         
         petalsController.Init();
+
+        interactionRangeCollider.Init(sphereColliderTag);
+        activationRangeCollider.Init(sphereColliderTag);
+
         Hide();
     }
 
@@ -288,8 +297,7 @@ public class StationController : MonoBehaviour
                 return;
             
             // check if the sphere controller is within range of interaction (radius of interactable controller)
-            bool inRange = Vector3.Magnitude(
-                SphereController.Instance.transform.position - transform.position) < interactionRangeCollider.radius * transform.localScale.x;
+            bool inRange = interactionRangeCollider.SphereInRange;
             
             // if it's in range and it WASN't interactable, trigger interactionEnter
             if (inRange && !_isInteractable)
@@ -307,8 +315,7 @@ public class StationController : MonoBehaviour
                 return;
             
             // check if the sphere controller is within range of activation (radius of activation controller)
-            bool inRange = Vector3.Magnitude(
-                SphereController.Instance.transform.position - transform.position) < activationRangeCollider.radius * transform.localScale.x;
+            bool inRange = activationRangeCollider.SphereInRange;
             
             // Debug.Log($"CheckActivated - inRange: {inRange} - _isInteractable: {_isInteractable}");
             

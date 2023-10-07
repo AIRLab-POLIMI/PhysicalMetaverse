@@ -36,7 +36,7 @@ public class PillarBlobChecker : MonoBehaviour
         }
         //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         //lerp
-        transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, 0, transform.position.z), _pillarLerpSpeed/_backUpReducer);
+        //transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, 0, transform.position.z), _pillarLerpSpeed/_backUpReducer);
         /*
         //color this gameobject in yellow
         GetComponent<Renderer>().material.color = Color.yellow;
@@ -90,11 +90,11 @@ public class PillarBlobChecker : MonoBehaviour
         
         if(other.gameObject.CompareTag("Person")){
             //disable mesh
-            //GetComponent<MeshRenderer>().enabled = false;
+            GetComponent<MeshRenderer>().enabled = false;
             //set y to _personPillarDown
             //transform.position = new Vector3(transform.position.x, _personPillarDown, transform.position.z);
             //lerp
-            transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, _personPillarDown, transform.position.z), _pillarLerpSpeed);
+            //transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, _personPillarDown, transform.position.z), _pillarLerpSpeed);
         }
     }
 
