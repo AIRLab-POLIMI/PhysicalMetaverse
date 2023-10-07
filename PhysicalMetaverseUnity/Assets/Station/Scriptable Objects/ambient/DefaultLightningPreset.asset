@@ -76,20 +76,47 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
+      inSlope: 3.466272
+      outSlope: 3.466272
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.090860896
+    - serializedVersion: 3
+      time: 0.4696536
+      value: 0.7919483
+      inSlope: 1.0659653
+      outSlope: 1.0659653
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.2529851
+    - serializedVersion: 3
+      time: 0.689816
+      value: 0.8951036
+      inSlope: 0.2688086
+      outSlope: 0.2688086
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30305555
+      outWeight: 0.426404
+    - serializedVersion: 3
+      time: 0.8543382
+      value: 0.9301362
+      inSlope: 0.14799623
+      outSlope: 0.14799623
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.4200107
     - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 1.348411
+      outSlope: 1.348411
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.20413381
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -107,8 +134,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.99157715
-      value: 0.39294434
+      time: 1.0031981
+      value: 0.2623291
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -119,4 +146,4 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   dayTimeDirectionalAngle: 90
-  nightTimeDirectionalAngle: 210
+  nightTimeDirectionalAngle: 200
