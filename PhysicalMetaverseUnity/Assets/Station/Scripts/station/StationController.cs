@@ -334,34 +334,22 @@ public class StationController : MonoBehaviour
     }
     public void CompleteStation()
     {
-        //data is "BLINK" in bytes
-        string data = "BLINK";
-
-        //key is (char)195
-        NetworkingManager.Instance.SendString(data, _stationIp);
-        string gamemanagerIp = NetworkingManager.Instance._gameManagerPythonIP;
+        BlinkStation();
         //id station isright is false send W:10
         if (!isRight)
         {
-            data = "W:10";
-            NetworkingManager.Instance.SendString(data, gamemanagerIp);
+            StationManager.Instance.CompleteWrongStation();
         }
         //else send R:1
         else
         {
-            data = "R:1";
-            NetworkingManager.Instance.SendString(data, gamemanagerIp);
-            NetworkingManager.Instance._completedStations++;
+            StationManager.Instance.CompleteRightStation();
         }
-        //if completed stations is 6 send G:1
-        if(NetworkingManager.Instance._completedStations == NetworkingManager.Instance._AMOUNTOFCOMPLETE)
-        {
-            data = "G:1";
-            NetworkingManager.Instance.SendString(data, gamemanagerIp);
-            //pannello win lose
-            NetworkingManager.Instance.WinPanel(true);
-        }
-        
+    }
+
+    [SerializeField] private string _blinkMessage = "BLINK";
+    private void BlinkStation(){
+        NetworkingManager.Instance.SendString(_blinkMessage, _stationIp);
     }
     
     public void SetIp(string ip)

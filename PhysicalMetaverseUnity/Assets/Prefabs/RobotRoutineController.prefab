@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6485311611006799438}
   - component: {fileID: 6485311611006799439}
   m_Layer: 0
-  m_Name: RoutineController
+  m_Name: RobotRoutineController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

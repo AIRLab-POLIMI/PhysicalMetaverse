@@ -14,12 +14,10 @@ using UnityEngine.Serialization;
 using System.Net;
 public class NetworkingManager : Monosingleton<NetworkingManager>
 {
-    public string _gameManagerPythonIP = "192.168.0.222";
-    public int _completedStations = 0;
-    public int _AMOUNTOFCOMPLETE = 2;
+    [SerializeField] private string _gameManagerPythonIP = "192.168.0.222";
     [SerializeField] private GameObject _setupScreen;
     
-    [SerializeField] public SetupSO setup;
+    [SerializeField] private SetupSO setup;
     
     private EndPointSO _jetsonEndpoint;
 
@@ -40,8 +38,8 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     [SerializeField] private ByteSO jetsonSensorsReadyKey;
 
     [SerializeField] private ByteSO jetsonPingKey;
-    public bool TCP_PRESENTATIONS = false;
-    public bool _skipTcp = true;
+    [SerializeField] private bool TCP_PRESENTATIONS = false;
+    [SerializeField] private bool _skipTcp = true;
  
     private readonly UdpMessenger _udpMessenger = new UdpMessenger();
 
@@ -61,6 +59,8 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     private bool pingedBack = false;
 
     private Thread clientReceiveThread;
+    [SerializeField] private bool ENABLE_LOG = false;
+    [SerializeField] private bool ENABLE_SEND_STRING_LOG = true;
 
     protected override void Init() =>
         SetInitialized(false);
@@ -77,28 +77,14 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             StartCoroutine(CheckOldMessages());
             StartCoroutine(Presentations());
         }
-
-        //send start time
-        
-        string data = "S:" + _timeString;
-        SendString(data, _gameManagerPythonIP);
         
     }
-    public string _timeString;
 
-    public int _timeDuration;
 
     #endregion
 
     #region PRESENTATION
-
-    public GameObject _winPanel;
-    public GameObject _gameManager;
-    public void WinPanel(bool set){
-        _gameManager.SetActive(false);
-        //enable win panel
-        _winPanel.SetActive(true);
-    }
+    
     private IEnumerator Presentations()
     {
         _setupScreen.SetActive(true);
@@ -289,7 +275,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     #region LOOP
 
-    public bool ENABLE_LOG = false;
+
     private void Update()
     {
         if(!_skipTcp){
@@ -568,38 +554,28 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     public void SendString(string data, string ip)
     {
-        byte[] bytes = new byte[data.Length];
-        for (int i = 0; i < data.Length; i++)
-        {
-            bytes[i] = (byte)data[i];
+        if(ENABLE_SEND_STRING_LOG){
+            byte[] bytes = new byte[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                bytes[i] = (byte)data[i];
+            }
+            byte[] bytes2 = new byte[data.Length + 1];
+            //bytes2[0] = key;
+            //Array.Copy(data, 0, bytes2, 1, data.Length);
+            //new broadcast endpoint
+            //endpoint
+            IPEndPoint sendTo = new IPEndPoint(IPAddress.Parse(ip), myUdpPort);
+            _udpMessenger.SendUdp(bytes, sendTo);
+            Debug.Log("<NetworkingManager> Sent UDP string " + data);
         }
-        byte[] bytes2 = new byte[data.Length + 1];
-        //bytes2[0] = key;
-        //Array.Copy(data, 0, bytes2, 1, data.Length);
-        //new broadcast endpoint
-        //endpoint
-        IPEndPoint sendTo = new IPEndPoint(IPAddress.Parse(ip), myUdpPort);
-        _udpMessenger.SendUdp(bytes, sendTo);
+    }
+
+    public string GetPythonGamemanagerIp()
+    {
+        return _gameManagerPythonIP;
     }
 
     #endregion
 
-    public bool _resetTime = false;
-
-    public void ResetTime(){
-
-    }
-
-    private void FixedUpdate(){
-        if(_resetTime){
-            _resetTime = false;
-            string data = "S:" + _timeString;
-            SendString(data, _gameManagerPythonIP);
-            //gamemanager teststationsmanager set _normalisedElapsedTime 0 gameDurationSeconds time string
-            _gameManager.GetComponent<TestStationsManager>()._normalisedElapsedTime = 0;
-            //parse int from _timeString
-            int timeSend = int.Parse(_timeString);
-            _gameManager.GetComponent<TestStationsManager>().gameDurationSeconds = timeSend;
-        }
-    }
 }

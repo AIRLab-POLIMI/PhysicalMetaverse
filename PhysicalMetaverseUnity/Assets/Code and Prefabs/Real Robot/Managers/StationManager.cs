@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 //to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
 //this manager receives x, y of the biggest blob of one chosen color in image frame and positions a sphere at such coordinates
-public class StationManager : MonoBehaviour
+public class StationManager : Monosingleton<StationManager>
 {
     
     public bool _resetStations = true;
@@ -289,27 +289,24 @@ public class StationManager : MonoBehaviour
         }
     }
 
-    //move spheres
-    //private void MoveSphere()
-    //{
-    //    try{
-    //        //set the sphere's position
-    //        //_sphere.transform.position = new Vector3(parsedData[1]/_imageFrameScale + xOffset, parsedData[0]/_imageFrameScale + yOffset, zOffset);
-    //        //linear movement to new position using _stations
-    //        if (_colorTracked)
-    //            //_sphere.transform.position = Vector3.Lerp(_sphere.transform.position, new Vector3(parsedData[1]/_imageFrameScale + xOffset, yOffset, zOffset - parsedData[0]/_imageFrameScale), _speed);
-    //            _sphere.transform.position = Vector3.Lerp(_sphere.transform.position, _untrackedLocation.position, _speed);
-    //        else{
-    //            //rotate sphere around center of ther world around y axis _untrackedAngle, lerp use RotateAround to angle
-    //            _sphere.transform.RotateAround(Vector3.zero, Vector3.up, -(_untrackedAngle-(int)_sun.transform.eulerAngles.y));
-    //            _untrackedAngle = (int)_sun.transform.eulerAngles.y;
-    //        }
-    //    }
-    //    catch(Exception e)
-    //    {
-    //        Debug.Log(e);
-    //    }
-    //}
+    [SerializeField] private string _rightStationMessage = "R:1";
+    [SerializeField] private int _completedStations = 0;
+    public void CompleteRightStation(){
+        NetworkingManager.Instance.SendString(_rightStationMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        _completedStations++;
+        GameManager.Instance.UpdateScore(_completedStations);
+    }
+    [SerializeField] private string _wrongStationMessage = "W:10";
+    public void CompleteWrongStation(){
+        NetworkingManager.Instance.SendString(_wrongStationMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        GameManager.Instance.SubtractTime(ParseTime(_wrongStationMessage));
+    }
+    
+    //parse time from _wrongStationMessage
+    private int ParseTime(string message){
+        string[] splitted = message.Split(':');
+        return int.Parse(splitted[1]);
+    }
 }
 
 
