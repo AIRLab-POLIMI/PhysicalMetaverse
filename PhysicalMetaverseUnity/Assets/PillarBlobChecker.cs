@@ -95,6 +95,7 @@ public class PillarBlobChecker : MonoBehaviour
             //transform.position = new Vector3(transform.position.x, _personPillarDown, transform.position.z);
             //lerp
             //transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, _personPillarDown, transform.position.z), _pillarLerpSpeed);
+            //TODO CHANGE HERE FOR PILLAR LERP
         }
     }
 

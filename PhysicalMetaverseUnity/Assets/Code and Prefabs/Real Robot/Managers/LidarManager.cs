@@ -1102,7 +1102,7 @@ public class LidarManager : Monosingleton<LidarManager>
             float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * convertedValue;
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * convertedValue;
             Vector3 posit = _points[pos].transform.position;
-            _points[pos].transform.position = new Vector3(x, posit.y, z);
+            _points[pos].transform.position = new Vector3(x, posit.y, z); //TODO CHANGE HERE FOR PILLAR LERP
 
             _points[pos].transform.localScale = new Vector3(convertedValue / 10, _points[pos].transform.localScale.y,
                 convertedValue / 10);
