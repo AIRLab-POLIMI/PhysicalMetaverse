@@ -50,14 +50,14 @@ MonoBehaviour:
     direction: MoveForward
     invert: 0
   - joint: Odile
-    cwKey: d
-    ccKey: a
+    cwKey: e
+    ccKey: q
     axis: 
     direction: MoveStrafe
     invert: 0
   - joint: Odile
-    cwKey: e
-    ccKey: q
+    cwKey: d
+    ccKey: a
     axis: 
     direction: MoveRotateRight
     invert: 0

@@ -21,8 +21,9 @@ public class OdometryManager : MonoBehaviour
     public float _rightFloat = 0f;
     public float _rotateRightFloat = 0f;
 
-    //slider
-    [Range(0.1f, 10f)]
+    public float _boolSpeed = 1f;
+    public float _boolRotateSpeed = 1f;
+    //for stations
     public float _speed = 1f;
     // Start is called before the first frame update
     void Start()
@@ -42,22 +43,22 @@ public class OdometryManager : MonoBehaviour
     void FixedUpdate(){
         //move and rotate floor with speed
         if(_forward){
-            _floor.transform.localPosition += _floor.transform.forward * _movementSpeed * Time.deltaTime;
+            _floor.transform.position += Vector3.forward * _boolSpeed * Time.deltaTime;
         }
         if(_backward){
-            _floor.transform.localPosition -= _floor.transform.forward * _movementSpeed * Time.deltaTime;
+            _floor.transform.position -= Vector3.forward * _boolSpeed * Time.deltaTime;
         }
         if(_left){
-            _floor.transform.localPosition -= _floor.transform.right * _movementSpeed * Time.deltaTime;
+            _floor.transform.position -= Vector3.right * _boolSpeed * Time.deltaTime;
         }
         if(_right){
-            _floor.transform.localPosition += _floor.transform.right * _movementSpeed * Time.deltaTime;
+            _floor.transform.position += Vector3.right * _boolSpeed * Time.deltaTime;
         }
         if(_rotateLeft){
-            _floor.transform.Rotate(Vector3.up * _rotationSpeed * Time.deltaTime);
+            _floor.transform.RotateAround(this.transform.position, Vector3.up, _boolRotateSpeed * Time.deltaTime);
         }
         if(_rotateRight){
-            _floor.transform.Rotate(Vector3.up * -_rotationSpeed * Time.deltaTime);
+            _floor.transform.RotateAround(this.transform.position, Vector3.up, -_boolRotateSpeed * Time.deltaTime);
         }
         //if(_forwardFloat > _odometryDeadzone){
         //abs value _forwardFloat

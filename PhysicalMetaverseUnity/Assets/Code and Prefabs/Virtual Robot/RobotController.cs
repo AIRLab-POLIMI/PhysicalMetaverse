@@ -261,6 +261,8 @@ public class RobotController : MonoBehaviour
         _odometryManager._backward = false;
         _odometryManager._left = false;
         _odometryManager._right = false;
+        _odometryManager._rotateLeft = false;
+        _odometryManager._rotateRight = false;
         
         if (Input.anyKey)
         {
@@ -312,6 +314,9 @@ public class RobotController : MonoBehaviour
                                 {
                                     //rotate odile right
                                     controller.transform.eulerAngles += new Vector3(0, (index % 2 == 0 ? 1 : -1) / _angleUpdate, 0);
+                                    //set odometry right or left to true
+                                    _odometryManager._rotateRight = index % 2 == 0 ? true : false;
+                                    _odometryManager._rotateLeft = index % 2 == 0 ? false : true;
                                 }
                             }
                             else{
