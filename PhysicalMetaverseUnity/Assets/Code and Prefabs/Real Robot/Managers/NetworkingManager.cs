@@ -14,6 +14,16 @@ using UnityEngine.Serialization;
 using System.Net;
 public class NetworkingManager : Monosingleton<NetworkingManager>
 {
+    [Header("ACTIONS")]
+    [Space]
+    [SerializeField] private bool ENABLE_LOG = false;
+    [SerializeField] private bool ENABLE_SEND_STRING_LOG = true;
+
+
+    [Space]
+    [Space]
+    [Header("SETTINGS")]
+    [Space]
     [SerializeField] private string _gameManagerPythonIP = "192.168.0.222";
     [SerializeField] private GameObject _setupScreen;
     
@@ -59,8 +69,14 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     private bool pingedBack = false;
 
     private Thread clientReceiveThread;
-    [SerializeField] private bool ENABLE_LOG = false;
-    [SerializeField] private bool ENABLE_SEND_STRING_LOG = true;
+    
+    [Space]
+    [Space]
+    [Header("STRING SENDER")]
+    [Space]
+    [SerializeField] private bool _SEND_ONE_STRING = true;
+    [SerializeField] private string _stringToSend = "";
+    [SerializeField] private string _singleStringDestIp = "";
 
     protected override void Init() =>
         SetInitialized(false);
@@ -293,6 +309,11 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             CheckPingNew();
         }
         //SendPing();
+    }
+
+    private void FixedUpdate(){
+        if(_SEND_ONE_STRING)
+            SendString(_stringToSend, _singleStringDestIp);
     }
 
     private void ReceiveMessages()

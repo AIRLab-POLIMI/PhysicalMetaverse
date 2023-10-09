@@ -8,51 +8,94 @@ using System.Collections.Generic;
 
 public class LidarManager : Monosingleton<LidarManager>
 {
-    public bool _smoothWithOdometry = true;
-    public OdometryManager _odometryManager;
-    [Range(0.0f, 1.0f)]
-    public float _odometrySpeed = 0.23f;
+    [Header("ACTIONS")]
+    [Space]
+    [SerializeField] private bool ENABLE_LOG = false;
+    [SerializeField] private bool _SMOOTH_WITH_ODOMETRY = true;
+    [SerializeField] private bool _MERGE_WALLS = false;
+    [SerializeField] private bool _LIDAR_TRACKING = true;
+    [SerializeField] private bool _UPDATE_PILLAR_BEHAVIOUR = true;
+    [Space]
+    [Space]
 
+    [Header("PILLAR GENERATION")]
+    [Space]
+    [SerializeField] private bool _disableBackPillars = true;
+    [SerializeField] private int _disablePillarsRange = 60;
+    [SerializeField] private int _savePillarsRange = 20;
     [SerializeField] private GameObject lidarPoint;
-
     [SerializeField] private GameObject lidarPoint2;
-
     [SerializeField] private IntSO lidarMode;
-
     private GameObject[] _points;
-
     private int[] _measurements;
-
     private  int arraySize = 360;
-
     private float minDistValue = 1.0f;
     private float maxDistValue = 20.0f;
-
     private int minMeasure = 0;
     private int maxMeasure = 5000;
-
     private Vector3 defaultHidePosition = new Vector3(-0.5f, -10f, -12.0f);
-    //private Vector3 defaultScale = new Vector3()
-
     [SerializeField] private FloatSO distanceFromCamera; //In centimeters, positive if lidar is behind camera, negative if lidar is in frontm of the camera
-
     [SerializeField] private FloatSO poseDistance;
-
     private float defaultPoseDistance = 10.0f;
-    
     private int nOfLidarDegrees = 0;
     private int[] trackedCameraDegrees;
-
-    private PoseManager _poseManager = null;
-
     [SerializeField] private IntSO MaxConvertedAngle;
     [SerializeField] private IntSO MinConvertedAngle;
+
+    [Space]
+    [Space]
+    [Header("DENOISING")]
+    [Space]
+    [SerializeField] private OdometryManager _odometryManager;
+    [Range(0.0f, 1.0f)]
+    [SerializeField] private float _odometrySpeed = 0.23f;
+    [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
+    private int[] currentPositions;
+    [SerializeField] float fadeDuration = 0.05f; // Duration of the fade-out effect in seconds
+
+    [Space]
+    [Space]
+    [Header("LIDAR TRACKING")]
+    [Space]
+    //array of blob booleans
+    [SerializeField] private int[] _blobs = new int[360];
+    [SerializeField] private int _middle = 0;
+    [SerializeField] private int count = 0;
+    [SerializeField] private int _skippableBlobPoints = 2;
+    [SerializeField] private List<int> _blobSizes = new List<int>();
+    [SerializeField] private List<int> _blobStarts = new List<int>();
+    [SerializeField] private List<int> _blobIds = new List<int>();
+    //dictionary of string gameobject blobtrackers
+    [SerializeField] private Dictionary<int, GameObject> _blobTrackers = new Dictionary<int, GameObject>();
+    [SerializeField] private float _maxJumpDistance = 3f;
+    [SerializeField] private GameObject _stationInteractionPrefab;
+    [SerializeField] private List<GameObject> _stationList;
+    //range 0 1 public float lidar tracking lerp
+    [Range(0.0f, 1.0f)]
+    [SerializeField] private float _lidarTrackingLerp = 0.5f;
+    private GameObject _blobTracker;
+    [SerializeField] private float _personPillarDown = -3f;
+    [SerializeField] private float _pillarLerpSpeed = 0.1f;
+    [SerializeField] private float _backUpReducer = 3f;
+
+    [Space]
+    [Space]
+    [Header("MERGE WALLS")]
+    [Space]
+    [SerializeField] private float _wallCylinderThreshold = 3.0f;
+    [SerializeField] private float _wallSizeMultiplier = 1.2f;
+    [SerializeField] private float _wallHeight = 4.5f;
+    //range _aggregatePointsTolerance from 0 to 100
+    [Range(1, 2)] [SerializeField] private float _aggregatePointsTolerance = 1.1f; //1 is no tolerance
+    [SerializeField] private int _skippablePoints = 0;
+    private List<GameObject> _walls = new List<GameObject>();
+    private List<GameObject> _cylinders = new List<GameObject>();
+    private int _wallCount = 0;
+
 
     public void Setup()
     {
         Debug.Log("[Lidar Manager setup]");
-
-        _poseManager = FindObjectOfType<PoseManager>();
 
         nOfLidarDegrees = LidarToCameraRange.LidarDegreesBasedOnDistance(distanceFromCamera.runtimeValue);
 
@@ -76,19 +119,6 @@ public class LidarManager : Monosingleton<LidarManager>
         _blobs [id] = value;
     }
 
-    [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
-    private int[] currentPositions;
-
-    //range _aggregatePointsTolerance from 0 to 100
-    [Range(1, 2)] [SerializeField] private float _aggregatePointsTolerance = 1.1f; //1 is no tolerance
-    public int _skippablePoints = 0;
-
-    public bool _mergeWalls = true;
-
-
-    private List<GameObject> _walls = new List<GameObject>();
-
-    private List<GameObject> _cylinders = new List<GameObject>();
 
     private void Start()
     {
@@ -135,7 +165,6 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
-    public bool ENABLE_LOG = false;
 
     public void OnMsgRcv(byte[] msg)
     {
@@ -180,9 +209,9 @@ public class LidarManager : Monosingleton<LidarManager>
             }
         }
 
-        if(_mergeWalls)
+        if(_MERGE_WALLS)
             WallsUsingDistancesSkippableGroups();
-        if(!_mergeWalls){
+        if(!_MERGE_WALLS){
             if(_wallCount > 0)
             {
                 //disable all elements in walls
@@ -218,10 +247,6 @@ public class LidarManager : Monosingleton<LidarManager>
 
         }
     }
-    public bool _disableBackPillars = true;
-    public int _disablePillarsRange = 60;
-    public int _savePillarsRange = 20;
-    public bool _LIDAR_TRACKING = true;
     void FixedUpdate()
     {
         //disable mesh of _blobTracker
@@ -242,8 +267,17 @@ public class LidarManager : Monosingleton<LidarManager>
         if(_LIDAR_TRACKING)
             LidarTracking();
         
-        if (_smoothWithOdometry)
+        if(_UPDATE_PILLAR_BEHAVIOUR)
+            UpdatePillarBehaviour(_personPillarDown, _pillarLerpSpeed, _backUpReducer);
+
+        if (_SMOOTH_WITH_ODOMETRY)
             Odometry();
+    }
+    void UpdatePillarBehaviour(float personPillarDown, float pillarLerpSpeed, float backUpReducer){
+        _UPDATE_PILLAR_BEHAVIOUR = false;
+        foreach(GameObject pillar in _points){
+            pillar.GetComponent<PillarManager>().UpdateBehaviour(personPillarDown, pillarLerpSpeed, backUpReducer);
+        }
     }
 
     void Odometry()
@@ -282,17 +316,6 @@ public class LidarManager : Monosingleton<LidarManager>
     }
 
     
-    private GameObject _blobTracker;
-    //array of blob booleans
-    public int[] _blobs = new int[360];
-    public int _middle = 0;
-    public int count = 0;
-    public int _skippableBlobPoints = 2;
-    public List<int> _blobSizes = new List<int>();
-    public List<int> _blobStarts = new List<int>();
-    public List<int> _blobIds = new List<int>();
-    //dictionary of string gameobject blobtrackers
-    public Dictionary<int, GameObject> _blobTrackers = new Dictionary<int, GameObject>();
     public void SpawnLidarBlobs(){
         StationManager stationManager = FindObjectOfType<StationManager>();
         foreach(GameObject station in stationManager._stations){
@@ -322,7 +345,6 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
-    public float _maxJumpDistance = 3f;
     void LidarTracking(){
         //clear lists
         _blobSizes.Clear();
@@ -486,8 +508,6 @@ public class LidarManager : Monosingleton<LidarManager>
 
     }
     
-    public GameObject _stationInteractionPrefab;
-    public List<GameObject> _stationList;
     public void AddStationInteraction(GameObject station){
         //add a _stationInteractionPrefab to list
         GameObject newStation = Instantiate(_stationInteractionPrefab);
@@ -508,9 +528,6 @@ public class LidarManager : Monosingleton<LidarManager>
         //add a new station to _stationList
         _stationList.Add(newStation);
     }
-    //range 0 1 public float lidar tracking lerp
-    [Range(0.0f, 1.0f)]
-    public float _lidarTrackingLerp = 0.5f;
 
     /*
     
@@ -561,8 +578,6 @@ public class LidarManager : Monosingleton<LidarManager>
             }
         }
     */
-
-    private int _wallCount = 0;
     void WallsUsingDistances(){
         int skippedPoints = 0;
         int lastValid = 0;
@@ -855,7 +870,6 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
-    public float _wallCylinderThreshold = 3.0f;
     private void SpawnWall(int start, int end){
         //enable
         _walls[_wallCount].SetActive(true);
@@ -880,8 +894,6 @@ public class LidarManager : Monosingleton<LidarManager>
 
     }
 
-    public float _wallSizeMultiplier = 1.2f;
-    public float _wallHeight = 4.5f;
     private void SpawnWall2(int start, int end){
         //enable
         _walls[_wallCount].GetComponent<MeshRenderer>().enabled = true;
@@ -1065,8 +1077,7 @@ public class LidarManager : Monosingleton<LidarManager>
             //obj.transform.position += obj.transform.forward*8.0f;
             _points[i] = obj;
             //_points[i] pillar blob checker SetLidarManager and SetPillarId
-            _points[i].GetComponent<PillarBlobChecker>().SetLidarManager(this);
-            _points[i].GetComponent<PillarBlobChecker>().SetPillarId(i);
+            _points[i].GetComponent<PillarManager>().SetPillarId(i);
         }
     }
 
@@ -1081,7 +1092,7 @@ public class LidarManager : Monosingleton<LidarManager>
         else
         {
             //if blob checker id is >0
-            if(_points[pos].GetComponent<PillarBlobChecker>()._stationId < 0){
+            if(_points[pos].GetComponent<PillarManager>().GetStationId() < 0){
                 StartCoroutine(FadeInPoint(_points[pos]));
             }
             if ((ConvertAngleTo360(pos) >= MinConvertedAngle.runtimeValue && ConvertAngleTo360(pos) <= MaxConvertedAngle.runtimeValue) && (MinConvertedAngle.runtimeValue != -1)) //if one of the angles where Pose is
@@ -1116,7 +1127,7 @@ public class LidarManager : Monosingleton<LidarManager>
     }
 
     
-    [SerializeField] float fadeDuration = 0.05f; // Duration of the fade-out effect in seconds
+
 
     private IEnumerator FadeOutPoint(GameObject point)
     {

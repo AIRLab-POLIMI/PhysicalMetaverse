@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PillarBlobChecker : MonoBehaviour
+public class PillarManager : MonoBehaviour
 {
-    public bool _blobEnabled = true;
-    public bool _disableMesh = true;
+    [SerializeField] private bool _blobEnabled = true;
+    [SerializeField] private bool _disableMesh = true;
     private bool _prevCollided = false;
-    private LidarManager _lidarManager;
-    public int _pillarId = 0;
-    public int _stationId = 0;
+    [SerializeField] private int _pillarId = 0;
+    [SerializeField] private int _stationId = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,10 +20,6 @@ public class PillarBlobChecker : MonoBehaviour
         //ad id to end of name
         gameObject.name += id.ToString();
     }
-
-    public void SetLidarManager(LidarManager lidarManager){
-        _lidarManager = lidarManager;
-    }
     
     // Update is called once per frame
     void FixedUpdate()
@@ -32,7 +27,7 @@ public class PillarBlobChecker : MonoBehaviour
         //if frame count is even
         if(Time.frameCount % 2 == 0){
             _stationId = -1;
-            _lidarManager.SetBlobAt(_pillarId, -1);
+            LidarManager.Instance.SetBlobAt(_pillarId, -1);
         }
         //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         //lerp
@@ -61,7 +56,7 @@ public class PillarBlobChecker : MonoBehaviour
             }
             string stationName = other.gameObject.transform.parent.name;
             _stationId = int.Parse(stationName.Substring(stationName.Length - 1));
-            _lidarManager.SetBlobAt(_pillarId, _stationId);
+            LidarManager.Instance.SetBlobAt(_pillarId, _stationId);
             //if other gameobject has SingleStationManager get alpha of its interaction object and set 1 - alpha to this gameobject
             SingleStationManager singlestation = other.gameObject.transform.parent.gameObject.GetComponent<SingleStationManager>();
             if(singlestation != null){
@@ -99,9 +94,9 @@ public class PillarBlobChecker : MonoBehaviour
         }
     }
 
-    public float _personPillarDown = -3f;
-    public float _pillarLerpSpeed = 0.1f;
-    public float _backUpReducer = 3f;
+    [SerializeField] private float _personPillarDown = -3f;
+    [SerializeField] private float _pillarLerpSpeed = 0.1f;
+    [SerializeField] private float _backUpReducer = 3f;
 
     /*void OnTriggerExit(Collider other){
         //color this gameobject in yellow
@@ -109,5 +104,14 @@ public class PillarBlobChecker : MonoBehaviour
         //enable mesh
         GetComponent<MeshRenderer>().enabled = true;
     }*/
+    public int GetStationId(){
+        return _stationId;
+    }
+
+    public void UpdateBehaviour(float personPillarDown, float pillarLerpSpeed, float backUpReducer){
+        _personPillarDown = personPillarDown;
+        _pillarLerpSpeed = pillarLerpSpeed;
+        _backUpReducer = backUpReducer;
+    }
     
 }

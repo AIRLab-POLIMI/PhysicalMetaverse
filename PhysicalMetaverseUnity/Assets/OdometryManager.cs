@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class OdometryManager : MonoBehaviour
+public class OdometryManager : Monosingleton<OdometryManager>
 {
     //bool forward
     public bool _forward = false;

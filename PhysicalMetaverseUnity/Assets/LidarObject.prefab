@@ -1,0 +1,129 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7631232991086627184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7631232991086627183}
+  - component: {fileID: 7631232991086627181}
+  - component: {fileID: 7631232991086627182}
+  m_Layer: 0
+  m_Name: LidarObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7631232991086627183
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7631232991086627184}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: -1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7631232991086627181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7631232991086627184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbc20c8ad0648eb4fa89d41dec689bb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _smoothWithOdometry: 1
+  _odometryManager: {fileID: 0}
+  _odometrySpeed: 0.23
+  lidarPoint: {fileID: 9071454379544978574, guid: 5779804919a1b68479b749227bfc2be3,
+    type: 3}
+  lidarPoint2: {fileID: 9071454379544978574, guid: 43cb5a197d0e5114f877d1a87c853382,
+    type: 3}
+  lidarMode: {fileID: 11400000, guid: 44dd04fc92a544f82bdfd0028d6f085e, type: 2}
+  distanceFromCamera: {fileID: 11400000, guid: d6bf57ad11fa1407ba476a9e23adddbb, type: 2}
+  poseDistance: {fileID: 11400000, guid: ddf4f252df98f4031ae1a92f7363b8ff, type: 2}
+  MaxConvertedAngle: {fileID: 11400000, guid: 3ba6d5b17663249438920c1a68c90d77, type: 2}
+  MinConvertedAngle: {fileID: 11400000, guid: cd7119f51bb83bd4393b31d561a93f56, type: 2}
+  newTolerance: 1
+  _aggregatePointsTolerance: 1.2
+  _skippablePoints: 3
+  _mergeWalls: 0
+  ENABLE_LOG: 0
+  _disableBackPillars: 1
+  _disablePillarsRange: 60
+  _savePillarsRange: 5
+  _LIDAR_TRACKING: 1
+  _blobs: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  _middle: 0
+  count: 0
+  _skippableBlobPoints: 2
+  _blobSizes: 
+  _blobStarts: 
+  _blobIds: 
+  _maxJumpDistance: 3
+  _stationInteractionPrefab: {fileID: 1875384383193128619, guid: 5217c083378f444268130524eeb13cab,
+    type: 3}
+  _stationList: []
+  _lidarTrackingLerp: 0.5
+  _wallCylinderThreshold: 3
+  _wallSizeMultiplier: 1.2
+  _wallHeight: 4.5
+  fadeDuration: 0
+--- !u!114 &7631232991086627182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7631232991086627184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32454833ed8b6cf408649ae05c71371e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  priorityLevel: 2
+  _unityEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7631232991086627182}
+        m_TargetAssemblyTypeName: ByteKeyMessageResponder, Assembly-CSharp
+        m_MethodName: OnKeyValueMsgReceived
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _gameEvent: {fileID: 11400000, guid: 0cb2e6384aeaf234d97528aa9c91d3e8, type: 2}
+  dofKey: {fileID: 11400000, guid: f540712804864624db4c6222d0d1fc95, type: 2}
+  byteEventResponse:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 7631232991086627181}
+        m_TargetAssemblyTypeName: LidarManager, Assembly-CSharp
+        m_MethodName: OnMsgRcv
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
