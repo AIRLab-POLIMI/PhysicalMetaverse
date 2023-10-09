@@ -64,7 +64,7 @@ public class GameManager : Monosingleton<GameManager>
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         if (!_gameOver)
             UpdateTime();
