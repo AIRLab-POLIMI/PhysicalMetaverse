@@ -18,6 +18,7 @@ TagManager:
   - Person
   - FedeHand
   - Sphere
+  - Pillar
   layers:
   - Default
   - TransparentFX

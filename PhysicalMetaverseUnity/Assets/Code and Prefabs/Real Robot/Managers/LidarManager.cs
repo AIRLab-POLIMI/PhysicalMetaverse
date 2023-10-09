@@ -68,7 +68,6 @@ public class LidarManager : Monosingleton<LidarManager>
     //dictionary of string gameobject blobtrackers
     [SerializeField] private Dictionary<int, GameObject> _blobTrackers = new Dictionary<int, GameObject>();
     [SerializeField] private float _maxJumpDistance = 3f;
-    [SerializeField] private GameObject _stationInteractionPrefab;
     [SerializeField] private List<GameObject> _stationList;
     //range 0 1 public float lidar tracking lerp
     [Range(0.0f, 1.0f)]
@@ -264,8 +263,6 @@ public class LidarManager : Monosingleton<LidarManager>
                 _points[i].GetComponent<MeshRenderer>().enabled = true;
             }
         }
-        if(_LIDAR_TRACKING)
-            LidarTracking();
         
         if(_UPDATE_PILLAR_BEHAVIOUR)
             UpdatePillarBehaviour(_personPillarDown, _pillarLerpSpeed, _backUpReducer);
@@ -273,6 +270,13 @@ public class LidarManager : Monosingleton<LidarManager>
         if (_SMOOTH_WITH_ODOMETRY)
             Odometry();
     }
+
+    void Update()
+    {
+        if(_LIDAR_TRACKING)
+            LidarTracking();
+    }
+    
     void UpdatePillarBehaviour(float personPillarDown, float pillarLerpSpeed, float backUpReducer){
         _UPDATE_PILLAR_BEHAVIOUR = false;
         foreach(GameObject pillar in _points){
@@ -318,7 +322,7 @@ public class LidarManager : Monosingleton<LidarManager>
     
     public void SpawnLidarBlobs(){
         StationManager stationManager = FindObjectOfType<StationManager>();
-        foreach(GameObject station in stationManager._stations){
+        foreach(GameObject station in stationManager.GetStations()){
             //spawn blob at station position
             GameObject blob = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             //name it like corresponding station
@@ -355,7 +359,7 @@ public class LidarManager : Monosingleton<LidarManager>
         //disable _stationList meshes
         foreach(GameObject station in _stationList){
             ////station.GetComponent<MeshRenderer>().enabled = false;
-            station.GetComponent<StationController>().Hide();
+            //station.GetComponent<StationController>().Hide();
         }
         //find start of groups of consecutive points and count their size
         for(int i = 0; i < 360; i++){
@@ -470,7 +474,9 @@ public class LidarManager : Monosingleton<LidarManager>
             ////_blobTrackers[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
             //lerp corresponding station in _stationList to cylinder only if it is not further than _maxJumpDistance
             ////_stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
-            _stationList[_blobIds[i]].GetComponent<StationController>().Show();
+            ///
+            //_stationList[_blobIds[i]].GetComponent<StationController>().Show();
+
             if(Vector3.Distance(_stationList[_blobIds[i]].transform.position, point.position) < _maxJumpDistance){
                 ////_stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
                 _stationList[_blobIds[i]].transform.position = Vector3.Lerp(_stationList[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);

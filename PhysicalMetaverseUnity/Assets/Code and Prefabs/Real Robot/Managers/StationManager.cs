@@ -11,92 +11,94 @@ public class StationManager : Monosingleton<StationManager>
 {
     [Header("ACTIONS")]
     [Space]
-    public bool _RESET_STATIONS = true;
-    public bool ENABLE_LOG = false;
+    [SerializeField] private bool _RESET_STATIONS = true;
+    [SerializeField] private bool _ENABLE_LOG = false;
+    [SerializeField] private bool _UPDATE_STATIONS_BEHAVIOUR = false;
+    [SerializeField] private float _consumeMultiplier = 3f;
+
 
     [Space]
     [Space]
     [Header("ACTIONS")]
     [Space]
-    public GameObject _stationPrefab;
+    [SerializeField] private GameObject _stationPrefab;
 
     private Transform _cameraStartRotationAngle;
-    public Transform _cameraRotationAngle;
-    public OdometryManager _odometryManager;
+    [SerializeField] private Transform _cameraRotationAngle;
+    [SerializeField] private OdometryManager _odometryManager;
     //transforms list _untrackedStations
     private List<Transform> _untrackedStations = new List<Transform>();
     //float list untrackedangles
-    public List<float> _untrackedAngles = new List<float>();
-    //public station ips strings list
-    public List<string> _stationIps = new List<string>();
+    [SerializeField] private List<float> _untrackedAngles = new List<float>();
+    //[SerializeField] private station ips strings list
+    [SerializeField] private List<string> _stationIps = new List<string>();
     //udp packet storage
     private byte[] data;
-    public static int _totalStations = 7;
-    public Transform _orientationTransform;
-    private float[] _lastPingTimes = new float[_totalStations];
+    [SerializeField] private int _totalStations = 7;
+    [SerializeField] private Transform _orientationTransform;
+    private float[] _lastPingTimes;
     //stations list
-    public List<int[]> _stationsData = new List<int[]>();
+    [SerializeField] private List<int[]> _stationsData = new List<int[]>();
     //gameobject station list
-    public List<GameObject> _stations = new List<GameObject>();
+    [SerializeField] private List<GameObject> _stations = new List<GameObject>();
     
 
     //spawned
     private bool spawned = false;
-
-    private GameObject[] spheres;
-
-    public int _minColorSize = 300;
-    private bool _colorTracked = false;
-    
-    [Range(0.1f, 3f)]
-    public float _zTrackedTolerance = 1.0f;
-    public bool _TOLERANCE_CHECK = false;
-    [Range(-5f, 5f)]    
-    public float _perspectiveRotationCorrection = 1f;
+    [Space]
+    [Space]
+    [Header("CAMERA EXTRINSIC CALIBRATION")]
+    [Space]
+    //[Range(-5f, 5f)]    
+    //[SerializeField] private float _perspectiveRotationCorrection = 1f;
     [Range(1f, 100f)]
-    public float _scale = 2f;
+    [SerializeField] private float _scale = 2f;
     [Range(1f, 500f)]
-    public float _imageFrameScale = 480f;
-    public float _imageRatio = 4f/3f;
+    [SerializeField] private float _imageFrameScale = 480f;
+    //[SerializeField] private float _imageRatio = 4f/3f;
     
     [Range(1f, 100f)]
-    public float _perspectiveCorrection = 1f;
+    [SerializeField] private float _perspectiveCorrection = 1f;
     
     [Range(10f, 100f)]
-    public float _zScale = 1f;
+    [SerializeField] private float _zScale = 1f;
 
     [Range(-15f, 15)]
-    public float zOffset = 0f;
+    [SerializeField] private float zOffset = 0f;
 
+    //[Range(-15f, 15)]
+    //[SerializeField] private float yOffset = 0f;
     [Range(-15f, 15)]
-    public float yOffset = 0f;
-    [Range(-15f, 15)]
-    public float xOffset = 0f;
-    
-    [Range(0.01f, 2f)]
-    public float _cameraSidesCorrection = 1f;
-    [Range(0.01f, 2f)]
-    public float _speed = 0.1f;
-    public int _untrackedAngle = 0;
-    public Transform _sun;
-    private Transform _untrackedLocation;
-    //_lastPingTime
-    private float _lastPingTime = 0f;
-    //public STATIONS_DECAY_TIME
-    public float STATIONS_DECAY_TIME = 0.3f; //TODO REPLACE WITH DRIFTED TOO MUCH AWAY WITHOUT SEEING AGAIN
-    //public TRACKING_DECAY_TIME
-    public float TRACKING_DECAY_TIME = 0.1f;
-    public float _yPosition = -0.8f;
-    public bool _lerp = false;
+    [SerializeField] private float xOffset = 0f;
     private float _currentZ = 0f;
+    [SerializeField] private float _yPosition = -0.8f;
+    
+    //[Range(0.01f, 2f)]
+    //[SerializeField] private float _cameraSidesCorrection = 1f;
+    
+    [Range(0.1f, 3f)]
+    [SerializeField] private float _zTrackedTolerance = 1.0f;
+    [SerializeField] private bool _TOLERANCE_CHECK = false;
+    
+    [Space]
+    [Space]
+    [Header("LERP")]
+    [Space]
+    [Range(0.01f, 2f)]
+    [SerializeField] private float _speed = 0.1f;
+    //[SerializeField] private STATIONS_DECAY_TIME
+    [SerializeField] private float STATIONS_DECAY_TIME = 0.3f; //TODO REPLACE WITH DRIFTED TOO MUCH AWAY WITHOUT SEEING AGAIN
+    //[SerializeField] private TRACKING_DECAY_TIME
+    [SerializeField] private float TRACKING_DECAY_TIME = 0.1f;
+    [SerializeField] private bool _lerp = false;
     [SerializeField] private string _rightStationMessage = "R:1";
-    [SerializeField] private int _completedStations = 0;
     [SerializeField] private string _wrongStationMessage = "W:10";
+    [SerializeField] private int _completedStations = 0;
     private GameObject _sphere;
     public void OnMsgRcv(byte[] msg)
     {
         //disable Debug.Log for this object
-        Debug.unityLogger.logEnabled = ENABLE_LOG;
+        Debug.unityLogger.logEnabled = _ENABLE_LOG;
         data = msg;
         char[] bytesAsChars = new char[msg.Length];
         for (int i = 0; i < msg.Length; i++)
@@ -110,6 +112,7 @@ public class StationManager : Monosingleton<StationManager>
     }   
     void Start()
     {
+        _totalStations = _stationIps.Count;
         //create an untracked gameobject for each station add it to _untrackedStations, parent is this object
         for (int i = 0; i < _totalStations; i++)
         {
@@ -122,7 +125,7 @@ public class StationManager : Monosingleton<StationManager>
         //copy y angle of _cameraRotationAngle to _cameraStartRotationAngle
         _cameraStartRotationAngle = new GameObject().transform;
         _cameraStartRotationAngle.eulerAngles = new Vector3(0, _cameraRotationAngle.eulerAngles.y, 0);
-    
+        _lastPingTimes = new float[_totalStations];
     }
 
     //a receive looks like
@@ -132,7 +135,6 @@ public class StationManager : Monosingleton<StationManager>
     //function to parse it into an array of arrays of 3 integers
     private List<int[]> ParseData(string data)
     {
-        _lastPingTime = Time.time;
         //split data with key byte 195 as separator
         string[] messages = data.Split((char)195);
         //clear stations
@@ -195,9 +197,22 @@ public class StationManager : Monosingleton<StationManager>
             _RESET_STATIONS = false;
             ResetStations();
         }
+
+        if(_UPDATE_STATIONS_BEHAVIOUR){
+            _UPDATE_STATIONS_BEHAVIOUR = false;
+            UpdateStationsBehaviour();
+        }
     }
 
+    private void UpdateStationsBehaviour(){
+        //for each station
+        foreach (GameObject station in _stations)
+        {
+            station.GetComponent<SingleStationManager>().UpdateBehaviour(_consumeMultiplier, _fadeSpeed);
+        }
+    }
 
+    [SerializeField] private float _fadeSpeed = 0.1f;
     private void ResetStations(){
         //for each ip send RESET using networking manager
         foreach (string ip in _stationIps)
@@ -311,6 +326,10 @@ public class StationManager : Monosingleton<StationManager>
     private int ParseTime(string message){
         string[] splitted = message.Split(':');
         return int.Parse(splitted[1]);
+    }
+
+    public List<GameObject> GetStations(){
+        return _stations;
     }
 }
 

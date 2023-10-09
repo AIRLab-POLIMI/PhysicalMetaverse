@@ -310,6 +310,10 @@ public class StationController : MonoBehaviour
         
         private void CheckActivated()
         {
+            //if _station IsInvalidated() true return, can't activate a station if it is not valid
+            if (_station.GetComponent<SingleStationManager>().IsInvalidated())
+                return;
+
             // if its activated, do nothing
             if (_isActivated)
                 return;

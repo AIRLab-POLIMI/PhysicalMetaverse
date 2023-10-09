@@ -788,7 +788,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 962
+  m_VersionIndex: 965
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -945,6 +945,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: stationInteraction
+      objectReference: {fileID: 0}
+    - target: {fileID: 1875384385092366668, guid: 5217c083378f444268130524eeb13cab,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.08
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5217c083378f444268130524eeb13cab, type: 3}

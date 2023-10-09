@@ -23,6 +23,10 @@ public class SingleStationManager : MonoBehaviour
 
         _interactionGameObject.transform.position = new Vector3(0,-100,0);
         _interactionGameObject.GetComponent<StationController>().Init();
+        //set _interactionGameObject parent to parent of this gameobject
+        _interactionGameObject.transform.parent = transform.parent;
+        //append id to end of name
+        _interactionGameObject.name = _interactionGameObject.name + " " + _stationId;
 
     }
 
@@ -55,8 +59,10 @@ public class SingleStationManager : MonoBehaviour
         //if station invalidated fade _interactionGameObject mesh, if not invalidated restore full alpha
         if (_stationInvalidated)
         {
-            if (_petalsAlpha > 0)
+            if (_petalsAlpha > 0){
                 _petalsAlpha -= _fadeSpeed;
+                //ConsumeStation(_petalsAlpha);
+            }
             else
             {
                 ////_interactionGameObject.GetComponent<Renderer>().material.color = new Color(_interactionGameObject.GetComponent<Renderer>().material.color.r, _interactionGameObject.GetComponent<Renderer>().material.color.g, _interactionGameObject.GetComponent<Renderer>().material.color.b, 0);
@@ -75,17 +81,19 @@ public class SingleStationManager : MonoBehaviour
             Show();
         }
 
-        if (_petalsAlpha == 0)
-        {
-            Hide(); //TODO FIX THIS IS NOT WORKING
-        }
     }
-
+    public bool IsInvalidated(){
+        return _stationInvalidated;
+    }
+    [SerializeField] private float _consumeMultiplier = 3f;
+    public void ConsumeStation(float consume){
+        _interactionGameObject.transform.localPosition = new Vector3(_interactionGameObject.transform.localPosition.x, _interactionGameObject.transform.localPosition.y, _interactionGameObject.transform.localPosition.z - (_consumeMultiplier - _consumeMultiplier * consume));
+    }
     public int _untrackedAngle = 0;
     public bool _prevTracked = false;
     private float _resetAngle = 0;
     [Range(0.001f, 0.02f)]
-    public float _fadeSpeed = 0.1f;
+    private float _fadeSpeed = 0.1f;
     public bool _lerp = false;
     public bool _lidarTracking = false;
     public GameObject _interactionGameObject;
@@ -227,5 +235,10 @@ public class SingleStationManager : MonoBehaviour
     public bool _stationInvalidated = false;
     public void InvalidateStation(){
         _stationInvalidated = true;
+    }
+
+    public void UpdateBehaviour(float consumeMultiplier, float fadeSpeed){
+        _consumeMultiplier = consumeMultiplier;
+        _fadeSpeed = fadeSpeed;
     }
 }
