@@ -23,7 +23,7 @@ public class ProprioceptionManager : MonoBehaviour
     //list current station
     public List<GameObject> _currentStations = new List<GameObject>();
     //on trigger stay with object tagged Station log
-    private void OnTriggerEnter(Collider other)
+    /*private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Station"))
         {
@@ -47,6 +47,6 @@ public class ProprioceptionManager : MonoBehaviour
             //call ExitStation of the station
             other.gameObject.transform.parent.gameObject.GetComponent<SingleStationManager>().ExitStation();
         }
-    }
+    }*/
 
 }

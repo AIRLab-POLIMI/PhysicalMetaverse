@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1875384384744600654}
   - component: {fileID: -5319972668293245360}
   m_Layer: 0
-  m_Name: station
+  m_Name: stationInteraction
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

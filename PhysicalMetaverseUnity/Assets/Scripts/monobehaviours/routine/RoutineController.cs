@@ -34,7 +34,7 @@ public class RoutineController : Monosingleton<RoutineController>
         public void Activate()
         {
             // debug log
-            Debug.Log("RoutineController.Activate()");
+            //Debug.Log("RoutineController.Activate()");
             
             if (_coroutine != null)
                 StopCoroutine(_coroutine);

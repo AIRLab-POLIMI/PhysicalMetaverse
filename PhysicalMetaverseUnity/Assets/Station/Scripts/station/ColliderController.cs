@@ -34,22 +34,17 @@ public class ColliderController : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        // debug the current InRange
-        Debug.Log(SphereInRange);
-    }
 
     private void OnTriggerExit(Collider other)
     {
         // debug the name of the object that exited the trigger
-        Debug.Log(other.gameObject.name);
+        //Debug.Log(other.gameObject.name);
         
         // try to see if the other is the SphereController. If it is, set SphereInRange to true
         if (CheckColliderTag(other))
         {
             // debug
-            Debug.Log("Sphere out of range");
+            //Debug.Log("Sphere out of range");
             
             SphereInRange = false;
         }

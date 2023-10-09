@@ -21,6 +21,9 @@ public class SingleStationManager : MonoBehaviour
         //disable mesh
         gameObject.GetComponent<MeshRenderer>().enabled = false;
 
+        _interactionGameObject.transform.position = new Vector3(0,-100,0);
+        _interactionGameObject.GetComponent<StationController>().Init();
+
     }
 
     public int _stationId = -1;
@@ -199,19 +202,19 @@ public class SingleStationManager : MonoBehaviour
         //_interactionGameObject.GetComponent<StationInteractionManager>().CompleteStation();
     }
 
-    public void ExitStation(){
+    /*public void ExitStation(){
         //_interactionGameObject.GetComponent<StationInteractionManager>().ExitStation();
-    }
+    }*/
 
     public void SetIp(string ip){
         //_interactionGameObject.GetComponent<StationInteractionManager>().SetIp(ip);
         _interactionGameObject.GetComponent<StationController>().SetIp(ip);
     }
 
-    public void EnterStation(){
+    /*public void EnterStation(){
         //_interactionGameObject.GetComponent<StationInteractionManager>().EnterStation();
 
-    }
+    }*/
 
     public void Show(){
         _interactionGameObject.GetComponent<StationController>().Show();

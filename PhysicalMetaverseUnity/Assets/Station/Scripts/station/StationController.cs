@@ -191,7 +191,7 @@ public class StationController : MonoBehaviour
     
     private void OnInteractableExit(bool petalsAnimation = true)
     {
-        Debug.Log("StationManager: OnInteractableExit");
+        //Debug.Log("StationManager: OnInteractableExit");
         
         _isInteractable = false;
 

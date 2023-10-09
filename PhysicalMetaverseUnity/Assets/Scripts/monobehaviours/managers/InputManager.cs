@@ -39,8 +39,8 @@ public class InputManager : Monosingleton<InputManager>
                 string udpMessage = RoutineController.Instance.IsRunning 
                     ? RoutineController.Instance.GetMsg() 
                     : GetUdpMessage();
-                if(udpMessage != "")
-                    Debug.Log("udp " + udpMessage);
+                /*if(udpMessage != "")
+                    Debug.Log("udp " + udpMessage);*/
                 //if not null
                 if (udpMessage != "")
                     //send using NetworkManager

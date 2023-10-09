@@ -575,20 +575,20 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     public void SendString(string data, string ip)
     {
+        byte[] bytes = new byte[data.Length];
+        for (int i = 0; i < data.Length; i++)
+        {
+            bytes[i] = (byte)data[i];
+        }
+        byte[] bytes2 = new byte[data.Length + 1];
+        //bytes2[0] = key;
+        //Array.Copy(data, 0, bytes2, 1, data.Length);
+        //new broadcast endpoint
+        //endpoint
+        IPEndPoint sendTo = new IPEndPoint(IPAddress.Parse(ip), myUdpPort);
+        _udpMessenger.SendUdp(bytes, sendTo);
         if(ENABLE_SEND_STRING_LOG){
-            byte[] bytes = new byte[data.Length];
-            for (int i = 0; i < data.Length; i++)
-            {
-                bytes[i] = (byte)data[i];
-            }
-            byte[] bytes2 = new byte[data.Length + 1];
-            //bytes2[0] = key;
-            //Array.Copy(data, 0, bytes2, 1, data.Length);
-            //new broadcast endpoint
-            //endpoint
-            IPEndPoint sendTo = new IPEndPoint(IPAddress.Parse(ip), myUdpPort);
-            _udpMessenger.SendUdp(bytes, sendTo);
-            Debug.Log("<NetworkingManager> Sent UDP string " + data);
+            Debug.Log("<NetworkingManager> Sent UDP string \"" + data + "\" to " + ip);
         }
     }
 
