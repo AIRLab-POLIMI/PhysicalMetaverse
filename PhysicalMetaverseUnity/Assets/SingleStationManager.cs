@@ -4,20 +4,25 @@ using UnityEngine;
 
 public class SingleStationManager : MonoBehaviour
 {
-    public bool _tracked = false;
-    public OdometryManager _odometryManager;
+    [SerializeField] private bool _tracked = false;
     //transform orientationtransform
     private Transform _orientationTransform;
-    public Transform _untrackedParent;
-    public Transform _stationManager;
-    //private lidar manager
-    private LidarManager _lidarManager;
+    [SerializeField] private Transform _untrackedParent;
+    [SerializeField] private int _stationId = -1;
+    [SerializeField] private float _petalsAlpha = 1f;
+    [SerializeField] private float _consumeMultiplier = 3f;
+    [SerializeField] private int _untrackedAngle = 0;
+    [SerializeField] private bool _prevTracked = false;
+    private float _resetAngle = 0;
+    [Range(0.001f, 0.02f)]
+    private float _fadeSpeed = 0.1f;
+    [SerializeField] private bool _lerp = false;
+    [SerializeField] private bool _lidarTracking = false;
+    [SerializeField] private GameObject _interactionGameObject;
+
     // Start is called before the first frame update
     void Start()
     {
-        //get lidar manager mono instance
-        _lidarManager = LidarManager.Instance;
-
         //disable mesh
         gameObject.GetComponent<MeshRenderer>().enabled = false;
 
@@ -25,12 +30,17 @@ public class SingleStationManager : MonoBehaviour
         _interactionGameObject.GetComponent<StationController>().Init();
         //set _interactionGameObject parent to parent of this gameobject
         _interactionGameObject.transform.parent = transform.parent;
+        if(_stationId < 0){
+            //parse station id from last char pf name
+            _stationId = int.Parse(gameObject.name.Substring(gameObject.name.Length - 1));
+            //if station id even right true, if odd right false
+            _interactionGameObject.GetComponent<StationController>().SetRight(_stationId % 2 == 0 ? true : false);
+        }
         //append id to end of name
         _interactionGameObject.name = _interactionGameObject.name + " " + _stationId;
 
     }
 
-    public int _stationId = -1;
     // Update is called once per frame
     void Update()
     {
@@ -38,14 +48,7 @@ public class SingleStationManager : MonoBehaviour
         
     }
 
-    public float _petalsAlpha = 1f;
     void FixedUpdate(){
-        if(_stationId < 0){
-            //parse station id from last char pf name
-            _stationId = int.Parse(gameObject.name.Substring(gameObject.name.Length - 1));
-            //if station id even right true, if odd right false
-            _interactionGameObject.GetComponent<StationController>().isRight = _stationId % 2 == 0 ? true : false;
-        }
         //if tracked set tag to Station if not set to InvalidStation
         if (_tracked)
         {
@@ -82,26 +85,22 @@ public class SingleStationManager : MonoBehaviour
         }
 
     }
+
+    public float GetPetalsAlpha(){
+        return _petalsAlpha;
+    }
+
     public bool IsInvalidated(){
         return _stationInvalidated;
     }
-    [SerializeField] private float _consumeMultiplier = 3f;
     public void ConsumeStation(float consume){
         _interactionGameObject.transform.localPosition = new Vector3(_interactionGameObject.transform.localPosition.x, _interactionGameObject.transform.localPosition.y, _interactionGameObject.transform.localPosition.z - (_consumeMultiplier - _consumeMultiplier * consume));
     }
-    public int _untrackedAngle = 0;
-    public bool _prevTracked = false;
-    private float _resetAngle = 0;
-    [Range(0.001f, 0.02f)]
-    private float _fadeSpeed = 0.1f;
-    public bool _lerp = false;
-    public bool _lidarTracking = false;
-    public GameObject _interactionGameObject;
     private void Odometry()
     {
         if (_tracked)
         {
-            transform.parent = _stationManager;
+            transform.parent = StationManager.Instance.transform;
             //only rotate the station on its own axis, movement is done by StationManager looking at the camera
             //locally rotate according to orientation transform y angle
             transform.localRotation = Quaternion.Euler(transform.localRotation.eulerAngles.x , _orientationTransform.rotation.eulerAngles.y, transform.localRotation.eulerAngles.z);
@@ -152,30 +151,30 @@ public class SingleStationManager : MonoBehaviour
                 _prevTracked = false;
 
                 //check if something is true in odometry manager
-                if (_odometryManager._forward)
+                if (OdometryManager.Instance._forward)
                 {
-                    transform.position -= Vector3.forward * _odometryManager._speed * Time.deltaTime;
+                    transform.position -= Vector3.forward * OdometryManager.Instance._speed * Time.deltaTime;
                     //fade material alpha a bit, no lerp
                     FadeOut();
                 }
-                if (_odometryManager._backward)
+                if (OdometryManager.Instance._backward)
                 {
-                    transform.position += Vector3.forward * _odometryManager._speed * Time.deltaTime;
+                    transform.position += Vector3.forward * OdometryManager.Instance._speed * Time.deltaTime;
                     FadeOut();
                 }
-                if (_odometryManager._left)
+                if (OdometryManager.Instance._left)
                 {
-                    transform.position += Vector3.right * _odometryManager._speed * Time.deltaTime;
+                    transform.position += Vector3.right * OdometryManager.Instance._speed * Time.deltaTime;
                     FadeOut();
                 }
-                if (_odometryManager._right)
+                if (OdometryManager.Instance._right)
                 {
-                    transform.position -= Vector3.right * _odometryManager._speed * Time.deltaTime;
+                    transform.position -= Vector3.right * OdometryManager.Instance._speed * Time.deltaTime;
                     FadeOut();
                 }
             }
             else{
-                _lidarManager.LidarTrack(this.gameObject);
+                LidarManager.Instance.LidarTrack(this.gameObject);
             }
         }
     }
@@ -195,6 +194,12 @@ public class SingleStationManager : MonoBehaviour
         if(_tracked)
             _stationInvalidated = false;
     }
+
+    public bool GetTracked()
+    {
+        return _tracked;
+    }
+
     public void SetUntrackedParent(Transform untrackedParent)
     {
         _untrackedParent = untrackedParent;
@@ -237,8 +242,13 @@ public class SingleStationManager : MonoBehaviour
         _stationInvalidated = true;
     }
 
-    public void UpdateBehaviour(float consumeMultiplier, float fadeSpeed){
+    public void UpdateBehaviour(float consumeMultiplier, float fadeSpeed, float activationPermanenceTime){
         _consumeMultiplier = consumeMultiplier;
         _fadeSpeed = fadeSpeed;
+        _interactionGameObject.GetComponent<StationController>().SetActivationPermanenceTime(activationPermanenceTime);
+    }
+
+    public GameObject GetStationInteraction(){
+        return _interactionGameObject;
     }
 }

@@ -15,6 +15,7 @@ public class StationManager : Monosingleton<StationManager>
     [SerializeField] private bool _ENABLE_LOG = false;
     [SerializeField] private bool _UPDATE_STATIONS_BEHAVIOUR = false;
     [SerializeField] private float _consumeMultiplier = 3f;
+    [SerializeField] private float _activationPermanenceTime = 1f;
 
 
     [Space]
@@ -208,7 +209,7 @@ public class StationManager : Monosingleton<StationManager>
         //for each station
         foreach (GameObject station in _stations)
         {
-            station.GetComponent<SingleStationManager>().UpdateBehaviour(_consumeMultiplier, _fadeSpeed);
+            station.GetComponent<SingleStationManager>().UpdateBehaviour(_consumeMultiplier, _fadeSpeed, _activationPermanenceTime);
         }
     }
 
@@ -235,11 +236,8 @@ public class StationManager : Monosingleton<StationManager>
         {
             GameObject station = Instantiate(_stationPrefab);
             _stations.Add(station);
-            LidarManager.Instance.AddStationInteraction(station.GetComponent<SingleStationManager>()._interactionGameObject);
             //set station's untrackedParent to untrackedStation
-            station.GetComponent<SingleStationManager>()._untrackedParent = _untrackedStations[i];
-            station.GetComponent<SingleStationManager>()._stationManager = this.transform;
-            station.GetComponent<SingleStationManager>()._odometryManager = _odometryManager;
+            station.GetComponent<SingleStationManager>().SetUntrackedParent(_untrackedStations[i]);
             station.transform.localScale = new Vector3(_scale, _scale, _scale);
             //random color
             station.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0, 1f));
@@ -253,6 +251,7 @@ public class StationManager : Monosingleton<StationManager>
             station.GetComponent<SingleStationManager>().SetIp(_stationIps[i]);
             //set orientation transform
             station.GetComponent<SingleStationManager>().SetOrientationTransform(_orientationTransform);
+            LidarManager.Instance.AddStationInteraction(station.GetComponent<SingleStationManager>().GetStationInteraction());
         }
         spawned = true;
         //call LidarManager method SpawnLidarBlobs
@@ -277,7 +276,7 @@ public class StationManager : Monosingleton<StationManager>
                     //set station position, data is formatted as [station code, x, y, size(diagonal)]
                     //((GameObject)_stations[i]).transform.localPosition = new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3]/10.0f + zOffset);
                     //if _stations[i].GetComponent<SingleStationManager>()._tracked
-                    if (station.GetComponent<SingleStationManager>()._tracked)
+                    if (station.GetComponent<SingleStationManager>().GetTracked())
                     {
                         //lerp
                         //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);

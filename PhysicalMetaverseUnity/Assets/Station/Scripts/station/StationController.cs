@@ -60,7 +60,7 @@ public class StationController : MonoBehaviour
     
     [SerializeField] private string sphereColliderTag;
     
-    public GameObject _station;
+    [SerializeField] private GameObject _station;
     
     private Material _holeCoverMaterial;
     
@@ -78,7 +78,13 @@ public class StationController : MonoBehaviour
     
     [Header("Station")] 
 
-    public bool isRight; //change this boolean to set if station is right or wrong
+    [SerializeField] private bool _isRight; //change this boolean to set if station is right or wrong
+    private float _startActivationTime = 0;
+    private bool _activationStarted = false;
+    private float _activationPermanenceTime = 1f;
+    public void SetRight(bool right){
+        _isRight = right;
+    }
     
     public void Init()
     {
@@ -230,7 +236,7 @@ public class StationController : MonoBehaviour
             audioSource.Stop();
         
         // when the player hand enters the collider of the "activate range" AND the station is interactable
-        if (isRight)
+        if (_isRight)
         {
             petalsController.ActivatePetalsGood();
             upperSphere.StartColorLerp(rightColor, initBrightness, endBrightness, colorChangeDurationRight, false);
@@ -307,13 +313,20 @@ public class StationController : MonoBehaviour
             if (!inRange && _isInteractable)
                 OnInteractableExit();
         }
-        
+
+        public void SetActivationPermanenceTime(float time)
+        {
+            _activationPermanenceTime = time;
+        }
+
         private void CheckActivated()
         {
             //if _station IsInvalidated() true return, can't activate a station if it is not valid
-            if (_station.GetComponent<SingleStationManager>().IsInvalidated())
+            if (_station.GetComponent<SingleStationManager>().IsInvalidated()){
+                _activationStarted = false;
                 return;
-
+            }
+            
             // if its activated, do nothing
             if (_isActivated)
                 return;
@@ -324,11 +337,31 @@ public class StationController : MonoBehaviour
             // Debug.Log($"CheckActivated - inRange: {inRange} - _isInteractable: {_isInteractable}");
             
             // if it's in range and it's interactable, trigger activated
-            if (inRange && _isInteractable)
-                OnActivated();
+            if (inRange && _isInteractable){
+                if (!_activationStarted)
+                {
+                    _activationStarted = true;
+                    _startActivationTime = Time.time;
+                }
+                else
+                {
+                    ChannelDarkEnergy();
+                    if (Time.time - _startActivationTime > _activationPermanenceTime)
+                    {
+                        OnActivated();
+                    }
+                }
+            }
+            else
+            {
+                _activationStarted = false;
+            }
         }
             
-        
+    public void ChannelDarkEnergy(){
+        Debug.Log("CHANNELING DARK ENERGY... " + (_activationPermanenceTime - (Time.time - _startActivationTime)));
+    }
+
     #endregion
 
     public void ResetStation()
@@ -340,7 +373,7 @@ public class StationController : MonoBehaviour
     {
         BlinkStation();
         //id station isright is false send W:10
-        if (!isRight)
+        if (!_isRight)
         {
             StationManager.Instance.CompleteWrongStation();
         }

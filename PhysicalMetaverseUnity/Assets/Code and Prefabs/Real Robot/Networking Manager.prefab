@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8637557680593042170
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8637557680593042169}
+  - component: {fileID: 8637557680593042168}
+  m_Layer: 0
+  m_Name: Networking Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8637557680593042169
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8637557680593042170}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.00000024795534, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8637557680593042168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8637557680593042170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c61e2b38bf9e834db728598783d966d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ENABLE_LOG: 0
+  ENABLE_SEND_STRING_LOG: 1
+  _gameManagerPythonIP: 192.168.0.103
+  _setupScreen: {fileID: 0}
+  setup: {fileID: 11400000, guid: 722b005341b6c4e5ba894c0711bdf1f4, type: 2}
+  myTcpPort: 25777
+  myUdpPort: 25666
+  maxUdpAge: 2
+  bufferSize: 50
+  onKeyValueReceived: {fileID: 11400000, guid: 0cb2e6384aeaf234d97528aa9c91d3e8, type: 2}
+  unityPresentationKey: {fileID: 11400000, guid: 6773020508b7ded489c30f835a9dd2d7,
+    type: 2}
+  jetsonSensorsReadyKey: {fileID: 11400000, guid: c8df839a4eec06b449ea9f7b290c61ca,
+    type: 2}
+  jetsonPingKey: {fileID: 11400000, guid: 85b9b3f28247a79499cfa1b3ffe572ca, type: 2}
+  TCP_PRESENTATIONS: 0
+  _skipTcp: 1
+  _SEND_ONE_STRING: 0
+  _stringToSend: 
+  _singleStringDestIp: 

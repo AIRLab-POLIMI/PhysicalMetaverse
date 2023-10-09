@@ -61,7 +61,7 @@ public class PillarManager : MonoBehaviour
             SingleStationManager singlestation = other.gameObject.transform.parent.gameObject.GetComponent<SingleStationManager>();
             if(singlestation != null){
                 //get alpha
-                float alpha = singlestation._petalsAlpha;
+                float alpha = singlestation.GetPetalsAlpha();
                 //set alpha
                 GetComponent<Renderer>().material.color = new Color(GetComponent<Renderer>().material.color.r, GetComponent<Renderer>().material.color.g, GetComponent<Renderer>().material.color.b, 1 - alpha);
                 //singlestation.Show();

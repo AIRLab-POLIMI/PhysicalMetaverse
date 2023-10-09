@@ -349,6 +349,7 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
+    //Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly
     void LidarTracking(){
         //clear lists
         _blobSizes.Clear();
@@ -455,14 +456,37 @@ public class LidarManager : Monosingleton<LidarManager>
                 middle -= 360;
             }
             //if middle id is not valid try next one
+            //drifts counter clockwise, try to fix by looking left and right
             int id = _blobs[middle];
-            while(id < 0){
+            /*while(id < 0){
                 middle++;
                 if(middle >= 360){
                     middle -= 360;
                 }
                 id = _blobs[middle];
+            }*/
+            bool lookRight = true;
+            int middleRight = middle;
+            int middleLeft = middle;
+            while(id < 0){
+                if(lookRight){
+                    middleRight++;
+                    if(middleRight >= 360){
+                        middleRight -= 360;
+                    }
+                    id = _blobs[middleRight];
+                    lookRight = false;
+                }
+                else{
+                    middleLeft--;
+                    if(middleLeft < 0){
+                        middleLeft += 360;
+                    }
+                    id = _blobs[middleLeft];
+                    lookRight = true;
+                }
             }
+
             Transform point = _points[middle].transform;
             //lerp corresponding blobtracker at point
             //_blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, _lidarTrackingLerp);
@@ -477,6 +501,8 @@ public class LidarManager : Monosingleton<LidarManager>
             ///
             //_stationList[_blobIds[i]].GetComponent<StationController>().Show();
 
+            //LIDAR TRACKING MOVES INTERACTABLE STATION
+            
             if(Vector3.Distance(_stationList[_blobIds[i]].transform.position, point.position) < _maxJumpDistance){
                 ////_stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
                 _stationList[_blobIds[i]].transform.position = Vector3.Lerp(_stationList[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
