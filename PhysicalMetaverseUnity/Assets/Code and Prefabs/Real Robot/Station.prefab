@@ -246,14 +246,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tracked: 0
-  _odometryManager: {fileID: 0}
   _untrackedParent: {fileID: 0}
-  _stationManager: {fileID: 0}
   _stationId: -1
   _petalsAlpha: 1
+  _consumeMultiplier: 3
   _untrackedAngle: 0
   _prevTracked: 0
-  _fadeSpeed: 0.0043
   _lerp: 0
   _lidarTracking: 1
   _interactionGameObject: {fileID: 7050986087156862069}

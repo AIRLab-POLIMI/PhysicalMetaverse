@@ -62,8 +62,8 @@ public class AmbientManager : Monosingleton<AmbientManager>
         var newIntensity = Mathf.Clamp01(lightningPreset.directionalIntensity.Evaluate(evalPoint));
         
         // a = lightningPreset.directionalColor.Evaluate(evalPoint);
-        //RenderSettings.ambientLight = lightningPreset.ambientColor.Evaluate(evalPoint);
-        //RenderSettings.ambientIntensity = newIntensity;
+        RenderSettings.ambientLight = lightningPreset.ambientColor.Evaluate(evalPoint);
+        RenderSettings.ambientIntensity = newIntensity;
 
         directionalLight.color = lightningPreset.directionalColor.Evaluate(evalPoint);
         
