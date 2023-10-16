@@ -14,6 +14,7 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private bool _SMOOTH_WITH_ODOMETRY = true;
     [SerializeField] private bool _MERGE_WALLS = false;
     [SerializeField] private bool _LIDAR_TRACKING = true;
+    [SerializeField] private bool _PERSON_TRACKING = true;
     [SerializeField] private bool _UPDATE_PILLAR_BEHAVIOUR = true;
     [Space]
     [Space]
@@ -59,6 +60,7 @@ public class LidarManager : Monosingleton<LidarManager>
     [Space]
     //array of blob booleans
     [SerializeField] private int[] _blobs = new int[360];
+    [SerializeField] private int[] _personBlobs = new int[360];
     [SerializeField] private int _middle = 0;
     [SerializeField] private int count = 0;
     [SerializeField] private int _skippableBlobPoints = 2;
@@ -72,10 +74,11 @@ public class LidarManager : Monosingleton<LidarManager>
     //range 0 1 public float lidar tracking lerp
     [Range(0.0f, 1.0f)]
     [SerializeField] private float _lidarTrackingLerp = 0.5f;
-    private GameObject _blobTracker;
+    private GameObject _personTracker;
     [SerializeField] private float _personPillarDown = -3f;
     [SerializeField] private float _pillarLerpSpeed = 0.1f;
     [SerializeField] private float _backUpReducer = 3f;
+    [SerializeField] private int _PERSON_ID = 9;
 
     [Space]
     [Space]
@@ -118,20 +121,28 @@ public class LidarManager : Monosingleton<LidarManager>
         _blobs [id] = value;
     }
 
+    public void SetPersonBlobAt(int id, int value){
+        _personBlobs [id] = value;
+    }
+
 
     private void Start()
     {
         //instantiate blob tracker
-        _blobTracker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        _personTracker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         //set tag to Station
-        _blobTracker.tag = "Station";
+        _personTracker.tag = "Person";
+        //blobtracker name "Person"
+        _personTracker.name = "Person";
+        //scale 3
+        _personTracker.transform.localScale = new Vector3(3, 3, 3);
         //add rigidbody
-        _blobTracker.AddComponent<Rigidbody>();
+        _personTracker.AddComponent<Rigidbody>();
         //add trigger mesh collider
-        _blobTracker.AddComponent<MeshCollider>().convex = true;
-        _blobTracker.GetComponent<MeshCollider>().isTrigger = true;
+        _personTracker.AddComponent<MeshCollider>().convex = true;
+        _personTracker.GetComponent<MeshCollider>().isTrigger = true;
         //set rigidbody to kinematic
-        _blobTracker.GetComponent<Rigidbody>().isKinematic = true;
+        _personTracker.GetComponent<Rigidbody>().isKinematic = true;
         //add object Walls as children and populate it with 150 cube meshes
         GameObject walls = new GameObject("Walls");
         walls.transform.parent = transform;
@@ -161,6 +172,12 @@ public class LidarManager : Monosingleton<LidarManager>
         _blobs = new int[arraySize];
         for(int i = 0; i < arraySize; i++){
             _blobs[i] = -1;
+        }
+
+        //init person blocs to -1
+        _personBlobs = new int[arraySize];
+        for(int i = 0; i < arraySize; i++){
+            _personBlobs[i] = -1;
         }
     }
 
@@ -249,7 +266,7 @@ public class LidarManager : Monosingleton<LidarManager>
     void FixedUpdate()
     {
         //disable mesh of _blobTracker
-        _blobTracker.GetComponent<MeshRenderer>().enabled = false;
+        _personTracker.GetComponent<MeshRenderer>().enabled = false;
         //disable _blobTrackers meshes
         foreach(GameObject blob in _blobTrackers.Values){
             blob.GetComponent<MeshRenderer>().enabled = false;
@@ -275,6 +292,8 @@ public class LidarManager : Monosingleton<LidarManager>
     {
         if(_LIDAR_TRACKING)
             LidarTracking();
+        if(_PERSON_TRACKING)
+            PersonTracking();
     }
     
     void UpdatePillarBehaviour(float personPillarDown, float pillarLerpSpeed, float backUpReducer){
@@ -349,6 +368,83 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
+    private void PersonTracking(){
+        //track a blob of pillars whose station id is 9, the tag is "Person"
+        int skippableBlobPoints = _skippableBlobPoints;
+        //look at _personBlobs array
+        for(int i = 0; i < 360; i++){
+            //if true
+            if(_personBlobs[i] == _PERSON_ID){
+                //count until false
+                count = 0;
+                int j = i;
+                bool seamPassed = false;
+                while(skippableBlobPoints>0){
+                    if(_personBlobs[j] != _PERSON_ID){
+                        skippableBlobPoints--;
+                    }
+                    else{
+                        skippableBlobPoints = _skippableBlobPoints;
+                    }
+                    count++;
+                    j++;
+                    if(j >= 360){
+                        skippableBlobPoints = -1;
+                    }
+                    /*if(!seamPassed){
+                        //if j is out of range
+                        if(j >= 360){
+                            j -= 360;
+                            seamPassed = true;
+                        }
+                    }
+                    else{
+                        //if j is out of range
+                        if(j >= 180){
+                            _skippableBlobPoints = 1;
+
+                        }
+                    }*/
+                }
+                //spawn cylinder at middle of maxIndex
+                //int middle = i + count/2;
+                //middle = index of the pillar closest to world center
+                //for each point in the blob, check distance from world center and keep the smallest
+                int middle = i;
+                float minDistance = 1000f;
+                for(int k = i; k < i + count; k++){
+                    if(k >= 360){
+                        k -= 360;
+                    }
+                    //get distance from world center
+                    float distance = Vector3.Distance(_points[k].transform.position, new Vector3(0,0,0));
+                    if(distance < minDistance){
+                        minDistance = distance;
+                        middle = k;
+                    }
+                }
+                if(middle >= 360){
+                    middle -= 360;
+                }
+                Transform point = _points[middle].transform;
+                //lerp corresponding blobtracker at point
+                _personTracker.transform.position = Vector3.Lerp(_personTracker.transform.position, point.position, _lidarTrackingLerp);
+                //no lerp
+                //_personTracker.transform.position = point.position;
+                
+                //TODO if actual person is not being tracked by camera take control of it, otherwise don't move it
+
+                    //lerp gameobject "PersonCollider" there
+                    GameObject personCollider = GameObject.Find("PersonCollider");
+                    personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp);
+                    
+                //enable mesh
+                _personTracker.GetComponent<MeshRenderer>().enabled = true;
+                break;
+            }
+        }
+    }
+
     //Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly
     void LidarTracking(){
         //clear lists
@@ -366,7 +462,7 @@ public class LidarManager : Monosingleton<LidarManager>
         for(int i = 0; i < 360; i++){
             skippableBlobPoints = _skippableBlobPoints;
             //if true
-            if(_blobs[i] >= 0){
+            if(_blobs[i] >= 0 && _blobs[i] != _PERSON_ID){
                 //count until false
                 count = 0;
                 int j = i;

@@ -36,6 +36,7 @@ public class PillarManager : MonoBehaviour
         if(Time.frameCount % 2 == 0){
             _stationId = -1;
             LidarManager.Instance.SetBlobAt(_pillarId, -1);
+            LidarManager.Instance.SetPersonBlobAt(_pillarId, -1);
         }
         //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         //lerp
@@ -93,7 +94,10 @@ public class PillarManager : MonoBehaviour
         
         if(other.gameObject.CompareTag("Person")){
             //disable mesh
-            GetComponent<MeshRenderer>().enabled = false;
+            ////GetComponent<MeshRenderer>().enabled = false;
+            //set station id to 9
+            _stationId = 9;
+            LidarManager.Instance.SetPersonBlobAt(_pillarId, _stationId);
             //set y to _personPillarDown
             //transform.position = new Vector3(transform.position.x, _personPillarDown, transform.position.z);
             //lerp
