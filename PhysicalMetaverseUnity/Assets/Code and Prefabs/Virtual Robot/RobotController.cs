@@ -257,6 +257,7 @@ public class RobotController : MonoBehaviour
 
     [SerializeField] private float _sprintMultiplier = 4f;
     [SerializeField] private bool _AUTO_ROTATE = false;
+    [SerializeField] private bool _AUTO_MOVE = false;
     void KeyboardUpdate(){
         //set all _odometryManager to false
         _odometryManager._forward = false;
@@ -363,6 +364,11 @@ public class RobotController : MonoBehaviour
             //rotate odile right
             controller.transform.eulerAngles += new Vector3(0, 1 / _angleUpdate, 0);
             _odometryManager._rotateRight = true;
+        }
+        if(_AUTO_MOVE){
+            //move odile forward
+            controller.Move(transform.forward * 1 / _moveUpdate);
+            _odometryManager._forward = true;
         }
 
         _moveUpdate = _originalMoveUpdate;

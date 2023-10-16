@@ -73,8 +73,8 @@ public class PillarManager : MonoBehaviour
                 if(_debugMaterial)
                     GetComponent<Renderer>().material = _movementDetectionMaterial;
                 //if all OdometryManager instance is false set this station id to 9
-                //_stationId = 9;
-                //LidarManager.Instance.SetPersonBlobAt(_pillarId, _stationId);
+                _stationId = 9;
+                LidarManager.Instance.SetPersonBlobAt(_pillarId, _stationId);
             }
             //if(_currentPositionMagnitude > _prevPositionMagnitude){
             //    GetComponent<Renderer>().material = _alternateMaterial;
@@ -189,6 +189,10 @@ public class PillarManager : MonoBehaviour
     }*/
     public int GetStationId(){
         return _stationId;
+    }
+
+    public void SetStationId(int id){
+        _stationId = id;
     }
 
     public int GetPillarId(){
