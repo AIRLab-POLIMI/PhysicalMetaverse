@@ -52,6 +52,8 @@ MonoBehaviour:
   _disableMesh: 1
   _pillarId: 0
   _stationId: 0
+  _alternateMaterial: {fileID: 2100000, guid: b50a9dbd3d00957419fa82cd5315daaa, type: 2}
+  _debugMaterial: 1
   _personPillarDown: -3
   _pillarLerpSpeed: 0.1
   _backUpReducer: 3

@@ -9,10 +9,18 @@ public class PillarManager : MonoBehaviour
     private bool _prevCollided = false;
     [SerializeField] private int _pillarId = 0;
     [SerializeField] private int _stationId = 0;
+    //serializefield alternate material
+    [SerializeField] private Material _alternateMaterial = null;
+    //serializefield bool debug material
+    [SerializeField] private bool _debugMaterial = false;
     // Start is called before the first frame update
     void Start()
     {
-        
+        //if debug material is true
+        if(_debugMaterial){
+            //set material to alternate material
+            GetComponent<Renderer>().material = _alternateMaterial;
+        }
     }
 
     public void SetPillarId(int id){
