@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class PillarManager : MonoBehaviour
 {
     [SerializeField] private bool _blobEnabled = true;
@@ -13,6 +13,23 @@ public class PillarManager : MonoBehaviour
     [SerializeField] private Material _alternateMaterial = null;
     //serializefield bool debug material
     [SerializeField] private bool _debugMaterial = false;
+    //private original material
+    private Material _originalMaterial = null;
+    //private movement detection material serialize
+    [SerializeField] private Material _movementDetectionMaterial = null;
+
+    //collision pillar left bool
+    [SerializeField] private bool _collisionPillarLeft = false;
+    //collision pillar right bool
+    [SerializeField] private bool _collisionPillarRight = false;
+    //prev
+    private bool _prevCollisionPillarLeft = false;
+    //prev
+    private bool _prevCollisionPillarRight = false;
+    private Vector3 _prevPosition = Vector3.zero;
+    [SerializeField] private float _movementTrackingThreshold = 1f;
+    private int _trackingFrame = 0;
+    [SerializeField] private int _materialRestoreDeltaFrame = 5;
     // Start is called before the first frame update
     void Start()
     {
@@ -20,6 +37,7 @@ public class PillarManager : MonoBehaviour
         if(_debugMaterial){
             //set material to alternate material
             GetComponent<Renderer>().material = _alternateMaterial;
+            _originalMaterial = _alternateMaterial;
         }
     }
 
@@ -37,6 +55,29 @@ public class PillarManager : MonoBehaviour
             _stationId = -1;
             LidarManager.Instance.SetBlobAt(_pillarId, -1);
             LidarManager.Instance.SetPersonBlobAt(_pillarId, -1);
+            //set collisions to false
+            _collisionPillarLeft = false;
+            _collisionPillarRight = false;
+        }
+        if(Time.frameCount - _trackingFrame > _materialRestoreDeltaFrame){
+            GetComponent<Renderer>().material = _alternateMaterial;
+        }
+        float _currentPositionMagnitude = Vector3.Magnitude(transform.position);
+        float _prevPositionMagnitude = Vector3.Magnitude(_prevPosition);
+        float relativeDistance = (float)Math.Max(_currentPositionMagnitude, _prevPositionMagnitude) / (float)Math.Min(_currentPositionMagnitude, _prevPositionMagnitude);
+        //if magnitude of difference between prevposition and current position is greater than _movementTrackingThreshold set material to _movementDetectionMaterial
+        //if(Vector3.Magnitude(transform.position - _prevPosition) > _movementTrackingThreshold){
+        if(relativeDistance > _movementTrackingThreshold){
+            //set material to _movementDetectionMaterial
+            if(_debugMaterial ){//&& _currentPositionMagnitude < _prevPositionMagnitude){
+                GetComponent<Renderer>().material = _movementDetectionMaterial;
+            }
+            //if(_currentPositionMagnitude > _prevPositionMagnitude){
+            //    GetComponent<Renderer>().material = _alternateMaterial;
+            //}
+            //get current frame
+            _trackingFrame = Time.frameCount;
+            _prevPosition = transform.position;
         }
         //transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         //lerp
@@ -104,6 +145,30 @@ public class PillarManager : MonoBehaviour
             //transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, _personPillarDown, transform.position.z), _pillarLerpSpeed);
             //TODO CHANGE HERE FOR PILLAR LERP
         }
+
+        //if collision with Pillar tag check if id greater or less than this and set left and right booleans
+        /*if(other.gameObject.CompareTag("Pillar")){
+            //GetPillarId
+            int otherPillarId = other.gameObject.GetComponent<PillarManager>().GetPillarId();
+            //if otherPillarId is greater than this pillar id
+            if(otherPillarId > _pillarId){
+                //set collision pillar right to true
+                _collisionPillarRight = true;
+            }else{
+                //set collision pillar left to true
+                _collisionPillarLeft = true;
+            }
+            //check with prev, if one differs set material to _alternateMaterial
+            if(_prevCollisionPillarLeft != _collisionPillarLeft || _prevCollisionPillarRight != _collisionPillarRight){
+                //set material to _alternateMaterial
+                if(_debugMaterial){
+                        GetComponent<Renderer>().material = _movementDetectionMaterial;
+                }
+            }
+            _prevCollisionPillarLeft = _collisionPillarLeft;
+            _prevCollisionPillarRight = _collisionPillarRight;
+
+        }*/
     }
 
     [SerializeField] private float _personPillarDown = -3f;
@@ -118,6 +183,10 @@ public class PillarManager : MonoBehaviour
     }*/
     public int GetStationId(){
         return _stationId;
+    }
+
+    public int GetPillarId(){
+        return _pillarId;
     }
 
     public void UpdateBehaviour(float personPillarDown, float pillarLerpSpeed, float backUpReducer){

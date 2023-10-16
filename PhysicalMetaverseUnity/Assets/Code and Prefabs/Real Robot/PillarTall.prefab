@@ -52,8 +52,14 @@ MonoBehaviour:
   _disableMesh: 1
   _pillarId: 0
   _stationId: 0
-  _alternateMaterial: {fileID: 2100000, guid: b50a9dbd3d00957419fa82cd5315daaa, type: 2}
+  _alternateMaterial: {fileID: 2100000, guid: de6d33c8572f86c4ab1bc13221a28da9, type: 2}
   _debugMaterial: 1
+  _movementDetectionMaterial: {fileID: 2100000, guid: b3fda3fed0778e44184df09b6215f15d,
+    type: 2}
+  _collisionPillarLeft: 0
+  _collisionPillarRight: 0
+  _movementTrackingThreshold: 1.1
+  _materialRestoreDeltaFrame: 10
   _personPillarDown: -3
   _pillarLerpSpeed: 0.1
   _backUpReducer: 3
