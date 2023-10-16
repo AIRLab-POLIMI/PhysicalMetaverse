@@ -255,6 +255,7 @@ public class RobotController : MonoBehaviour
         Debug.unityLogger.logEnabled = true;
     }
 
+    [SerializeField] private float _sprintMultiplier = 4f;
     void KeyboardUpdate(){
         //set all _odometryManager to false
         _odometryManager._forward = false;
@@ -263,6 +264,16 @@ public class RobotController : MonoBehaviour
         _odometryManager._right = false;
         _odometryManager._rotateLeft = false;
         _odometryManager._rotateRight = false;
+
+        float _originalMoveUpdate = _moveUpdate;
+        float _originalAngleUpdate = _angleUpdate;
+
+        //if shift is pressed, divide by sprintmultiplier move update
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            _moveUpdate /= _sprintMultiplier;
+            _angleUpdate /= _sprintMultiplier;
+        }
         
         if (Input.anyKey)
         {
@@ -346,6 +357,10 @@ public class RobotController : MonoBehaviour
             UpdateKeysKeyboard();
             _updateKeysButton = false;
         }
+
+        _moveUpdate = _originalMoveUpdate;
+        _angleUpdate = _originalAngleUpdate;
+
     }
 
     //prevaxisvalue dictionary
