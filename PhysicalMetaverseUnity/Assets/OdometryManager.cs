@@ -25,6 +25,9 @@ public class OdometryManager : Monosingleton<OdometryManager>
     public float _boolRotateSpeed = 1f;
     //for stations
     public float _speed = 1f;
+    public bool _odometryActive = false;
+    public float _odometryCooldown = 0.5f; //time required by the robot to halt after a movement
+    private float _prevTime = 0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -78,6 +81,19 @@ public class OdometryManager : Monosingleton<OdometryManager>
             //rotate floor right around this transform
             _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
         }
-        
+        //if any set _odometryActive
+        if(_forward || _backward || _left || _right || _rotateLeft || _rotateRight || absForwardFloat > _odometryDeadzone || absRightFloat > _odometryDeadzone || absRotateRightFloat > _odometryDeadzone){
+            _odometryActive = true;
+            _prevTime = Time.time;
+
+        }
+        else{
+            if(Time.time - _prevTime > _odometryCooldown)
+                _odometryActive = false;
+        }
+    }
+
+    public bool GetOdometryActive(){
+        return _odometryActive;
     }
 }
