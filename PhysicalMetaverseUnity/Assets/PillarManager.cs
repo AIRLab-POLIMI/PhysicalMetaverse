@@ -69,8 +69,12 @@ public class PillarManager : MonoBehaviour
         //if(Vector3.Magnitude(transform.position - _prevPosition) > _movementTrackingThreshold){
         if(relativeDistance > _movementTrackingThreshold){
             //set material to _movementDetectionMaterial
-            if(_debugMaterial ){//&& _currentPositionMagnitude < _prevPositionMagnitude){
-                GetComponent<Renderer>().material = _movementDetectionMaterial;
+            if(!OdometryManager.Instance.GetOdometryActive()){//&& _currentPositionMagnitude < _prevPositionMagnitude){
+                if(_debugMaterial)
+                    GetComponent<Renderer>().material = _movementDetectionMaterial;
+                //if all OdometryManager instance is false set this station id to 9
+                //_stationId = 9;
+                //LidarManager.Instance.SetPersonBlobAt(_pillarId, _stationId);
             }
             //if(_currentPositionMagnitude > _prevPositionMagnitude){
             //    GetComponent<Renderer>().material = _alternateMaterial;
@@ -139,6 +143,8 @@ public class PillarManager : MonoBehaviour
             //set station id to 9
             _stationId = 9;
             LidarManager.Instance.SetPersonBlobAt(_pillarId, _stationId);
+            if(_debugMaterial)
+                GetComponent<Renderer>().material = _movementDetectionMaterial;
             //set y to _personPillarDown
             //transform.position = new Vector3(transform.position.x, _personPillarDown, transform.position.z);
             //lerp
