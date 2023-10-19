@@ -78,6 +78,7 @@ public class LidarManager : Monosingleton<LidarManager>
     [Range(0.0f, 1.0f)]
     [SerializeField] private float _lidarTrackingLerp = 0.5f;
     private GameObject _personTracker;
+    [SerializeField] private GameObject _humanViz;
     [SerializeField] private float _personPillarDown = -3f;
     [SerializeField] private float _pillarLerpSpeed = 0.1f;
     [SerializeField] private float _backUpReducer = 3f;
@@ -464,6 +465,7 @@ public class LidarManager : Monosingleton<LidarManager>
         Transform point = _points[middle].transform;
         //lerp corresponding blobtracker at point
         _personTracker.transform.position = Vector3.Lerp(_personTracker.transform.position, point.position, _lidarTrackingLerp);
+        _humanViz.transform.position = Vector3.Lerp(_humanViz.transform.position, point.position, _lidarTrackingLerp);
         //no lerp
         //_personTracker.transform.position = point.position;
         
@@ -477,6 +479,7 @@ public class LidarManager : Monosingleton<LidarManager>
             
         //enable mesh
         _personTracker.GetComponent<MeshRenderer>().enabled = true;
+        _humanViz.GetComponent<MeshRenderer>().enabled = true;
     }
 
     //Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly

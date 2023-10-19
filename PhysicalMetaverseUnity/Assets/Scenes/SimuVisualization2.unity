@@ -22194,6 +22194,7 @@ MonoBehaviour:
   _VREnabled: 0
   _sprintMultiplier: 4
   _AUTO_ROTATE: 0
+  _AUTO_MOVE: 0
   _moveUpdate: 50
   _angleUpdate: 1
   selectedOption: 
@@ -39753,7 +39754,7 @@ PrefabInstance:
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
       propertyPath: _personSkippableBlobPoints
-      value: 14
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353763, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
