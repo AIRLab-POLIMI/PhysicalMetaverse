@@ -232,6 +232,9 @@ public class PersonManagerV2 : MonoBehaviour
     //spawn spheres
     private void SpawnSpheres()
     {
+        //if parsedData.Length shorter than 30 return
+        if (parsedData.Length < 30)
+            return;
         _spheres = new GameObject[parsedData.Length];
         //list of strings containing Shoulder, Elbow, Wrist, Hip, Knee, Ankle
         List<string> joints = new List<string> { "Shoulder", "Elbow", "Wrist", "Hip", "Knee", "Ankle" };

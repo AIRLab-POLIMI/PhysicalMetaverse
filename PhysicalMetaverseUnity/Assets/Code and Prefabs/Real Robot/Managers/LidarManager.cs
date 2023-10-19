@@ -77,7 +77,7 @@ public class LidarManager : Monosingleton<LidarManager>
     //range 0 1 public float lidar tracking lerp
     [Range(0.0f, 1.0f)]
     [SerializeField] private float _lidarTrackingLerp = 0.5f;
-    private GameObject _personTracker;
+    ////private GameObject _personTracker;
     [SerializeField] private GameObject _humanViz;
     [SerializeField] private float _personPillarDown = -3f;
     [SerializeField] private float _pillarLerpSpeed = 0.1f;
@@ -133,20 +133,20 @@ public class LidarManager : Monosingleton<LidarManager>
     private void Start()
     {
         //instantiate blob tracker
-        _personTracker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        ////_personTracker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         //set tag to Station
-        _personTracker.tag = "Person";
+        ////_personTracker.tag = "Person";
         //blobtracker name "Person"
-        _personTracker.name = "Person";
+        ////_personTracker.name = "Person";
         //scale 3
-        _personTracker.transform.localScale = new Vector3(3, 3, 3);
+        ////_personTracker.transform.localScale = new Vector3(3, 3, 3);
         //add rigidbody
-        _personTracker.AddComponent<Rigidbody>();
+        ////_personTracker.AddComponent<Rigidbody>();
         //add trigger mesh collider
-        _personTracker.AddComponent<MeshCollider>().convex = true;
-        _personTracker.GetComponent<MeshCollider>().isTrigger = true;
+        ////_personTracker.AddComponent<MeshCollider>().convex = true;
+        ////_personTracker.GetComponent<MeshCollider>().isTrigger = true;
         //set rigidbody to kinematic
-        _personTracker.GetComponent<Rigidbody>().isKinematic = true;
+        ////_personTracker.GetComponent<Rigidbody>().isKinematic = true;
         //add object Walls as children and populate it with 150 cube meshes
         GameObject walls = new GameObject("Walls");
         walls.transform.parent = transform;
@@ -280,7 +280,7 @@ public class LidarManager : Monosingleton<LidarManager>
     void FixedUpdate()
     {
         //disable mesh of _blobTracker
-        _personTracker.GetComponent<MeshRenderer>().enabled = false;
+        ////_personTracker.GetComponent<MeshRenderer>().enabled = false;
         //disable _blobTrackers meshes
         foreach(GameObject blob in _blobTrackers.Values){
             blob.GetComponent<MeshRenderer>().enabled = false;
@@ -464,10 +464,10 @@ public class LidarManager : Monosingleton<LidarManager>
         }
         Transform point = _points[middle].transform;
         //lerp corresponding blobtracker at point
-        _personTracker.transform.position = Vector3.Lerp(_personTracker.transform.position, point.position, _lidarTrackingLerp);
+        ////_personTracker.transform.position = Vector3.Lerp(////_personTracker.transform.position, point.position, _lidarTrackingLerp);
         _humanViz.transform.position = Vector3.Lerp(_humanViz.transform.position, point.position, _lidarTrackingLerp);
         //no lerp
-        //_personTracker.transform.position = point.position;
+        //////_personTracker.transform.position = point.position;
         
         //TODO if actual person is not being tracked by camera take control of it, otherwise don't move it
 
@@ -478,7 +478,7 @@ public class LidarManager : Monosingleton<LidarManager>
             personCollider.transform.position = point.position;
             
         //enable mesh
-        _personTracker.GetComponent<MeshRenderer>().enabled = true;
+        ////_personTracker.GetComponent<MeshRenderer>().enabled = true;
         _humanViz.GetComponent<MeshRenderer>().enabled = true;
     }
 

@@ -81,17 +81,20 @@ public class RobotPoseContoller : MonoBehaviour
     void FixedUpdate()
     {
         //if spawned
-        if (_notPopulated && _personManager._spawned)
+        if (_notPopulated)
         {
-            //print names of all spheres
-            foreach (GameObject sphere in _personManager._spheres)
-            {
-                //print(sphere.name);
-                _joints.Add(sphere.name, sphere.transform);
+            if (_personManager._spawned){
+                _joints.Clear();
+                //print names of all spheres
+                foreach (GameObject sphere in _personManager._spheres)
+                {
+                    //print(sphere.name);
+                    _joints.Add(sphere.name, sphere.transform);
+                }
+                _notPopulated = false;
             }
-            _notPopulated = false;
-            
-            return;
+            else
+                return;
         }
         //orient parent like YDirection("Left Shoulder", "Left Shoulder")
         //////transform.rotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Left Shoulder"]));
