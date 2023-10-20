@@ -73,6 +73,8 @@ public class SingleStationManager : MonoBehaviour
                 ////gameObject.SetActive(false);
                 _petalsAlpha = 0;
                 Hide();
+                //disable this gameobject
+                gameObject.SetActive(false);
             }
         }
         else

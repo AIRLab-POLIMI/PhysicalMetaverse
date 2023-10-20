@@ -10744,7 +10744,7 @@ MonoBehaviour:
   _qrDetectionScriptPath: C:/Users/Alessandro/Documents/Maurizio/PhysicalMetaverse/Python/MultipleQRDetect.py
   _poseDetectionScriptPath: C:/Users/Alessandro/Documents/Maurizio/PhysicalMetaverse/PhysicalMetaverseUnity/Assets/Code
     and Prefabs/Python Scripts/webcamPoseRecognition.py
-  _ENABLE_QR: 0
+  _ENABLE_QR: 1
   _ENABLE_POSE: 0
 --- !u!1 &615016625
 GameObject:

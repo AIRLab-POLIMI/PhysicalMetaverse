@@ -16,6 +16,7 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private bool _LIDAR_TRACKING = true;
     [SerializeField] private bool _PERSON_TRACKING = true;
     [SerializeField] private bool _UPDATE_PILLAR_BEHAVIOUR = true;
+    [SerializeField] private bool _STATION_TO_CLOSEST = true;
     [Space]
     [Space]
 
@@ -632,44 +633,74 @@ public class LidarManager : Monosingleton<LidarManager>
 
         //for each blob spawn corresponding cylinder at middle
         for(int i = 0; i < _blobStarts.Count; i++){
-            //spawn cylinder at middle of maxIndex
-            int middle = _blobStarts[i] + _blobSizes[i]/2;
-            if(middle >= 360){
-                middle -= 360;
-            }
-            //if middle id is not valid try next one
-            //drifts counter clockwise, try to fix by looking left and right
-            int id = _blobs[middle];
-            /*while(id < 0){
-                middle++;
+            Transform point;
+            if(!_STATION_TO_CLOSEST){
+                //MOVE TO MIDDLE
+                //spawn cylinder at middle of maxIndex
+                int middle = _blobStarts[i] + _blobSizes[i]/2;
                 if(middle >= 360){
                     middle -= 360;
                 }
-                id = _blobs[middle];
-            }*/
-            bool lookRight = true;
-            int middleRight = middle;
-            int middleLeft = middle;
-            while(id < 0){
-                if(lookRight){
-                    middleRight++;
-                    if(middleRight >= 360){
-                        middleRight -= 360;
+                //if middle id is not valid try next one
+                //drifts counter clockwise, try to fix by looking left and right
+                int id = _blobs[middle];
+                //while(id < 0){
+                //    middle++;
+                //    if(middle >= 360){
+                //        middle -= 360;
+                //    }
+                //    id = _blobs[middle];
+                //}
+                bool lookRight = true;
+                int middleRight = middle;
+                int middleLeft = middle;
+                while(id < 0){
+                    if(lookRight){
+                        middleRight++;
+                        if(middleRight >= 360){
+                            middleRight -= 360;
+                        }
+                        id = _blobs[middleRight];
+                        lookRight = false;
                     }
-                    id = _blobs[middleRight];
-                    lookRight = false;
-                }
-                else{
-                    middleLeft--;
-                    if(middleLeft < 0){
-                        middleLeft += 360;
+                    else{
+                        middleLeft--;
+                        if(middleLeft < 0){
+                            middleLeft += 360;
+                        }
+                        id = _blobs[middleLeft];
+                        lookRight = true;
                     }
-                    id = _blobs[middleLeft];
-                    lookRight = true;
                 }
+
+                point = _points[middle].transform;
+            }
+            else{
+                //MOVE TO CLOSEST PILLAR
+                //spawn cylinder at middle of maxIndex
+                //int middle = i + count/2;
+                //middle = index of the pillar closest to world center
+                //for each point in the blob, check distance from world center and keep the smallest
+                int closestIndex = _blobStarts[i] + _blobSizes[i]/2;
+                float minDistance = 1000f;
+                for(int k = _blobStarts[i]; k < _blobStarts[i] + _blobSizes[i]; k++){
+                    if(k >= 360){
+                        k -= 360;
+                    }
+                    //get distance from world center
+                    float distance = Vector3.Distance(_points[k].transform.position, new Vector3(0,0,0));
+                    if(distance < minDistance){
+                        minDistance = distance;
+                        closestIndex = k;
+                    }
+                }
+                if(closestIndex >= 360){
+                    closestIndex -= 360;
+                }
+                point = _points[closestIndex].transform;
             }
 
-            Transform point = _points[middle].transform;
+
             //lerp corresponding blobtracker at point
             //_blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, _lidarTrackingLerp);
             //_blobTrackers[_blobIds[i]].transform.position = Vector3.Lerp(_blobTrackers[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
