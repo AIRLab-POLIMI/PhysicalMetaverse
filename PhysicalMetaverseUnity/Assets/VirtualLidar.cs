@@ -24,6 +24,8 @@ public class VirtualLidar : MonoBehaviour
     public float _missChance = 0.023f;
     public bool _lidarSeamFix = false;
     public List<GameObject> _lidarSeamFixObjects = new List<GameObject>();
+    //serialize show debug raycasts
+    [SerializeField] private bool _showDebugRaycasts = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -52,7 +54,7 @@ public class VirtualLidar : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, Quaternion.Euler(0, i, 0) * transform.forward, out hit, _maxDistance))
             {
-                if (Time.frameCount % _frameSkip == 0)
+                if (Time.frameCount % _frameSkip == 0 && _showDebugRaycasts)
                 {
                     Debug.DrawRay(transform.position, Quaternion.Euler(0, i, 0) * transform.forward * hit.distance, Color.red);
                 }

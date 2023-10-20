@@ -6,6 +6,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 //replace back all .localPosition to .position if there are problems
 
@@ -36,6 +37,13 @@ public class PersonManagerV2 : MonoBehaviour
     
     public bool ENABLE_LOG = false;
     public bool MESH_ENABLED = false;
+    public bool _CENTER_TO_VIZ = true;
+
+    //serializefied center viz offsets
+    [SerializeField] private float _centerVizXOffset = 0f;
+    [SerializeField] private float _centerVizYOffset = 0f;
+    [SerializeField] private float _centerVizZOffset = 0f;
+    public GameObject _pose;
     public void OnMsgRcv(byte[] msg)
     {
         //disable Debug.Log for this object
@@ -79,6 +87,8 @@ public class PersonManagerV2 : MonoBehaviour
         leftLeg.transform.parent = this.transform;
         GameObject rightLeg = new GameObject("Right Leg");
         rightLeg.transform.parent = this.transform;
+        //rotate pose 180
+        _pose.transform.rotation = Quaternion.Euler(0, 180, 0);
 
     }
 
@@ -211,7 +221,12 @@ public class PersonManagerV2 : MonoBehaviour
         {
             if(!_spawned)
                 //call function to spawn spheres
-                SpawnSpheres();
+                if(_CENTER_TO_VIZ){
+                    GetSpheres();
+                }
+                else{
+                    SpawnSpheres();
+                }
             
             //move spheres to position
             MoveSpheres();
@@ -222,7 +237,7 @@ public class PersonManagerV2 : MonoBehaviour
         if (Time.time - prevRcvTime > _poseDecayTime)
         {
             //move transform down 100y
-            transform.localPosition = new Vector3(transform.localPosition.x, -100f, transform.localPosition.z);
+            //transform.localPosition = new Vector3(transform.localPosition.x, -100f, transform.localPosition.z);
             //disable _odileViz
             _odileViz.GetComponent<RobotPoseContoller>().Hide(true);
         }
@@ -334,7 +349,7 @@ public class PersonManagerV2 : MonoBehaviour
         //set all spheres as children of this gameobject
         foreach (GameObject sphere in _spheres)
         {
-            sphere.transform.parent = this.transform;
+            sphere.transform.parent = _pose.transform;
         }
         //if mesh enable, else disable mesh
         if (!MESH_ENABLED)
@@ -345,6 +360,23 @@ public class PersonManagerV2 : MonoBehaviour
                 sphere.GetComponent<MeshRenderer>().enabled = false;
             }
         }
+    }
+
+    private void GetSpheres(){
+        _spheres = new GameObject[parsedData.Length];
+        int i = 0;
+        //add each child of _pose to _spheres
+        foreach(Transform sphere in _pose.gameObject.GetComponentsInChildren<Transform>()){
+            //skip _pose
+            if(sphere.gameObject == _pose.gameObject)
+                continue;
+            _spheres[i] = sphere.gameObject;
+            //set the position of the sphere
+            sphere.localPosition = new Vector3(i, 0, 0);
+            i++;
+        }
+        //set spawned to true
+        _spawned = true;
     }
     //gameobject sphere 34
     private GameObject sphere34;
@@ -401,9 +433,9 @@ public class PersonManagerV2 : MonoBehaviour
                 // Specify the rotation angle in degrees
                 //float rotationAngle = -20f; // You can adjust the angle as desired
                 //rotation center in 0 0
-                Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
+                ////Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
                 // Rotate the sphere around the center of rotation
-                newTransform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
+                ////newTransform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
                 //move sphere by Offset
                 newTransform.localPosition = new Vector3(sphere.transform.localPosition.x + xOffset, sphere.transform.localPosition.y + yOffset, sphere.transform.localPosition.z + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
                 //sphere lerp to newTransform
@@ -448,9 +480,9 @@ public class PersonManagerV2 : MonoBehaviour
                 // Specify the rotation angle in degrees
                 //float rotationAngle = -20f; // You can adjust the angle as desired
                 //rotation center in 0 0
-                Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
+                ////Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
                 // Rotate the sphere around the center of rotation
-                sphere.transform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
+                ////phere.transform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
                 //move sphere by Offset
                 sphere.transform.localPosition = new Vector3(((sphere.transform.localPosition.x * _xScale) + xOffset), (sphere.transform.localPosition.y * _yScale) + yOffset, (sphere.transform.localPosition.z * _zScale) + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
                 //move gradually
@@ -460,7 +492,8 @@ public class PersonManagerV2 : MonoBehaviour
         }
         catch(Exception e)
         {
-            Debug.Log(":-)");
+            //log exception
+            Debug.Log(e);
             //log size of data
             Debug.Log(parsedData.Length);
             //log size of first element
@@ -472,15 +505,21 @@ public class PersonManagerV2 : MonoBehaviour
         float footY = _spheres[23].transform.localPosition.y;
         float footX = _spheres[23].transform.localPosition.x;
         //move father z like _zDistance * _zDistanceMultiplier
-        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, _zDistance * _zDistanceMultiplier);
+        ////transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, _zDistance * _zDistanceMultiplier);
         //move father y to make it so _spheres[23].transform.localPosition.y; goes to absolute 0
-        transform.localPosition = new Vector3(transform.localPosition.x, -footY, transform.localPosition.z);
+        ////transform.localPosition = new Vector3(transform.localPosition.x, -footY, transform.localPosition.z);
         //use footX and perspective correction to move father x
-        transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
+        ////transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         //enable _odileViz
         _odileViz.SetActive(true);
         _odileViz.GetComponent<RobotPoseContoller>().Hide(false);
+        if(_CENTER_TO_VIZ){
+            //find mid point between left shoulder and right hip
+            Vector3 bellyButton = (_spheres[11].transform.localPosition + _spheres[24].transform.localPosition)/2;
+            //move spheres so that bellyButton is located at OdileViz
+            _pose.transform.localPosition = new Vector3(-bellyButton.x - _odileViz.transform.position.x + _centerVizXOffset, -bellyButton.y + _odileViz.transform.position.y + _centerVizYOffset, -bellyButton.z - _odileViz.transform.position.z + _centerVizZOffset);
+        }
     }
 }
 
