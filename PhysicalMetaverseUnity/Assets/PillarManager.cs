@@ -31,7 +31,7 @@ public class PillarManager : MonoBehaviour
     private Vector3 _prevPosition = Vector3.zero;
     [SerializeField] private float _movementTrackingThreshold = 1f;
     private int _trackingFrame = 0;
-    [SerializeField] private int _materialRestoreDeltaFrame = 5;
+    [SerializeField] private int _materialRestoreDeltaFrame = 2;
     [SerializeField] private int _latestDisableMeshFrame = 0;
     // Start is called before the first frame update
     void Start()

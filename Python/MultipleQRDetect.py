@@ -48,9 +48,14 @@ def detectQR():
 
             # Focal length of the camera in millimeters
             focal_length_mm = 4.81
-
-            # Actual size of the square in the real world (e.g., in meters)
-            actual_square_size_meters = 0.2  # Replace this with the actual measurement
+            barcodeValue = int(barcode.data)
+            #if code is >= 10 actual size is 0.05
+            if int(barcode.data) >= 10:
+                actual_square_size_meters = 0.04
+                barcodeValue = barcodeValue - 10
+            else:
+                # Actual size of the square in the real world (e.g., in meters)
+                actual_square_size_meters = 0.2  # Replace this with the actual measurement
 
             # Calculate the angular size in radians
             angular_size_rad = 2 * math.atan(length_to_measure / (2 * focal_length_mm))
@@ -64,7 +69,7 @@ def detectQR():
             #append key
             #MSG FORMAT: [barcode, x, y, size(diagonal)]
             try:
-                currMsg = STATION_KEY + str([int(barcode.data), rect_center[0], rect_center[1], int(distance_meters)]).encode()
+                currMsg = STATION_KEY + str([int(barcodeValue), rect_center[0], rect_center[1], int(distance_meters)]).encode()
                 msg += [currMsg]
             except:
                 #DIRTY FIX TO USE INVALID QR CODES

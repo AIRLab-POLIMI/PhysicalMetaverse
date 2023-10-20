@@ -603,6 +603,33 @@ public class LidarManager : Monosingleton<LidarManager>
         }
         */
 
+        //check _blobIds list, if there are duplicates, keep the biggest one
+        for(int i = 0; i < _blobIds.Count; i++){
+            for(int j = i+1; j < _blobIds.Count; j++){
+                if(_blobIds[i] == _blobIds[j]){
+                    //if same id, check size
+                    if(_blobSizes[i] > _blobSizes[j]){
+                        //delete j
+                        _blobIds.RemoveAt(j);
+                        _blobSizes.RemoveAt(j);
+                        _blobStarts.RemoveAt(j);
+                        //decrement j
+                        j--;
+                    }
+                    else{
+                        //delete i
+                        _blobIds.RemoveAt(i);
+                        _blobSizes.RemoveAt(i);
+                        _blobStarts.RemoveAt(i);
+                        //decrement i
+                        i--;
+                        //break
+                        break;
+                    }
+                }
+            }
+        }
+
         //for each blob spawn corresponding cylinder at middle
         for(int i = 0; i < _blobStarts.Count; i++){
             //spawn cylinder at middle of maxIndex
