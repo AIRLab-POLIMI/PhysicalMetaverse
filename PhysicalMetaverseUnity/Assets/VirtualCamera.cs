@@ -13,11 +13,16 @@ public class VirtualCamera : MonoBehaviour
     public GameObject _virtualCamera;
     public GameObject _robotBase;
 
-    private Thread pythonThread;
-    private Process process;
+    private Thread _qrThread;
+    private Process _qrProcess;
+    private Thread _poseThread;
+    private Process _poseProcess;
     // Path to your OpenCV Python script.
-    [SerializeField] string pythonScriptPath = "C:/Users/Alessandro/Documents/Maurizio/PhysicalMetaverse/Python/MultipleQRDetect.py";
+    [SerializeField] string _qrDetectionScriptPath = "C:/Users/Alessandro/Documents/Maurizio/PhysicalMetaverse/Python/MultipleQRDetect.py";
+    [SerializeField] string _poseDetectionScriptPath = "C:/Users/Alessandro/Documents/Maurizio/PhysicalMetaverse/PhysicalMetaverseUnity/Assets/Code and Prefabs/Python Scripts/webcamPoseRecognition.py";
 
+    [SerializeField] bool _ENABLE_QR = true;
+    [SerializeField] bool _ENABLE_POSE = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -25,13 +30,24 @@ public class VirtualCamera : MonoBehaviour
         _XRCamera.GetComponent<TrackedPoseDriver>().enabled = false;
         //run python script C:\Users\Alessandro\Documents\Maurizio\PhysicalMetaverse\Python\MultipleQRDetect.py
 
-        // Start a new thread to run the Python script.
-        pythonThread = new Thread(ExecutePythonScript)
-        {
-            //set daemon to true
-            IsBackground = true
-        };
-        pythonThread.Start();
+        if(_ENABLE_QR){
+            // Start a new thread to run the Python script.
+            _qrThread = new Thread(ExecuteQRScript)
+            {
+                //set daemon to true
+                IsBackground = true
+            };
+            _qrThread.Start();
+        }
+        if(_ENABLE_POSE){
+            // Start a new thread to run the Python script.
+            _poseThread = new Thread(ExecutePoseScript)
+            {
+                //set daemon to true
+                IsBackground = true
+            };
+            _poseThread.Start();
+        }
 
     }
 
@@ -43,29 +59,57 @@ public class VirtualCamera : MonoBehaviour
         
     }
 
-    void ExecutePythonScript()
+    void ExecuteQRScript()
     {
         // Path to the Python interpreter (change this to your Python executable path).
         string pythonPath = "python";
 
         // Create a new process to run the OpenCV Python script.
-        process = new Process();
-        process.StartInfo.FileName = pythonPath;
-        process.StartInfo.Arguments = pythonScriptPath;
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.RedirectStandardError = true;
-        process.StartInfo.CreateNoWindow = true;
+        _qrProcess = new Process();
+        _qrProcess.StartInfo.FileName = pythonPath;
+        _qrProcess.StartInfo.Arguments = _qrDetectionScriptPath;
+        _qrProcess.StartInfo.UseShellExecute = false;
+        _qrProcess.StartInfo.RedirectStandardOutput = true;
+        _qrProcess.StartInfo.RedirectStandardError = true;
+        _qrProcess.StartInfo.CreateNoWindow = true;
 
         // Start the process.
-        process.Start();
+        _qrProcess.Start();
 
         // Read the output and error streams (optional).
-        string output = process.StandardOutput.ReadToEnd();
-        string error = process.StandardError.ReadToEnd();
+        string output = _qrProcess.StandardOutput.ReadToEnd();
+        string error = _qrProcess.StandardError.ReadToEnd();
 
         // Wait for the process to finish.
-        process.WaitForExit();
+        _qrProcess.WaitForExit();
+
+        // You can print the output and error to the Unity console (optional).
+        UnityEngine.Debug.Log("OpenCV Script Output:\n" + output);
+        UnityEngine.Debug.LogError("OpenCV Script Error:\n" + error);
+    }
+
+    void ExecutePoseScript(){
+        // Path to the Python interpreter (change this to your Python executable path).
+        string pythonPath = "python";
+
+        // Create a new process to run the OpenCV Python script.
+        _poseProcess = new Process();
+        _poseProcess.StartInfo.FileName = pythonPath;
+        _poseProcess.StartInfo.Arguments = _poseDetectionScriptPath;
+        _poseProcess.StartInfo.UseShellExecute = false;
+        _poseProcess.StartInfo.RedirectStandardOutput = true;
+        _poseProcess.StartInfo.RedirectStandardError = true;
+        _poseProcess.StartInfo.CreateNoWindow = true;
+
+        // Start the process.
+        _poseProcess.Start();
+
+        // Read the output and error streams (optional).
+        string output = _poseProcess.StandardOutput.ReadToEnd();
+        string error = _poseProcess.StandardError.ReadToEnd();
+
+        // Wait for the process to finish.
+        _poseProcess.WaitForExit();
 
         // You can print the output and error to the Unity console (optional).
         UnityEngine.Debug.Log("OpenCV Script Output:\n" + output);
@@ -75,15 +119,25 @@ public class VirtualCamera : MonoBehaviour
     void OnApplicationQuit()
     {
         // Terminate the Python process and thread when Unity is stopped.
-        if (process != null && !process.HasExited)
+        if (_qrProcess != null && !_qrProcess.HasExited)
         {
-            process.Kill();
-            process.WaitForExit();
-            process.Dispose();
+            _qrProcess.Kill();
+            _qrProcess.WaitForExit();
+            _qrProcess.Dispose();
         }
-        if (pythonThread != null && pythonThread.IsAlive)
+        if (_poseProcess != null && !_poseProcess.HasExited)
         {
-            pythonThread.Abort();
+            _poseProcess.Kill();
+            _poseProcess.WaitForExit();
+            _poseProcess.Dispose();
+        }
+        if (_qrThread != null && _qrThread.IsAlive)
+        {
+            _qrThread.Abort();
+        }
+        if (_poseThread != null && _poseThread.IsAlive)
+        {
+            _poseThread.Abort();
         }
     }
 }

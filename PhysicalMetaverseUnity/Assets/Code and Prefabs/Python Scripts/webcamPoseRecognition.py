@@ -31,83 +31,96 @@ pTime = 0
 server_address = ('localhost', 25666)  # Change the address and port as needed
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+PAUSE = False
+
+def mouse_callback(event, x, y, flags, param):
+    global PAUSE
+    if event == cv2.EVENT_LBUTTONDOWN:
+        PAUSE = not PAUSE
+#create "Image" window
+cv2.namedWindow("Image")
+
+#set mouse callback
+cv2.setMouseCallback("Image", mouse_callback)
 
 while True:
-    success, img = cap.read()
-    success, img = cap.read()
-    imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    results = pose.process(imgRGB)
+    if not PAUSE:
+        success, img = cap.read()
+        success, img = cap.read()
+        imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        results = pose.process(imgRGB)
 
-    pose_data = []
+        pose_data = []
 
-    #print(results.pose_landmarks)
-    #if more than 5 landmars have visibility less than 0.5, then print "NOT OK"
+        #print(results.pose_landmarks)
+        #if more than 5 landmars have visibility less than 0.5, then print "NOT OK"
 
-    h, w, c = img.shape
-    if results.pose_landmarks:
-        count = 0
-        for lm in results.pose_landmarks.landmark:
-            cx, cy, _ = int(lm.x * w), int(lm.y * h), int(lm.z * c)
-            pose_data.append([cx, cy, _])
-            if lm.visibility < 0.5:
-                count += 1
-        if count > 5:  
+        h, w, c = img.shape
+        if results.pose_landmarks:
+            count = 0
+            for lm in results.pose_landmarks.landmark:
+                cx, cy, _ = int(lm.x * w), int(lm.y * h), int(lm.z * c)
+                pose_data.append([cx, cy, _])
+                if lm.visibility < 0.5:
+                    count += 1
+            if count > 5:  
+                print("NOT OK")
+                #put red frame around image
+                img = cv2.rectangle(img, (0, 0), (w, h), (0, 0, 255), 10)
+            else:
+                print("OK")
+                #put green frame around image
+                img = cv2.rectangle(img, (0, 0), (w, h), (0, 255, 0), 10)
+        else:
             print("NOT OK")
             #put red frame around image
             img = cv2.rectangle(img, (0, 0), (w, h), (0, 0, 255), 10)
+
+        # append 2 more empty points
+        pose_data.append([0, 0, 0])
+        pose_data.append([0, 0, 0])
+        
+        #rotate all points 90 degrees
+        for i in range(len(pose_data)):
+            temp = pose_data[i][0]
+            pose_data[i][0] = pose_data[i][1]
+            pose_data[i][1] = temp
+            #upside down using img.shape
+            pose_data[i][0] = img.shape[0] - pose_data[i][0]
+            pose_data[i][1] = img.shape[1] - pose_data[i][1]
+            
+            pose_data[i][2] = pose_data[i][2] * DISTANCE_MULTIPLIER
+            
+        
+        # Convert the pose landmarks to a JSON string
+        pose_json = json.dumps(pose_data)
+        #replace commas with spaces
+        pose_json = pose_json.replace(",", " ")
+        #replace "] " with newline
+        pose_json = pose_json.replace("] ", "]\n")
+        #append "1.0000." to the end of the string
+        pose_json = pose_json + "10000."
+
+        # Send the JSON-formatted pose data via UDP
+        if ADD_KEY:
+            sock.sendto(b'\xf2' + pose_json.encode(), server_address)
         else:
-            print("OK")
-            #put green frame around image
-            img = cv2.rectangle(img, (0, 0), (w, h), (0, 255, 0), 10)
-    else:
-        print("NOT OK")
-        #put red frame around image
-        img = cv2.rectangle(img, (0, 0), (w, h), (0, 0, 255), 10)
+            sock.sendto(pose_json.encode(), server_address)
+        # print
+        print(pose_json)
+        #print count
+        print(len(pose_data))
 
-    # append 2 more empty points
-    pose_data.append([0, 0, 0])
-    pose_data.append([0, 0, 0])
-    
-    #rotate all points 90 degrees
-    for i in range(len(pose_data)):
-        temp = pose_data[i][0]
-        pose_data[i][0] = pose_data[i][1]
-        pose_data[i][1] = temp
-        #upside down using img.shape
-        pose_data[i][0] = img.shape[0] - pose_data[i][0]
-        pose_data[i][1] = img.shape[1] - pose_data[i][1]
         
-        pose_data[i][2] = pose_data[i][2] * DISTANCE_MULTIPLIER
-        
-    
-    # Convert the pose landmarks to a JSON string
-    pose_json = json.dumps(pose_data)
-    #replace commas with spaces
-    pose_json = pose_json.replace(",", " ")
-    #replace "] " with newline
-    pose_json = pose_json.replace("] ", "]\n")
-    #append "1.0000." to the end of the string
-    pose_json = pose_json + "10000."
-
-    # Send the JSON-formatted pose data via UDP
-    if ADD_KEY:
-        sock.sendto(b'\xf2' + pose_json.encode(), server_address)
-    else:
-        sock.sendto(pose_json.encode(), server_address)
-    # print
-    print(pose_json)
-    #print count
-    print(len(pose_data))
-
-    
-    # Draw the pose landmarks on the image
-    mpDraw.draw_landmarks(img, results.pose_landmarks, mpPose.POSE_CONNECTIONS)
-    #show
-    if SHOW:
-        cv2.imshow("Image", img)
-        cv2.waitKey(1)
+        # Draw the pose landmarks on the image
+        mpDraw.draw_landmarks(img, results.pose_landmarks, mpPose.POSE_CONNECTIONS)
+        #show
+        if SHOW:
+            cv2.imshow("Image", img)
 
     #sleep 0.1
     time.sleep(0.001)
+    if SHOW:
+        cv2.waitKey(1)
     
 sock.close()

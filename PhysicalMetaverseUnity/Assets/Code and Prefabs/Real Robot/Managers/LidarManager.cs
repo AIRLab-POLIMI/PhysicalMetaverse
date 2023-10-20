@@ -79,6 +79,9 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private float _lidarTrackingLerp = 0.5f;
     ////private GameObject _personTracker;
     [SerializeField] private GameObject _humanViz;
+    [SerializeField] private float _humanVizOffset = 1f;
+    [SerializeField] private float _maxPersonJumpDistance = 8f;
+    [SerializeField] private GameObject personCollider;
     [SerializeField] private float _personPillarDown = -3f;
     [SerializeField] private float _pillarLerpSpeed = 0.1f;
     [SerializeField] private float _backUpReducer = 3f;
@@ -286,6 +289,7 @@ public class LidarManager : Monosingleton<LidarManager>
             blob.GetComponent<MeshRenderer>().enabled = false;
         }
         //check blob array and enable mesh of corresponding true values
+        /*
         for(int i = 0; i < 360; i++){
             if(_blobs[i] >= 0){
                 _points[i].GetComponent<MeshRenderer>().enabled = true;
@@ -294,6 +298,7 @@ public class LidarManager : Monosingleton<LidarManager>
                 _points[i].GetComponent<MeshRenderer>().enabled = true;
             }
         }
+        */
         
         if(_UPDATE_PILLAR_BEHAVIOUR)
             UpdatePillarBehaviour(_personPillarDown, _pillarLerpSpeed, _backUpReducer);
@@ -432,21 +437,22 @@ public class LidarManager : Monosingleton<LidarManager>
         //find the index of the max element in list _personBlobSizes using Math.max
         int found = 0;
         int max = 0;
+        int trueMiddle = 0;
         for(int k = 0; k < _personBlobSizes.Count; k++){
             if(_personBlobSizes[k] > max){
                 max = _personBlobSizes[k];
                 found = _personBlobStarts[k];
+                trueMiddle = found + max/2;
                 if(found >= 360){
                     found -= 360;
                 }
             }
         }
-
         //spawn cylinder at middle of maxIndex
         //int middle = i + count/2;
         //middle = index of the pillar closest to world center
         //for each point in the blob, check distance from world center and keep the smallest
-        int middle = found;
+        int closestIndex = found;
         float minDistance = 1000f;
         for(int k = found; k < found + count; k++){
             if(k >= 360){
@@ -456,26 +462,42 @@ public class LidarManager : Monosingleton<LidarManager>
             float distance = Vector3.Distance(_points[k].transform.position, new Vector3(0,0,0));
             if(distance < minDistance){
                 minDistance = distance;
-                middle = k;
+                closestIndex = k;
             }
         }
-        if(middle >= 360){
-            middle -= 360;
+        if(closestIndex >= 360){
+            closestIndex -= 360;
         }
-        Transform point = _points[middle].transform;
+        Transform point = _points[closestIndex].transform;
+        Transform trueMiddleTransform = _points[trueMiddle].transform;
         //lerp corresponding blobtracker at point
         ////_personTracker.transform.position = Vector3.Lerp(////_personTracker.transform.position, point.position, _lidarTrackingLerp);
-        _humanViz.transform.position = Vector3.Lerp(_humanViz.transform.position, point.position, _lidarTrackingLerp);
+        //destination equal to point minus 1 in direction of vector zero
+        Vector3 destination = point.position - point.position.normalized * _humanVizOffset;
+        //if distance is less than maxjumpdistance lerp
+        if(Vector3.Distance(_humanViz.transform.position, destination) < _maxPersonJumpDistance){
+            _humanViz.transform.position = Vector3.Lerp(_humanViz.transform.position, destination, _lidarTrackingLerp);
+        }
+        else{
+            //else teleport
+            _humanViz.transform.position = destination;
+        }
+
+        //lerp with constant speed
+        //_humanViz.transform.position = Vector3.MoveTowards(_humanViz.transform.position, point.position, _lidarTrackingLerp);
+
         //no lerp
         //////_personTracker.transform.position = point.position;
         
         //TODO if actual person is not being tracked by camera take control of it, otherwise don't move it
 
             //lerp gameobject "PersonCollider" there
-            GameObject personCollider = GameObject.Find("PersonCollider");
+            //GameObject personCollider = GameObject.Find("PersonCollider");
             //personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp);
             //no lerp
             personCollider.transform.position = point.position;
+            //position personCollider at point distance in direction of trueMiddleTransform
+            //personCollider.transform.position = trueMiddleTransform.position.normalized * point.position.magnitude;
             
         //enable mesh
         ////_personTracker.GetComponent<MeshRenderer>().enabled = true;

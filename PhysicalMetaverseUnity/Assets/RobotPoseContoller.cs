@@ -23,6 +23,14 @@ public class RobotPoseContoller : MonoBehaviour
     public GameObject _rightHandTracker;
     [Range(0.01f, 2f)]
     public float _odileScale = 0.516f;
+    //serialize field pose invalidated
+    [SerializeField] private bool _poseInvalidated = false;
+    //float pose invalidated decay time
+    [SerializeField] private float _poseInvalidatedDecayTime = 1f;
+    //private invalidation start time
+    private float _invalidationStartTime = 0f;
+    //private list of meshes
+    private List<MeshRenderer> _meshes = new List<MeshRenderer>();
     
     // Start is called before the first frame update
     void Start()
@@ -73,6 +81,12 @@ public class RobotPoseContoller : MonoBehaviour
         //blue
         _rightHandTracker.GetComponent<Renderer>().material.color = Color.blue;
         _rightHandTracker.GetComponent<MeshRenderer>().enabled = _handTrackerMeshEnabled;
+
+        //fill mesh list with all meshes of object and children and children of children
+        foreach (MeshRenderer mesh in transform.GetComponentsInChildren<MeshRenderer>())
+        {
+            _meshes.Add(mesh);
+        }
 
     }
     public bool _handTrackerMeshEnabled = false;
@@ -178,8 +192,11 @@ public class RobotPoseContoller : MonoBehaviour
         if(!_manualMovement){
             if(setHide){
                 _prevHide = true;
-                //disable gameobject
-                gameObject.SetActive(false);
+                //set all meshes
+                foreach (MeshRenderer mesh in _meshes)
+                {
+                    mesh.enabled = false;
+                }
             }
             else{
                 if(_prevHide){
@@ -275,5 +292,10 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 aToC = cPos - aPos;
         float angle = Vector3.Angle(aToB, aToC);
         return angle;
+    }
+
+    void SetPoseInvalidated(bool poseInvalidated){
+        _poseInvalidated = poseInvalidated;
+        _invalidationStartTime = Time.time;
     }
 }

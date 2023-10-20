@@ -17,6 +17,8 @@ public class PillarManager : MonoBehaviour
     private Material _originalMaterial = null;
     //private movement detection material serialize
     [SerializeField] private Material _movementDetectionMaterial = null;
+    //_StationTrackingMaterial
+    [SerializeField] private Material _StationTrackingMaterial = null;
 
     //collision pillar left bool
     [SerializeField] private bool _collisionPillarLeft = false;
@@ -30,6 +32,7 @@ public class PillarManager : MonoBehaviour
     [SerializeField] private float _movementTrackingThreshold = 1f;
     private int _trackingFrame = 0;
     [SerializeField] private int _materialRestoreDeltaFrame = 5;
+    [SerializeField] private int _latestDisableMeshFrame = 0;
     // Start is called before the first frame update
     void Start()
     {
@@ -95,6 +98,16 @@ public class PillarManager : MonoBehaviour
             GetComponent<MeshRenderer>().enabled = true;
         }
         _prevCollided = false;*/
+
+        //if _latestDisableMeshFrame is current frame disable mesh, else enable it
+        /*
+        if(Time.frameCount - _latestDisableMeshFrame > 5){
+            GetComponent<MeshRenderer>().enabled = true;
+        }else{  
+            GetComponent<MeshRenderer>().enabled = false;
+        }
+        */
+        
     }
 
     void OnTriggerStay(Collider other){
@@ -103,6 +116,9 @@ public class PillarManager : MonoBehaviour
         }
         //if colliding with "Station" color this gameobject in red
         if(other.gameObject.CompareTag("Station")){
+            _trackingFrame = Time.frameCount;
+            if(_debugMaterial)
+                GetComponent<Renderer>().material = _StationTrackingMaterial;
             //get station id from last character of name of parent
             //if gameobject has a parent
             if(other.gameObject.transform.parent == null){
@@ -138,8 +154,9 @@ public class PillarManager : MonoBehaviour
         }
         
         if(other.gameObject.CompareTag("Person")){
+            //_latestDisableMeshFrame = Time.frameCount;
             //disable mesh
-            ////GetComponent<MeshRenderer>().enabled = false;
+            //GetComponent<MeshRenderer>().enabled = false;
             //set station id to 9
             _stationId = 9;
             LidarManager.Instance.SetPersonBlobAt(_pillarId, _stationId);
