@@ -3241,6 +3241,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3057180796987337364}
+  - component: {fileID: 2597913025871936100}
   - component: {fileID: 3057180796987337369}
   - component: {fileID: 3057180796987337368}
   - component: {fileID: 3057180796987337371}
@@ -3269,6 +3270,21 @@ Transform:
   m_Father: {fileID: 3057180796795217597}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+--- !u!114 &2597913025871936100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3057180796987337367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5b33d78a5d81f428da2fc06077b031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controlledAngle: x
+  _angle: 0
+  _active: 1
 --- !u!114 &3057180796987337369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3586,6 +3602,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3057180797244991271}
+  - component: {fileID: 4488710958149709532}
   - component: {fileID: 3057180797244991272}
   - component: {fileID: 3057180797244991275}
   - component: {fileID: 3057180797244991274}
@@ -3614,6 +3631,21 @@ Transform:
   m_Father: {fileID: 3057180798079065268}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: -90}
+--- !u!114 &4488710958149709532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3057180797244991270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5b33d78a5d81f428da2fc06077b031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controlledAngle: y
+  _angle: 0
+  _active: 1
 --- !u!114 &3057180797244991272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3987,9 +4019,15 @@ MonoBehaviour:
   _leftHandTracker: {fileID: 0}
   _rightHandTracker: {fileID: 0}
   _odileScale: 0.53
+  _poseInvalidated: 0
+  _poseInvalidatedDecayTime: 1
   _handTrackerMeshEnabled: 0
   _manualMovement: 0
   _lerpSpeed: 0.5
+  xOffset: 0
+  yOffset: 0
+  zOffset: 0
+  _tilt: {x: 0, y: 0, z: 0}
   _debugCylinder: {fileID: 3057180798023917266}
   _heightOffset: -0.39
   _currentHandTracker: {fileID: 0}
