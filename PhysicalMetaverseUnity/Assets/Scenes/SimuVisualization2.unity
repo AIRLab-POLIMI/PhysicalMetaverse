@@ -44542,6 +44542,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
         type: 3}
+      propertyPath: _odileScale
+      value: 0.331
+      objectReference: {fileID: 0}
+    - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
+        type: 3}
+      propertyPath: _heightOffset
+      value: -0.084
+      objectReference: {fileID: 0}
+    - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
+        type: 3}
       propertyPath: _personManager
       value: 
       objectReference: {fileID: 2065342270}

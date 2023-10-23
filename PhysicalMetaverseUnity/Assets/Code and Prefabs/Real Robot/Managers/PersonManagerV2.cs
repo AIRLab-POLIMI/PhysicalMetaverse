@@ -241,8 +241,12 @@ public class PersonManagerV2 : MonoBehaviour
             //disable _odileViz
             _odileViz.GetComponent<RobotPoseContoller>().Hide(true);
         }
-
+        //set odileviz rotation to orientation of vector from zero to odileviz
+        Quaternion rotationOffset = Quaternion.FromToRotation(Vector3.forward, _odileViz.transform.position);
+        float angle = Quaternion.Angle(Quaternion.identity, rotationOffset);
+        _odileViz.GetComponent<RobotPoseContoller>().SetRotationOffset(angle);
     }
+
 
     //spawn spheres
     private void SpawnSpheres()

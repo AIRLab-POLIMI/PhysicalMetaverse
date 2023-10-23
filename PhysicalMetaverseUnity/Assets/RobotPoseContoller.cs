@@ -31,6 +31,7 @@ public class RobotPoseContoller : MonoBehaviour
     private float _invalidationStartTime = 0f;
     //private list of meshes
     private List<MeshRenderer> _meshes = new List<MeshRenderer>();
+    [SerializeField] private float _rotationOffset = 0f;
     
     // Start is called before the first frame update
     void Start()
@@ -132,6 +133,7 @@ public class RobotPoseContoller : MonoBehaviour
         _rightHandTracker.transform.localPosition = handTrackerPos * _odileScale + _odileJoints["VRotate"].localPosition + new Vector3(0, _heightOffset, 0);
         //inverse kinematics of odile joints to get as close as possible to hand tracker
         InverseKinematics();
+        //InverseKinematics2();
         //target = _joints["Left Foot 29"].position + new Vector3(0, 1f, 0);
         Vector3 target = _joints["Left Foot 29"].position;
         target.y = 0f;
@@ -142,12 +144,16 @@ public class RobotPoseContoller : MonoBehaviour
         //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
         //quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) + 180 on y
-        Quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 180, 0);
+        Quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 180 + _rotationOffset, 0);
         //lerp
         transform.localRotation = Quaternion.Lerp(transform.localRotation, destRotation, 0.1f);
         
         HeadAngles(); //TODO
 
+    }
+
+    public void SetRotationOffset(float rotationOffset){
+        _rotationOffset = rotationOffset;
     }
     public bool _manualMovement = false;
     public float _lerpSpeed = 0.5f;
@@ -253,6 +259,68 @@ public class RobotPoseContoller : MonoBehaviour
         
         
     }
+
+    
+    void InverseKinematics2(){
+        _currentHandTracker = _rightHandTracker;
+        //get y angle between up vector and hand tracker
+        ////float yAngle = Vector3.Angle(Vector3.up, _handTracker.transform.position - _odileJoints["VRotate"].position);
+        //set y angle of VRotate to yAngle
+        ////_odileJoints["VRotate"].localRotation = Quaternion.Euler(0, yAngle, -90);
+        //print distance from VRotate to hand tracker without z component
+        //float distance = Vector3.Distance(_odileJoints["VRotate"].position, _handTracker.transform.position);
+        float distance = Vector3.Distance(_odileJoints["VRotate"].position, _currentHandTracker.transform.position);
+        //draw line
+        Debug.DrawLine(_odileJoints["VRotate"].position, _currentHandTracker.transform.position, Color.red);
+        //Debug.Log("Distance " + distance);
+        float height = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
+        //draw blue line
+        Debug.DrawLine(_odileJoints["VRotate"].position, new Vector3(_odileJoints["VRotate"].position.x, _currentHandTracker.transform.position.y, _odileJoints["VRotate"].position.z), Color.blue);
+        //arm and forearm are long both 1.6
+        //clamp distance between 0 and 3.2
+        distance = Mathf.Clamp(distance, 0, 3.2f);
+        //from height and distance find angle using arcsin
+        float heightAngle = Mathf.Asin(height / distance) * Mathf.Rad2Deg;
+        //set 90 - heightangle to VArm
+        _odileJoints["VArm"].localRotation = Quaternion.Euler(90 - heightAngle, 0, 0);
+/*
+        //log height
+        //Debug.Log("Height " + height);
+        //distance clamp to 0 1
+        distance = Mathf.Clamp(distance, 0, 1);
+        //height angle, subract 0.5y from distance and get angle using sin-1 on it
+        float heightAngle = Mathf.Asin(height) * Mathf.Rad2Deg;
+        //clamp
+        heightAngle = Mathf.Clamp(heightAngle, -90, 90);
+        //set VArm x angle to sin-1 distance plus distanceAngle
+        //_odileJoints["VArm"].localRotation = Quaternion.Euler(Mathf.Asin(distance) * Mathf.Rad2Deg, 0, 0) * Quaternion.Euler(heightAngle, 0, 0);
+        //lerp
+        _odileJoints["VArm"].localRotation = Quaternion.Lerp(_odileJoints["VArm"].localRotation, Quaternion.Euler(Mathf.Asin(distance) * Mathf.Rad2Deg, 0, 0) * Quaternion.Euler(heightAngle, 0, 0), 0.1f);
+        //set VWrist x angle to 180 - VArm x angle
+        //_odileJoints["VWrist"].localRotation = Quaternion.Euler(180 - (Mathf.Asin(distance) * Mathf.Rad2Deg)*2, 0, 0);
+        //lerp
+        _odileJoints["VWrist"].localRotation = Quaternion.Lerp(_odileJoints["VWrist"].localRotation, Quaternion.Euler(180 - (Mathf.Asin(distance) * Mathf.Rad2Deg)*2, 0, 0), 0.1f);
+        Vector3 yDirection;
+        //VRotate YDirection shoulder and wrist, rotate also -90 on z
+        if(_currentHandTracker == _leftHandTracker)
+            yDirection = YDirection(_joints["Left Shoulder"], _joints["Left Wrist"]);
+        else
+            yDirection = YDirection(_joints["Right Shoulder"], _joints["Right Wrist"]);
+        //only positive y
+        //yDirection = new Vector3(yDirection.x, Mathf.Abs(yDirection.y), yDirection.z);
+        //invert
+        yDirection = -yDirection;
+        //only positive y
+        yDirection = new Vector3(yDirection.x, Mathf.Abs(yDirection.y), yDirection.z);
+        //_odileJoints["VRotate"].localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Left Wrist"])) * Quaternion.Euler(0, -90, -90);
+        //lerp plus transform.localRotation
+        _odileJoints["VRotate"].localRotation = Quaternion.Lerp(_odileJoints["VRotate"].localRotation, Quaternion.LookRotation(yDirection) * Quaternion.Euler(0, -90, -90), 0.1f);
+        //TODO lerp only through positive y, even if it is longer path
+        */
+        
+    }
+
+    
     //return the vector ortogonal to two vectors on the xz plane
     Vector3 YDirection(Transform a, Transform b)
     {
