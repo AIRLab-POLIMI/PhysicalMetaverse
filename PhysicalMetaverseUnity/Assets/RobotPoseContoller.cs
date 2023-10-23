@@ -149,6 +149,7 @@ public class RobotPoseContoller : MonoBehaviour
         transform.localRotation = Quaternion.Lerp(transform.localRotation, destRotation, 0.1f);
         
         HeadAngles(); //TODO
+        //HeadAngles2D();
 
     }
 
@@ -177,6 +178,40 @@ public class RobotPoseContoller : MonoBehaviour
         _odileJoints["VCamTilt"].GetComponent<DOFController>().SetAngle(headTilt.eulerAngles.x - xOffset);
 
 
+    }
+    //_leftDiff _rightDiff
+    [SerializeField] private float _leftDiff = 0f;
+    [SerializeField] private float _rightDiff = 0f;
+    void HeadAngles2D(){ //TODO use a more refined formula for angle
+        //difference between left ear and left eye's x
+        _leftDiff = _joints["Left Ear"].position.x - _joints["Left Eye"].position.x;
+        //difference between right ear and right eye's x
+        _rightDiff = _joints["Right Ear"].position.x - _joints["Right Eye"].position.x;
+        
+        float headAngle = 0f;
+
+        //if leftDiff is positive and rightDiff is negative
+        if(_leftDiff > 0 && _rightDiff < 0){
+            //headAngle is 0
+            headAngle = 180f;
+        }
+        //if leftDiff is negative and rightDiff is positive
+        else if(_leftDiff < 0 && _rightDiff > 0){
+            //headAngle is 30
+            headAngle = 0f;
+        }
+        //if leftDiff is positive and rightDiff is positive
+        else if(_leftDiff > 0 && _rightDiff > 0){
+            //headAngle is 15
+            headAngle = 45f;
+        }
+        //if leftDiff is negative and rightDiff is negative
+        else if(_leftDiff < 0 && _rightDiff < 0){
+            //headAngle is -15
+            headAngle = -45f;
+        }
+        //set VCamPan to headAngle
+        _odileJoints["VCamPan"].GetComponent<DOFController>().SetAngle(headAngle);
     }
 
     //if distance is 1 VArm = 90, VWrist = 0

@@ -263,6 +263,7 @@ public class PersonManagerV2 : MonoBehaviour
         {
             //spawn a sphere
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.transform.localScale = new Vector3(60f/_scale, 60f/_scale, 60f/_scale);
             //name the sphere
             sphere.name = "Sphere (" + i + ")";
             //scale 10
@@ -271,6 +272,8 @@ public class PersonManagerV2 : MonoBehaviour
             //from 24 to 32 make spheres green only on even numbers, from 23 to 31 make spheres blue only on odd numbers
             if (i >= 0 && i <= 11)
             {
+                //localscale to 0.1
+                sphere.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                 sphere.GetComponent<Renderer>().material.color = Color.cyan;
                 //name face + i
                 //if 3 or 6 call left or right eye
@@ -477,7 +480,6 @@ public class PersonManagerV2 : MonoBehaviour
                     sphere.transform.localPosition = new Vector3(-parsedData[i][1]/_scale, parsedData[i][0]/_scale, parsedData[i][2]/_scale);
                 else
                     sphere.transform.localPosition = new Vector3(-parsedData[i][0]/_scale, parsedData[i][1]/_scale, parsedData[i][2]/_scale);
-                sphere.transform.localScale = new Vector3(80f/_scale, 80f/_scale, 80f/_scale);
                 //rotate spheres position by 45 degrees with fulcrum at 
                 Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
 

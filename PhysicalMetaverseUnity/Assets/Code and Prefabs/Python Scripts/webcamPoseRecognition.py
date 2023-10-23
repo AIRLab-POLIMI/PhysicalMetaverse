@@ -8,6 +8,7 @@ import json
 #internal - internal webcam
 #remote - ip camera at http://192.168.1.7:8080/video
 CAMERA_TYPE = "internal"
+MIRROR_MODE = True
 
 SHOW = True
 DISTANCE_MULTIPLIER = 60
@@ -48,6 +49,10 @@ while True:
         success, img = cap.read()
         success, img = cap.read()
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        if MIRROR_MODE:
+            #mirror image
+            imgRGB = cv2.flip(imgRGB, 1)
+            img = cv2.flip(img, 1)
         results = pose.process(imgRGB)
 
         pose_data = []
