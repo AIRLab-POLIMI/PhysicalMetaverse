@@ -144,7 +144,7 @@ public class RobotPoseContoller : MonoBehaviour
         //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
         //quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) + 180 on y
-        Quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 180 + _rotationOffset, 0);
+        Quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 180 - _rotationOffset, 0);
         //lerp
         transform.localRotation = Quaternion.Lerp(transform.localRotation, destRotation, 0.1f);
         
