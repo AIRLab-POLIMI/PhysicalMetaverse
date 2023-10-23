@@ -96,6 +96,7 @@ public class StationManager : Monosingleton<StationManager>
     [SerializeField] private string _wrongStationMessage = "W:10";
     [SerializeField] private int _completedStations = 0;
     private GameObject _sphere;
+    private float _lidarScale = 1f;
     public void OnMsgRcv(byte[] msg)
     {
         //disable Debug.Log for this object
@@ -127,6 +128,9 @@ public class StationManager : Monosingleton<StationManager>
         _cameraStartRotationAngle = new GameObject().transform;
         _cameraStartRotationAngle.eulerAngles = new Vector3(0, _cameraRotationAngle.eulerAngles.y, 0);
         _lastPingTimes = new float[_totalStations];
+
+        //get lidar scale
+        _lidarScale = LidarManager.Instance.GetLidarScale();
     }
 
     //a receive looks like
@@ -282,7 +286,7 @@ public class StationManager : Monosingleton<StationManager>
                         //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);
                         //switch x and y
                         //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, (((int[])_stationsData[i])[2] / _imageFrameScale * _imageRatio ) + yOffset, ((int[])_stationsData[i])[3] / _zScale + zOffset), _speed);
-                        _currentZ = ((int[])_stationsData[i])[3] / _zScale + zOffset;
+                        _currentZ = ((int[])_stationsData[i])[3] / _zScale * _lidarScale + zOffset;
                         float currentX = ((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset)*(_currentZ/_perspectiveCorrection);
                         //block Y to -0.8
                         if(_lerp)

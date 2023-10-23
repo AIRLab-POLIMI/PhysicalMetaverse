@@ -49,7 +49,8 @@ def detectQR():
             # Focal length of the camera in millimeters
             focal_length_mm = 4.81
             barcodeValue = int(barcode.data)
-            #if code is >= 10 actual size is 0.05
+            #CODES AFTER 10 ARE CONSIDERED AS THE VALUE MINUS TEN AND SIZE OF QR TO 1/5
+            #if code is >= 10 actual size is 0.04
             if int(barcode.data) >= 10:
                 actual_square_size_meters = 0.04
                 barcodeValue = barcodeValue - 10

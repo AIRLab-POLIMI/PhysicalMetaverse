@@ -22,6 +22,7 @@ public class LidarManager : Monosingleton<LidarManager>
 
     [Header("PILLAR GENERATION")]
     [Space]
+    [SerializeField] private float _lidarScale = 1f;
     [SerializeField] private bool _disableBackPillars = true;
     [SerializeField] private int _disablePillarsRange = 60;
     [SerializeField] private int _savePillarsRange = 20;
@@ -1354,6 +1355,7 @@ public class LidarManager : Monosingleton<LidarManager>
             
             //float convertedValue = ConvertRange(value);
             float convertedValue = (((float) value) / 100.0f)-0.5f;
+            convertedValue = convertedValue * _lidarScale;
             float circleposition = (float)pos / (float)arraySize;
             float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * convertedValue;
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * convertedValue;
@@ -1439,4 +1441,10 @@ public class LidarManager : Monosingleton<LidarManager>
 
         return newAngle;
     }
+
+    public float GetLidarScale()
+    {
+        return _lidarScale;
+    }
+    
 }

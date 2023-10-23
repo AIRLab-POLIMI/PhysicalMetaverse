@@ -39,6 +39,9 @@ public class SingleStationManager : MonoBehaviour
         //append id to end of name
         _interactionGameObject.name = _interactionGameObject.name + " " + _stationId;
 
+        //scale this gameobject as lidar scale
+        transform.localScale = new Vector3(LidarManager.Instance.GetLidarScale(), LidarManager.Instance.GetLidarScale(), LidarManager.Instance.GetLidarScale());
+
     }
 
     // Update is called once per frame
