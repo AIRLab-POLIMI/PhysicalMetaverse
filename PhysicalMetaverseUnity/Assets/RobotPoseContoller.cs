@@ -148,8 +148,9 @@ public class RobotPoseContoller : MonoBehaviour
         //lerp
         transform.localRotation = Quaternion.Lerp(transform.localRotation, destRotation, 0.1f);
         
-        HeadAngles(); //TODO
+        //HeadAngles(); //TODO
         //HeadAngles2D();
+        HeadAngles3();
 
     }
 
@@ -212,6 +213,23 @@ public class RobotPoseContoller : MonoBehaviour
         }
         //set VCamPan to headAngle
         _odileJoints["VCamPan"].GetComponent<DOFController>().SetAngle(headAngle);
+    }
+
+    private void HeadAngles3(){
+        Quaternion bodyRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 0, 0);
+        //final angle should be x=0, y=direction, z=-90
+        Quaternion leftAngle = Quaternion.LookRotation(YDirection(_joints["Left Ear"], _joints["Left Eye"]));
+        Quaternion rightAngle = Quaternion.LookRotation(YDirection(_joints["Right Ear"], _joints["Right Eye"]));
+        float avgAngle = (leftAngle.eulerAngles.y + rightAngle.eulerAngles.y) / 2 - bodyRotation.eulerAngles.y + 90f;
+        //set VCamPan to eyeDirection
+        //_odileJoints["VCamPan"].localRotation = headPan;
+        _odileJoints["VCamPan"].GetComponent<DOFController>().SetAngle(avgAngle);
+        //Quaternion headTilt = Quaternion.LookRotation(ZDirection(_joints["Left Ear"], _joints["Nose"])) * Quaternion.Euler(90, 0, 0);
+        Quaternion leftTilt = Quaternion.LookRotation(XDirection(_joints["Left Ear"], _joints["Nose"]));
+        Quaternion rightTilt = Quaternion.LookRotation(XDirection(_joints["Right Ear"], _joints["Nose"]));
+        avgAngle = (leftTilt.eulerAngles.x + rightTilt.eulerAngles.x) / 2;
+        //set VCamTilt to headTilt
+        _odileJoints["VCamTilt"].GetComponent<DOFController>().SetAngle(-avgAngle - xOffset);
     }
 
     //if distance is 1 VArm = 90, VWrist = 0

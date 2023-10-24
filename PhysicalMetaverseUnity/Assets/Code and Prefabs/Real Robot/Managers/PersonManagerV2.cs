@@ -465,6 +465,7 @@ public class PersonManagerV2 : MonoBehaviour
     }
 
     public bool _rotate90 = false;
+    [SerializeField] private float _earsOffset = 0.1f;
     private void MoveSpheres()
     {
         try{
@@ -489,8 +490,22 @@ public class PersonManagerV2 : MonoBehaviour
                 ////Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
                 // Rotate the sphere around the center of rotation
                 ////phere.transform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
-                //move sphere by Offset
-                sphere.transform.localPosition = new Vector3(((sphere.transform.localPosition.x * _xScale) + xOffset), (sphere.transform.localPosition.y * _yScale) + yOffset, (sphere.transform.localPosition.z * _zScale) + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
+                //if i == 0 or > 10
+                if (i == 0 || i > 10)
+                {
+                    //move sphere by Offset
+                    sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, (sphere.transform.localPosition.z * _zScale) + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
+                }
+                else{
+                    //if i is not 7 or 8
+                    if(i != 7 && i != 8)
+                        //set z as z of nose
+                        //move sphere by Offset
+                        sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, _spheres[0].transform.localPosition.z);
+                    else
+                        //move sphere by Offset
+                        sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, _spheres[0].transform.localPosition.z + _earsOffset);
+                }
                 //move gradually
                 //sphere.transform.localPosition = Vector3.Lerp(sphere.transform.localPosition, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
 
