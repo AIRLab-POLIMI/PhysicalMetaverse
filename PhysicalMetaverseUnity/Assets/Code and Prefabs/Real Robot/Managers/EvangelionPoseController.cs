@@ -151,12 +151,28 @@ public class EvangelionPoseController : MonoBehaviour
     private Vector3 _rightHandTrackerPrevPosition = Vector3.zero;
     [SerializeField] private float _leftHandSpeed = 0f;
     [SerializeField] private float _rightHandSpeed = 0f;
-    //variables needed to measure speed of left hand tracker in the last 0.5 seconds
-    [SerializeField] private float _leftHandSpeedSum = 0f;
-    [SerializeField] private float _leftHandSpeedSumTime = 0f;
-    [SerializeField] private float _leftHandSpeedSumTimeMax = 0.5f;
-    [SerializeField] private float _leftHandSpeedSumTimeStep = 0.1f;
-
+    //variables to have a sliding window of 10 measurements on lefthand tracker position
+    //list of 10 delta measurements
+    private List<float> _leftHandDeltaMeasurements = new List<float>();
+    private List<float> _rightHandDeltaMeasurements = new List<float>();
+    [SerializeField] private float _mesurementDeltaTime = 0.06f;
+    //_measurementsTaken
+    private int _measurementsTaken = 0;
+    private float _prevTime = 0f;
+    private float _leftHandDelta = 0f;
+    private float _rightHandDelta = 0f;
+    public float _realDeltaTime = 0f;
+    private float _deltaTime = 0f;
+    private int _totalMeasurements = 6;
+    //serialize _qtyOfMovementSensitivity
+    [SerializeField] private float _qtyOfMovementSensitivity = 1f;
+    //serialize new quantity of movement
+    [SerializeField] private float _newQtyOfMovement = 0f;
+    //serialize _qtyOfMovement threshold
+    [SerializeField] private float _qtyOfMovementThreshold = 2f;
+    //_qtyOfMovementLerp
+    [SerializeField] private float _qtyOfMovementLerp = 0.1f;
+    
     private void UpdateValues(){
         RobotPoseContoller robotPoseContoller = _odileViz.GetComponent<RobotPoseContoller>();
         // get distanceFromCenter.runtimeValue from odileviz x position abs
@@ -183,16 +199,48 @@ public class EvangelionPoseController : MonoBehaviour
         _leftHandTrackerPrevPosition = leftHandTracker;
         _rightHandTrackerPrevPosition = rightHandTracker;
         */
-        //measure speed of left hand tracker in the last 0.5 seconds
-        _leftHandSpeedSumTime += Time.deltaTime;
-        if(_leftHandSpeedSumTime > _leftHandSpeedSumTimeStep){
-            _leftHandSpeedSumTime = 0f;
-            _leftHandSpeedSum += Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker);
+        _deltaTime = Time.time - _prevTime;
+        //take a measurement every _mesurementDeltaTime
+        if(_deltaTime > _mesurementDeltaTime){
+            _realDeltaTime = _deltaTime;
+            //module of Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker)
+            float delta = Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker);
             _leftHandTrackerPrevPosition = leftHandTracker;
-        }
-        if(_leftHandSpeedSumTime > _leftHandSpeedSumTimeMax){
-            _leftHandSpeed = _leftHandSpeedSum / _leftHandSpeedSumTimeMax;
-            _leftHandSpeedSum = 0f;
+            //add delta to list
+            _leftHandDeltaMeasurements.Add(delta);
+            _leftHandDelta += delta;
+
+            delta = Vector3.Distance(_rightHandTrackerPrevPosition, rightHandTracker);
+            _rightHandTrackerPrevPosition = rightHandTracker;
+            //add delta to list
+            _rightHandDeltaMeasurements.Add(delta);
+            _rightHandDelta += delta;
+
+            //increment _measurementsTaken
+            _measurementsTaken++;
+            //if _measurementsTaken is 10, remove first element
+            if(_measurementsTaken == _totalMeasurements){
+                //measure speed
+                _leftHandSpeed = _leftHandDelta / (_mesurementDeltaTime * _totalMeasurements);
+                _leftHandDelta -= _leftHandDeltaMeasurements[0];
+                _leftHandDeltaMeasurements.RemoveAt(0);
+                _rightHandSpeed = _rightHandDelta / (_mesurementDeltaTime * _totalMeasurements);
+                _rightHandDelta -= _rightHandDeltaMeasurements[0];
+                _rightHandDeltaMeasurements.RemoveAt(0);
+                _measurementsTaken -= 1;
+                //QtyOfMovement.runtimeValue = _leftHandSpeed + _rightHandSpeed;
+                _newQtyOfMovement = _leftHandSpeed + _rightHandSpeed;
+                //if less than _qtyOfMovementThreshold set to
+                if(_newQtyOfMovement < _qtyOfMovementThreshold){
+                    //lerp _newQtyOfMovement to _qtyOfMovementThreshold
+                    _newQtyOfMovement = Mathf.Lerp(_newQtyOfMovement, _qtyOfMovementThreshold, _qtyOfMovementLerp);
+                }
+                //timeMultiplier = _newQtyOfMovement * _qtyOfMovementSensitivity;
+                //lerp
+                timeMultiplier = Mathf.Lerp(timeMultiplier, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
+            }
+            //reset _prevTime
+            _prevTime = Time.time;
         }
 
     }
