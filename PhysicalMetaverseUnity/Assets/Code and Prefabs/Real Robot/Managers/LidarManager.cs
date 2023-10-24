@@ -17,6 +17,7 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private bool _PERSON_TRACKING = true;
     [SerializeField] private bool _UPDATE_PILLAR_BEHAVIOUR = true;
     [SerializeField] private bool _STATION_TO_CLOSEST = true;
+    [SerializeField] private bool _DISABLE_LIDAR = false;
     [Space]
     [Space]
 
@@ -137,6 +138,9 @@ public class LidarManager : Monosingleton<LidarManager>
 
     private void Start()
     {
+        //if _DISABLE_LIDAR disable this
+        if(_DISABLE_LIDAR)
+            this.gameObject.SetActive(false);
         //instantiate blob tracker
         ////_personTracker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         //set tag to Station
@@ -188,12 +192,11 @@ public class LidarManager : Monosingleton<LidarManager>
         for(int i = 0; i < arraySize; i++){
             _personBlobs[i] = -1;
         }
+        
+        DisableBackPillars();
     }
 
-
-    public void OnMsgRcv(byte[] msg)
-    {
-        
+    private void DisableBackPillars(){
         if(_disableBackPillars){
             //disable pillars from 0 to 30 and from 330 to 360
             for(int j = 0; j < _disablePillarsRange; j++){
@@ -219,6 +222,11 @@ public class LidarManager : Monosingleton<LidarManager>
             }
 
         }
+    }
+    public void OnMsgRcv(byte[] msg)
+    {
+        
+        DisableBackPillars();
         
         //disable Debug.Log for this object
         Debug.unityLogger.logEnabled = ENABLE_LOG;

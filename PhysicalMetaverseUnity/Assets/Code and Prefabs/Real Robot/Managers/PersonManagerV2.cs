@@ -12,8 +12,11 @@ using System.Security.Cryptography;
 
 //to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
 //this manager receives the 34 body landmarks detected by the depthai camera and positions a sphere at each landmark
-public class PersonManagerV2 : MonoBehaviour
+public class PersonManagerV2 : Monosingleton<PersonManagerV2>
 {
+    //dictionary of all joints
+    private Dictionary<string, Transform> _joints = new Dictionary<string, Transform>();
+
     //make a slider to adjust the rotation angle
     //public float rotationAngle = -20f;
     [Range(-90f, 90f)]
@@ -38,11 +41,14 @@ public class PersonManagerV2 : MonoBehaviour
     public bool ENABLE_LOG = false;
     public bool MESH_ENABLED = false;
     public bool _CENTER_TO_VIZ = true;
+    public bool _GET_SPHERES = true;
 
     //serializefied center viz offsets
     [SerializeField] private float _centerVizXOffset = 0f;
     [SerializeField] private float _centerVizYOffset = 0f;
     [SerializeField] private float _centerVizZOffset = 0f;
+    //serializefield transform offset with root
+    [SerializeField] private Vector3 _rootOffset;
     public GameObject _pose;
     public void OnMsgRcv(byte[] msg)
     {
@@ -219,14 +225,22 @@ public class PersonManagerV2 : MonoBehaviour
         //if first receive
         if (data != null)
         {
-            if(!_spawned)
+            if(!_spawned){
                 //call function to spawn spheres
-                if(_CENTER_TO_VIZ){
+                if(_GET_SPHERES){
                     GetSpheres();
                 }
                 else{
                     SpawnSpheres();
                 }
+                _joints.Clear();
+                //print names of all spheres
+                foreach (GameObject sphere in _spheres)
+                {
+                    //print(sphere.name);
+                    _joints.Add(sphere.name, sphere.transform);
+                }
+            }
             
             //move spheres to position
             MoveSpheres();
@@ -245,6 +259,11 @@ public class PersonManagerV2 : MonoBehaviour
         Vector3 direction = _odileViz.transform.position - Vector3.zero;
         float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg + 90f;
         _odileViz.GetComponent<RobotPoseContoller>().SetRotationOffset(angle);
+    }
+
+    //get _joints
+    public Dictionary<string, Transform> GetJoints(){
+        return _joints;
     }
 
 
@@ -495,6 +514,7 @@ public class PersonManagerV2 : MonoBehaviour
                 {
                     //move sphere by Offset
                     sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, (sphere.transform.localPosition.z * _zScale) + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
+                    sphere.transform.localPosition = sphere.transform.localPosition + _rootOffset;
                 }
                 else{
                     //if i is not 7 or 8
@@ -505,6 +525,7 @@ public class PersonManagerV2 : MonoBehaviour
                     else
                         //move sphere by Offset
                         sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, _spheres[0].transform.localPosition.z + _earsOffset);
+                    sphere.transform.localPosition = new Vector3(sphere.transform.localPosition.x + _rootOffset.x, sphere.transform.localPosition.y + _rootOffset.y, sphere.transform.localPosition.z);
                 }
                 //move gradually
                 //sphere.transform.localPosition = Vector3.Lerp(sphere.transform.localPosition, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);

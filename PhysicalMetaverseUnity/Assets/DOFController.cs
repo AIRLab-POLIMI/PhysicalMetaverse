@@ -32,6 +32,20 @@ public class DOFController : MonoBehaviour
         _angle = angle;
     }
 
+    //getangle
+    public float GetAngle(){
+        if(_controlledAngle == "x"){
+            return transform.localEulerAngles.x;
+        }
+        if(_controlledAngle == "y"){
+            return transform.localEulerAngles.y;
+        }
+        if(_controlledAngle == "z"){
+            return transform.localEulerAngles.z;
+        }
+        return 0f;
+    }
+
     // Update is called once per frame
     void Update()
     {

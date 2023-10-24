@@ -16,12 +16,13 @@ public class PoseRenderer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        //enable debug lines
+        Debug.unityLogger.logEnabled = true;
         //for each list in pose, for each element in list draw a line from element to next element with white color
         foreach (PoseComponents poseComponents in _poseComponents)
         {
@@ -31,6 +32,6 @@ public class PoseRenderer : MonoBehaviour
                 Debug.DrawLine(poseComponents._part[i].position, poseComponents._part[i + 1].position, color, Time.deltaTime);
             }
         }
-        
+        Debug.unityLogger.logEnabled = false;
     }
 }

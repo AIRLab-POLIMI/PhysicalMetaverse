@@ -32,6 +32,10 @@ public class RobotPoseContoller : MonoBehaviour
     //private list of meshes
     private List<MeshRenderer> _meshes = new List<MeshRenderer>();
     [SerializeField] private float _rotationOffset = 0f;
+    [SerializeField] private GameObject _pose;
+    //transform _offsetWithPose
+    [SerializeField] private Vector3 _offsetWithPose = new Vector3(0, 0, 0);
+    [SerializeField] private float _xTraslationMultiplier = 2f;
     
     // Start is called before the first frame update
     void Start()
@@ -134,12 +138,14 @@ public class RobotPoseContoller : MonoBehaviour
         //inverse kinematics of odile joints to get as close as possible to hand tracker
         InverseKinematics();
         //InverseKinematics2();
-        //target = _joints["Left Foot 29"].position + new Vector3(0, 1f, 0);
-        Vector3 target = _joints["Left Foot 29"].position;
+        //pose location = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
+        Vector3 poseLocation = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
+        //target = pose transform plus middle between left shoulder and right shoulder
+        Vector3 target = _pose.transform.localPosition + new Vector3(_xTraslationMultiplier*poseLocation.x + _offsetWithPose.x, 0, 0);
         target.y = 0f;
         //lerp position to left foot
         if(!_manualMovement)
-            transform.position = Vector3.Lerp(transform.position, target, _lerpSpeed);
+            transform.localPosition = Vector3.Lerp(transform.localPosition, target, _lerpSpeed);
 
         //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
@@ -180,6 +186,20 @@ public class RobotPoseContoller : MonoBehaviour
 
 
     }
+
+    //get _lookAngle
+    public float GetLookAngle(){
+        return _odileJoints["VCamPan"].GetComponent<DOFController>().GetAngle();;
+    }
+
+    //get handtrackers localpositions
+    public Vector3 GetLeftHandTrackerLocalPosition(){
+        return _leftHandTracker.transform.localPosition;
+    }
+    public Vector3 GetRightHandTrackerLocalPosition(){
+        return _rightHandTracker.transform.localPosition;
+    }
+
     //_leftDiff _rightDiff
     [SerializeField] private float _leftDiff = 0f;
     [SerializeField] private float _rightDiff = 0f;
