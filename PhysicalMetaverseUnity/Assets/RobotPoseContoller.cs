@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class RobotPoseContoller : MonoBehaviour
 {
+    //bool serialize HIDE
+    [SerializeField] private bool _HIDE = true;
     //PersonManagerV2
     public PersonManagerV2 _personManager;
     public Transform _odileWrist;
@@ -99,6 +101,7 @@ public class RobotPoseContoller : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        Hide(_HIDE);
         //if spawned
         if (_notPopulated)
         {
@@ -191,6 +194,9 @@ public class RobotPoseContoller : MonoBehaviour
     public float GetLookAngle(){
         return _odileJoints["VCamPan"].GetComponent<DOFController>().GetAngle();;
     }
+    public float GetTiltAngle(){
+        return _odileJoints["VCamTilt"].GetComponent<DOFController>().GetAngle();;
+    }
 
     //get handtrackers localpositions
     public Vector3 GetLeftHandTrackerLocalPosition(){
@@ -263,7 +269,7 @@ public class RobotPoseContoller : MonoBehaviour
 
     public bool _prevHide = false;
     public void Hide(bool setHide){
-        if(!_manualMovement){
+        if(!_manualMovement || _HIDE){
             if(setHide){
                 _prevHide = true;
                 //set all meshes
@@ -273,7 +279,7 @@ public class RobotPoseContoller : MonoBehaviour
                 }
             }
             else{
-                if(_prevHide){
+                if(_prevHide && !_HIDE){
                     Vector3 target = _joints["Left Foot 29"].position;
                     target.y = 0f;
                     //no lerp

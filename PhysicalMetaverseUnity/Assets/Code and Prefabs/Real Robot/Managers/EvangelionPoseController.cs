@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class EvangelionPoseController : MonoBehaviour
 {
+    //bool hide
+    [SerializeField] private bool _HIDE = false;
+    private bool _hideStatus = false;
     [SerializeField] private IntSO MaxConvertedAngle;
     [SerializeField] private IntSO MinConvertedAngle;
     
@@ -43,6 +46,8 @@ public class EvangelionPoseController : MonoBehaviour
     {
         _points = new GameObject[arraySize];
         SpawnPoints();
+        //set QtyOfMovement to zero
+        QtyOfMovement.runtimeValue = 0f;
     }
 
     private void SpawnPoints()
@@ -70,9 +75,23 @@ public class EvangelionPoseController : MonoBehaviour
         
     }
 
+    public void Hide(bool hide)
+    {
+        foreach (GameObject point in _points)
+        {
+            //hide mesh
+            point.GetComponent<MeshRenderer>().enabled = !hide;
+        }
+    }
+
     [SerializeField] private float _scaledTime = 0f;
     private void Update()
     {
+        if(_HIDE){
+            Hide(_hideStatus);
+            _hideStatus = !_hideStatus;
+            _HIDE = false;
+        }
         //PARAMETERS:
         //-DistanceFromCenter 
         //-QtyOfMovement-> 0 to 0.3 circa
@@ -111,7 +130,9 @@ public class EvangelionPoseController : MonoBehaviour
         
         amplitude = Mathf.Lerp(amplitude, targetAmplitude, Time.deltaTime * speed);
         
-        swarmDimension = QtyOfMovement.runtimeValue * 5;
+        
+        if(!_SPEED_MODE)
+            swarmDimension = QtyOfMovement.runtimeValue * 5;
 
 
 
@@ -172,6 +193,12 @@ public class EvangelionPoseController : MonoBehaviour
     [SerializeField] private float _qtyOfMovementThreshold = 2f;
     //_qtyOfMovementLerp
     [SerializeField] private float _qtyOfMovementLerp = 0.1f;
+    //serialize _SPEED_MODE
+    [SerializeField] private bool _SPEED_MODE = false;
+
+    //thickness mode
+    //sensitivity 0.13
+    //threshold 0.71
     
     private void UpdateValues(){
         RobotPoseContoller robotPoseContoller = _odileViz.GetComponent<RobotPoseContoller>();
@@ -232,17 +259,27 @@ public class EvangelionPoseController : MonoBehaviour
                 _newQtyOfMovement = _leftHandSpeed + _rightHandSpeed;
                 //if less than _qtyOfMovementThreshold set to
                 if(_newQtyOfMovement < _qtyOfMovementThreshold){
-                    //lerp _newQtyOfMovement to _qtyOfMovementThreshold
-                    _newQtyOfMovement = Mathf.Lerp(_newQtyOfMovement, _qtyOfMovementThreshold, _qtyOfMovementLerp);
+                    if(_SPEED_MODE)
+                        //lerp _newQtyOfMovement to _qtyOfMovementThreshold
+                        _newQtyOfMovement = Mathf.Lerp(_newQtyOfMovement, _qtyOfMovementThreshold, _qtyOfMovementLerp);
+                    QtyOfMovement.runtimeValue = Mathf.Lerp(QtyOfMovement.runtimeValue, _qtyOfMovementThreshold, _qtyOfMovementLerp);
                 }
-                //timeMultiplier = _newQtyOfMovement * _qtyOfMovementSensitivity;
-                //lerp
-                timeMultiplier = Mathf.Lerp(timeMultiplier, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
+                if(_SPEED_MODE)
+                    //timeMultiplier = _newQtyOfMovement * _qtyOfMovementSensitivity;
+                    //lerp
+                    timeMultiplier = Mathf.Lerp(timeMultiplier, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
+                //lerp QtyOfMovement.runtimeValue
+                QtyOfMovement.runtimeValue = Mathf.Lerp(QtyOfMovement.runtimeValue, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
             }
             //reset _prevTime
             _prevTime = Time.time;
         }
 
+    }
+
+    //get _newQtyOfMovement
+    public float GetNewQtyOfMovement(){
+        return _newQtyOfMovement;
     }
     
     public static Color LerpColor(Color color1, Color color2, float t)
