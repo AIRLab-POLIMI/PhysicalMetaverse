@@ -8,6 +8,7 @@ public class DOFController : MonoBehaviour
     [SerializeField] private string _controlledAngle = "x";
     //variable float angle
     [SerializeField] private float _angle = 0f;
+    [SerializeField] private float _sensitivity = 1f;
     //bool active
     [SerializeField] private bool _active = true;
     [SerializeField] private bool _lerp = true;
@@ -51,6 +52,7 @@ public class DOFController : MonoBehaviour
     {
         //if active set transform angle depending on controlledangle
         if(_active){
+            _angle *= _sensitivity;
             if(_controlledAngle == "x"){
                 if(_lerp)
                     transform.localEulerAngles = new Vector3(Mathf.LerpAngle(transform.localEulerAngles.x, _angle + _angleOffset, 0.1f), transform.localEulerAngles.y, transform.localEulerAngles.z);

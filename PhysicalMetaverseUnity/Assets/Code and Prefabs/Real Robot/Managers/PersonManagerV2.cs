@@ -97,6 +97,7 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
         //rotate pose 180
         _pose.transform.rotation = Quaternion.Euler(0, 180, 0);
 
+        _originalEarsOffset = _earsOffset;
     }
 
     //a receive looks like
@@ -506,8 +507,10 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
 
     public bool _rotate90 = false;
     [SerializeField] private float _earsOffset = 0.1f;
+    private float _originalEarsOffset = 0.1f;
     private void MoveSpheres()
     {
+        _earsOffset = _originalEarsOffset / (_odileViz.GetComponent<RobotPoseContoller>().GetFilteredDistance()/0.3f);
         try{
             //for each sphere
             for (int i = 0; i < parsedData.Length; i++)

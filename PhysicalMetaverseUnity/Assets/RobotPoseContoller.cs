@@ -45,7 +45,7 @@ public class RobotPoseContoller : MonoBehaviour
     //static _list_length
     public int _list_length = 10;
     public List<float> _zDistanceList = new List<float>();
-    
+    [SerializeField] private float _lerpNose;
     
     // Start is called before the first frame update
     void Start()
@@ -102,7 +102,9 @@ public class RobotPoseContoller : MonoBehaviour
         {
             _meshes.Add(mesh);
         }
-
+    
+        //lerpnose copy vector3 of nose
+        _lerpNose = _joints["Nose"].position.y;
     }
     public bool _handTrackerMeshEnabled = false;
     private bool _notPopulated = true;
@@ -113,8 +115,9 @@ public class RobotPoseContoller : MonoBehaviour
     //public transform camera
     public Transform _camera;
     public float _camAngleSensitivity = 10f;
+    public float _camXAngleSensitivity = 10f;
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         Hide(_HIDE);
         //if spawned
@@ -165,13 +168,12 @@ public class RobotPoseContoller : MonoBehaviour
         if(Mathf.Abs(zDistance - _oldZDistance) > _distanceDeltaTolerance)
             zDistance = _oldZDistance;
         else
-            _oldZDistance = zDistance;
             _zDistanceList.Add(zDistance);
             if(_zDistanceList.Count > _list_length)
                 _zDistanceList.RemoveAt(0);
                 //sort list
                 //sorted list
-                /*List<float> sortedList = new List<float>();
+                List<float> sortedList = new List<float>();
                 //for each value in _zDistanceList
                 foreach (float value in _zDistanceList)
                 {
@@ -181,12 +183,13 @@ public class RobotPoseContoller : MonoBehaviour
                 //sort sorted list
                 sortedList.Sort();
                 //choose middle value
-                zDistance = sortedList[_list_length/2];*/
+                zDistance = sortedList[_list_length/2];
                 //zDistance = min of list
-                for(int i = 0; i < _zDistanceList.Count; i++){
+                /*for(int i = 0; i < _zDistanceList.Count; i++){
                     if(_zDistanceList[i] < zDistance)
                         zDistance = _zDistanceList[i];
-                }
+                }*/
+            _oldZDistance = zDistance;
         /*Vector3 poseZLocation = _joints["Left Shoulder"].localPosition - _joints["Left Ankle"].localPosition;
 
         float length_to_measure = poseZLocation.y;
@@ -216,9 +219,15 @@ public class RobotPoseContoller : MonoBehaviour
 
         //map localtransform x from -5,5 to 90,270 and set rotation of _camera
         //clamp from -5 to 5
-        float camAngle = Mathf.Clamp(transform.localPosition.x, -5f, 5f);
-        camAngle = -(transform.localPosition.x/5f) * _camAngleSensitivity;// + 180f;
-        _camera.localRotation = Quaternion.Euler(0, camAngle, 0);
+        float camYAngle = Mathf.Clamp(transform.localPosition.x, -5f, 5f);
+        camYAngle = -(transform.localPosition.x/5f) * _camAngleSensitivity;// + 180f;
+        //lerp _lerpNose to nose
+        _lerpNose = Mathf.Lerp(_lerpNose, _joints["Nose"].localPosition.y, _lerpSpeed);
+        //camXAngle add 1 and clamp between -2 and 2
+        float camXAngle = Mathf.Clamp(_lerpNose + 1f, -2f, 2f);
+        camXAngle = (camXAngle/2f) * _camXAngleSensitivity;
+
+        _camera.localRotation = Quaternion.Euler(camXAngle, camYAngle, 0);
 
         //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
@@ -232,7 +241,9 @@ public class RobotPoseContoller : MonoBehaviour
         HeadAngles3();
 
     }
-
+    public float GetFilteredDistance(){
+        return _oldZDistance;
+    }
     public void SetRotationOffset(float rotationOffset){
         _rotationOffset = rotationOffset;
     }
