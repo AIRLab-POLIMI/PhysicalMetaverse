@@ -21,10 +21,10 @@ mpDraw = mp.solutions.drawing_utils
 
 #internal webcam
 if CAMERA_TYPE == "internal":
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
 #camera stream from ip camera at http://192.168.1.7:8080/video
 elif CAMERA_TYPE == "remote":
-    cap = cv2.VideoCapture("http://192.168.1.5:8080/video")
+    cap = cv2.VideoCapture("http://10.0.0.175:8080/video")
 
 pTime = 0
 
@@ -44,10 +44,15 @@ cv2.namedWindow("Image")
 #set mouse callback
 cv2.setMouseCallback("Image", mouse_callback)
 
+frame_saved = False
+
 while True:
     if not PAUSE:
         success, img = cap.read()
-        success, img = cap.read()
+        #save frame as png
+        if not frame_saved:
+            cv2.imwrite("frame.png", img)
+            frame_saved = True
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if MIRROR_MODE:
             #mirror image
