@@ -38,6 +38,14 @@ public class RobotPoseContoller : MonoBehaviour
     //transform _offsetWithPose
     [SerializeField] private Vector3 _offsetWithPose = new Vector3(0, 0, 0);
     [SerializeField] private float _xTraslationMultiplier = 2f;
+    [SerializeField] private float _yTraslationMultiplier = 0f;
+    [SerializeField] private float _zTraslationMultiplier = 1f;
+    //variables to keep median of zdistance
+    //list
+    //static _list_length
+    public int _list_length = 10;
+    public List<float> _zDistanceList = new List<float>();
+    
     
     // Start is called before the first frame update
     void Start()
@@ -98,6 +106,9 @@ public class RobotPoseContoller : MonoBehaviour
     }
     public bool _handTrackerMeshEnabled = false;
     private bool _notPopulated = true;
+
+    private float _oldZDistance = 10f;
+    public float _perspectiveCorrection = 10f;
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -142,9 +153,54 @@ public class RobotPoseContoller : MonoBehaviour
         InverseKinematics();
         //InverseKinematics2();
         //pose location = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
-        Vector3 poseLocation = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
+        Vector3 poseLocation = Vector3.zero;
+        Vector3 poseXLocation = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
+        //get distance from personmanager to set z
+        float zDistance = _personManager.GetDistance();
+        //median of last 5 values
+        _zDistanceList.Add(zDistance);
+        //if zDistance changed more than 100% of oldZDistance use oldZDistance
+        if(Mathf.Abs(zDistance - _oldZDistance) > Mathf.Abs(_oldZDistance))
+            zDistance = _oldZDistance;
+        else
+            _oldZDistance = zDistance;
+        if(_zDistanceList.Count > _list_length)
+            _zDistanceList.RemoveAt(0);
+            //sort list
+            //sorted list
+            List<float> sortedList = new List<float>();
+            //for each value in _zDistanceList
+            foreach (float value in _zDistanceList)
+            {
+                //add value to sorted list
+                sortedList.Add(value);
+            }
+            //sort sorted list
+            sortedList.Sort();
+            //choose middle value
+            zDistance = sortedList[_list_length/2];
+        /*Vector3 poseZLocation = _joints["Left Shoulder"].localPosition - _joints["Left Ankle"].localPosition;
+
+        float length_to_measure = poseZLocation.y;
+
+        // Focal length of the camera in millimeters
+        float focal_length_mm = 4.81f;
+        float actual_square_size_meters = 1f;  // Replace this with the actual measurement
+
+        // Calculate the angular size in radians
+        float angular_size_rad = 2 * Mathf.Atan(length_to_measure / (2 * focal_length_mm));
+
+        //# Calculate the distance using the formula
+        float distance_meters = (actual_square_size_meters / 2) / Mathf.Tan(angular_size_rad / 2);
+        distance_meters = distance_meters*100* 33/13;
+        //#print("Distance from camera to square: {:.2f} meters".format(distance_meters))
+        distance_meters *= 100;*/
+        float xPosition = poseXLocation.x;
+        //correct with zDistance
+        //xPosition = (xPosition - 7f) * (zDistance/_perspectiveCorrection);
+        poseLocation = new Vector3(xPosition, 0, zDistance);
         //target = pose transform plus middle between left shoulder and right shoulder
-        Vector3 target = _pose.transform.localPosition + new Vector3(_xTraslationMultiplier*poseLocation.x + _offsetWithPose.x, 0, 0);
+        Vector3 target = _pose.transform.localPosition + new Vector3(_xTraslationMultiplier*poseLocation.x + _offsetWithPose.x, _yTraslationMultiplier*poseLocation.y + _offsetWithPose.y, _zTraslationMultiplier*poseLocation.z + _offsetWithPose.z);
         target.y = 0f;
         //lerp position to left foot
         if(!_manualMovement)

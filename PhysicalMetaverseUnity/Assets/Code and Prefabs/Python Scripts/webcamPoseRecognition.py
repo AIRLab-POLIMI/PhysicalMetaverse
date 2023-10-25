@@ -21,7 +21,7 @@ mpDraw = mp.solutions.drawing_utils
 
 #internal webcam
 if CAMERA_TYPE == "internal":
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(2)
 #camera stream from ip camera at http://192.168.1.7:8080/video
 elif CAMERA_TYPE == "remote":
     cap = cv2.VideoCapture("http://10.0.0.175:8080/video")

@@ -7,7 +7,7 @@ public class EvangelionPoseController : MonoBehaviour
 {
     //bool hide
     [SerializeField] private bool _HIDE = false;
-    private bool _hideStatus = false;
+    private bool _hideStatus = true;
     [SerializeField] private IntSO MaxConvertedAngle;
     [SerializeField] private IntSO MinConvertedAngle;
     

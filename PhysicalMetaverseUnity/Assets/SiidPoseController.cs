@@ -6,7 +6,7 @@ public class SiidPoseController : MonoBehaviour
 {
     //bool hide
     [SerializeField] private bool _HIDE = false;
-    private bool _hideStatus = false;
+    private bool _hideStatus = true;
     //serialize gameobject odileviz
     [SerializeField] private GameObject _odileViz;
     //serialize Evangelion

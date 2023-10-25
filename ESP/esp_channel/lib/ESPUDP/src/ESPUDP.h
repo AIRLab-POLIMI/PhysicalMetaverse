@@ -24,12 +24,14 @@ using namespace std;
 
 // ----------------------------------------------------------------------------------------------DEFAULTS
 // STATIC IP
-IPAddress default_gateway(192, 168, 0, 1);   // IP Address of your WiFi Router (Gateway)
+IPAddress default_gateway(192, 168, 137, 1);   // IP Address of your WiFi Router (Gateway)
 IPAddress default_subnet(255, 255, 255, 0);  // Subnet mask
-IPAddress default_primaryDNS(192, 168, 0, 1);  // DNS 1
+IPAddress default_primaryDNS(192, 168, 137, 1);  // DNS 1
 IPAddress default_secondaryDNS(8, 8, 8, 8);  // DNS 2
 // WIFI
-#define WIFI_SSID "Physical Metaverse 2.4GHz"
+/*#define WIFI_SSID "Physical Metaverse 2.4GHz"
+#define WIFI_PSW "earthbound"*/
+#define WIFI_SSID "FakePhysicalMetaverse"
 #define WIFI_PSW "earthbound"
 // UDP
 #define MY_UDP_PORT 25666

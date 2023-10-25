@@ -39,7 +39,8 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
     private float prevRcvTime = 0f;
     
     public bool ENABLE_LOG = false;
-    public bool MESH_ENABLED = false;
+    public bool MESH_ENABLED = true;
+    public bool _mesh_status = true;
     public bool _CENTER_TO_VIZ = true;
     public bool _GET_SPHERES = true;
 
@@ -148,9 +149,13 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
     {
         //string ending float, read chars from length - 5 to length - 1
         string endingFloat = data.Substring(data.Length - 6, 6);
+        //replace dot with comma
+        endingFloat = endingFloat.Replace(".", ",");
+        //remove final comma
+        endingFloat = endingFloat.Substring(0, endingFloat.Length - 1);
         _zDistance = float.Parse(endingFloat);
-        _zDistance /= 1000;
-        Debug.Log(_zDistance);
+        _zDistance /= 100;
+        Debug.Log(endingFloat);
         string dataWithoutEndingFloat = data.Substring(0, data.Length - 6);
         //split the data into lines
         string[] lines = dataWithoutEndingFloat.Split('\n');
@@ -212,6 +217,11 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
         //return the array of arrays
         return parsedData;
     }
+
+    //public get distance
+    public float GetDistance(){
+        return _zDistance;
+    }
     
     //range 0.1 1 _poseDecayTime
     [Range(0.1f, 1f)]
@@ -221,7 +231,27 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
     private void Update()
-    {
+    {   
+        //if mesh enable, else disable mesh
+        if (MESH_ENABLED)
+        {
+            if(!_mesh_status){
+                //disable mesh of all spheres
+                foreach (GameObject sphere in _spheres)
+                {
+                    sphere.GetComponent<MeshRenderer>().enabled = false;
+                }
+            }
+            else{
+                //enable mesh of all spheres
+                foreach (GameObject sphere in _spheres)
+                {
+                    sphere.GetComponent<MeshRenderer>().enabled = true;
+                }
+            }
+            _mesh_status = !_mesh_status;
+            MESH_ENABLED = false;
+        }
         //if first receive
         if (data != null)
         {
@@ -376,15 +406,6 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
         foreach (GameObject sphere in _spheres)
         {
             sphere.transform.parent = _pose.transform;
-        }
-        //if mesh enable, else disable mesh
-        if (!MESH_ENABLED)
-        {
-            //disable mesh of all spheres
-            foreach (GameObject sphere in _spheres)
-            {
-                sphere.GetComponent<MeshRenderer>().enabled = false;
-            }
         }
     }
 
