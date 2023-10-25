@@ -107,8 +107,12 @@ public class RobotPoseContoller : MonoBehaviour
     public bool _handTrackerMeshEnabled = false;
     private bool _notPopulated = true;
 
-    private float _oldZDistance = 10f;
-    public float _perspectiveCorrection = 10f;
+    public float _oldZDistance = 10f;
+    public float _perspectiveCorrection = 1f;
+    public float _distanceDeltaTolerance = 0.5f;
+    //public transform camera
+    public Transform _camera;
+    public float _camAngleSensitivity = 10f;
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -157,28 +161,32 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 poseXLocation = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
         //get distance from personmanager to set z
         float zDistance = _personManager.GetDistance();
-        //median of last 5 values
-        _zDistanceList.Add(zDistance);
         //if zDistance changed more than 100% of oldZDistance use oldZDistance
-        if(Mathf.Abs(zDistance - _oldZDistance) > Mathf.Abs(_oldZDistance))
+        if(Mathf.Abs(zDistance - _oldZDistance) > _distanceDeltaTolerance)
             zDistance = _oldZDistance;
         else
             _oldZDistance = zDistance;
-        if(_zDistanceList.Count > _list_length)
-            _zDistanceList.RemoveAt(0);
-            //sort list
-            //sorted list
-            List<float> sortedList = new List<float>();
-            //for each value in _zDistanceList
-            foreach (float value in _zDistanceList)
-            {
-                //add value to sorted list
-                sortedList.Add(value);
-            }
-            //sort sorted list
-            sortedList.Sort();
-            //choose middle value
-            zDistance = sortedList[_list_length/2];
+            _zDistanceList.Add(zDistance);
+            if(_zDistanceList.Count > _list_length)
+                _zDistanceList.RemoveAt(0);
+                //sort list
+                //sorted list
+                /*List<float> sortedList = new List<float>();
+                //for each value in _zDistanceList
+                foreach (float value in _zDistanceList)
+                {
+                    //add value to sorted list
+                    sortedList.Add(value);
+                }
+                //sort sorted list
+                sortedList.Sort();
+                //choose middle value
+                zDistance = sortedList[_list_length/2];*/
+                //zDistance = min of list
+                for(int i = 0; i < _zDistanceList.Count; i++){
+                    if(_zDistanceList[i] < zDistance)
+                        zDistance = _zDistanceList[i];
+                }
         /*Vector3 poseZLocation = _joints["Left Shoulder"].localPosition - _joints["Left Ankle"].localPosition;
 
         float length_to_measure = poseZLocation.y;
@@ -205,6 +213,12 @@ public class RobotPoseContoller : MonoBehaviour
         //lerp position to left foot
         if(!_manualMovement)
             transform.localPosition = Vector3.Lerp(transform.localPosition, target, _lerpSpeed);
+
+        //map localtransform x from -5,5 to 90,270 and set rotation of _camera
+        //clamp from -5 to 5
+        float camAngle = Mathf.Clamp(transform.localPosition.x, -5f, 5f);
+        camAngle = -(transform.localPosition.x/5f) * _camAngleSensitivity;// + 180f;
+        _camera.localRotation = Quaternion.Euler(0, camAngle, 0);
 
         //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));

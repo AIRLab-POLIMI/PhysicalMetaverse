@@ -21,10 +21,10 @@ mpDraw = mp.solutions.drawing_utils
 
 #internal webcam
 if CAMERA_TYPE == "internal":
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 #camera stream from ip camera at http://192.168.1.7:8080/video
 elif CAMERA_TYPE == "remote":
-    cap = cv2.VideoCapture("http://10.0.0.175:8080/video")
+    cap = cv2.VideoCapture("http://192.168.1.8:8080/video")
 
 pTime = 0
 
@@ -49,25 +49,29 @@ frame_saved = False
 #open socket to receive on port 25667
 sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock2.bind(('192.168.137.1', 25667))
+prev_time = time.time()
 def receive_distance():
-    global distance
+    global distance, prev_time
+    recv_deltatime = 0.1
     while True:
         #receive from sock2 and print
         data, addr = sock2.recvfrom(1024)
-        #data is like d: 146.0000000000, keep only float value
-        distance = data.decode().split(":")[1]
-        #remove space
-        distance = distance.replace(" ", "")
-        #replace . with ,
-        #distance = distance.replace(".", ",")
-        #keep only first 5 chars
-        distance = distance[:5]
-        #replace . with ,
-        #distance = distance.replace(".", ",")
-        #add . to end
-        distance = distance + "."
-        #sleep 0.05
-        time.sleep(0.05)
+        #if time passed is more than recv_deltatime
+        if time.time() - prev_time > recv_deltatime:
+            #data is like d: 146.0000000000, keep only float value
+            distance = data.decode().split(":")[1]
+            #remove space
+            distance = distance.replace(" ", "")
+            #replace . with ,
+            #distance = distance.replace(".", ",")
+            #keep only first 5 chars
+            distance = distance[:5]
+            #replace . with ,
+            #distance = distance.replace(".", ",")
+            #add . to end
+            distance = distance + "."
+            #sleep 0.1
+        time.sleep(0.01)
 
 #extra thread to receive data from sock2
 import threading
