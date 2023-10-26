@@ -21,7 +21,7 @@ mpDraw = mp.solutions.drawing_utils
 
 #internal webcam
 if CAMERA_TYPE == "internal":
-    cap = cv2.VideoCapture(2)
+    cap = cv2.VideoCapture(1)
 #camera stream from ip camera at http://192.168.1.7:8080/video
 elif CAMERA_TYPE == "remote":
     cap = cv2.VideoCapture("http://10.0.0.175:8080/video")
@@ -109,7 +109,7 @@ while True:
         #replace "] " with newline
         pose_json = pose_json.replace("] ", "]\n")
         #append "1.0000." to the end of the string
-        pose_json = pose_json + "10000."
+        pose_json = pose_json + "80.00."
 
         # Send the JSON-formatted pose data via UDP
         if ADD_KEY:

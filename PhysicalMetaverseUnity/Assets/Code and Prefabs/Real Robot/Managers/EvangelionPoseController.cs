@@ -35,19 +35,24 @@ public class EvangelionPoseController : MonoBehaviour
     private float speed = 1f;
     [SerializeField] private float offset = 0f;
     private float targetOffset;
-    private float swarmDimension = 1f;
+    [SerializeField] private float swarmDimension = 1f;
+    //serialize _neutralDistance
+    [SerializeField] private float _neutralDistance = 0.8f;
     private float colorSlider = 0f;
 
     private Color color1 = Color.gray;
     private Color color3 = Color.magenta;
     private Color color2 = new Color(255, 165, 0);
     [SerializeField] private Transform _odileViz;
+    //RobotPoseContoller
+    [SerializeField] private RobotPoseContoller _robotPoseContoller;
     private void Start()
     {
         _points = new GameObject[arraySize];
         SpawnPoints();
         //set QtyOfMovement to zero
         QtyOfMovement.runtimeValue = 0f;
+        _robotPoseContoller = _odileViz.GetComponent<RobotPoseContoller>();
     }
 
     private void SpawnPoints()
@@ -124,7 +129,7 @@ public class EvangelionPoseController : MonoBehaviour
         offset = Mathf.Lerp(offset, targetOffset, Time.deltaTime / 2);
         
 
-        float targetAmplitude = 20f - distanceFromCenter.runtimeValue;
+        float targetAmplitude = _baseAmplitude - distanceFromCenter.runtimeValue;
         
         
         
@@ -157,12 +162,14 @@ public class EvangelionPoseController : MonoBehaviour
             //change time with timeMultiplier
             _scaledTime = _scaledTime + Time.deltaTime / 100f * timeMultiplier;
             _points[i].transform.position = new Vector3(_points[i].transform.position.x, startY + amplitude * Mathf.Sin( _scaledTime + i * offset), _points[i].transform.position.z);
-            _points[i].transform.localScale = new Vector3(1, 1 + swarmDimension, 1);
+            _points[i].transform.localScale = new Vector3(1, swarmDimension, 1);
             _points[i].GetComponent<Renderer>().material.color = LerpColor(color1, color3, colorSlider);
 
         }
     }
     [SerializeField] private float _distanceFromCenterMultiplier = 1f;
+    //serialize _baseAmplitude
+    [SerializeField] private float _baseAmplitude = 20f;
     //lookingatmultiplier
     [SerializeField] private float _lookingAtMultiplier = 1f;
     [SerializeField] private float _odileLookAngle;
@@ -212,6 +219,10 @@ public class EvangelionPoseController : MonoBehaviour
         _odileAngle = Vector3.Angle(Vector3.right, _odileViz.position);
         _odileAngle -= 90f;
         LookingAt.runtimeValue = 1f - Mathf.Abs(_odileLookAngle) / 180f * _lookingAtMultiplier;
+
+        //swarmDimension = 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f);
+        //lerp
+        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f), Time.deltaTime * 10f);
 
         //left and right handtrackers
         //left handtracker

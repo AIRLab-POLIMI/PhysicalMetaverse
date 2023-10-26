@@ -233,26 +233,6 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
     //data is an array of numbers not a string
     private void Update()
     {   
-        //if mesh enable, else disable mesh
-        if (MESH_ENABLED)
-        {
-            if(!_mesh_status){
-                //disable mesh of all spheres
-                foreach (GameObject sphere in _spheres)
-                {
-                    sphere.GetComponent<MeshRenderer>().enabled = false;
-                }
-            }
-            else{
-                //enable mesh of all spheres
-                foreach (GameObject sphere in _spheres)
-                {
-                    sphere.GetComponent<MeshRenderer>().enabled = true;
-                }
-            }
-            _mesh_status = !_mesh_status;
-            MESH_ENABLED = false;
-        }
         //if first receive
         if (data != null)
         {
@@ -260,6 +240,7 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
                 //call function to spawn spheres
                 if(_GET_SPHERES){
                     GetSpheres();
+                    CheckMeshEnabled();
                 }
                 else{
                     SpawnSpheres();
@@ -275,7 +256,9 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
             
             //move spheres to position
             MoveSpheres();
-            data = null;
+            data = null;//if mesh enable, else disable mesh
+
+            CheckMeshEnabled();
         }
 
         //if time since last receive is more than pose decay time move spheres to y = -100
@@ -297,6 +280,27 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
         return _joints;
     }
 
+    private void CheckMeshEnabled(){
+        if (MESH_ENABLED)
+        {
+            if(_mesh_status){
+                //disable mesh of all spheres
+                foreach (GameObject sphere in _spheres)
+                {
+                    sphere.GetComponent<MeshRenderer>().enabled = false;
+                }
+            }
+            else{
+                //enable mesh of all spheres
+                foreach (GameObject sphere in _spheres)
+                {
+                    sphere.GetComponent<MeshRenderer>().enabled = true;
+                }
+            }
+            _mesh_status = !_mesh_status;
+            MESH_ENABLED = false;
+        }
+    }
 
     //spawn spheres
     private void SpawnSpheres()

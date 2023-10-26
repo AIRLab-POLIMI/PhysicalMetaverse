@@ -6,6 +6,7 @@ public class RobotPoseContoller : MonoBehaviour
 {
     //bool serialize HIDE
     [SerializeField] private bool _HIDE = true;
+    [SerializeField] private bool _HIDE_BUTTON = true;
     //PersonManagerV2
     public PersonManagerV2 _personManager;
     public Transform _odileWrist;
@@ -119,7 +120,10 @@ public class RobotPoseContoller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Hide(_HIDE);
+        if(_HIDE_BUTTON){
+            Hide(_HIDE);
+            _HIDE_BUTTON = false;
+        }
         //if spawned
         if (_notPopulated)
         {
@@ -254,7 +258,6 @@ public class RobotPoseContoller : MonoBehaviour
     public float zOffset = 0f;
     public Vector3 _tilt = new Vector3(0, 0, 0);
 
-    public GameObject _debugCylinder;
     void HeadAngles(){
         Quaternion bodyRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 0, 0);
         //final angle should be x=0, y=direction, z=-90
@@ -358,13 +361,28 @@ public class RobotPoseContoller : MonoBehaviour
                 {
                     mesh.enabled = false;
                 }
+                //disable all sprite mesh renderes
+                foreach (SpriteRenderer spriteRenderer in GetComponentsInChildren<SpriteRenderer>())
+                {
+                    spriteRenderer.enabled = false;
+                }
             }
             else{
-                if(_prevHide && !_HIDE){
+                if((_prevHide && !_HIDE) || (_HIDE_BUTTON && !_HIDE)){
                     Vector3 target = _joints["Left Foot 29"].position;
                     target.y = 0f;
                     //no lerp
                     transform.position = target;
+                    //set all meshes
+                    foreach (MeshRenderer mesh in _meshes)
+                    {
+                        mesh.enabled = true;
+                    }
+                    //disable all sprite mesh renderes
+                    foreach (SpriteRenderer spriteRenderer in GetComponentsInChildren<SpriteRenderer>())
+                    {
+                        spriteRenderer.enabled = true;
+                    }
                 }
                 _prevHide = false;
             }
