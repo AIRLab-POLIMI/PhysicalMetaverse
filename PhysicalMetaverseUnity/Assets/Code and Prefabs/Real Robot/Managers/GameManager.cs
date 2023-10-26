@@ -20,7 +20,7 @@ public class GameManager : Monosingleton<GameManager>
     
     [Range(0, 600)] [SerializeField] private int _gameDurationSeconds;
     [SerializeField] private int _remainingTime;
-    private float _normalisedElapsedTime;    
+    [SerializeField] private float _normalisedElapsedTime;    
     private bool _gameOver;
     [Space]
     
@@ -71,9 +71,11 @@ public class GameManager : Monosingleton<GameManager>
         CheckResetTime();
     }
 
+    //serialize time scale
+    [SerializeField] private float _timeScale = -20f;
     void UpdateTime()
     {
-        _normalisedElapsedTime += Time.deltaTime/_gameDurationSeconds;
+        _normalisedElapsedTime += Time.deltaTime/_gameDurationSeconds * _timeScale;
         //_remainingTime round
         _remainingTime = _gameDurationSeconds - (int) Math.Round(_normalisedElapsedTime * _gameDurationSeconds);
         AmbientManager.Instance.UpdateLight(_normalisedElapsedTime);
@@ -82,6 +84,11 @@ public class GameManager : Monosingleton<GameManager>
             LoseTheGame();
         }
     }    
+
+    public void SetTimeScale(float timeScale)
+    {
+        _timeScale = timeScale;
+    }
 
     private void WinTheGame(){
         _gameOver = true;
@@ -130,6 +137,18 @@ public class GameManager : Monosingleton<GameManager>
     {
         //normalise time and add it to _normalisedElapsedTime
         _normalisedElapsedTime += (float) time / _gameDurationSeconds;
+    }
+
+    //get normalized elapsed
+    public float GetNormalizedElapsedTime()
+    {
+        return _normalisedElapsedTime;
+    }
+
+    //set normalized time
+    public void SetNormalizedElapsedTime(float normalizedElapsedTime)
+    {
+        _normalisedElapsedTime = normalizedElapsedTime;
     }
 
 }
