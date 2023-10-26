@@ -117,6 +117,11 @@ public class RobotPoseContoller : MonoBehaviour
     public Transform _camera;
     public float _camAngleSensitivity = 10f;
     public float _camXAngleSensitivity = 10f;
+    public float _exitX = 6.5f;
+    public bool _NO_PERSON = false;
+    public bool GetPoseDetected(){
+        return !_NO_PERSON;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -229,9 +234,19 @@ public class RobotPoseContoller : MonoBehaviour
         _lerpNose = Mathf.Lerp(_lerpNose, _joints["Nose"].localPosition.y, _lerpSpeed);
         //camXAngle add 1 and clamp between -2 and 2
         float camXAngle = Mathf.Clamp(_lerpNose + 1f, -2f, 2f);
+        
         camXAngle = (camXAngle/2f) * _camXAngleSensitivity;
 
-        _camera.localRotation = Quaternion.Euler(camXAngle, camYAngle, 0);
+        //if abs x less than _exitX
+        if(Mathf.Abs(transform.localPosition.x) < _exitX){
+            //_camera.localRotation = Quaternion.Euler(camXAngle, camYAngle, 0);
+            //lerp
+            _camera.localRotation = Quaternion.Lerp(_camera.localRotation, Quaternion.Euler(camXAngle, camYAngle, 0), _lerpSpeed);
+            _NO_PERSON = false;
+        }
+        else{
+            _NO_PERSON = true;
+        }
 
         //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
@@ -276,10 +291,10 @@ public class RobotPoseContoller : MonoBehaviour
 
     //get _lookAngle
     public float GetLookAngle(){
-        return _odileJoints["VCamPan"].GetComponent<DOFController>().GetAngle();;
+        return _odileJoints["VCamPan"].GetComponent<DOFController>().GetAngle();
     }
     public float GetTiltAngle(){
-        return _odileJoints["VCamTilt"].GetComponent<DOFController>().GetAngle();;
+        return _odileJoints["VCamTilt"].GetComponent<DOFController>().GetAngle();
     }
 
     //get handtrackers localpositions
@@ -288,6 +303,30 @@ public class RobotPoseContoller : MonoBehaviour
     }
     public Vector3 GetRightHandTrackerLocalPosition(){
         return _rightHandTracker.transform.localPosition;
+    }
+
+    public Vector3 GetNoseTrackerLocalPosition(){
+        return _joints["Nose"].localPosition;
+    }
+
+    //right wrist
+    public Vector3 GetRightWristLocalPosition(){
+        return _joints["Right Wrist"].localPosition;
+    }
+
+    //left wrist
+    public Vector3 GetLeftWristLocalPosition(){
+        return _joints["Left Wrist"].localPosition;
+    }
+
+    //right shoulder
+    public Vector3 GetRightShoulderLocalPosition(){
+        return _joints["Right Shoulder"].localPosition;
+    }
+
+    //left shoulder
+    public Vector3 GetLeftShoulderLocalPosition(){
+        return _joints["Left Shoulder"].localPosition;
     }
 
     //_leftDiff _rightDiff

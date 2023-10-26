@@ -21,7 +21,7 @@ mpDraw = mp.solutions.drawing_utils
 
 #internal webcam
 if CAMERA_TYPE == "internal":
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
 #camera stream from ip camera at http://192.168.1.7:8080/video
 elif CAMERA_TYPE == "remote":
     cap = cv2.VideoCapture("http://10.0.0.175:8080/video")
@@ -29,7 +29,7 @@ elif CAMERA_TYPE == "remote":
 pTime = 0
 
 # Define the UDP server's address and port
-server_address = ('localhost', 25666)  # Change the address and port as needed
+server_address = ('localhost', 25667)  # Change the address and port as needed
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 PAUSE = False

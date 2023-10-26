@@ -8229,7 +8229,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-2302
+  m_Name: pb_Mesh-2292
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -16250,7 +16250,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-2290
+  m_Name: pb_Mesh-2280
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -18687,7 +18687,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh33546
+  m_Name: pb_Mesh33556
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -20862,7 +20862,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh34634
+  m_Name: pb_Mesh34662
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -22488,7 +22488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27a9fc44e6e5d8c40a9afae0ec27570e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _HIDE: 1
+  _HIDE: 0
   _odileViz: {fileID: 1088018241}
   _evangelion: {fileID: 1209229514}
   QtyOfMovement: {fileID: 11400000, guid: 11db1589bb1140145b7ec92a9f693258, type: 2}
@@ -22509,6 +22509,9 @@ MonoBehaviour:
   _eyeVerticalMiddle: 0
   _eyeHorizontalMiddle: 270
   _eyeClamp: 0.335
+  _petalsControlType: 1
+  _lowerNoseDistanceLimit: 0.7
+  _upperNoseDistanceLimit: 2.2
 --- !u!1 &991052603
 GameObject:
   m_ObjectHideFlags: 0
@@ -40623,7 +40626,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1724598785
 Transform:
   m_ObjectHideFlags: 0
@@ -40924,7 +40927,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh33812
+  m_Name: pb_Mesh33832
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -50391,7 +50394,7 @@ PrefabInstance:
     - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
         type: 3}
       propertyPath: _offsetWithPose.x
-      value: 18.29
+      value: 18.12
       objectReference: {fileID: 0}
     - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
         type: 3}
@@ -50416,7 +50419,7 @@ PrefabInstance:
     - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
         type: 3}
       propertyPath: _xTraslationMultiplier
-      value: 2.89
+      value: 3.1
       objectReference: {fileID: 0}
     - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
         type: 3}
@@ -50656,6 +50659,16 @@ PrefabInstance:
         type: 3}
       propertyPath: _neutralDistance
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3326365395569944337, guid: 1cd8fac3fa154024bacaf0da85821b2e,
+        type: 3}
+      propertyPath: _headSpeedSensitivity
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 3326365395569944337, guid: 1cd8fac3fa154024bacaf0da85821b2e,
+        type: 3}
+      propertyPath: _qtyOfMovementSensitivity
+      value: 1.34
       objectReference: {fileID: 0}
     - target: {fileID: 3326365395569944342, guid: 1cd8fac3fa154024bacaf0da85821b2e,
         type: 3}

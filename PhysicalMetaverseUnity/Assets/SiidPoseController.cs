@@ -51,9 +51,22 @@ public class SiidPoseController : MonoBehaviour
 
     }
 
+    //serialize enum of HANDS DISTANCE, NOSE DISTANCE
+    public enum PetalsControlType{
+        HANDS,
+        NOSE,
+        CENTER
+    }
+
+    //serialize petals control type
+    [SerializeField] private PetalsControlType _petalsControlType = PetalsControlType.NOSE;
+
     // Update is called once per frame
     void Update()
     {
+        //_distance from filtered distance
+        _distance = _robotPoseController.GetFilteredDistance();
+        
         if(_HIDE){
             Hide(_hideStatus);
             _hideStatus = !_hideStatus;
@@ -67,6 +80,28 @@ public class SiidPoseController : MonoBehaviour
         //multiply ball emission color
         _lightBall.GetComponent<Renderer>().material.SetColor("_EmissionColor", new Color(_lightBallEmissionColor.r * _qtyOfMovement / _maxEmissionIntensity, _lightBallEmissionColor.g * _qtyOfMovement / _maxEmissionIntensity, _lightBallEmissionColor.b * _qtyOfMovement / _maxEmissionIntensity));
 
+        //if _petalsControlType
+        if(_petalsControlType == PetalsControlType.HANDS){
+            PetalsAngleWithHandsDistance();
+        }else if(_petalsControlType == PetalsControlType.NOSE){
+            PetalsAngleWithNoseDistance();
+        }
+        else if(_petalsControlType == PetalsControlType.CENTER){
+            PetalsAngleWithCenterDistance();
+        }
+
+
+        _horizontalEye = (_robotPoseController.GetLookAngle() - _eyeHorizontalMiddle) / _eyeHorizontalRange;
+        //315 to 350, 330 is middle
+        _verticalEye = _robotPoseController.GetTiltAngle();
+        _verticalEye = (_verticalEye - _eyeVerticalMiddle) / _eyeVerticalRange;
+        //clamp between _eyeClamp
+        _horizontalEye = Mathf.Clamp(_horizontalEye, -_eyeClamp, _eyeClamp);
+        _verticalEye = Mathf.Clamp(_verticalEye, -_eyeClamp, _eyeClamp);
+        _eye.transform.localPosition = new Vector3(-_horizontalEye, -_verticalEye, _eye.transform.localPosition.z);
+    }
+
+    private void PetalsAngleWithHandsDistance(){
         Vector3 leftHandTracker = _robotPoseController.GetLeftHandTrackerLocalPosition();
         //right handtracker
         Vector3 rightHandTracker = _robotPoseController.GetRightHandTrackerLocalPosition();
@@ -79,14 +114,60 @@ public class SiidPoseController : MonoBehaviour
             //set angle
             dofController.SetAngle(-90f+_averageAngle);
         }
-        _horizontalEye = (_robotPoseController.GetLookAngle() - _eyeHorizontalMiddle) / _eyeHorizontalRange;
-        //315 to 350, 330 is middle
-        _verticalEye = _robotPoseController.GetTiltAngle();
-        _verticalEye = (_verticalEye - _eyeVerticalMiddle) / _eyeVerticalRange;
-        //clamp between _eyeClamp
-        _horizontalEye = Mathf.Clamp(_horizontalEye, -_eyeClamp, _eyeClamp);
-        _verticalEye = Mathf.Clamp(_verticalEye, -_eyeClamp, _eyeClamp);
-        _eye.transform.localPosition = new Vector3(-_horizontalEye, -_verticalEye, _eye.transform.localPosition.z);
+    }
+
+    //distance
+    [SerializeField] private float _distance = 0f;
+    //Serialize lower nose distance limit
+    [SerializeField] private float _lowerNoseDistanceLimit = 0.7f;
+    //Serialize upper nose distance limit
+    [SerializeField] private float _upperNoseDistanceLimit = 2.2f;
+    private void PetalsAngleWithNoseDistance(){
+        float correctedUpperNoseDistanceLimit = _upperNoseDistanceLimit / _distance;
+        Vector3 noseTracker = _robotPoseController.GetNoseTrackerLocalPosition();
+        //right handtracker
+        Vector3 rightHandTracker = _robotPoseController.GetRightWristLocalPosition();
+        Vector3 leftHandTracker = _robotPoseController.GetLeftWristLocalPosition();
+        _averageDistance = Vector3.Distance(noseTracker, rightHandTracker) + Vector3.Distance(noseTracker, leftHandTracker);
+        _averageDistance = _averageDistance / 2;
+        //clamp between 0.7 and 2.5
+        _averageDistance = Mathf.Clamp(_averageDistance, _lowerNoseDistanceLimit, correctedUpperNoseDistanceLimit);
+        float _averageAngle = (_averageDistance-_lowerNoseDistanceLimit) * 90 / (correctedUpperNoseDistanceLimit - _lowerNoseDistanceLimit);
+        //for each DOFController
+        foreach (DOFController dofController in _dofControllers)
+        {
+            //set angle
+            dofController.SetAngle(-90f+_averageAngle);
+        }
+    }
+    //PetalsAngleWithCenterDistance
+    //upper and lower limits
+    [SerializeField] private float _lowerCenterDistanceLimit = 0.7f;
+    [SerializeField] private float _upperCenterDistanceLimit = 2.5f;
+    private void PetalsAngleWithCenterDistance(){
+        float correctedUpperCenterDistanceLimit = _upperCenterDistanceLimit / _distance;
+        //vertical axis passing by average of left and right shoulder
+        Vector3 leftShoulderTracker = _robotPoseController.GetLeftShoulderLocalPosition();
+        Vector3 rightShoulderTracker = _robotPoseController.GetRightShoulderLocalPosition();
+        Vector3 centerShoulderTracker = (leftShoulderTracker + rightShoulderTracker) / 2;
+        //left hand distance with x and z distance from center
+        Vector3 leftHandTracker = _robotPoseController.GetLeftWristLocalPosition();
+        Vector3 rightHandTracker = _robotPoseController.GetRightWristLocalPosition();
+        Vector3 leftHandDistance = new Vector3(leftHandTracker.x - centerShoulderTracker.x, 0, leftHandTracker.z - centerShoulderTracker.z);
+        Vector3 rightHandDistance = new Vector3(rightHandTracker.x - centerShoulderTracker.x, 0, rightHandTracker.z - centerShoulderTracker.z);
+        //average distance
+        _averageDistance = (leftHandDistance.magnitude + rightHandDistance.magnitude) / 2;
+        //clamp between 0.7 and 2.5
+        _averageDistance = Mathf.Clamp(_averageDistance, _lowerCenterDistanceLimit, correctedUpperCenterDistanceLimit);
+        float _averageAngle = (_averageDistance-_lowerCenterDistanceLimit) * 90 / (correctedUpperCenterDistanceLimit - _lowerCenterDistanceLimit);
+        //for each DOFController
+        foreach (DOFController dofController in _dofControllers)
+        {
+            //set angle
+            dofController.SetAngle(-90f+_averageAngle);
+        }
+
+        
     }
 
     public void Hide(bool hide){

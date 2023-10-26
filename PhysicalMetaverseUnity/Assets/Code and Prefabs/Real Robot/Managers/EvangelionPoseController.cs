@@ -177,20 +177,29 @@ public class EvangelionPoseController : MonoBehaviour
     [SerializeField] private float _odileAngle;
     private Vector3 _leftHandTrackerPrevPosition = Vector3.zero;
     private Vector3 _rightHandTrackerPrevPosition = Vector3.zero;
+    //prev horizontal_headHorizontalAngle
+    private float _prevHorizontalHeadAngle = 0f;
     [SerializeField] private float _leftHandSpeed = 0f;
     [SerializeField] private float _rightHandSpeed = 0f;
+    [SerializeField] private float _headSpeed = 0f;
+    //_headSpeedSensitivity
+    [SerializeField] private float _headSpeedSensitivity = 0.0125f;
     //variables to have a sliding window of 10 measurements on lefthand tracker position
-    //list of 10 delta measurements
+    //list of delta measurements
     private List<float> _leftHandDeltaMeasurements = new List<float>();
     private List<float> _rightHandDeltaMeasurements = new List<float>();
+    //list of head horizontal angle delta measurements
+    private List<float> _headHorizontalAngleDeltaMeasurements = new List<float>();
     [SerializeField] private float _mesurementDeltaTime = 0.06f;
     //_measurementsTaken
     private int _measurementsTaken = 0;
     private float _prevTime = 0f;
     private float _leftHandDelta = 0f;
     private float _rightHandDelta = 0f;
+    //head delta
+    private float _headDelta = 0f;
     public float _realDeltaTime = 0f;
-    private float _deltaTime = 0f;
+    [SerializeField] private float _deltaTime = 0f;
     private int _totalMeasurements = 6;
     //serialize _qtyOfMovementSensitivity
     [SerializeField] private float _qtyOfMovementSensitivity = 1f;
@@ -207,13 +216,13 @@ public class EvangelionPoseController : MonoBehaviour
     //sensitivity 0.13
     //threshold 0.71
     
+
     private void UpdateValues(){
-        RobotPoseContoller robotPoseContoller = _odileViz.GetComponent<RobotPoseContoller>();
         // get distanceFromCenter.runtimeValue from odileviz x position abs
         distanceFromCenter.runtimeValue = Mathf.Abs(_odileViz.position.x) * _distanceFromCenterMultiplier;
         //LookingAt 
         //_odileLookAngle from _odileViz GetLookAngle
-        _odileLookAngle = robotPoseContoller.GetLookAngle();
+        _odileLookAngle = _robotPoseContoller.GetLookAngle();
         _odileLookAngle -= 270f;
         //angle of vector from 0 to odile position
         _odileAngle = Vector3.Angle(Vector3.right, _odileViz.position);
@@ -222,13 +231,19 @@ public class EvangelionPoseController : MonoBehaviour
 
         //swarmDimension = 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f);
         //lerp
-        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f), Time.deltaTime * 10f);
+        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f), Time.deltaTime * 10f);
 
+        MeasureQtyOfMovement();
+        
+
+    }
+    
+    private void MeasureQtyOfMovement(){
         //left and right handtrackers
         //left handtracker
-        Vector3 leftHandTracker = robotPoseContoller.GetLeftHandTrackerLocalPosition();
+        Vector3 leftHandTracker = _robotPoseContoller.GetLeftHandTrackerLocalPosition();
         //right handtracker
-        Vector3 rightHandTracker = robotPoseContoller.GetRightHandTrackerLocalPosition();
+        Vector3 rightHandTracker = _robotPoseContoller.GetRightHandTrackerLocalPosition();
         /*
         //left hand speed, use deltatime
         _leftHandSpeed = Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker) / Time.deltaTime; //TODO sum distances in intervals of one second so speed is actually measurable
@@ -254,6 +269,16 @@ public class EvangelionPoseController : MonoBehaviour
             _rightHandDeltaMeasurements.Add(delta);
             _rightHandDelta += delta;
 
+            //head horizontal angle
+            float headHorizontalAngle = _robotPoseContoller.GetLookAngle();
+            //delta of head horizontal angle
+            delta = Mathf.Abs(headHorizontalAngle - _prevHorizontalHeadAngle);
+            _prevHorizontalHeadAngle = headHorizontalAngle;
+            //add delta to list
+            _headHorizontalAngleDeltaMeasurements.Add(delta);
+            _headDelta += delta;
+
+
             //increment _measurementsTaken
             _measurementsTaken++;
             //if _measurementsTaken is 10, remove first element
@@ -265,9 +290,13 @@ public class EvangelionPoseController : MonoBehaviour
                 _rightHandSpeed = _rightHandDelta / (_mesurementDeltaTime * _totalMeasurements);
                 _rightHandDelta -= _rightHandDeltaMeasurements[0];
                 _rightHandDeltaMeasurements.RemoveAt(0);
+                //head speed
+                _headSpeed = _headDelta / (_mesurementDeltaTime * _totalMeasurements) * _headSpeedSensitivity;
+                _headDelta -= _headHorizontalAngleDeltaMeasurements[0];
+                _headHorizontalAngleDeltaMeasurements.RemoveAt(0);
                 _measurementsTaken -= 1;
                 //QtyOfMovement.runtimeValue = _leftHandSpeed + _rightHandSpeed;
-                _newQtyOfMovement = _leftHandSpeed + _rightHandSpeed;
+                _newQtyOfMovement = _leftHandSpeed + _rightHandSpeed + _headSpeed;
                 //if less than _qtyOfMovementThreshold set to
                 if(_newQtyOfMovement < _qtyOfMovementThreshold){
                     if(_SPEED_MODE)
@@ -285,9 +314,7 @@ public class EvangelionPoseController : MonoBehaviour
             //reset _prevTime
             _prevTime = Time.time;
         }
-
     }
-
     //get _newQtyOfMovement
     public float GetNewQtyOfMovement(){
         return _newQtyOfMovement;
