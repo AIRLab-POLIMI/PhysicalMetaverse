@@ -44785,7 +44785,7 @@ MonoBehaviour:
   _normalizedEndTime: 0.95
   _resetTimeSpeed: -2
   _resetTimeDuration: 1
-  _restoreTime: 3
+  _restoreTime: 0.5
   _restoreTimeBeforeEnd: 3
   _vizList: []
   _byteEventList:
@@ -50666,7 +50666,7 @@ PrefabInstance:
     - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
         type: 3}
       propertyPath: _distanceDeltaTolerance
-      value: 0.8
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 3057180797265128315, guid: f56df9eea6a88034ab9e9e0b0c828c7c,
         type: 3}

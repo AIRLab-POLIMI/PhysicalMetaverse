@@ -122,10 +122,6 @@ public class RobotPoseContoller : MonoBehaviour
     public bool GetPoseDetected(){
         return _personManager.GetPersonDetected();
     }
-    //setposedetected
-    public void SetPoseDetected(bool poseDetected){
-        _NO_PERSON = !poseDetected;
-    }
     // Update is called once per frame
     void Update()
     {
@@ -263,7 +259,10 @@ public class RobotPoseContoller : MonoBehaviour
         //HeadAngles(); //TODO
         //HeadAngles2D();
         HeadAngles3();
-
+        
+        if(_NO_PERSON){
+            _oldZDistance = 0.6f;
+        }
     }
     public float GetFilteredDistance(){
         return _oldZDistance;

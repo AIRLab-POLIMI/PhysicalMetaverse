@@ -52,12 +52,25 @@ public class MirrorGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        bool poseDetected = _robotPoseController.GetPoseDetected();
+        //if prev true and curr false fire event with value false
+        if(!_prevPoseDetected && poseDetected){
+            //fire event
+            _byteEventList[(int)_currentVizType].Invoke(new byte[]{0});
+        }
+        //if prev false and curr true fire event with value true
+        if(_prevPoseDetected && !poseDetected){
+            //fire event
+            _byteEventList[(int)_currentVizType].Invoke(new byte[]{1});
+        }
+        _prevPoseDetected = poseDetected;
         //if not viz setted fire corresponding event with value true
         if(!_vizSetted){
             //fire event
-            _byteEventList[(int)_currentVizType].Invoke(new byte[]{1});
+            //if(!poseDetected)
+            //    _byteEventList[(int)_currentVizType].Invoke(new byte[]{1});
             //fire next in list
-            _byteEventList[((int)_currentVizType + 1) % _byteEventList.Count].Invoke(new byte[]{0});
+            //_byteEventList[((int)_currentVizType + 1) % _byteEventList.Count].Invoke(new byte[]{0});
             //change _currentVizType to next
             _currentVizType = _vizTypeList[((int)_currentVizType + 1) % _vizTypeList.Length];
             //set viz setted to true
