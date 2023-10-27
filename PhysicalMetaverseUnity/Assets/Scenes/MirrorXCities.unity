@@ -44751,7 +44751,9 @@ MonoBehaviour:
   _robotPoseController: {fileID: 1088018249}
   _normalizedEndTime: 0.95
   _resetTimeSpeed: -2
+  _resetTimeDuration: 1
   _restoreTime: 3
+  _restoreTimeBeforeEnd: 3
 --- !u!1 &1873101567
 GameObject:
   m_ObjectHideFlags: 0
@@ -51075,7 +51077,7 @@ PrefabInstance:
     - target: {fileID: 6519660980425091106, guid: aa34bbf7fae5014458dcccc10a1cb6d3,
         type: 3}
       propertyPath: _gameDurationSeconds
-      value: 12
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa34bbf7fae5014458dcccc10a1cb6d3, type: 3}
