@@ -101,6 +101,12 @@ public class SiidPoseController : MonoBehaviour
         _eye.transform.localPosition = new Vector3(-_horizontalEye, -_verticalEye, _eye.transform.localPosition.z);
     }
 
+    
+    //fire hide button
+    public void FireHideButton(){
+        _HIDE = true;
+    }
+
     private void PetalsAngleWithHandsDistance(){
         Vector3 leftHandTracker = _robotPoseController.GetLeftHandTrackerLocalPosition();
         //right handtracker

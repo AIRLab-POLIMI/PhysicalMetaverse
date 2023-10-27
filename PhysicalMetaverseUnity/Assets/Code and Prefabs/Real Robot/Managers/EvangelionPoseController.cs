@@ -237,6 +237,12 @@ public class EvangelionPoseController : MonoBehaviour
         
 
     }
+
+    //fire hide button
+    public void FireHideButton(){
+        _HIDE = true;
+        swarmDimension = 0f;
+    }
     
     private void MeasureQtyOfMovement(){
         //left and right handtrackers

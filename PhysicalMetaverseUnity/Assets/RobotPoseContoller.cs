@@ -120,12 +120,17 @@ public class RobotPoseContoller : MonoBehaviour
     public float _exitX = 6.5f;
     public bool _NO_PERSON = false;
     public bool GetPoseDetected(){
-        return !_NO_PERSON;
+        return _personManager.GetPersonDetected();
+    }
+    //setposedetected
+    public void SetPoseDetected(bool poseDetected){
+        _NO_PERSON = !poseDetected;
     }
     // Update is called once per frame
     void Update()
     {
         if(_HIDE_BUTTON){
+            _HIDE = !_HIDE;
             Hide(_HIDE);
             _HIDE_BUTTON = false;
         }
@@ -437,6 +442,12 @@ public class RobotPoseContoller : MonoBehaviour
                 _prevHide = false;
             }
         }
+    }
+
+    
+    //fire hide button
+    public void FireHideButton(){
+        _HIDE_BUTTON = true;
     }
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist
     void InverseKinematics(){

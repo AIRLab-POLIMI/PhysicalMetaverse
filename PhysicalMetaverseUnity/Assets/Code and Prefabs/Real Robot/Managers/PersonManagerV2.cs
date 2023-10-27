@@ -37,6 +37,8 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
 
     //prev rcv time
     private float prevRcvTime = 0f;
+    //serialize person detected
+    [SerializeField] private bool _personDetected = false;
     
     public bool ENABLE_LOG = false;
     public bool MESH_ENABLED = true;
@@ -66,8 +68,16 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
         parsedData = ParseData(message);
         //log difference between times
         Debug.Log(Time.time - prevRcvTime);
-        prevRcvTime = Time.time;
+        
+        //set prevRcvTime only if lenght of parsedData is >= 33
+        if(parsedData.Length >= 33){
+            prevRcvTime = Time.time;
+        }
         Debug.unityLogger.logEnabled = true;
+    }
+    //get _personDetected
+    public bool GetPersonDetected(){
+        return _personDetected;
     }
     //struct containing a string and a gameobject
     [System.Serializable]
@@ -264,10 +274,14 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
         //if time since last receive is more than pose decay time move spheres to y = -100
         if (Time.time - prevRcvTime > _poseDecayTime)
         {
+            _personDetected = false;
             //move transform down 100y
             //transform.localPosition = new Vector3(transform.localPosition.x, -100f, transform.localPosition.z);
             //disable _odileViz
             _odileViz.GetComponent<RobotPoseContoller>().Hide(true);
+        }
+        else{
+            _personDetected = true;
         }
         //set odileviz rotation to orientation of vector from zero to odileviz
         Vector3 direction = _odileViz.transform.position - Vector3.zero;

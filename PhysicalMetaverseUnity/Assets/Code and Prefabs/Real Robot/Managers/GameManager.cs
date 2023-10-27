@@ -90,6 +90,12 @@ public class GameManager : Monosingleton<GameManager>
         _timeScale = timeScale;
     }
 
+    //get timescale
+    public float GetTimeScale()
+    {
+        return _timeScale;
+    }
+
     private void WinTheGame(){
         _gameOver = true;
         _winPanel.SetActive(true);
