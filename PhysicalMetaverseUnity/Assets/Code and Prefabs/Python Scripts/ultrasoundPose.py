@@ -75,7 +75,7 @@ def receive_distance():
 
 #extra thread to receive data from sock2
 import threading
-distance = "40,00."
+distance = "80,00."
 thread = threading.Thread(target=receive_distance, args=())
 #daemon
 thread.daemon = True

@@ -363,7 +363,14 @@ public class RobotPoseContoller : MonoBehaviour
         //set VCamPan to headAngle
         _odileJoints["VCamPan"].GetComponent<DOFController>().SetAngle(headAngle);
     }
-
+    //serialize tilt zero distance
+    [SerializeField] private float _tiltZeroDistance = 0.8f;
+    [SerializeField] private float _tiltZeroHeight = 0.8f;
+    //float nose height
+    [SerializeField] private float _noseHeight = 0.8f;
+    //nose height
+    [SerializeField] private float _noseHeightMultiplier = 0.1f;
+    
     private void HeadAngles3(){
         Quaternion bodyRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 0, 0);
         //final angle should be x=0, y=direction, z=-90
@@ -377,6 +384,10 @@ public class RobotPoseContoller : MonoBehaviour
         Quaternion leftTilt = Quaternion.LookRotation(XDirection(_joints["Left Ear"], _joints["Nose"]));
         Quaternion rightTilt = Quaternion.LookRotation(XDirection(_joints["Right Ear"], _joints["Nose"]));
         avgAngle = (leftTilt.eulerAngles.x + rightTilt.eulerAngles.x) / 2;
+        _noseHeight = _joints["Nose"].localPosition.y;
+        //avg angle * tiltzerp / filtered distance
+        //avgAngle = avgAngle * _tiltZeroDistance / _oldZDistance;
+        //avgAngle = avgAngle + (_noseHeight - _tiltZeroHeight) * _noseHeightMultiplier; //TODO
         //set VCamTilt to headTilt
         _odileJoints["VCamTilt"].GetComponent<DOFController>().SetAngle(-avgAngle - xOffset);
     }
@@ -408,10 +419,10 @@ public class RobotPoseContoller : MonoBehaviour
             }
             else{
                 if((_prevHide && !_HIDE) || (_HIDE_BUTTON && !_HIDE)){
-                    Vector3 target = _joints["Left Foot 29"].position;
-                    target.y = 0f;
+                    //Vector3 target = _joints["Left Foot 29"].position;
+                    //target.y = 0f;
                     //no lerp
-                    transform.position = target;
+                    //transform.position = target;
                     //set all meshes
                     foreach (MeshRenderer mesh in _meshes)
                     {
