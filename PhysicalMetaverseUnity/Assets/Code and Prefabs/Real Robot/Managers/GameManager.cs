@@ -151,4 +151,9 @@ public class GameManager : Monosingleton<GameManager>
         _normalisedElapsedTime = normalizedElapsedTime;
     }
 
+    //get game duration
+    public int GetGameDuration()
+    {
+        return _gameDurationSeconds;
+    }
 }

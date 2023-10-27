@@ -7,7 +7,7 @@ import json
 #camera types:
 #internal - internal webcam
 #remote - ip camera at http://192.168.1.7:8080/video
-CAMERA_TYPE = "internal"
+CAMERA_TYPE = "remote"
 MIRROR_MODE = True
 
 SHOW = True
@@ -24,7 +24,7 @@ if CAMERA_TYPE == "internal":
     cap = cv2.VideoCapture(0)
 #camera stream from ip camera at http://192.168.1.7:8080/video
 elif CAMERA_TYPE == "remote":
-    cap = cv2.VideoCapture("http://10.0.0.175:8080/video")
+    cap = cv2.VideoCapture("http://192.168.137.1:9000/stream.mjpg")
 
 pTime = 0
 

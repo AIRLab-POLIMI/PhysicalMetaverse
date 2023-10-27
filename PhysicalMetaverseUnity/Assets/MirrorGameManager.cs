@@ -13,8 +13,11 @@ public class MirrorGameManager : MonoBehaviour
     [SerializeField] private float _normalizedEndTime = 0.8f;
     //serialize _resetTimeSpeed
     [SerializeField] private float _resetTimeSpeed = -80f;
+    [SerializeField] private float _resetTimeDuration = 2f;
     //serialize _restoreTime
     [SerializeField] private float _restoreTime = 3f;
+    //serialize _restoreTimeBeforeEnd
+    [SerializeField] private float _restoreTimeBeforeEnd = 3f;
     private float _exitTime = 0f;
     // Start is called before the first frame update
     void Start()
@@ -49,19 +52,10 @@ public class MirrorGameManager : MonoBehaviour
                 }
             }
             _prevPoseDetected = _robotPoseController.GetPoseDetected();*/
-
-            //restore 3 seconds after person left
-            if(_robotPoseController.GetPoseDetected()){
-                _exitTime = Time.time;
-            }
-            if(Time.time - _exitTime > _restoreTime){
-                //set timescale to -20
-                _gameManager.SetTimeScale(_resetTimeSpeed);
-                //set normalized time to end
-                if(_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime){
-                    _gameManager.SetNormalizedElapsedTime(_normalizedEndTime);
-                }
-            }
+            RestoreTimeAfter(_restoreTime);
+        }
+        else{
+            RestoreTimeAfter(_restoreTimeBeforeEnd);
         }
         //if normalised time is less than 0 set timescale to 1
         if(_gameManager.GetNormalizedElapsedTime() < 0){
@@ -78,5 +72,22 @@ public class MirrorGameManager : MonoBehaviour
         }
 
 
+
+    }
+
+    private void RestoreTimeAfter(float restoreTime){
+        //restore 3 seconds after person left
+        if(_robotPoseController.GetPoseDetected()){
+            _exitTime = Time.time;
+        }
+        if(Time.time - _exitTime > restoreTime){
+            //set timescale to -20
+            _resetTimeSpeed = -GameManager.Instance.GetGameDuration() / _resetTimeDuration;
+            _gameManager.SetTimeScale(_resetTimeSpeed);
+            //set normalized time to end
+            if(_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime){
+                _gameManager.SetNormalizedElapsedTime(_normalizedEndTime);
+            }
+        }
     }
 }
