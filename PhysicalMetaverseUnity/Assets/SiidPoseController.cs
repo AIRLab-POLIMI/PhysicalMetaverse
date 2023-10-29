@@ -11,6 +11,8 @@ public class SiidPoseController : MonoBehaviour
     [SerializeField] private GameObject _odileViz;
     //serialize Evangelion
     [SerializeField] private GameObject _evangelion;
+    //y offset
+    [SerializeField] private float _yOffset = -1.8f;
     private EvangelionPoseController _evangelionPoseController;
     //RobotPoseContoller
     private RobotPoseContoller _robotPoseController;
@@ -26,6 +28,9 @@ public class SiidPoseController : MonoBehaviour
     [SerializeField] private float _averageDistance;
     //array of 4 DOFController
     [SerializeField] private DOFController[] _dofControllers = new DOFController[4];
+    //dofcontroller eyeY and dofcontroller eyeX
+    [SerializeField] private DOFController _dofControllerEyeY;
+    [SerializeField] private DOFController _dofControllerEyeX;
     [SerializeField] private float _horizontalEye;
     [SerializeField] private float _verticalEye;
     //gameobject eye
@@ -48,7 +53,7 @@ public class SiidPoseController : MonoBehaviour
         _lightBallEmissionColor = new Color(_lightBall.GetComponent<Renderer>().material.GetColor("_EmissionColor").r, _lightBall.GetComponent<Renderer>().material.GetColor("_EmissionColor").g, _lightBall.GetComponent<Renderer>().material.GetColor("_EmissionColor").b);
         //get components of trype DOFController in children of this
         _dofControllers = GetComponentsInChildren<DOFController>();
-
+        _yOffset = transform.localPosition.y;
     }
 
     //serialize enum of HANDS DISTANCE, NOSE DISTANCE
@@ -73,9 +78,9 @@ public class SiidPoseController : MonoBehaviour
             _HIDE = false;
         }
         //set position and rotation to odileviz
-        transform.position = _odileViz.transform.position;
+        transform.position = _odileViz.transform.position + _yOffset * Vector3.up;
         //rotation odileviz - 135 on y
-        transform.rotation = Quaternion.Euler(0, _odileViz.transform.rotation.eulerAngles.y - 135, 0);
+        transform.rotation = Quaternion.Euler(0, _odileViz.transform.rotation.eulerAngles.y - 180f, 0);
         _qtyOfMovement = QtyOfMovement.runtimeValue;
         //multiply ball emission color
         _lightBall.GetComponent<Renderer>().material.SetColor("_EmissionColor", new Color(_lightBallEmissionColor.r * _qtyOfMovement / _maxEmissionIntensity, _lightBallEmissionColor.g * _qtyOfMovement / _maxEmissionIntensity, _lightBallEmissionColor.b * _qtyOfMovement / _maxEmissionIntensity));
@@ -90,7 +95,17 @@ public class SiidPoseController : MonoBehaviour
             PetalsAngleWithCenterDistance();
         }
 
+        RotateEye();
+    }
 
+    void RotateEye(){
+        _verticalEye = _robotPoseController.GetTiltAngle();
+        _horizontalEye = _robotPoseController.GetLookAngle() + 90f;
+        _dofControllerEyeY.SetAngle(_horizontalEye);
+        _dofControllerEyeX.SetAngle(_verticalEye);
+    }
+    
+    void TraslateEye(){ //OLD Siid
         _horizontalEye = (_robotPoseController.GetLookAngle() - _eyeHorizontalMiddle) / _eyeHorizontalRange;
         //315 to 350, 330 is middle
         _verticalEye = _robotPoseController.GetTiltAngle();
@@ -100,7 +115,6 @@ public class SiidPoseController : MonoBehaviour
         _verticalEye = Mathf.Clamp(_verticalEye, -_eyeClamp, _eyeClamp);
         _eye.transform.localPosition = new Vector3(-_horizontalEye, -_verticalEye, _eye.transform.localPosition.z);
     }
-
     
     //fire hide button
     public void FireHideButton(){
