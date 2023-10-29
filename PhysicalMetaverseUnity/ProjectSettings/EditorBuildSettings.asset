@@ -8,10 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/SimuVisualization.unity
     guid: eec71a0f462b8be4c91311f0de06d45f
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/MirrorXCities.unity
     guid: b122a546d535a6345bced52cca16120b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Utils/Assets/Scenes/Sample Mjpeg Viewer.unity
     guid: 5808b4c5c873f1e4fa409faec2e7da74
   m_configObjects:

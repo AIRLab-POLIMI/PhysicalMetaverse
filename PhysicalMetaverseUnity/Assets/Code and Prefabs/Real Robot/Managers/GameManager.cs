@@ -162,4 +162,13 @@ public class GameManager : Monosingleton<GameManager>
     {
         return _gameDurationSeconds;
     }
+
+    //fullscreen variable
+    [SerializeField] private bool _fullscreen = false;
+    //set fullscreen
+    public void ToggleFullscreen()
+    {
+        _fullscreen = !_fullscreen;
+        Screen.fullScreen = _fullscreen;
+    }
 }

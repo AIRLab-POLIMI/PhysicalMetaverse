@@ -18,6 +18,8 @@ public class EvangelionPoseController : MonoBehaviour
     [SerializeField] private FloatSO distanceFromCenter;
 
     [SerializeField] private GameObject _pointPrefab;
+    //frequency multiplier
+    [SerializeField] private float _frequencyMultiplier = 1f;
 
     [SerializeField] private float timeMultiplier = 1f;
 
@@ -161,7 +163,7 @@ public class EvangelionPoseController : MonoBehaviour
                 */
             //change time with timeMultiplier
             _scaledTime = _scaledTime + Time.deltaTime / 100f * timeMultiplier;
-            _points[i].transform.position = new Vector3(_points[i].transform.position.x, startY + amplitude * Mathf.Sin( _scaledTime + i * offset), _points[i].transform.position.z);
+            _points[i].transform.position = new Vector3(_points[i].transform.position.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_scaledTime + i * offset)), _points[i].transform.position.z);
             _points[i].transform.localScale = new Vector3(1, swarmDimension, 1);
             _points[i].GetComponent<Renderer>().material.color = LerpColor(color1, color3, colorSlider);
 
