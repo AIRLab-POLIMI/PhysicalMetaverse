@@ -13,10 +13,13 @@ public class DOFController : MonoBehaviour
     [SerializeField] private bool _active = true;
     [SerializeField] private bool _lerp = true;
     [SerializeField] private bool _upsideDownFix = false;
+    //private initial quaternion rotation
+    private Quaternion _initialRotation;
     private float _angleOffset = 0f;
     // Start is called before the first frame update
     void Start()
     {
+        _initialRotation = transform.localRotation;
         //get controlled angle value
         if(_controlledAngle == "x"){
             _angleOffset = transform.localEulerAngles.x;
@@ -49,15 +52,7 @@ public class DOFController : MonoBehaviour
     }
 
     public void ResetDof(){
-        if(_controlledAngle == "x"){
-            transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
-        }
-        if(_controlledAngle == "y"){
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, 0, transform.localEulerAngles.z);
-        }
-        if(_controlledAngle == "z"){
-            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 0);
-        }
+        transform.localRotation = _initialRotation;
     }
     // Update is called once per frame
     void Update()

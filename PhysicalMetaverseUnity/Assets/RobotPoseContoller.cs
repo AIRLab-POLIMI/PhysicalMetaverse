@@ -289,6 +289,10 @@ public class RobotPoseContoller : MonoBehaviour
         
         if(_NO_PERSON){
             _oldZDistance = 0.6f;
+            _odileJoints["VCamArm"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamAlign"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamPan"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamTilt"].GetComponent<DOFController>().ResetDof();
         }
     }
     public float GetFilteredDistance(){
@@ -483,6 +487,11 @@ public class RobotPoseContoller : MonoBehaviour
                 {
                     obj.SetActive(false);
                 }
+                    
+                _odileJoints["VCamArm"].GetComponent<DOFController>().ResetDof();
+                _odileJoints["VCamAlign"].GetComponent<DOFController>().ResetDof();
+                _odileJoints["VCamPan"].GetComponent<DOFController>().ResetDof();
+                _odileJoints["VCamTilt"].GetComponent<DOFController>().ResetDof();
             }
             else{
                 if((_prevHide && !_HIDE) || (_HIDE_BUTTON && !_HIDE)){
