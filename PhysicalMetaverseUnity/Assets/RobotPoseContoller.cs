@@ -51,6 +51,21 @@ public class RobotPoseContoller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //add to _fedeOdilePartsStrings (arm, head, headAnchor, neck, head attach, body, odile, pointer container, elbow container)
+        _fedeOdilePartsStrings.Add("arm");
+        _fedeOdilePartsStrings.Add("head");
+        _fedeOdilePartsStrings.Add("headAnchor");
+        _fedeOdilePartsStrings.Add("neck");
+        _fedeOdilePartsStrings.Add("head attach");
+        _fedeOdilePartsStrings.Add("body");
+        _fedeOdilePartsStrings.Add("odile");
+        _fedeOdilePartsStrings.Add("pointer container");
+        _fedeOdilePartsStrings.Add("elbow container");
+        //fede odile parts add gameobjects in list fedeodilepartsstrings on children
+        foreach (string fedeOdilePartString in _fedeOdilePartsStrings)
+        {
+            //_fedeOdileParts.Add(GameObject.Find(fedeOdilePartString));
+        }
         /*foreach (Transform child in transform)
         {
             if (child.name.Contains("Joint"))
@@ -103,9 +118,20 @@ public class RobotPoseContoller : MonoBehaviour
         {
             _meshes.Add(mesh);
         }
+        //set all meshes
+        foreach (MeshRenderer mesh in _meshes)
+        {
+            mesh.enabled = false;
+        }
+        //disable all sprite mesh renderes
+        foreach (SpriteRenderer spriteRenderer in GetComponentsInChildren<SpriteRenderer>())
+        {
+            spriteRenderer.enabled = false;
+        }
     
         //lerpnose copy vector3 of nose
         _lerpNose = _joints["Nose"].position.y;
+        
     }
     public bool _handTrackerMeshEnabled = false;
     private bool _notPopulated = true;
@@ -168,6 +194,7 @@ public class RobotPoseContoller : MonoBehaviour
         _rightHandTracker.transform.localPosition = handTrackerPos * _odileScale + _odileJoints["VRotate"].localPosition + new Vector3(0, _heightOffset, 0);
         //inverse kinematics of odile joints to get as close as possible to hand tracker
         InverseKinematics();
+        NeckKinematics();
         //InverseKinematics2();
         //pose location = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
         Vector3 poseLocation = Vector3.zero;
@@ -406,7 +433,7 @@ public class RobotPoseContoller : MonoBehaviour
     public GameObject _currentHandTracker;
 
     public bool _prevHide = false;
-    public void Hide(bool setHide){
+    public void HideOld(bool setHide){
         if(!_manualMovement || _HIDE){
             if(setHide){
                 _prevHide = true;
@@ -443,6 +470,45 @@ public class RobotPoseContoller : MonoBehaviour
         }
     }
 
+    //list of gameobjects
+    [SerializeField] private List<GameObject> _fedeOdileParts;
+    //list _fedeOdilePartsStrings
+    public List<string> _fedeOdilePartsStrings = new List<string>();
+    public void Hide(bool setHide){
+        if(!_manualMovement || _HIDE){
+            if(setHide){
+                _prevHide = true;
+                //disable all obejcts in _fedOdileParts
+                foreach (GameObject obj in _fedeOdileParts)
+                {
+                    obj.SetActive(false);
+                }
+            }
+            else{
+                if((_prevHide && !_HIDE) || (_HIDE_BUTTON && !_HIDE)){
+                    //enable all obejcts in _fedOdileParts
+                    foreach (GameObject obj in _fedeOdileParts)
+                    {
+                        obj.SetActive(true);
+                        //enable all meshes in the children
+                        foreach (MeshRenderer mesh in obj.GetComponentsInChildren<MeshRenderer>())
+                        {
+                            mesh.enabled = true;
+                        }
+                    }
+                    //ResetDof on all dof
+                    
+                    _odileJoints["VCamArm"].GetComponent<DOFController>().ResetDof();
+                    _odileJoints["VCamAlign"].GetComponent<DOFController>().ResetDof();
+                    _odileJoints["VCamPan"].GetComponent<DOFController>().ResetDof();
+                    _odileJoints["VCamTilt"].GetComponent<DOFController>().ResetDof();
+
+                }
+                _prevHide = false;
+            }
+        }
+    }
+
     
     //fire hide button
     public void FireHideButton(){
@@ -450,7 +516,7 @@ public class RobotPoseContoller : MonoBehaviour
     }
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist
     void InverseKinematics(){
-        _currentHandTracker = _rightHandTracker;
+        _currentHandTracker = _leftHandTracker;
         //get y angle between up vector and hand tracker
         ////float yAngle = Vector3.Angle(Vector3.up, _handTracker.transform.position - _odileJoints["VRotate"].position);
         //set y angle of VRotate to yAngle
@@ -557,7 +623,20 @@ public class RobotPoseContoller : MonoBehaviour
         */
         
     }
-
+    public float _leftDistance;
+    public float _neckSensitivity = 50f;
+    public float _neckOffset = 25f;
+    private void NeckKinematics(){
+        //get distance of left hand tracker from left hip and set VCamArm dofcontroller
+        //_leftDistance = Vector3.Distance(_joints["Right Wrist"].position, _joints["Right Hip"].position) * _oldZDistance;
+        //_leftDistance = distance from right wrist to vertical line passing by right hip
+        _leftDistance = Vector3.Distance(_joints["Right Wrist"].position, new Vector3(_joints["Right Hip"].position.x, _joints["Right Wrist"].position.y, _joints["Right Hip"].position.z)) * _oldZDistance;
+        //map angle
+        _leftDistance = _leftDistance * _neckSensitivity - _neckOffset;
+        _odileJoints["VCamArm"].GetComponent<DOFController>().SetAngle(_leftDistance);
+        //set VCamAlign to complementary
+        _odileJoints["VCamAlign"].GetComponent<DOFController>().SetAngle(-_leftDistance);
+    }
     
     //return the vector ortogonal to two vectors on the xz plane
     Vector3 YDirection(Transform a, Transform b)

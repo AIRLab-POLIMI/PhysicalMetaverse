@@ -48,6 +48,17 @@ public class DOFController : MonoBehaviour
         return 0f;
     }
 
+    public void ResetDof(){
+        if(_controlledAngle == "x"){
+            transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
+        }
+        if(_controlledAngle == "y"){
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, 0, transform.localEulerAngles.z);
+        }
+        if(_controlledAngle == "z"){
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, 0);
+        }
+    }
     // Update is called once per frame
     void Update()
     {
@@ -56,7 +67,7 @@ public class DOFController : MonoBehaviour
             _angle *= _sensitivity;
             if(_controlledAngle == "x"){
                 if(_upsideDownFix){
-                    if(transform.localEulerAngles.x <= -150f){
+                    if(transform.localEulerAngles.x <= -100f){
                         transform.localEulerAngles = new Vector3(0, transform.localEulerAngles.y, transform.localEulerAngles.z);
                     }
                 }

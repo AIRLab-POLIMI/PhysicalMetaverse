@@ -312,10 +312,12 @@ public class EvangelionPoseController : MonoBehaviour
                         _newQtyOfMovement = Mathf.Lerp(_newQtyOfMovement, _qtyOfMovementThreshold, _qtyOfMovementLerp);
                     QtyOfMovement.runtimeValue = Mathf.Lerp(QtyOfMovement.runtimeValue, _qtyOfMovementThreshold, _qtyOfMovementLerp);
                 }
-                if(_SPEED_MODE)
+                if(_SPEED_MODE){
                     //timeMultiplier = _newQtyOfMovement * _qtyOfMovementSensitivity;
                     //lerp
                     timeMultiplier = Mathf.Lerp(timeMultiplier, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
+                    timeMultiplier /= 1.3f;
+                }
                 //lerp QtyOfMovement.runtimeValue
                 QtyOfMovement.runtimeValue = Mathf.Lerp(QtyOfMovement.runtimeValue, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
             }
