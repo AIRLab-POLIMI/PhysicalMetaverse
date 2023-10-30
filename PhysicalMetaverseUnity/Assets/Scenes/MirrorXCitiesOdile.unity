@@ -50364,7 +50364,7 @@ MonoBehaviour:
   _resetTimeSpeed: -2
   _resetTimeDuration: 1
   _restoreTime: 0.5
-  _restoreTimeBeforeEnd: 0.5
+  _restoreTimeBeforeEnd: 3
   _vizList: []
   _byteEventList:
   - m_PersistentCalls:

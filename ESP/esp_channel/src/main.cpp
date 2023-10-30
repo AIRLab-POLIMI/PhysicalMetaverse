@@ -334,5 +334,5 @@ void loop()
     //distance round to int
     distanceCm = round(distanceCm);
     //write_key_value_pair to destination ip
-    espUdp.write_key_value_pair("d", distanceCm, "192.168.137.1", 25667);
+    espUdp.write_key_value_pair("d", distanceCm, "192.168.137.1", 25666);
 }

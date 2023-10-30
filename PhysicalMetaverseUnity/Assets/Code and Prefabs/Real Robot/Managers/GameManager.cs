@@ -61,6 +61,11 @@ public class GameManager : Monosingleton<GameManager>
         NetworkingManager.Instance.Setup();
 
         _normalisedElapsedTime = 0;
+
+        //set quality to high
+        QualitySettings.SetQualityLevel(5);
+        //resolution aspect ratio to 9:16
+        Screen.SetResolution(1080, 1920, false);
     }
 
     // Update is called once per frame
@@ -170,5 +175,11 @@ public class GameManager : Monosingleton<GameManager>
     {
         _fullscreen = !_fullscreen;
         Screen.fullScreen = _fullscreen;
+        //enable log
+        Debug.unityLogger.logEnabled = true;
+        //log
+        Debug.Log("Fullscreen: " + _fullscreen);
+        //disable log
+        Debug.unityLogger.logEnabled = false;
     }
 }
