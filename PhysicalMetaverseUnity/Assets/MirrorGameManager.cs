@@ -38,6 +38,7 @@ public class MirrorGameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _ambientManager = AmbientManager.Instance;
         _gameManager = GameManager.Instance;
         _gameManager.SetTimeScale(1f);
         _blackPanel.gameObject.SetActive(true);
@@ -49,6 +50,7 @@ public class MirrorGameManager : MonoBehaviour
     [SerializeField] private bool _vizSetted = false;
     private bool _prevPoseDetected = true;
     private bool _fadeBlackPanel = false;
+    private AmbientManager _ambientManager;
     // Update is called once per frame
     void Update()
     {
@@ -75,6 +77,7 @@ public class MirrorGameManager : MonoBehaviour
             _currentVizType = _vizTypeList[((int)_currentVizType + 1) % _vizTypeList.Length];
             //set viz setted to true
             _vizSetted = true;
+            _gameManager.SetNormalizedElapsedTime(0.001f);
         }
         //if _robotPoseController getposedetected is false enable black panel and fade it in, else fade it out
         /*if(!_robotPoseController.GetPoseDetected()){

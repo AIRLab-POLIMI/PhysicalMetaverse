@@ -13,9 +13,15 @@ public class AmbientManager : Monosingleton<AmbientManager>
 
     private float _rotationSpeed; 
     private float _previousNormalizedValue = 0.0f;
+    //private initial quaternions
+    private Quaternion _initialDirectionalLightRotation;
+    private Quaternion _initialDirectionalLightShadowRotation;
     
-    private void Start()
+    public void Start()
     {
+        _initialDirectionalLightRotation = directionalLight.transform.localRotation;
+        _initialDirectionalLightShadowRotation = directionalLightShadow.transform.localRotation;
+
         Vector3 rotation = directionalLight.transform.localRotation.eulerAngles;
         directionalLight.transform.localRotation = Quaternion.Euler(
             lightningPreset.dayTimeDirectionalAngle,
@@ -34,6 +40,13 @@ public class AmbientManager : Monosingleton<AmbientManager>
         _rotationSpeed = rotationRange / 1.0f; // Assuming 1.0f represents a full range
 
         _previousNormalizedValue = 0.0f;
+    }
+
+    public void Restart()
+    {
+        //rotate back to beginning
+        directionalLight.transform.Rotate(-directionalLight.transform.eulerAngles.x, 0, 0);
+        directionalLightShadow.transform.Rotate(-directionalLightShadow.transform.eulerAngles.x, 0, 0);
     }
 
     private void RotateLight(float currentNormalizedValue)
