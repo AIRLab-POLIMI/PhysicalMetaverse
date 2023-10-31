@@ -10,6 +10,7 @@ public class RobotPoseContoller : MonoBehaviour
     //PersonManagerV2
     [SerializeField] private PoseReceiver _poseReceiver;
     [SerializeField] private PoseManager _poseManager;
+    private Transform _rotoTraslation;
     public Transform _odileWrist;
     public Transform _odileArm;
 
@@ -35,7 +36,6 @@ public class RobotPoseContoller : MonoBehaviour
     private float _invalidationStartTime = 0f;
     //private list of meshes
     private List<MeshRenderer> _meshes = new List<MeshRenderer>();
-    [SerializeField] private float _rotationOffset = 0f;
     [SerializeField] private GameObject _pose;
     //transform _offsetWithPose
     [SerializeField] private Vector3 _offsetWithPose = new Vector3(0, 0, 0);
@@ -44,14 +44,12 @@ public class RobotPoseContoller : MonoBehaviour
     [SerializeField] private float _zTraslationMultiplier = 1f;
     //variables to keep median of zdistance
     //list
-    //static _list_length
-    public int _list_length = 10;
-    public List<float> _zDistanceList = new List<float>();
     [SerializeField] private float _lerpNose;
     
     // Start is called before the first frame update
     void Start()
     {
+        _rotoTraslation = _poseManager.GetRotoTraslation();
         _joints = _poseManager.GetPoseJoints();
         //add to _fedeOdilePartsStrings (arm, head, headAnchor, neck, head attach, body, odile, pointer container, elbow container)
         _fedeOdilePartsStrings.Add("arm");
@@ -137,14 +135,11 @@ public class RobotPoseContoller : MonoBehaviour
     }
     public bool _handTrackerMeshEnabled = false;
 
-    public float _oldZDistance = 10f;
     public float _perspectiveCorrection = 1f;
-    public float _distanceDeltaTolerance = 0.5f;
     //public transform camera
     public Transform _camera;
     public float _camAngleSensitivity = 10f;
     public float _camXAngleSensitivity = 10f;
-    public float _exitX = 6.5f;
     public bool _NO_PERSON = false;
     public bool GetPoseDetected(){
         return _poseReceiver.GetPersonDetected();
@@ -152,6 +147,7 @@ public class RobotPoseContoller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        _zDistance = _poseManager.GetDistanceFromCamera();
         if(_HIDE_BUTTON){
             _HIDE = !_HIDE;
             Hide(_HIDE);
@@ -185,33 +181,8 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 poseLocation = Vector3.zero;
         Vector3 poseXLocation = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
         //get distance from personmanager to set z
-        float zDistance = _poseReceiver.GetDistance();
-        //if zDistance changed more than 100% of oldZDistance use oldZDistance
-        if(Mathf.Abs(zDistance - _oldZDistance) > _distanceDeltaTolerance)
-            zDistance = _oldZDistance;
-        else
-            _zDistanceList.Add(zDistance);
-            if(_zDistanceList.Count > _list_length)
-                _zDistanceList.RemoveAt(0);
-                //sort list
-                //sorted list
-                List<float> sortedList = new List<float>();
-                //for each value in _zDistanceList
-                foreach (float value in _zDistanceList)
-                {
-                    //add value to sorted list
-                    sortedList.Add(value);
-                }
-                //sort sorted list
-                sortedList.Sort();
-                //choose middle value
-                zDistance = sortedList[_list_length/2];
-                //zDistance = min of list
-                /*for(int i = 0; i < _zDistanceList.Count; i++){
-                    if(_zDistanceList[i] < zDistance)
-                        zDistance = _zDistanceList[i];
-                }*/
-            _oldZDistance = zDistance;
+        float zDistance = _poseManager.GetDistanceFromCamera();
+        
         /*Vector3 poseZLocation = _joints["Left Shoulder"].localPosition - _joints["Left Ankle"].localPosition;
 
         float length_to_measure = poseZLocation.y;
@@ -239,6 +210,9 @@ public class RobotPoseContoller : MonoBehaviour
         if(!_manualMovement)
             transform.localPosition = Vector3.Lerp(transform.localPosition, target, _lerpSpeed);
 
+
+        //Parallax stuff
+
         //map localtransform x from -5,5 to 90,270 and set rotation of _camera
         //clamp from -5 to 5
         float camYAngle = Mathf.Clamp(transform.localPosition.x, -5f, 5f);
@@ -250,30 +224,22 @@ public class RobotPoseContoller : MonoBehaviour
         
         camXAngle = (camXAngle/2f) * _camXAngleSensitivity;
 
-        //if abs x less than _exitX
-        if(Mathf.Abs(transform.localPosition.x) < _exitX){
-            //_camera.localRotation = Quaternion.Euler(camXAngle, camYAngle, 0);
-            //lerp
+
+        _NO_PERSON = !_poseManager.GetPersonDetected();
+        if(_NO_PERSON){
             _camera.localRotation = Quaternion.Lerp(_camera.localRotation, Quaternion.Euler(camXAngle, camYAngle, 0), _lerpSpeed);
-            _NO_PERSON = false;
-        }
-        else{
-            _NO_PERSON = true;
         }
 
-        //set transform.localrotation y angle from YDirection of left shoulder and right shoulder
-        //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
-        //quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) + 180 on y
-        Quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 180 - _rotationOffset, 0);
-        //lerp
-        transform.localRotation = Quaternion.Lerp(transform.localRotation, destRotation, 0.1f);
+        //
+
         
+        transform.localRotation = _rotoTraslation.localRotation;
+
         //HeadAngles(); //TODO
         //HeadAngles2D();
         HeadAngles3();
         
         if(_NO_PERSON){
-            _oldZDistance = 0.6f;
             _odileJoints["VCamArm"].GetComponent<DOFController>().ResetDof();
             _odileJoints["VCamAlign"].GetComponent<DOFController>().ResetDof();
             _odileJoints["VCamPan"].GetComponent<DOFController>().ResetDof();
@@ -281,10 +247,7 @@ public class RobotPoseContoller : MonoBehaviour
         }
     }
     public float GetFilteredDistance(){
-        return _oldZDistance;
-    }
-    public void SetRotationOffset(float rotationOffset){
-        _rotationOffset = rotationOffset;
+        return _zDistance;
     }
     public bool _manualMovement = false;
     public float _lerpSpeed = 0.5f;
@@ -620,11 +583,12 @@ public class RobotPoseContoller : MonoBehaviour
     public float _leftDistance;
     public float _neckSensitivity = 50f;
     public float _neckOffset = 25f;
+    private float _zDistance = 1f;
     private void NeckKinematics(){
         //get distance of left hand tracker from left hip and set VCamArm dofcontroller
         //_leftDistance = Vector3.Distance(_joints["Right Wrist"].position, _joints["Right Hip"].position) * _oldZDistance;
         //_leftDistance = distance from right wrist to vertical line passing by right hip
-        _leftDistance = Vector3.Distance(_joints["Right Wrist"].position, new Vector3(_joints["Right Hip"].position.x, _joints["Right Wrist"].position.y, _joints["Right Hip"].position.z)) * _oldZDistance;
+        _leftDistance = Vector3.Distance(_joints["Right Wrist"].position, new Vector3(_joints["Right Hip"].position.x, _joints["Right Wrist"].position.y, _joints["Right Hip"].position.z)) * _zDistance;
         //map angle
         _leftDistance = _leftDistance * _neckSensitivity - _neckOffset;
         _odileJoints["VCamArm"].GetComponent<DOFController>().SetAngle(_leftDistance);

@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 //this manager receives the 34 body landmarks detected by the depthai camera and positions a sphere at each landmark
 public class PoseReceiver : Monosingleton<PoseReceiver>
 {
+    private PoseManager _poseManager;
     //dictionary of all joints
     private Dictionary<string, Transform> _joints = new Dictionary<string, Transform>();
 
@@ -99,6 +100,7 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     public List<PoseJointsDict> _poseJoints = new List<PoseJointsDict>();
     void Start()
     {
+        _poseManager = PoseManager.Instance;
         newObject = new GameObject("Transformer");
         newTransform = newObject.AddComponent<Transform>();
         //create empty gameobjects Head, Left Arm, Right Arm, Left Leg, Right Leg with parent this
@@ -294,7 +296,7 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         //set odileviz rotation to orientation of vector from zero to odileviz
         Vector3 direction = _odileViz.transform.position - Vector3.zero;
         float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg + 90f;
-        _odileViz.GetComponent<RobotPoseContoller>().SetRotationOffset(angle);
+        _poseManager.SetRotationOffset(angle);
     }
 
     //get _joints
