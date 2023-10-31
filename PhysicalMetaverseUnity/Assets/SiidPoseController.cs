@@ -5,19 +5,14 @@ using UnityEngine;
 public class SiidPoseController : MonoBehaviour
 {
     private PoseManager _poseManager;
+    //transform _rotoTraslation
+    private Transform _rotoTraslation;
+    private Dictionary<string, Transform> _poseJoints;
     //bool hide
     [SerializeField] private bool _HIDE = false;
     private bool _hideStatus = true;
-    //serialize gameobject odileviz
-    [SerializeField] private GameObject _odileViz;
-    //serialize Evangelion
-    [SerializeField] private GameObject _evangelion;
     //y offset
     [SerializeField] private float _yOffset = -1.8f;
-    private EvangelionPoseController _evangelionPoseController;
-    //RobotPoseContoller
-    private RobotPoseContoller _robotPoseController;
-    [SerializeField] private FloatSO QtyOfMovement;
     //serialize lightball
     [SerializeField] private GameObject _lightBall;
     //serialize qtyofmovement
@@ -50,8 +45,8 @@ public class SiidPoseController : MonoBehaviour
     void Start()
     {
         _poseManager = PoseManager.Instance;
-        _evangelionPoseController = _evangelion.GetComponent<EvangelionPoseController>();
-        _robotPoseController = _odileViz.GetComponent<RobotPoseContoller>();
+        _poseJoints = _poseManager.GetPoseJoints();
+        _rotoTraslation = _poseManager.GetRotoTraslation();
         //create a copy of lightball emission color
         _lightBallEmissionColor = new Color(_lightBall.GetComponent<Renderer>().material.GetColor("_EmissionColor").r, _lightBall.GetComponent<Renderer>().material.GetColor("_EmissionColor").g, _lightBall.GetComponent<Renderer>().material.GetColor("_EmissionColor").b);
         //get components of trype DOFController in children of this
@@ -73,7 +68,7 @@ public class SiidPoseController : MonoBehaviour
     void Update()
     {
         //_distance from filtered distance
-        _distance = _robotPoseController.GetFilteredDistance();
+        _distance = _poseManager.GetDistanceFromCamera();
         
         if(_HIDE){
             Hide(_hideStatus);
@@ -81,9 +76,9 @@ public class SiidPoseController : MonoBehaviour
             _HIDE = false;
         }
         //set position and rotation to odileviz
-        transform.position = _odileViz.transform.position + _yOffset * Vector3.up;
+        transform.position = _rotoTraslation.position + _yOffset * Vector3.up;
         //rotation odileviz - 135 on y
-        transform.rotation = Quaternion.Euler(0, _odileViz.transform.rotation.eulerAngles.y - 180f, 0);
+        transform.rotation = Quaternion.Euler(0, _rotoTraslation.rotation.eulerAngles.y - 180f, 0);
         _qtyOfMovement = _poseManager.GetQuantityOfMovement() * _quantityOfMovementMultiplier;
         //multiply ball emission color
         _lightBall.GetComponent<Renderer>().material.SetColor("_EmissionColor", new Color(_lightBallEmissionColor.r * _qtyOfMovement / _maxEmissionIntensity, _lightBallEmissionColor.g * _qtyOfMovement / _maxEmissionIntensity, _lightBallEmissionColor.b * _qtyOfMovement / _maxEmissionIntensity));
@@ -125,9 +120,9 @@ public class SiidPoseController : MonoBehaviour
     }
 
     private void PetalsAngleWithHandsDistance(){
-        Vector3 leftHandTracker = _robotPoseController.GetLeftHandTrackerLocalPosition();
+        Vector3 leftHandTracker = _poseJoints["Left Wrist"].position;
         //right handtracker
-        Vector3 rightHandTracker = _robotPoseController.GetRightHandTrackerLocalPosition();
+        Vector3 rightHandTracker = _poseJoints["Right Wrist"].position;
         _averageDistance = Vector3.Distance(leftHandTracker, rightHandTracker);
         //resize 0 to 0.6 with 80 to -10
         float _averageAngle = _averageDistance/0.6f * 90;
@@ -147,10 +142,10 @@ public class SiidPoseController : MonoBehaviour
     [SerializeField] private float _upperNoseDistanceLimit = 2.2f;
     private void PetalsAngleWithNoseDistance(){
         float correctedUpperNoseDistanceLimit = _upperNoseDistanceLimit / _distance;
-        Vector3 noseTracker = _robotPoseController.GetNoseTrackerLocalPosition();
+        Vector3 noseTracker = _poseJoints["Nose"].position;
         //right handtracker
-        Vector3 rightHandTracker = _robotPoseController.GetRightWristLocalPosition();
-        Vector3 leftHandTracker = _robotPoseController.GetLeftWristLocalPosition();
+        Vector3 rightHandTracker = _poseJoints["Right Wrist"].position;
+        Vector3 leftHandTracker = _poseJoints["Left Wrist"].position;
         _averageDistance = Vector3.Distance(noseTracker, rightHandTracker) + Vector3.Distance(noseTracker, leftHandTracker);
         _averageDistance = _averageDistance / 2;
         //clamp between 0.7 and 2.5
@@ -170,12 +165,12 @@ public class SiidPoseController : MonoBehaviour
     private void PetalsAngleWithCenterDistance(){
         float correctedUpperCenterDistanceLimit = _upperCenterDistanceLimit / _distance;
         //vertical axis passing by average of left and right shoulder
-        Vector3 leftShoulderTracker = _robotPoseController.GetLeftShoulderLocalPosition();
-        Vector3 rightShoulderTracker = _robotPoseController.GetRightShoulderLocalPosition();
+        Vector3 leftShoulderTracker = _poseJoints["Left Shoulder"].position;
+        Vector3 rightShoulderTracker = _poseJoints["Right Shoulder"].position;
         Vector3 centerShoulderTracker = (leftShoulderTracker + rightShoulderTracker) / 2;
         //left hand distance with x and z distance from center
-        Vector3 leftHandTracker = _robotPoseController.GetLeftWristLocalPosition();
-        Vector3 rightHandTracker = _robotPoseController.GetRightWristLocalPosition();
+        Vector3 leftHandTracker = _poseJoints["Left Wrist"].position;
+        Vector3 rightHandTracker = _poseJoints["Right Wrist"].position;
         Vector3 leftHandDistance = new Vector3(leftHandTracker.x - centerShoulderTracker.x, 0, leftHandTracker.z - centerShoulderTracker.z);
         Vector3 rightHandDistance = new Vector3(rightHandTracker.x - centerShoulderTracker.x, 0, rightHandTracker.z - centerShoulderTracker.z);
         //average distance
