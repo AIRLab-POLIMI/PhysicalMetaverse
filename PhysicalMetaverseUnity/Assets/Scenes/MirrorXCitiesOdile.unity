@@ -54672,6 +54672,18 @@ MonoBehaviour:
   _personDetected: 0
   _MANUAL_MOVEMENT: 0
   _headXOffset: -45
+  _deltaTime: 0
+  _mesurementDeltaTime: 0.06
+  _leftHandSpeed: 0
+  _rightHandSpeed: 0
+  _headSpeed: 0
+  _headSpeedSensitivity: 0.1
+  _newQtyOfMovement: 0
+  _qtyOfMovementThreshold: 2
+  _qtyOfMovementSensitivity: 2
+  _qtyOfMovementLerp: 0.1
+  _timeMultiplier: 1
+  _scaledTime: 0
   _exitX: 5.9
   _rotationOffset: 0
   _lerpSpeed: 0.1

@@ -186,8 +186,122 @@ public class PoseManager : Monosingleton<PoseManager>
         return aToBOrtho;
     }
 
+    [SerializeField] private float _deltaTime = 0f;
+    private float _prevTime = 0f;
+    [SerializeField] private float _mesurementDeltaTime = 0.06f;
+    private Vector3 _leftHandTrackerPrevPosition = Vector3.zero;
+    private Vector3 _rightHandTrackerPrevPosition = Vector3.zero;
+    //prev horizontal_headHorizontalAngle
+    private float _prevHorizontalHeadAngle = 0f;
+    //list of delta measurements
+    private List<float> _leftHandDeltaMeasurements = new List<float>();
+    private List<float> _rightHandDeltaMeasurements = new List<float>();
+    
+    //list of head horizontal angle delta measurements
+    private List<float> _headHorizontalAngleDeltaMeasurements = new List<float>();
+    private float _leftHandDelta = 0f;
+    private float _rightHandDelta = 0f;
+    //head delta
+    private float _headDelta = 0f;
+    //_measurementsTaken
+    private int _measurementsTaken = 0;
+    private int _totalMeasurements = 6;
+    [SerializeField] private float _leftHandSpeed = 0f;
+    [SerializeField] private float _rightHandSpeed = 0f;
+    [SerializeField] private float _headSpeed = 0f;
+    //_headSpeedSensitivity
+    [SerializeField] private float _headSpeedSensitivity = 0.012f;
+    //serialize new quantity of movement
+    [SerializeField] private float _newQtyOfMovement = 0f;
+    //serialize _qtyOfMovement threshold
+    [SerializeField] private float _qtyOfMovementThreshold = 1.34f;
+    //serialize _qtyOfMovementSensitivity
+    [SerializeField] private float _qtyOfMovementSensitivity = 200f;
+    //_qtyOfMovementLerp
+    [SerializeField] private float _qtyOfMovementLerp = 0.5f;
+
+    [SerializeField] private float _timeMultiplier = 1f;
+    [SerializeField] private float _scaledTime = 0f;
+    //getscaledtime
+    public float GetScaledTime(){
+        return _scaledTime;
+    }
     private void CalculateQuantityOfMovement()
     {
+        //left and right handtrackers
+        //left handtracker
+        Vector3 leftHandTracker = _poseJoints["Left Wrist"].position - _poseJoints["Left Hip"].position;
+        //right handtracker
+        Vector3 rightHandTracker = _poseJoints["Right Wrist"].position - _poseJoints["Right Hip"].position;
+        /*
+        //left hand speed, use deltatime
+        _leftHandSpeed = Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker) / Time.deltaTime; //TODO sum distances in intervals of one second so speed is actually measurable
+        //right hand speed, use deltatime
+        _rightHandSpeed = Vector3.Distance(_rightHandTrackerPrevPosition, rightHandTracker) / Time.deltaTime;
+        _leftHandTrackerPrevPosition = leftHandTracker;
+        _rightHandTrackerPrevPosition = rightHandTracker;
+        */
+        _deltaTime = Time.time - _prevTime;
+        //take a measurement every _mesurementDeltaTime
+        if(_deltaTime > _mesurementDeltaTime){
+            //module of Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker)
+            float delta = Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker);
+            _leftHandTrackerPrevPosition = leftHandTracker;
+            //add delta to list
+            _leftHandDeltaMeasurements.Add(delta);
+            _leftHandDelta += delta;
+
+            delta = Vector3.Distance(_rightHandTrackerPrevPosition, rightHandTracker);
+            _rightHandTrackerPrevPosition = rightHandTracker;
+            //add delta to list
+            _rightHandDeltaMeasurements.Add(delta);
+            _rightHandDelta += delta;
+
+            //head horizontal angle
+            float headHorizontalAngle = _headPan.GetAngle();
+            //delta of head horizontal angle
+            delta = Mathf.Abs(headHorizontalAngle - _prevHorizontalHeadAngle);
+            _prevHorizontalHeadAngle = headHorizontalAngle;
+            //add delta to list
+            _headHorizontalAngleDeltaMeasurements.Add(delta);
+            _headDelta += delta;
+
+
+            //increment _measurementsTaken
+            _measurementsTaken++;
+            //if _measurementsTaken is 10, remove first element
+            if(_measurementsTaken == _totalMeasurements){
+                //measure speed
+                _leftHandSpeed = _leftHandDelta / (_mesurementDeltaTime * _totalMeasurements);
+                _leftHandDelta -= _leftHandDeltaMeasurements[0];
+                _leftHandDeltaMeasurements.RemoveAt(0);
+                _rightHandSpeed = _rightHandDelta / (_mesurementDeltaTime * _totalMeasurements);
+                _rightHandDelta -= _rightHandDeltaMeasurements[0];
+                _rightHandDeltaMeasurements.RemoveAt(0);
+                //head speed
+                _headSpeed = _headDelta / (_mesurementDeltaTime * _totalMeasurements) * _headSpeedSensitivity;
+                _headDelta -= _headHorizontalAngleDeltaMeasurements[0];
+                _headHorizontalAngleDeltaMeasurements.RemoveAt(0);
+                _measurementsTaken -= 1;
+                //QtyOfMovement.runtimeValue = _leftHandSpeed + _rightHandSpeed;
+                _newQtyOfMovement = _leftHandSpeed + _rightHandSpeed + _headSpeed;
+                //if less than _qtyOfMovementThreshold set to
+                if(_newQtyOfMovement < _qtyOfMovementThreshold){
+                    //lerp _newQtyOfMovement to _qtyOfMovementThreshold
+                    _newQtyOfMovement = Mathf.Lerp(_newQtyOfMovement, _qtyOfMovementThreshold, _qtyOfMovementLerp);
+                    _quantityOfMovement = Mathf.Lerp(_quantityOfMovement, _qtyOfMovementThreshold, _qtyOfMovementLerp);
+                }
+                //timeMultiplier = _newQtyOfMovement * _qtyOfMovementSensitivity;
+                //lerp
+                _timeMultiplier = Mathf.Lerp(_timeMultiplier, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
+                _timeMultiplier /= 1.3f;
+                //lerp QtyOfMovement.runtimeValue
+                _quantityOfMovement = Mathf.Lerp(_quantityOfMovement, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
+            }
+            _scaledTime = _scaledTime + Time.deltaTime * _timeMultiplier;
+            //reset _prevTime
+            _prevTime = Time.time;
+        }
     }
 
     [SerializeField] private float _exitX = 5.9f;

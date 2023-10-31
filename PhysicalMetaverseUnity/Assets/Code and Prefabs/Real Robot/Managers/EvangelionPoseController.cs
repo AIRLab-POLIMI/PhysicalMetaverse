@@ -15,14 +15,13 @@ public class EvangelionPoseController : MonoBehaviour
     [SerializeField] private FloatSO LookingAt;
 
     [SerializeField] private FloatSO QtyOfMovement;
+    [SerializeField] private float _quantityOfMovement;
     
     [SerializeField] private FloatSO distanceFromCenter;
 
     [SerializeField] private GameObject _pointPrefab;
     //frequency multiplier
     [SerializeField] private float _frequencyMultiplier = 1f;
-
-    [SerializeField] private float timeMultiplier = 1f;
 
     private GameObject[] _points;
     
@@ -54,8 +53,6 @@ public class EvangelionPoseController : MonoBehaviour
         _poseManager = PoseManager.Instance;
         _points = new GameObject[arraySize];
         SpawnPoints();
-        //set QtyOfMovement to zero
-        QtyOfMovement.runtimeValue = 0f;
         _robotPoseContoller = _odileViz.GetComponent<RobotPoseContoller>();
     }
 
@@ -96,6 +93,7 @@ public class EvangelionPoseController : MonoBehaviour
     [SerializeField] private float _scaledTime = 0f;
     private void Update()
     {
+        _quantityOfMovement = _poseManager.GetQuantityOfMovement();
         if(_HIDE){
             Hide(_hideStatus);
             _hideStatus = !_hideStatus;
@@ -141,7 +139,7 @@ public class EvangelionPoseController : MonoBehaviour
         
         
         if(!_SPEED_MODE)
-            swarmDimension = QtyOfMovement.runtimeValue * 5;
+            swarmDimension = _quantityOfMovement * 5;
 
 
 
@@ -164,7 +162,7 @@ public class EvangelionPoseController : MonoBehaviour
                 new Vector3(_points[i].transform.position.x, y, _points[i].transform.position.z);
                 */
             //change time with timeMultiplier
-            _scaledTime = _scaledTime + Time.deltaTime / 100f * timeMultiplier;
+            _scaledTime = _poseManager.GetScaledTime();
             _points[i].transform.position = new Vector3(_points[i].transform.position.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_scaledTime + i * offset)), _points[i].transform.position.z);
             _points[i].transform.localScale = new Vector3(1, swarmDimension, 1);
             _points[i].GetComponent<Renderer>().material.color = LerpColor(color1, color3, colorSlider);
@@ -179,40 +177,6 @@ public class EvangelionPoseController : MonoBehaviour
     [SerializeField] private float _odileLookAngle;
     //angle from 0 to odile
     [SerializeField] private float _odileAngle;
-    private Vector3 _leftHandTrackerPrevPosition = Vector3.zero;
-    private Vector3 _rightHandTrackerPrevPosition = Vector3.zero;
-    //prev horizontal_headHorizontalAngle
-    private float _prevHorizontalHeadAngle = 0f;
-    [SerializeField] private float _leftHandSpeed = 0f;
-    [SerializeField] private float _rightHandSpeed = 0f;
-    [SerializeField] private float _headSpeed = 0f;
-    //_headSpeedSensitivity
-    [SerializeField] private float _headSpeedSensitivity = 0.0125f;
-    //variables to have a sliding window of 10 measurements on lefthand tracker position
-    //list of delta measurements
-    private List<float> _leftHandDeltaMeasurements = new List<float>();
-    private List<float> _rightHandDeltaMeasurements = new List<float>();
-    //list of head horizontal angle delta measurements
-    private List<float> _headHorizontalAngleDeltaMeasurements = new List<float>();
-    [SerializeField] private float _mesurementDeltaTime = 0.06f;
-    //_measurementsTaken
-    private int _measurementsTaken = 0;
-    private float _prevTime = 0f;
-    private float _leftHandDelta = 0f;
-    private float _rightHandDelta = 0f;
-    //head delta
-    private float _headDelta = 0f;
-    public float _realDeltaTime = 0f;
-    [SerializeField] private float _deltaTime = 0f;
-    private int _totalMeasurements = 6;
-    //serialize _qtyOfMovementSensitivity
-    [SerializeField] private float _qtyOfMovementSensitivity = 1f;
-    //serialize new quantity of movement
-    [SerializeField] private float _newQtyOfMovement = 0f;
-    //serialize _qtyOfMovement threshold
-    [SerializeField] private float _qtyOfMovementThreshold = 2f;
-    //_qtyOfMovementLerp
-    [SerializeField] private float _qtyOfMovementLerp = 0.1f;
     //serialize _SPEED_MODE
     [SerializeField] private bool _SPEED_MODE = false;
 
@@ -236,8 +200,6 @@ public class EvangelionPoseController : MonoBehaviour
         //swarmDimension = 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f);
         //lerp
         swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f), Time.deltaTime * 10f);
-
-        MeasureQtyOfMovement();
         
 
     }
@@ -247,90 +209,7 @@ public class EvangelionPoseController : MonoBehaviour
         _HIDE = true;
         swarmDimension = 0f;
     }
-    
-    private void MeasureQtyOfMovement(){
-        //left and right handtrackers
-        //left handtracker
-        Vector3 leftHandTracker = _robotPoseContoller.GetLeftHandTrackerLocalPosition();
-        //right handtracker
-        Vector3 rightHandTracker = _robotPoseContoller.GetRightHandTrackerLocalPosition();
-        /*
-        //left hand speed, use deltatime
-        _leftHandSpeed = Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker) / Time.deltaTime; //TODO sum distances in intervals of one second so speed is actually measurable
-        //right hand speed, use deltatime
-        _rightHandSpeed = Vector3.Distance(_rightHandTrackerPrevPosition, rightHandTracker) / Time.deltaTime;
-        _leftHandTrackerPrevPosition = leftHandTracker;
-        _rightHandTrackerPrevPosition = rightHandTracker;
-        */
-        _deltaTime = Time.time - _prevTime;
-        //take a measurement every _mesurementDeltaTime
-        if(_deltaTime > _mesurementDeltaTime){
-            _realDeltaTime = _deltaTime;
-            //module of Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker)
-            float delta = Vector3.Distance(_leftHandTrackerPrevPosition, leftHandTracker);
-            _leftHandTrackerPrevPosition = leftHandTracker;
-            //add delta to list
-            _leftHandDeltaMeasurements.Add(delta);
-            _leftHandDelta += delta;
 
-            delta = Vector3.Distance(_rightHandTrackerPrevPosition, rightHandTracker);
-            _rightHandTrackerPrevPosition = rightHandTracker;
-            //add delta to list
-            _rightHandDeltaMeasurements.Add(delta);
-            _rightHandDelta += delta;
-
-            //head horizontal angle
-            float headHorizontalAngle = _poseManager.GetHeadAngleY();
-            //delta of head horizontal angle
-            delta = Mathf.Abs(headHorizontalAngle - _prevHorizontalHeadAngle);
-            _prevHorizontalHeadAngle = headHorizontalAngle;
-            //add delta to list
-            _headHorizontalAngleDeltaMeasurements.Add(delta);
-            _headDelta += delta;
-
-
-            //increment _measurementsTaken
-            _measurementsTaken++;
-            //if _measurementsTaken is 10, remove first element
-            if(_measurementsTaken == _totalMeasurements){
-                //measure speed
-                _leftHandSpeed = _leftHandDelta / (_mesurementDeltaTime * _totalMeasurements);
-                _leftHandDelta -= _leftHandDeltaMeasurements[0];
-                _leftHandDeltaMeasurements.RemoveAt(0);
-                _rightHandSpeed = _rightHandDelta / (_mesurementDeltaTime * _totalMeasurements);
-                _rightHandDelta -= _rightHandDeltaMeasurements[0];
-                _rightHandDeltaMeasurements.RemoveAt(0);
-                //head speed
-                _headSpeed = _headDelta / (_mesurementDeltaTime * _totalMeasurements) * _headSpeedSensitivity;
-                _headDelta -= _headHorizontalAngleDeltaMeasurements[0];
-                _headHorizontalAngleDeltaMeasurements.RemoveAt(0);
-                _measurementsTaken -= 1;
-                //QtyOfMovement.runtimeValue = _leftHandSpeed + _rightHandSpeed;
-                _newQtyOfMovement = _leftHandSpeed + _rightHandSpeed + _headSpeed;
-                //if less than _qtyOfMovementThreshold set to
-                if(_newQtyOfMovement < _qtyOfMovementThreshold){
-                    if(_SPEED_MODE)
-                        //lerp _newQtyOfMovement to _qtyOfMovementThreshold
-                        _newQtyOfMovement = Mathf.Lerp(_newQtyOfMovement, _qtyOfMovementThreshold, _qtyOfMovementLerp);
-                    QtyOfMovement.runtimeValue = Mathf.Lerp(QtyOfMovement.runtimeValue, _qtyOfMovementThreshold, _qtyOfMovementLerp);
-                }
-                if(_SPEED_MODE){
-                    //timeMultiplier = _newQtyOfMovement * _qtyOfMovementSensitivity;
-                    //lerp
-                    timeMultiplier = Mathf.Lerp(timeMultiplier, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
-                    timeMultiplier /= 1.3f;
-                }
-                //lerp QtyOfMovement.runtimeValue
-                QtyOfMovement.runtimeValue = Mathf.Lerp(QtyOfMovement.runtimeValue, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
-            }
-            //reset _prevTime
-            _prevTime = Time.time;
-        }
-    }
-    //get _newQtyOfMovement
-    public float GetNewQtyOfMovement(){
-        return _newQtyOfMovement;
-    }
     
     public static Color LerpColor(Color color1, Color color2, float t)
     {

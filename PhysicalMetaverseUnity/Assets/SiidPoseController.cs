@@ -22,6 +22,7 @@ public class SiidPoseController : MonoBehaviour
     [SerializeField] private GameObject _lightBall;
     //serialize qtyofmovement
     [SerializeField] private float _qtyOfMovement;
+    [SerializeField] private float _quantityOfMovementMultiplier = 0.2f;
     //serialize max emission intensity
     [SerializeField] private float _maxEmissionIntensity;
     private Color _lightBallEmissionColor;
@@ -83,7 +84,7 @@ public class SiidPoseController : MonoBehaviour
         transform.position = _odileViz.transform.position + _yOffset * Vector3.up;
         //rotation odileviz - 135 on y
         transform.rotation = Quaternion.Euler(0, _odileViz.transform.rotation.eulerAngles.y - 180f, 0);
-        _qtyOfMovement = QtyOfMovement.runtimeValue;
+        _qtyOfMovement = _poseManager.GetQuantityOfMovement() * _quantityOfMovementMultiplier;
         //multiply ball emission color
         _lightBall.GetComponent<Renderer>().material.SetColor("_EmissionColor", new Color(_lightBallEmissionColor.r * _qtyOfMovement / _maxEmissionIntensity, _lightBallEmissionColor.g * _qtyOfMovement / _maxEmissionIntensity, _lightBallEmissionColor.b * _qtyOfMovement / _maxEmissionIntensity));
 
