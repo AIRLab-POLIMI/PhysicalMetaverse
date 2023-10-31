@@ -28,12 +28,6 @@ public class RobotPoseContoller : MonoBehaviour
     public GameObject _rightHandTracker;
     [Range(0.01f, 2f)]
     public float _odileScale = 0.516f;
-    //serialize field pose invalidated
-    [SerializeField] private bool _poseInvalidated = false;
-    //float pose invalidated decay time
-    [SerializeField] private float _poseInvalidatedDecayTime = 1f;
-    //private invalidation start time
-    private float _invalidationStartTime = 0f;
     //private list of meshes
     private List<MeshRenderer> _meshes = new List<MeshRenderer>();
     [SerializeField] private GameObject _pose;
@@ -51,21 +45,6 @@ public class RobotPoseContoller : MonoBehaviour
         _poseManager = PoseManager.Instance;
         _rotoTraslation = _poseManager.GetRotoTraslation();
         _joints = _poseManager.GetPoseJoints();
-        //add to _fedeOdilePartsStrings (arm, head, headAnchor, neck, head attach, body, odile, pointer container, elbow container)
-        _fedeOdilePartsStrings.Add("arm");
-        _fedeOdilePartsStrings.Add("head");
-        _fedeOdilePartsStrings.Add("headAnchor");
-        _fedeOdilePartsStrings.Add("neck");
-        _fedeOdilePartsStrings.Add("head attach");
-        _fedeOdilePartsStrings.Add("body");
-        _fedeOdilePartsStrings.Add("odile");
-        _fedeOdilePartsStrings.Add("pointer container");
-        _fedeOdilePartsStrings.Add("elbow container");
-        //fede odile parts add gameobjects in list fedeodilepartsstrings on children
-        foreach (string fedeOdilePartString in _fedeOdilePartsStrings)
-        {
-            //_fedeOdileParts.Add(GameObject.Find(fedeOdilePartString));
-        }
         /*foreach (Transform child in transform)
         {
             if (child.name.Contains("Joint"))
@@ -600,10 +579,5 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 aToC = cPos - aPos;
         float angle = Vector3.Angle(aToB, aToC);
         return angle;
-    }
-
-    void SetPoseInvalidated(bool poseInvalidated){
-        _poseInvalidated = poseInvalidated;
-        _invalidationStartTime = Time.time;
     }
 }

@@ -13,8 +13,6 @@ public class EvangelionPoseController : MonoBehaviour
     [SerializeField] private IntSO MinConvertedAngle;
     
     [SerializeField] private FloatSO LookingAt;
-
-    [SerializeField] private FloatSO QtyOfMovement;
     [SerializeField] private float _quantityOfMovement;
     
     [SerializeField] private FloatSO distanceFromCenter;
@@ -29,11 +27,8 @@ public class EvangelionPoseController : MonoBehaviour
 
     private float startY;
 
-    private Vector3[] initialPositions;
-
     //TESTING
     private float amplitude = 0f;
-    private float frequency = 0f;
     private float speed = 1f;
     [SerializeField] private float offset = 0f;
     private float targetOffset;
@@ -45,15 +40,11 @@ public class EvangelionPoseController : MonoBehaviour
     private Color color1 = Color.gray;
     private Color color3 = Color.magenta;
     private Color color2 = new Color(255, 165, 0);
-    [SerializeField] private Transform _odileViz;
-    //RobotPoseContoller
-    [SerializeField] private RobotPoseContoller _robotPoseContoller;
     private void Start()
     {
         _poseManager = PoseManager.Instance;
         _points = new GameObject[arraySize];
         SpawnPoints();
-        _robotPoseContoller = _odileViz.GetComponent<RobotPoseContoller>();
     }
 
     private void SpawnPoints()
@@ -187,19 +178,19 @@ public class EvangelionPoseController : MonoBehaviour
 
     private void UpdateValues(){
         // get distanceFromCenter.runtimeValue from odileviz x position abs
-        distanceFromCenter.runtimeValue = Mathf.Abs(_odileViz.position.x) * _distanceFromCenterMultiplier;
+        distanceFromCenter.runtimeValue = Mathf.Abs(_poseManager.GetRotoTraslation().position.x) * _distanceFromCenterMultiplier;
         //LookingAt 
         //_odileLookAngle from _odileViz GetLookAngle
         _odileLookAngle = _poseManager.GetHeadAngleY();
         _odileLookAngle -= 270f;
         //angle of vector from 0 to odile position
-        _odileAngle = Vector3.Angle(Vector3.right, _odileViz.position);
+        _odileAngle = Vector3.Angle(Vector3.right, _poseManager.GetRotoTraslation().position);
         _odileAngle -= 90f;
         LookingAt.runtimeValue = 1f - Mathf.Abs(_odileLookAngle) / 180f * _lookingAtMultiplier;
 
         //swarmDimension = 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f);
         //lerp
-        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f), Time.deltaTime * 10f);
+        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_poseManager.GetDistanceFromCamera() + (1f - _neutralDistance), 3f), Time.deltaTime * 10f);
         
 
     }

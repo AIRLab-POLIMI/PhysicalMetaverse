@@ -32,6 +32,7 @@ public class PoseManager : Monosingleton<PoseManager>
 
     public float GetDistanceFromCamera()
     {
+        //TODO if manual movement return case (no distance sensors, distance is measured directly in unity)
         return _distanceFromCamera;
     }
 
