@@ -181,6 +181,8 @@ public class PoseManager : Monosingleton<PoseManager>
         //transform.localRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"]));
         //quaternion destRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) + 180 on y
         Quaternion destRotation = Quaternion.LookRotation(YDirection(_poseJoints["Left Shoulder"], _poseJoints["Right Shoulder"])) * Quaternion.Euler(0, -_rotationOffset, 0);
+        //rotate 180
+        destRotation *= Quaternion.Euler(0, 180, 0);
         //lerp
         _rotoTraslation.localRotation = Quaternion.Lerp(_rotoTraslation.localRotation, destRotation, _lerpSpeed);
 
