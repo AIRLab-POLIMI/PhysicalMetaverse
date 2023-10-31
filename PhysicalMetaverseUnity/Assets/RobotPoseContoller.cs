@@ -44,7 +44,6 @@ public class RobotPoseContoller : MonoBehaviour
     [SerializeField] private float _zTraslationMultiplier = 1f;
     //variables to keep median of zdistance
     //list
-    [SerializeField] private float _lerpNose;
     
     // Start is called before the first frame update
     void Start()
@@ -130,17 +129,11 @@ public class RobotPoseContoller : MonoBehaviour
             spriteRenderer.enabled = false;
         }
     
-        //lerpnose copy vector3 of nose
-        _lerpNose = _joints["Nose"].position.y;
         
     }
     public bool _handTrackerMeshEnabled = false;
 
     public float _perspectiveCorrection = 1f;
-    //public transform camera
-    public Transform _camera;
-    public float _camAngleSensitivity = 10f;
-    public float _camXAngleSensitivity = 10f;
     public bool _NO_PERSON = false;
     public bool GetPoseDetected(){
         return _poseReceiver.GetPersonDetected();
@@ -212,29 +205,9 @@ public class RobotPoseContoller : MonoBehaviour
             transform.localPosition = Vector3.Lerp(transform.localPosition, target, _lerpSpeed);
 
 
-        //Parallax stuff
-
-        //map localtransform x from -5,5 to 90,270 and set rotation of _camera
-        //clamp from -5 to 5
-        float camYAngle = Mathf.Clamp(transform.localPosition.x, -5f, 5f);
-        camYAngle = -(transform.localPosition.x/5f) * _camAngleSensitivity;// + 180f;
-        //lerp _lerpNose to nose
-        _lerpNose = Mathf.Lerp(_lerpNose, _joints["Nose"].localPosition.y, _lerpSpeed);
-        //camXAngle add 1 and clamp between -2 and 2
-        float camXAngle = Mathf.Clamp(_lerpNose + 1f, -2f, 2f);
-        
-        camXAngle = (camXAngle/2f) * _camXAngleSensitivity;
-
-
-        _NO_PERSON = !_poseManager.GetPersonDetected();
-        if(_NO_PERSON){
-            _camera.localRotation = Quaternion.Lerp(_camera.localRotation, Quaternion.Euler(camXAngle, camYAngle, 0), _lerpSpeed);
-        }
 
         //
 
-        
-        transform.localRotation = _rotoTraslation.localRotation;
 
         //HeadAngles(); //TODO
         //HeadAngles2D();
@@ -246,6 +219,10 @@ public class RobotPoseContoller : MonoBehaviour
             _odileJoints["VCamPan"].GetComponent<DOFController>().ResetDof();
             _odileJoints["VCamTilt"].GetComponent<DOFController>().ResetDof();
         }
+        
+
+        transform.localRotation = _rotoTraslation.localRotation;
+        _NO_PERSON = !_poseManager.GetPersonDetected();
     }
     public float GetFilteredDistance(){
         return _zDistance;

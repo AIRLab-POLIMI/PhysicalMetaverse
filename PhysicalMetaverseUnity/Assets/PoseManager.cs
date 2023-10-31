@@ -6,6 +6,8 @@ public class PoseManager : Monosingleton<PoseManager>
 {
     [SerializeField] private PoseReceiver _poseReceiver;
     [SerializeField] private Transform _rotoTraslation;
+    //_camera
+    [SerializeField] private Transform _camera;
     [SerializeField] private GameObject _pose;
     //serialize field: _quantityOfMovement, _headAngleX, _headAngleY, _poseJoints scriptableobject, _distanceFromCamera
     //dictionary of all joints
@@ -75,6 +77,7 @@ public class PoseManager : Monosingleton<PoseManager>
         CalculateQuantityOfMovement();
         CalculatePersonDetected();
         CalculateRotoTraslation();
+        CalculateParallax();
     }
 
     private bool _notPopulated = true;
@@ -125,7 +128,8 @@ public class PoseManager : Monosingleton<PoseManager>
                 //sort sorted list
                 sortedList.Sort();
                 //choose middle value
-                zDistance = sortedList[_list_length/2];
+                if(_zDistanceList.Count > _list_length) //check here if distance broke
+                    zDistance = sortedList[_list_length/2];
                 //zDistance = min of list
                 /*for(int i = 0; i < _zDistanceList.Count; i++){
                     if(_zDistanceList[i] < zDistance)
@@ -221,7 +225,7 @@ public class PoseManager : Monosingleton<PoseManager>
     }
 
     //return the vector ortogonal to two vectors on the xz plane
-    Vector3 YDirection(Transform a, Transform b)
+    private Vector3 YDirection(Transform a, Transform b)
     {
         Vector3 aPos = a.position;
         Vector3 bPos = b.position;
@@ -232,4 +236,28 @@ public class PoseManager : Monosingleton<PoseManager>
         return aToBOrtho;
     }
 
+    public float _camAngleSensitivity = 10f;
+    public float _camXAngleSensitivity = 10f;
+    [SerializeField] private float _lerpNose;
+    private void CalculateParallax(){
+        //Parallax stuff
+
+        //map localtransform x from -5,5 to 90,270 and set rotation of _camera
+        //clamp from -5 to 5
+        float camYAngle = Mathf.Clamp(_rotoTraslation.localPosition.x, -5f, 5f);
+        camYAngle = -(_rotoTraslation.localPosition.x/5f) * _camAngleSensitivity;// + 180f;
+        //lerp _lerpNose to nose
+        _lerpNose = Mathf.Lerp(_lerpNose, _poseJoints["Nose"].localPosition.y, _lerpSpeed);
+        //camXAngle add 1 and clamp between -2 and 2
+        float camXAngle = Mathf.Clamp(_lerpNose + 1f, -2f, 2f);
+        
+        camXAngle = (camXAngle/2f) * _camXAngleSensitivity;
+
+        if(_personDetected){
+            _camera.localRotation = Quaternion.Lerp(_camera.localRotation, Quaternion.Euler(camXAngle, camYAngle, 0), _lerpSpeed);
+        }
+        else{
+            _camera.localRotation = Quaternion.Lerp(_camera.localRotation, Quaternion.Euler(0, 0, 0), _lerpSpeed);
+        }
+    }
 }

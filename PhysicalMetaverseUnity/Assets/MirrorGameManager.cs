@@ -10,6 +10,7 @@ public class MirrorGameManager : MonoBehaviour
     [SerializeField] private SpriteRenderer _blackPanel;
     //serialize _robotPoseController
     [SerializeField] private RobotPoseContoller _robotPoseController;
+    private PoseManager _poseManager;
     //serialize normalized end time
     [SerializeField] private float _normalizedEndTime = 0.8f;
     //serialize _resetTimeSpeed
@@ -38,6 +39,7 @@ public class MirrorGameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _poseManager = PoseManager.Instance;
         _ambientManager = AmbientManager.Instance;
         _gameManager = GameManager.Instance;
         _gameManager.SetTimeScale(1f);
@@ -54,7 +56,7 @@ public class MirrorGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        bool poseDetected = _robotPoseController.GetPoseDetected();
+        bool poseDetected = _poseManager.GetPersonDetected();
         //if prev true and curr false fire event with value false
         if(!_prevPoseDetected && poseDetected){
             //fire event
@@ -107,7 +109,7 @@ public class MirrorGameManager : MonoBehaviour
         //if normalised time is less than 0 set timescale to 1
         if(_gameManager.GetNormalizedElapsedTime() < 0){
             _gameManager.SetTimeScale(0f);
-            if(_robotPoseController.GetPoseDetected())
+            if(_poseManager.GetPersonDetected())
                 _gameManager.SetTimeScale(1f);
         }
         
@@ -129,7 +131,7 @@ public class MirrorGameManager : MonoBehaviour
 
     private void RestoreTimeAfter(float restoreTime){
         //restore 3 seconds after person left
-        if(_robotPoseController.GetPoseDetected()){
+        if(_poseManager.GetPersonDetected()){
             _exitTime = Time.time;
         }
         if(Time.time - _exitTime > restoreTime){
