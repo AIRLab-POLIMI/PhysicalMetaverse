@@ -210,15 +210,15 @@ public class PoseManager : Monosingleton<PoseManager>
     [SerializeField] private float _rightHandSpeed = 0f;
     [SerializeField] private float _headSpeed = 0f;
     //_headSpeedSensitivity
-    [SerializeField] private float _headSpeedSensitivity = 0.012f;
+    [SerializeField] private float _headSpeedSensitivity = 0.1f;
     //serialize new quantity of movement
     [SerializeField] private float _newQtyOfMovement = 0f;
     //serialize _qtyOfMovement threshold
     [SerializeField] private float _qtyOfMovementThreshold = 1.34f;
     //serialize _qtyOfMovementSensitivity
-    [SerializeField] private float _qtyOfMovementSensitivity = 200f;
+    [SerializeField] private float _qtyOfMovementSensitivity = 0.5f;
     //_qtyOfMovementLerp
-    [SerializeField] private float _qtyOfMovementLerp = 0.5f;
+    [SerializeField] private float _qtyOfMovementLerp = 0.1f;
 
     [SerializeField] private float _timeMultiplier = 1f;
     [SerializeField] private float _scaledTime = 0f;
@@ -298,10 +298,10 @@ public class PoseManager : Monosingleton<PoseManager>
                 //lerp QtyOfMovement.runtimeValue
                 _quantityOfMovement = Mathf.Lerp(_quantityOfMovement, _newQtyOfMovement * _qtyOfMovementSensitivity, _qtyOfMovementLerp);
             }
-            _scaledTime = _scaledTime + Time.deltaTime * _timeMultiplier;
             //reset _prevTime
             _prevTime = Time.time;
         }
+        _scaledTime = _scaledTime + Time.deltaTime * _timeMultiplier;
     }
 
     [SerializeField] private float _exitX = 5.9f;

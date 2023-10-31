@@ -22,7 +22,7 @@ public class SiidPoseController : MonoBehaviour
     [SerializeField] private GameObject _lightBall;
     //serialize qtyofmovement
     [SerializeField] private float _qtyOfMovement;
-    [SerializeField] private float _quantityOfMovementMultiplier = 0.2f;
+    [SerializeField] private float _quantityOfMovementMultiplier = 0.34f;
     //serialize max emission intensity
     [SerializeField] private float _maxEmissionIntensity;
     private Color _lightBallEmissionColor;
