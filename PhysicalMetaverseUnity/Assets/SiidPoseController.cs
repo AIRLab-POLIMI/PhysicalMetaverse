@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SiidPoseController : MonoBehaviour
 {
+    private PoseManager _poseManager;
     //bool hide
     [SerializeField] private bool _HIDE = false;
     private bool _hideStatus = true;
@@ -47,6 +48,7 @@ public class SiidPoseController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _poseManager = PoseManager.Instance;
         _evangelionPoseController = _evangelion.GetComponent<EvangelionPoseController>();
         _robotPoseController = _odileViz.GetComponent<RobotPoseContoller>();
         //create a copy of lightball emission color
@@ -99,16 +101,16 @@ public class SiidPoseController : MonoBehaviour
     }
 
     void RotateEye(){
-        _verticalEye = _robotPoseController.GetTiltAngle();
-        _horizontalEye = _robotPoseController.GetLookAngle() + 90f;
+        _verticalEye = _poseManager.GetHeadAngleX();
+        _horizontalEye = _poseManager.GetHeadAngleY() + 90f;
         _dofControllerEyeY.SetAngle(_horizontalEye);
         _dofControllerEyeX.SetAngle(_verticalEye);
     }
     
     void TraslateEye(){ //OLD Siid
-        _horizontalEye = (_robotPoseController.GetLookAngle() - _eyeHorizontalMiddle) / _eyeHorizontalRange;
+        _horizontalEye = (_poseManager.GetHeadAngleY() - _eyeHorizontalMiddle) / _eyeHorizontalRange;
         //315 to 350, 330 is middle
-        _verticalEye = _robotPoseController.GetTiltAngle();
+        _verticalEye = _poseManager.GetHeadAngleX();
         _verticalEye = (_verticalEye - _eyeVerticalMiddle) / _eyeVerticalRange;
         //clamp between _eyeClamp
         _horizontalEye = Mathf.Clamp(_horizontalEye, -_eyeClamp, _eyeClamp);

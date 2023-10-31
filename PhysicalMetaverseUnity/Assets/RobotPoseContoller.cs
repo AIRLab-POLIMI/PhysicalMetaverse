@@ -229,12 +229,11 @@ public class RobotPoseContoller : MonoBehaviour
     }
     public bool _manualMovement = false;
     public float _lerpSpeed = 0.5f;
-    public float xOffset = 0f;
     public float yOffset = 0f;
     public float zOffset = 0f;
     public Vector3 _tilt = new Vector3(0, 0, 0);
 
-    void HeadAngles(){
+    /*void HeadAngles(){
         Quaternion bodyRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 0, 0);
         //final angle should be x=0, y=direction, z=-90
         Quaternion headPan = Quaternion.LookRotation(YDirection(_joints["Left Ear"], _joints["Right Ear"]));
@@ -248,15 +247,15 @@ public class RobotPoseContoller : MonoBehaviour
         _odileJoints["VCamTilt"].GetComponent<DOFController>().SetAngle(headTilt.eulerAngles.x - xOffset);
 
 
-    }
+    }*/
 
     //get _lookAngle
-    public float GetLookAngle(){
+    /*public float GetLookAngle(){
         return _odileJoints["VCamPan"].GetComponent<DOFController>().GetAngle();
     }
     public float GetTiltAngle(){
         return _odileJoints["VCamTilt"].GetComponent<DOFController>().GetAngle();
-    }
+    }*/
 
     //get handtrackers localpositions
     public Vector3 GetLeftHandTrackerLocalPosition(){
@@ -327,30 +326,12 @@ public class RobotPoseContoller : MonoBehaviour
     //serialize tilt zero distance
     [SerializeField] private float _tiltZeroDistance = 0.8f;
     [SerializeField] private float _tiltZeroHeight = 0.8f;
-    //float nose height
-    [SerializeField] private float _noseHeight = 0.8f;
     //nose height
     [SerializeField] private float _noseHeightMultiplier = 0.1f;
     
     private void HeadAngles3(){
-        Quaternion bodyRotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Right Shoulder"])) * Quaternion.Euler(0, 0, 0);
-        //final angle should be x=0, y=direction, z=-90
-        Quaternion leftAngle = Quaternion.LookRotation(YDirection(_joints["Left Ear"], _joints["Left Eye"]));
-        Quaternion rightAngle = Quaternion.LookRotation(YDirection(_joints["Right Ear"], _joints["Right Eye"]));
-        float avgAngle = (leftAngle.eulerAngles.y + rightAngle.eulerAngles.y) / 2 - bodyRotation.eulerAngles.y + 90f;
-        //set VCamPan to eyeDirection
-        //_odileJoints["VCamPan"].localRotation = headPan;
-        _odileJoints["VCamPan"].GetComponent<DOFController>().SetAngle(avgAngle);
-        //Quaternion headTilt = Quaternion.LookRotation(ZDirection(_joints["Left Ear"], _joints["Nose"])) * Quaternion.Euler(90, 0, 0);
-        Quaternion leftTilt = Quaternion.LookRotation(XDirection(_joints["Left Ear"], _joints["Nose"]));
-        Quaternion rightTilt = Quaternion.LookRotation(XDirection(_joints["Right Ear"], _joints["Nose"]));
-        avgAngle = (leftTilt.eulerAngles.x + rightTilt.eulerAngles.x) / 2;
-        _noseHeight = _joints["Nose"].localPosition.y;
-        //avg angle * tiltzerp / filtered distance
-        //avgAngle = avgAngle * _tiltZeroDistance / _oldZDistance;
-        //avgAngle = avgAngle + (_noseHeight - _tiltZeroHeight) * _noseHeightMultiplier; //TODO
-        //set VCamTilt to headTilt
-        _odileJoints["VCamTilt"].GetComponent<DOFController>().SetAngle(-avgAngle - xOffset);
+        _odileJoints["VCamPan"].GetComponent<DOFController>().SetAngle(_poseManager.GetHeadAngleY() + 90f);
+        _odileJoints["VCamTilt"].GetComponent<DOFController>().SetAngle(_poseManager.GetHeadAngleX());
     }
 
     //if distance is 1 VArm = 90, VWrist = 0
@@ -594,18 +575,6 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 bPosXZ = new Vector3(bPos.x, bPos.y, 0);
         Vector3 aToB = bPosXZ - aPosXZ;
         Vector3 aToBOrtho = new Vector3(-aToB.y, aToB.x, 0);
-        return aToBOrtho;
-    }
-    
-    //return the vector ortogonal to two vectors on the yz plane
-    Vector3 XDirection(Transform a, Transform b)
-    {
-        Vector3 aPos = a.position;
-        Vector3 bPos = b.position;
-        Vector3 aPosXZ = new Vector3(0, aPos.y, aPos.z);
-        Vector3 bPosXZ = new Vector3(0, bPos.y, bPos.z);
-        Vector3 aToB = bPosXZ - aPosXZ;
-        Vector3 aToBOrtho = new Vector3(0, -aToB.z, aToB.y);
         return aToBOrtho;
     }
 

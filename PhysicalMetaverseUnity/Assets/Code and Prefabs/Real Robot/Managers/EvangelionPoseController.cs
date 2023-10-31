@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class EvangelionPoseController : MonoBehaviour
 {
+    private PoseManager _poseManager;
     //bool hide
     [SerializeField] private bool _HIDE = false;
     private bool _hideStatus = true;
@@ -50,6 +51,7 @@ public class EvangelionPoseController : MonoBehaviour
     [SerializeField] private RobotPoseContoller _robotPoseContoller;
     private void Start()
     {
+        _poseManager = PoseManager.Instance;
         _points = new GameObject[arraySize];
         SpawnPoints();
         //set QtyOfMovement to zero
@@ -224,7 +226,7 @@ public class EvangelionPoseController : MonoBehaviour
         distanceFromCenter.runtimeValue = Mathf.Abs(_odileViz.position.x) * _distanceFromCenterMultiplier;
         //LookingAt 
         //_odileLookAngle from _odileViz GetLookAngle
-        _odileLookAngle = _robotPoseContoller.GetLookAngle();
+        _odileLookAngle = _poseManager.GetHeadAngleY();
         _odileLookAngle -= 270f;
         //angle of vector from 0 to odile position
         _odileAngle = Vector3.Angle(Vector3.right, _odileViz.position);
@@ -278,7 +280,7 @@ public class EvangelionPoseController : MonoBehaviour
             _rightHandDelta += delta;
 
             //head horizontal angle
-            float headHorizontalAngle = _robotPoseContoller.GetLookAngle();
+            float headHorizontalAngle = _poseManager.GetHeadAngleY();
             //delta of head horizontal angle
             delta = Mathf.Abs(headHorizontalAngle - _prevHorizontalHeadAngle);
             _prevHorizontalHeadAngle = headHorizontalAngle;

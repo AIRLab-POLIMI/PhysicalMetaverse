@@ -14,7 +14,11 @@ public class PoseManager : Monosingleton<PoseManager>
     private Dictionary<string, Transform> _poseJoints = new Dictionary<string, Transform>();
     [SerializeField] private float _distanceFromCamera;
     [SerializeField] private float _headAngleX;
+    //headTilt dof
+    [SerializeField] private DOFController _headTilt;
     [SerializeField] private float _headAngleY;
+    //headPan dof
+    [SerializeField] private DOFController _headPan;
     [SerializeField] private float _quantityOfMovement;
     [SerializeField] private bool _personDetected = false;
 
@@ -33,12 +37,12 @@ public class PoseManager : Monosingleton<PoseManager>
 
     public float GetHeadAngleX()
     {
-        return _headAngleX;
+        return _headTilt.GetAngle();
     }
 
     public float GetHeadAngleY()
     {
-        return _headAngleY;
+        return _headPan.GetAngle();
     }
 
     public float GetQuantityOfMovement()
@@ -72,8 +76,7 @@ public class PoseManager : Monosingleton<PoseManager>
     {
         CalculatePoseJoints();
         CalculateDistanceFromCamera();
-        CalculateHeadAngleX();
-        CalculateHeadAngleY();
+        CalculateHeadAngles();
         CalculateQuantityOfMovement();
         CalculatePersonDetected();
         CalculateRotoTraslation();
@@ -144,12 +147,43 @@ public class PoseManager : Monosingleton<PoseManager>
         _distanceFromCamera = _oldZDistance;
     }
 
-    private void CalculateHeadAngleX()
+    //float nose height
+    private float _noseHeight = 0.8f;
+    [SerializeField] private float _headXOffset = -45f;
+    private void CalculateHeadAngles()
     {
+        Quaternion bodyRotation = Quaternion.LookRotation(YDirection(_poseJoints["Left Shoulder"], _poseJoints["Right Shoulder"])) * Quaternion.Euler(0, 0, 0);
+        //final angle should be x=0, y=direction, z=-90
+        Quaternion leftAngle = Quaternion.LookRotation(YDirection(_poseJoints["Left Ear"], _poseJoints["Left Eye"]));
+        Quaternion rightAngle = Quaternion.LookRotation(YDirection(_poseJoints["Right Ear"], _poseJoints["Right Eye"]));
+        float avgAngle = (leftAngle.eulerAngles.y + rightAngle.eulerAngles.y) / 2 - bodyRotation.eulerAngles.y;
+        _headAngleY = avgAngle;
+        _headPan.SetAngle(_headAngleY);
+        //set VCamPan to eyeDirection
+        //_odileJoints["VCamPan"].localRotation = headPan;
+        //Quaternion headTilt = Quaternion.LookRotation(ZDirection(_poseJoints["Left Ear"], _poseJoints["Nose"])) * Quaternion.Euler(90, 0, 0);
+        Quaternion leftTilt = Quaternion.LookRotation(XDirection(_poseJoints["Left Ear"], _poseJoints["Nose"]));
+        Quaternion rightTilt = Quaternion.LookRotation(XDirection(_poseJoints["Right Ear"], _poseJoints["Nose"]));
+        avgAngle = (leftTilt.eulerAngles.x + rightTilt.eulerAngles.x) / 2;
+        _noseHeight = _poseJoints["Nose"].localPosition.y;
+        //avg angle * tiltzerp / filtered distance
+        //avgAngle = avgAngle * _tiltZeroDistance / _oldZDistance;
+        //avgAngle = avgAngle + (_noseHeight - _tiltZeroHeight) * _noseHeightMultiplier; //TODO
+        //set VCamTilt to headTilt
+        _headAngleX = -avgAngle - _headXOffset;
+        _headTilt.SetAngle(_headAngleX);
     }
-
-    private void CalculateHeadAngleY()
+    
+    //return the vector ortogonal to two vectors on the yz plane
+    Vector3 XDirection(Transform a, Transform b)
     {
+        Vector3 aPos = a.position;
+        Vector3 bPos = b.position;
+        Vector3 aPosXZ = new Vector3(0, aPos.y, aPos.z);
+        Vector3 bPosXZ = new Vector3(0, bPos.y, bPos.z);
+        Vector3 aToB = bPosXZ - aPosXZ;
+        Vector3 aToBOrtho = new Vector3(0, -aToB.z, aToB.y);
+        return aToBOrtho;
     }
 
     private void CalculateQuantityOfMovement()
