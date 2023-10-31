@@ -294,7 +294,7 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
             _personDetected = true;
         }
         //set odileviz rotation to orientation of vector from zero to odileviz
-        Vector3 direction = _odileViz.transform.position - Vector3.zero;
+        Vector3 direction = _poseManager.GetRotoTraslation().position - Vector3.zero;
         float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg + 90f;
         _poseManager.SetRotationOffset(angle);
     }
@@ -538,7 +538,7 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     private float _originalEarsOffset = 0.1f;
     private void MoveSpheres()
     {
-        _earsOffset = _originalEarsOffset / (_odileViz.GetComponent<RobotPoseContoller>().GetFilteredDistance()/0.3f);
+        _earsOffset = _originalEarsOffset / (_poseManager.GetDistanceFromCamera()/0.3f);
         try{
             //for each sphere
             for (int i = 0; i < parsedData.Length; i++)

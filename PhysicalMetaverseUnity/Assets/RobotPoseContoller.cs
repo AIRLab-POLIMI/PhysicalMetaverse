@@ -49,6 +49,7 @@ public class RobotPoseContoller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _poseManager = PoseManager.Instance;
         _rotoTraslation = _poseManager.GetRotoTraslation();
         _joints = _poseManager.GetPoseJoints();
         //add to _fedeOdilePartsStrings (arm, head, headAnchor, neck, head attach, body, odile, pointer container, elbow container)
