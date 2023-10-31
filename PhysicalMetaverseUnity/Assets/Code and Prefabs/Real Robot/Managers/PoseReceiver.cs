@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 
 //to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
 //this manager receives the 34 body landmarks detected by the depthai camera and positions a sphere at each landmark
-public class PersonManagerV2 : Monosingleton<PersonManagerV2>
+public class PoseReceiver : Monosingleton<PoseReceiver>
 {
     //dictionary of all joints
     private Dictionary<string, Transform> _joints = new Dictionary<string, Transform>();
@@ -31,9 +31,17 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
     private int[][] parsedData;
 
     //spawned
-    public bool _spawned = false;
+    [SerializeField] private bool _spawned = false;
+    //get
+    public bool GetSpawned(){
+        return _spawned;
+    }
 
-    public GameObject[] _spheres;
+    [SerializeField] private GameObject[] _spheres;
+    //public getspheres
+    public GameObject[] GetSpheres(){
+        return _spheres;
+    }
 
     //prev rcv time
     private float prevRcvTime = 0f;
@@ -249,7 +257,7 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
             if(!_spawned){
                 //call function to spawn spheres
                 if(_GET_SPHERES){
-                    GetSpheres();
+                    UseExistingSpheres();
                     CheckMeshEnabled();
                 }
                 else{
@@ -428,7 +436,7 @@ public class PersonManagerV2 : Monosingleton<PersonManagerV2>
         }
     }
 
-    private void GetSpheres(){
+    private void UseExistingSpheres(){
         _spheres = new GameObject[parsedData.Length];
         int i = 0;
         //add each child of _pose to _spheres

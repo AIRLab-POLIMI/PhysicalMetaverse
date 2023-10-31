@@ -7,7 +7,7 @@ import json
 #camera types:
 #internal - internal webcam
 #remote - ip camera at http://192.168.1.7:8080/video
-CAMERA_TYPE = "remote"
+CAMERA_TYPE = "internal"
 MIRROR_MODE = True
 
 SHOW = True
@@ -29,7 +29,7 @@ elif CAMERA_TYPE == "remote":
 pTime = 0
 
 # Define the UDP server's address and port
-server_address = ('localhost', 25667)  # Change the address and port as needed
+server_address = ('localhost', 25666)  # Change the address and port as needed
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 PAUSE = False

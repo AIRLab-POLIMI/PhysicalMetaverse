@@ -7,7 +7,7 @@ using System.Text;
 
 //This class handles the reception of the pose message. It:
 //-Updates the Array of ScriptableObjets corresponding to all the keypoints
-public class PoseManager : Monosingleton<PoseManager>
+public class OldPoseManager : Monosingleton<OldPoseManager>
 {
     private const int arraySize = 18;
 

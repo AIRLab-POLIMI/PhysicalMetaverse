@@ -8,12 +8,13 @@ public class RobotPoseContoller : MonoBehaviour
     [SerializeField] private bool _HIDE = true;
     [SerializeField] private bool _HIDE_BUTTON = true;
     //PersonManagerV2
-    public PersonManagerV2 _personManager;
+    [SerializeField] private PoseReceiver _poseReceiver;
+    [SerializeField] private PoseManager _poseManager;
     public Transform _odileWrist;
     public Transform _odileArm;
 
     //dictionary of all joints
-    private Dictionary<string, Transform> _joints = new Dictionary<string, Transform>();
+    private Dictionary<string, Transform> _joints;
 
     //dictionary of odile joints
     private Dictionary<string, Transform> _odileJoints = new Dictionary<string, Transform>();
@@ -51,6 +52,7 @@ public class RobotPoseContoller : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _joints = _poseManager.GetPoseJoints();
         //add to _fedeOdilePartsStrings (arm, head, headAnchor, neck, head attach, body, odile, pointer container, elbow container)
         _fedeOdilePartsStrings.Add("arm");
         _fedeOdilePartsStrings.Add("head");
@@ -134,7 +136,6 @@ public class RobotPoseContoller : MonoBehaviour
         
     }
     public bool _handTrackerMeshEnabled = false;
-    private bool _notPopulated = true;
 
     public float _oldZDistance = 10f;
     public float _perspectiveCorrection = 1f;
@@ -146,7 +147,7 @@ public class RobotPoseContoller : MonoBehaviour
     public float _exitX = 6.5f;
     public bool _NO_PERSON = false;
     public bool GetPoseDetected(){
-        return _personManager.GetPersonDetected();
+        return _poseReceiver.GetPersonDetected();
     }
     // Update is called once per frame
     void Update()
@@ -155,22 +156,6 @@ public class RobotPoseContoller : MonoBehaviour
             _HIDE = !_HIDE;
             Hide(_HIDE);
             _HIDE_BUTTON = false;
-        }
-        //if spawned
-        if (_notPopulated)
-        {
-            if (_personManager._spawned){
-                _joints.Clear();
-                //print names of all spheres
-                foreach (GameObject sphere in _personManager._spheres)
-                {
-                    //print(sphere.name);
-                    _joints.Add(sphere.name, sphere.transform);
-                }
-                _notPopulated = false;
-            }
-            else
-                return;
         }
         //orient parent like YDirection("Left Shoulder", "Left Shoulder")
         //////transform.rotation = Quaternion.LookRotation(YDirection(_joints["Left Shoulder"], _joints["Left Shoulder"]));
@@ -200,7 +185,7 @@ public class RobotPoseContoller : MonoBehaviour
         Vector3 poseLocation = Vector3.zero;
         Vector3 poseXLocation = (_joints["Left Shoulder"].localPosition + _joints["Right Shoulder"].localPosition) / 2;
         //get distance from personmanager to set z
-        float zDistance = _personManager.GetDistance();
+        float zDistance = _poseReceiver.GetDistance();
         //if zDistance changed more than 100% of oldZDistance use oldZDistance
         if(Mathf.Abs(zDistance - _oldZDistance) > _distanceDeltaTolerance)
             zDistance = _oldZDistance;
