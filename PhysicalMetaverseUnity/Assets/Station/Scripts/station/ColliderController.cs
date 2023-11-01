@@ -20,6 +20,11 @@ public class ColliderController : MonoBehaviour
 
     private bool CheckColliderTag(Collider other)
     {
+        //avoid null reference exception
+        if (_otherTag == null)
+        {
+            return false;
+        }
         // check if the collider has the tag otherTag
         return other.CompareTag(_otherTag);
     }
