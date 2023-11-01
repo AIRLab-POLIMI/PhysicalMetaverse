@@ -27,6 +27,8 @@ public class PoseManager : Monosingleton<PoseManager>
 
     //vizcontroller list
     [SerializeField] private List<VizController> _vizControllerList;
+    //gameobjects list
+    [SerializeField] private List<GameObject> _vizGameObjectsList;
     //dictionary with name and vizcontroller
     [SerializeField] private Dictionary<string, VizController> _vizControllerDict;
     //current viz string
@@ -34,7 +36,7 @@ public class PoseManager : Monosingleton<PoseManager>
 
 
     [ContextMenu("Next Viz")]
-    public void NextViz(){
+    /*public void NextViz(){
         //find current in _vizControllerList
         int index = _vizControllerList.IndexOf(_currentVizController);
         //increment index
@@ -64,6 +66,45 @@ public class PoseManager : Monosingleton<PoseManager>
         else{
             //set hide to true
             _currentVizController.SetHide(true);
+        }
+    }*/
+    //next viz and show viz simply enabling and disabling vizcontroller's parent gameobject
+    public void NextViz(){
+        //find current in _vizControllerList
+        int index = _vizControllerList.IndexOf(_currentVizController);
+        //increment index
+        index++;
+        //if index is out of range set to 0
+        if(index >= _vizControllerList.Count)
+            index = 0;
+        //set current viz to index
+        _currentVizController = _vizControllerList[index];
+        //disable all 
+        foreach (GameObject viz in _vizGameObjectsList)
+        {
+            //disable
+            viz.SetActive(false);
+            viz.GetComponent<VizController>().SetHide(true);
+        }
+        //enable
+        _vizGameObjectsList[index].SetActive(true);
+        _vizGameObjectsList[index].GetComponent<VizController>().SetHide(false);
+    }
+
+    //ShowViz
+    public void ShowViz(bool show){
+        //find current in _vizControllerList
+        int index = _vizControllerList.IndexOf(_currentVizController);
+        //if show
+        if(show){
+            //enable
+            _vizGameObjectsList[index].SetActive(true);
+            _vizGameObjectsList[index].GetComponent<VizController>().SetHide(false);
+        }
+        else{
+            //disable
+            _vizGameObjectsList[index].SetActive(false);
+            _vizGameObjectsList[index].GetComponent<VizController>().SetHide(true);
         }
     }
     
@@ -125,6 +166,7 @@ public class PoseManager : Monosingleton<PoseManager>
                 _vizControllerList.Add(child.GetComponent<VizController>());
                 //add vizcontroller name to _vizControllerDict
                 _vizControllerDict.Add(child.name, child.GetComponent<VizController>());
+                _vizGameObjectsList.Add(child.gameObject);
             }
             //if child has children
             if(child.childCount > 0){
@@ -137,6 +179,7 @@ public class PoseManager : Monosingleton<PoseManager>
                         _vizControllerList.Add(childOfChild.GetComponent<VizController>());
                         //add vizcontroller name to _vizControllerDict
                         _vizControllerDict.Add(childOfChild.name, childOfChild.GetComponent<VizController>());
+                        _vizGameObjectsList.Add(childOfChild.gameObject);
                     }
                 }
             }
