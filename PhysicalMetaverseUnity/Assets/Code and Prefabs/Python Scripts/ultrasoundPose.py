@@ -84,10 +84,6 @@ thread.start()
 while True:
     if not PAUSE:
         success, img = cap.read()
-        #save frame as png
-        if not frame_saved:
-            cv2.imwrite("frame.png", img)
-            frame_saved = True
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         if MIRROR_MODE:
             #mirror image
