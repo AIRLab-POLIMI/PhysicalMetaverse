@@ -8,6 +8,8 @@ public class MirrorGameManager : MonoBehaviour
     private GameManager _gameManager;
     //serialize sprite renderer
     [SerializeField] private SpriteRenderer _blackPanel;
+    //serialize _robotPoseController
+    [SerializeField] private RobotPoseContoller _robotPoseController;
     private PoseManager _poseManager;
     //_poseReceiver
     private PoseReceiver _poseReceiver;
@@ -26,174 +28,121 @@ public class MirrorGameManager : MonoBehaviour
     //[SerializeField] private UnityEvent<byte[]> byteEventResponse;
     //list of events UnityEvent<byte[]>
     [SerializeField] private List<UnityEvent<byte[]>> _byteEventList;
-
-    [SerializeField] private bool _vizSetted;
-    //_prevPoseDetected
-    private bool _prevPoseDetected = false;
-    [SerializeField] private GameState _currentState = GameState.PLAY;
-
-    private AmbientManager _ambientManager;
-    //VizType
-    public enum VizType
-    {
+    //enum current viz, Odile, Siid, Evangelion
+    public enum VizType{
         ODILE,
         SIID,
         EVANGELION
     }
-    //_vizTypeList
-    private VizType[] _vizTypeList = { VizType.ODILE, VizType.SIID, VizType.EVANGELION };
-    //_currentVizType
-    private VizType _currentVizType = VizType.ODILE;
-
-    //enum current viz, Odile, Siid, Evangelion
-    public enum GameState
-    {
-        PLAY,
-        END
-    }
-
+    //arraylist of viztypes
+    [SerializeField] private VizType[] _vizTypeList;
+    [SerializeField] private VizType _currentVizType = VizType.ODILE;
     private float _exitTime = 0f;
-
+    // Start is called before the first frame update
     void Start()
     {
-        // Your initialization logic
         _poseReceiver = PoseReceiver.Instance;
         _poseManager = PoseManager.Instance;
         _ambientManager = AmbientManager.Instance;
         _gameManager = GameManager.Instance;
         _gameManager.SetTimeScale(1f);
         _blackPanel.gameObject.SetActive(true);
+        //fill _vizTypeList with allvaluers of viztype
         _vizTypeList = (VizType[])System.Enum.GetValues(typeof(VizType));
+        //set current viz type to 0
         _currentVizType = _vizTypeList[0];
-
-        EnterState(GameState.PLAY);
     }
-
-    void EnterState(GameState state)
-    {
-        _currentState = state;
-
-        switch (_currentState)
-        {
-            case GameState.PLAY:
-                // Enter logic for play state (if any)
-                break;
-            case GameState.END:
-                // Enter logic for end state
-                _gameManager.SetTimeScale(0f);
-                break;
-        }
-    }
-
+    [SerializeField] private bool _vizSetted = false;
+    private bool _prevPoseDetected = true;
+    private bool _fadeBlackPanel = false;
+    private AmbientManager _ambientManager;
+    // Update is called once per frame
     void Update()
     {
-        switch (_currentState)
-        {
-            case GameState.PLAY:
-                PlayStateUpdate();
-                break;
-            case GameState.END:
-                EndStateUpdate();
-                break;
-        }
-    }
-
-    void PlayStateUpdate()
-    {
-        HandlePoseDetection();
-        ChangeVisualization();
-        HandleTime();
-        HandleBlackPanelFade();
-
-        if (_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime)
-        {
-            EnterState(GameState.END);
-        }
-    }
-
-    void EndStateUpdate()
-    {
-        HandlePoseDetection();
-        HandleTime();
-        HandleBlackPanelFade();
-        HandleVisualizationReset();
-    }
-
-    void HandlePoseDetection()
-    {
         bool poseDetected = _poseReceiver.GetPersonDetected();
-
-        if (!_prevPoseDetected && poseDetected)
-        {
-            _byteEventList[(int)_currentVizType].Invoke(new byte[] { 0 });
+        //if prev true and curr false fire event with value false
+        if(!_prevPoseDetected && poseDetected){
+            //fire event
+            _byteEventList[(int)_currentVizType].Invoke(new byte[]{0});
         }
-        if (_prevPoseDetected && !poseDetected)
-        {
-            _byteEventList[(int)_currentVizType].Invoke(new byte[] { 1 });
+        //if prev false and curr true fire event with value true
+        if(_prevPoseDetected && !poseDetected){
+            //fire event
+            _byteEventList[(int)_currentVizType].Invoke(new byte[]{1});
         }
-
         _prevPoseDetected = poseDetected;
-    }
-
-    void ChangeVisualization()
-    {
-        if (!_vizSetted)
-        {
+        //if not viz setted fire corresponding event with value true
+        if(!_vizSetted){
+            //fire event
+            //if(!poseDetected)
+            //    _byteEventList[(int)_currentVizType].Invoke(new byte[]{1});
+            //fire next in list
+            //_byteEventList[((int)_currentVizType + 1) % _byteEventList.Count].Invoke(new byte[]{0});
+            //change _currentVizType to next
             _currentVizType = _vizTypeList[((int)_currentVizType + 1) % _vizTypeList.Length];
+            //set viz setted to true
             _vizSetted = true;
             _gameManager.SetNormalizedElapsedTime(0.001f);
         }
-    }
-
-    void HandleTime()
-    {
-        if (_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime)
-        {
+        //if _robotPoseController getposedetected is false enable black panel and fade it in, else fade it out
+        /*if(!_robotPoseController.GetPoseDetected()){
+            _blackPanel.color = new Color(_blackPanel.color.r, _blackPanel.color.g, _blackPanel.color.b, Mathf.Lerp(_blackPanel.color.a, 1f, 0.1f));
+        }else{
+            _blackPanel.color = new Color(_blackPanel.color.r, _blackPanel.color.g, _blackPanel.color.b, Mathf.Lerp(_blackPanel.color.a, 0f, 0.1f));
+        }*/
+        
+        //if elapsed time more than _normalizedEndTime set timescale to 0
+        if(_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime){
             _gameManager.SetTimeScale(0f);
+            //restore when person leaves and comes back
+            /*if(_robotPoseController.GetPoseDetected() && !_prevPoseDetected){
+                //set timescale to -20
+                _gameManager.SetTimeScale(_resetTimeSpeed);
+                //set normalized time to end
+                if(_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime){
+                    _gameManager.SetNormalizedElapsedTime(_normalizedEndTime);
+                }
+            }
+            _prevPoseDetected = _robotPoseController.GetPoseDetected();*/
             RestoreTimeAfter(_restoreTime);
         }
-        else
-        {
+        else{
             RestoreTimeAfter(_restoreTimeBeforeEnd);
         }
-
-        if (_gameManager.GetNormalizedElapsedTime() < 0)
-        {
+        //if normalised time is less than 0 set timescale to 1
+        if(_gameManager.GetNormalizedElapsedTime() < 0){
             _gameManager.SetTimeScale(0f);
-            if (_poseReceiver.GetPersonDetected())
+            if(_poseReceiver.GetPersonDetected())
                 _gameManager.SetTimeScale(1f);
         }
-    }
+        
+        //if _fadeBlackPanel is true fade black panel in
+        if(_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime){
+            _blackPanel.color = new Color(_blackPanel.color.r, _blackPanel.color.g, _blackPanel.color.b, Mathf.Lerp(_blackPanel.color.a, 1f, 0.1f));
+        }else{
+            _blackPanel.color = new Color(_blackPanel.color.r, _blackPanel.color.g, _blackPanel.color.b, Mathf.Lerp(_blackPanel.color.a, 0f, 0.1f));
+        }
 
-    void HandleBlackPanelFade()
-    {
-        float targetAlpha = (_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime) ? 1f : 0f;
-        _blackPanel.color = new Color(_blackPanel.color.r, _blackPanel.color.g, _blackPanel.color.b, Mathf.Lerp(_blackPanel.color.a, targetAlpha, 0.1f));
-    }
-
-    void HandleVisualizationReset()
-    {
-        if (_prevResetTimeSpeed >= 0 && _gameManager.GetTimeScale() < 0)
-        {
+        //if _prevResetTimeSpeed >= 0 and _resetTimeSpeed < 0 set _vizSetted to false
+        if(_prevResetTimeSpeed >= 0 && _gameManager.GetTimeScale() < 0){
             _vizSetted = false;
         }
+        
         _prevResetTimeSpeed = _gameManager.GetTimeScale();
+
     }
 
-    void RestoreTimeAfter(float restoreTime)
-    {
-        if (_poseReceiver.GetPersonDetected())
-        {
+    private void RestoreTimeAfter(float restoreTime){
+        //restore 3 seconds after person left
+        if(_poseReceiver.GetPersonDetected()){
             _exitTime = Time.time;
         }
-
-        if (Time.time - _exitTime > restoreTime)
-        {
+        if(Time.time - _exitTime > restoreTime){
+            //set timescale to -20
             _resetTimeSpeed = -GameManager.Instance.GetGameDuration() / _resetTimeDuration;
             _gameManager.SetTimeScale(_resetTimeSpeed);
-
-            if (_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime)
-            {
+            //set normalized time to end
+            if(_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime){
                 _gameManager.SetNormalizedElapsedTime(_normalizedEndTime);
             }
         }
