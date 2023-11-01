@@ -61,6 +61,7 @@ public class LidarManager : Monosingleton<LidarManager>
     [Space]
     [Header("LIDAR TRACKING")]
     [Space]
+    [SerializeField] private PoseManager _poseManager;
     //array of blob booleans
     [SerializeField] private int[] _blobs = new int[360];
     [SerializeField] private int[] _personBlobs = new int[360];
@@ -80,8 +81,6 @@ public class LidarManager : Monosingleton<LidarManager>
     //range 0 1 public float lidar tracking lerp
     [Range(0.0f, 1.0f)]
     [SerializeField] private float _lidarTrackingLerp = 0.5f;
-    ////private GameObject _personTracker;
-    [SerializeField] private GameObject _humanViz;
     [SerializeField] private float _humanVizOffset = 1f;
     [SerializeField] private float _maxPersonJumpDistance = 8f;
     [SerializeField] private GameObject personCollider;
@@ -138,6 +137,7 @@ public class LidarManager : Monosingleton<LidarManager>
 
     private void Start()
     {
+        _poseManager = PoseManager.Instance;
         //if _DISABLE_LIDAR disable this
         if(_DISABLE_LIDAR)
             this.gameObject.SetActive(false);
@@ -485,12 +485,12 @@ public class LidarManager : Monosingleton<LidarManager>
         //destination equal to point minus 1 in direction of vector zero
         Vector3 destination = point.position - point.position.normalized * _humanVizOffset;
         //if distance is less than maxjumpdistance lerp
-        if(Vector3.Distance(_humanViz.transform.position, destination) < _maxPersonJumpDistance){
-            _humanViz.transform.position = Vector3.Lerp(_humanViz.transform.position, destination, _lidarTrackingLerp);
+        if(Vector3.Distance(_poseManager.GetRotoTraslation().transform.position, destination) < _maxPersonJumpDistance){
+            _poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
         }
         else{
             //else teleport
-            _humanViz.transform.position = destination;
+            _poseManager.SetRotoTraslationPosition(destination);
         }
 
         //lerp with constant speed

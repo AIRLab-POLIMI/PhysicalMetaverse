@@ -24,6 +24,7 @@ public class PoseManager : Monosingleton<PoseManager>
 
     //
     [SerializeField] private  bool _MANUAL_MOVEMENT = false;
+    [SerializeField] private  bool _MIRROR_MODE = true;
 
     //vizcontroller list
     [SerializeField] private List<VizController> _vizControllerList;
@@ -144,6 +145,11 @@ public class PoseManager : Monosingleton<PoseManager>
     {
         return _rotoTraslation;
     }
+    //set
+    public void SetRotoTraslationPosition(Vector3 position)
+    {
+        _rotoTraslation.position = position;
+    }
 
     public bool GetManualMovement()
     {
@@ -197,7 +203,8 @@ public class PoseManager : Monosingleton<PoseManager>
         CalculateQuantityOfMovement();
         CalculatePersonDetected();
         CalculateRotoTraslation();
-        CalculateParallax();
+        if(_MIRROR_MODE)
+            CalculateParallax();
     }
 
     private bool _notPopulated = true;
