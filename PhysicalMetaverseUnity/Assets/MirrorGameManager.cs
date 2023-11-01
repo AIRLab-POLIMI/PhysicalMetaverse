@@ -21,6 +21,9 @@ public class MirrorGameManager : MonoBehaviour
     [SerializeField] private float _resetTimeDuration = 2f;
     //serialize _restoreTime
     [SerializeField] private float _restoreTime = 3f;
+    [SerializeField] private float _blackScreenDuration = 2f;
+    //_endTime
+    private float _endTime = 0f;
     //serialize _restoreTimeBeforeEnd
     [SerializeField] private float _restoreTimeBeforeEnd = 3f;
     private float _exitTime = 0f;
@@ -93,12 +96,15 @@ public class MirrorGameManager : MonoBehaviour
             if(_poseReceiver.GetPersonDetected())
                 _gameManager.SetTimeScale(1f);
         }
+
+        //if time since endtime is more than blackscreen duration set timescale to 1
         
         //if _fadeBlackPanel is true fade black panel in
         if(_gameManager.GetNormalizedElapsedTime() > _normalizedEndTime){
             _blackPanel.color = new Color(_blackPanel.color.r, _blackPanel.color.g, _blackPanel.color.b, Mathf.Lerp(_blackPanel.color.a, 1f, 0.1f));
         }else{
             _blackPanel.color = new Color(_blackPanel.color.r, _blackPanel.color.g, _blackPanel.color.b, Mathf.Lerp(_blackPanel.color.a, 0f, 0.1f));
+            _endTime = Time.time;
         }
 
         //if _prevResetTimeSpeed >= 0 and _resetTimeSpeed < 0 set _vizSetted to false
@@ -115,7 +121,7 @@ public class MirrorGameManager : MonoBehaviour
         if(_poseReceiver.GetPersonDetected()){
             _exitTime = Time.time;
         }
-        if(Time.time - _exitTime > restoreTime){
+        if(Time.time - _exitTime > restoreTime || Time.time - _endTime > _blackScreenDuration){
             //set timescale to -20
             _resetTimeSpeed = -GameManager.Instance.GetGameDuration() / _resetTimeDuration;
             _gameManager.SetTimeScale(_resetTimeSpeed);
