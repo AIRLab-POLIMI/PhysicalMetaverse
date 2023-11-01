@@ -23,20 +23,6 @@ public class MirrorGameManager : MonoBehaviour
     [SerializeField] private float _restoreTime = 3f;
     //serialize _restoreTimeBeforeEnd
     [SerializeField] private float _restoreTimeBeforeEnd = 3f;
-    //gameobject list vizlist
-    [SerializeField] private GameObject[] _vizList;
-    //[SerializeField] private UnityEvent<byte[]> byteEventResponse;
-    //list of events UnityEvent<byte[]>
-    [SerializeField] private List<UnityEvent<byte[]>> _byteEventList;
-    //enum current viz, Odile, Siid, Evangelion
-    public enum VizType{
-        ODILE,
-        SIID,
-        EVANGELION
-    }
-    //arraylist of viztypes
-    [SerializeField] private VizType[] _vizTypeList;
-    [SerializeField] private VizType _currentVizType = VizType.ODILE;
     private float _exitTime = 0f;
     // Start is called before the first frame update
     void Start()
@@ -47,10 +33,6 @@ public class MirrorGameManager : MonoBehaviour
         _gameManager = GameManager.Instance;
         _gameManager.SetTimeScale(1f);
         _blackPanel.gameObject.SetActive(true);
-        //fill _vizTypeList with allvaluers of viztype
-        _vizTypeList = (VizType[])System.Enum.GetValues(typeof(VizType));
-        //set current viz type to 0
-        _currentVizType = _vizTypeList[0];
     }
     [SerializeField] private bool _vizSetted = false;
     private bool _prevPoseDetected = true;
@@ -60,16 +42,11 @@ public class MirrorGameManager : MonoBehaviour
     void Update()
     {
         bool poseDetected = _poseReceiver.GetPersonDetected();
-        //if prev true and curr false fire event with value false
-        if(!_prevPoseDetected && poseDetected){
-            //fire event
-            _byteEventList[(int)_currentVizType].Invoke(new byte[]{0});
-        }
-        //if prev false and curr true fire event with value true
-        if(_prevPoseDetected && !poseDetected){
-            //fire event
-            _byteEventList[(int)_currentVizType].Invoke(new byte[]{1});
-        }
+        //if posedetected became true show viz
+        if(poseDetected && !_prevPoseDetected)
+            _poseManager.ShowViz(true);
+        if(!poseDetected && _prevPoseDetected)
+            _poseManager.ShowViz(false);
         _prevPoseDetected = poseDetected;
         //if not viz setted fire corresponding event with value true
         if(!_vizSetted){
@@ -78,11 +55,12 @@ public class MirrorGameManager : MonoBehaviour
             //    _byteEventList[(int)_currentVizType].Invoke(new byte[]{1});
             //fire next in list
             //_byteEventList[((int)_currentVizType + 1) % _byteEventList.Count].Invoke(new byte[]{0});
-            //change _currentVizType to next
-            _currentVizType = _vizTypeList[((int)_currentVizType + 1) % _vizTypeList.Length];
+            _poseManager.NextViz();
+            //if not posedetected 
+            if(!poseDetected)
+                _poseManager.ShowViz(false);
             //set viz setted to true
             _vizSetted = true;
-            _gameManager.SetNormalizedElapsedTime(0.001f);
         }
         //if _robotPoseController getposedetected is false enable black panel and fade it in, else fade it out
         /*if(!_robotPoseController.GetPoseDetected()){

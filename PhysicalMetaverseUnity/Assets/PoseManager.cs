@@ -53,6 +53,19 @@ public class PoseManager : Monosingleton<PoseManager>
         //set hide to false
         _currentVizController.SetHide(false);
     }
+
+    //ShowViz
+    public void ShowViz(bool show){
+        //if show
+        if(show){
+            //set hide to false
+            _currentVizController.SetHide(false);
+        }
+        else{
+            //set hide to true
+            _currentVizController.SetHide(true);
+        }
+    }
     
 
     public Dictionary<string, Transform> GetPoseJoints()
