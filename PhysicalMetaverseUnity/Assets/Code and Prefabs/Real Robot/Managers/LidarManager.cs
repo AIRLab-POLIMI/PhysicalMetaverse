@@ -511,7 +511,7 @@ public class LidarManager : Monosingleton<LidarManager>
             
         //enable mesh
         ////_personTracker.GetComponent<MeshRenderer>().enabled = true;
-        _humanViz.GetComponent<MeshRenderer>().enabled = true;
+        //_humanViz.GetComponent<MeshRenderer>().enabled = true;
     }
 
     //Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly
