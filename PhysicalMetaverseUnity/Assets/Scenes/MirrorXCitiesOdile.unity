@@ -56885,6 +56885,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8570611158811090860, guid: 00f488a7070260f4686fd6ce2bdb47c2,
         type: 3}
+      propertyPath: _blackScreenDuration
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8570611158811090860, guid: 00f488a7070260f4686fd6ce2bdb47c2,
+        type: 3}
       propertyPath: _robotPoseController
       value: 
       objectReference: {fileID: 1088018249}
