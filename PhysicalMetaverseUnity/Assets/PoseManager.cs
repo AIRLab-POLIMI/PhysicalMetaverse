@@ -25,6 +25,36 @@ public class PoseManager : Monosingleton<PoseManager>
     //
     [SerializeField] private  bool _MANUAL_MOVEMENT = false;
 
+    //vizcontroller list
+    [SerializeField] private List<VizController> _vizControllerList;
+    //dictionary with name and vizcontroller
+    [SerializeField] private Dictionary<string, VizController> _vizControllerDict;
+    //current viz string
+    [SerializeField] private VizController _currentVizController;
+
+
+    [ContextMenu("Next Viz")]
+    public void NextViz(){
+        //find current in _vizControllerList
+        int index = _vizControllerList.IndexOf(_currentVizController);
+        //increment index
+        index++;
+        //if index is out of range set to 0
+        if(index >= _vizControllerList.Count)
+            index = 0;
+        //set current viz to index
+        _currentVizController = _vizControllerList[index];
+        //set all hides in list
+        foreach (VizController viz in _vizControllerList)
+        {
+            //set hide to true
+            viz.SetHide(true);
+        }
+        //set hide to false
+        _currentVizController.SetHide(false);
+    }
+    
+
     public Dictionary<string, Transform> GetPoseJoints()
     {
         return _poseJoints;
@@ -70,6 +100,36 @@ public class PoseManager : Monosingleton<PoseManager>
     void Start()
     {
         _poseReceiver = PoseReceiver.Instance;
+        //_vizNamesList
+        _vizControllerDict = new Dictionary<string, VizController>();
+        //among children and children of children find viz controllers
+        _vizControllerList = new List<VizController>();
+        foreach (Transform child in transform)
+        {
+            //if child has vizcontroller
+            if(child.GetComponent<VizController>() != null){
+                //add to list
+                _vizControllerList.Add(child.GetComponent<VizController>());
+                //add vizcontroller name to _vizControllerDict
+                _vizControllerDict.Add(child.name, child.GetComponent<VizController>());
+            }
+            //if child has children
+            if(child.childCount > 0){
+                //for each child of child
+                foreach (Transform childOfChild in child)
+                {
+                    //if child of child has vizcontroller
+                    if(childOfChild.GetComponent<VizController>() != null){
+                        //add to list
+                        _vizControllerList.Add(childOfChild.GetComponent<VizController>());
+                        //add vizcontroller name to _vizControllerDict
+                        _vizControllerDict.Add(childOfChild.name, childOfChild.GetComponent<VizController>());
+                    }
+                }
+            }
+        }
+        NextViz();
+        NextViz();
     }
 
     // Update is called once per frame

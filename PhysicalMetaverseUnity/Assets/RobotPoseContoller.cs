@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RobotPoseContoller : MonoBehaviour
+public class RobotPoseContoller : VizController
 {
     //bool serialize HIDE
     [SerializeField] private bool _HIDE = true;
@@ -409,6 +409,45 @@ public class RobotPoseContoller : MonoBehaviour
     public void FireHideButton(){
         _HIDE_BUTTON = true;
     }
+
+    public override void SetHide(bool setHide)
+    {
+        if(setHide){
+            _HIDE = true;
+            //disable all obejcts in _fedOdileParts
+            foreach (GameObject obj in _fedeOdileParts)
+            {
+                obj.SetActive(false);
+            }
+                
+            _odileJoints["VCamArm"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamAlign"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamPan"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamTilt"].GetComponent<DOFController>().ResetDof();
+            _prevHide = true;
+        }
+        else{
+            _HIDE = false;
+            //enable all obejcts in _fedOdileParts
+            foreach (GameObject obj in _fedeOdileParts)
+            {
+                obj.SetActive(true);
+                //enable all meshes in the children
+                foreach (MeshRenderer mesh in obj.GetComponentsInChildren<MeshRenderer>())
+                {
+                    mesh.enabled = true;
+                }
+            }
+            //ResetDof on all dof
+            
+            _odileJoints["VCamArm"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamAlign"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamPan"].GetComponent<DOFController>().ResetDof();
+            _odileJoints["VCamTilt"].GetComponent<DOFController>().ResetDof();
+            _prevHide = false;
+        }
+    }
+
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist
     void InverseKinematics(){
         _currentHandTracker = _leftHandTracker;

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EvangelionPoseController : MonoBehaviour
+public class EvangelionPoseController : VizController
 {
     private PoseManager _poseManager;
     //bool hide
@@ -79,6 +79,13 @@ public class EvangelionPoseController : MonoBehaviour
             //hide mesh
             point.GetComponent<MeshRenderer>().enabled = !hide;
         }
+        _hideStatus = !_hideStatus;
+        _HIDE = false;
+    }
+
+    public override void SetHide(bool setHide)
+    {
+        Hide(setHide);
     }
 
     [SerializeField] private float _scaledTime = 0f;
@@ -87,8 +94,6 @@ public class EvangelionPoseController : MonoBehaviour
         _quantityOfMovement = _poseManager.GetQuantityOfMovement();
         if(_HIDE){
             Hide(_hideStatus);
-            _hideStatus = !_hideStatus;
-            _HIDE = false;
         }
         //PARAMETERS:
         //-DistanceFromCenter 

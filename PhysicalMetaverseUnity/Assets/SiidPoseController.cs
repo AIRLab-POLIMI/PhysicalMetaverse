@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SiidPoseController : MonoBehaviour
+public class SiidPoseController : VizController
 {
     private PoseManager _poseManager;
     //transform _rotoTraslation
@@ -72,8 +72,6 @@ public class SiidPoseController : MonoBehaviour
         
         if(_HIDE){
             Hide(_hideStatus);
-            _hideStatus = !_hideStatus;
-            _HIDE = false;
         }
         //set position and rotation to odileviz
         transform.position = _rotoTraslation.position + _yOffset * Vector3.up;
@@ -117,6 +115,10 @@ public class SiidPoseController : MonoBehaviour
     //fire hide button
     public void FireHideButton(){
         _HIDE = true;
+    }
+
+    public override void SetHide(bool setHide){
+        Hide(setHide);
     }
 
     private void PetalsAngleWithHandsDistance(){
@@ -211,5 +213,7 @@ public class SiidPoseController : MonoBehaviour
                 spriteRenderer.enabled = true;
             }
         }
+        _hideStatus = !_hideStatus;
+        _HIDE = false;
     }
 }
