@@ -196,31 +196,31 @@ public class LidarManager : Monosingleton<LidarManager>
         DisableBackPillars();
     }
 
+    //list of disable back pillars angles
+    [SerializeField] private List<int> _disableBackPillarsAngles = new List<int>();
+    //list of disable back pillars ranges
+    [SerializeField] private List<int> _disableBackPillarsRanges = new List<int>();
+
+
     private void DisableBackPillars(){
         if(_disableBackPillars){
-            //disable pillars from 0 to 30 and from 330 to 360
-            for(int j = 0; j < _disablePillarsRange; j++){
-                //set station id to -1
-                _points[j].GetComponent<PillarManager>().SetStationId(-1);
-                _blobs[j] = -1;
-                _personBlobs[j] = -1;
-                _points[j].SetActive(false);
+            //for each _disableBackPillarsAngles, _disableBackPillarsRanges
+            for(int i = 0; i < _disableBackPillarsAngles.Count; i++){
+                for(int j = _disableBackPillarsAngles[i]; j < _disableBackPillarsAngles[i]+_disableBackPillarsRanges[i]; j++){
+                    //set station id to -1
+                    _blobs[j] = -1;
+                    _personBlobs[j] = -1;
+                    _points[j].GetComponent<PillarManager>().SetStationId(-1);
+                    _points[j].SetActive(false);
+                }
+                for(int j = _disableBackPillarsAngles[i]-_disableBackPillarsRanges[i]; j < _disableBackPillarsAngles[i]; j++){
+                    //set station id to -1
+                    _blobs[j] = -1;
+                    _personBlobs[j] = -1;
+                    _points[j].GetComponent<PillarManager>().SetStationId(-1);
+                    _points[j].SetActive(false);
+                }
             }
-            for(int j = 360-_disablePillarsRange; j < 360; j++){
-                //set station id to -1
-                _blobs[j] = -1;
-                _personBlobs[j] = -1;
-                _points[j].GetComponent<PillarManager>().SetStationId(-1);
-                _points[j].SetActive(false);
-            }
-            //enable pillars from 0 to _savePillarsRange
-            for(int j = 0; j < _savePillarsRange; j++){
-                _points[j].SetActive(true);
-            }
-            for(int j = 360-_savePillarsRange; j < 360; j++){
-                _points[j].SetActive(true);
-            }
-
         }
     }
     public void OnMsgRcv(byte[] msg)
@@ -470,7 +470,7 @@ public class LidarManager : Monosingleton<LidarManager>
             }
             //get distance from world center
             float distance = Vector3.Distance(_points[k].transform.position, new Vector3(0,0,0));
-            if(distance < minDistance){
+            if(distance < minDistance && distance > _closestPersonDistanceThreshold){
                 minDistance = distance;
                 closestIndex = k;
             }
@@ -480,18 +480,19 @@ public class LidarManager : Monosingleton<LidarManager>
         }
         Transform point = _points[closestIndex].transform;
         Transform trueMiddleTransform = _points[trueMiddle].transform;
+        //point = trueMiddleTransform;
         //lerp corresponding blobtracker at point
         ////_personTracker.transform.position = Vector3.Lerp(////_personTracker.transform.position, point.position, _lidarTrackingLerp);
         //destination equal to point minus 1 in direction of vector zero
         Vector3 destination = point.position - point.position.normalized * _humanVizOffset;
         //if distance is less than maxjumpdistance lerp
-        if(Vector3.Distance(_poseManager.GetRotoTraslation().transform.position, destination) < _maxPersonJumpDistance){
-            _poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
-        }
-        else{
+        ////if(Vector3.Distance(_poseManager.GetRotoTraslation().transform.position, destination) < _maxPersonJumpDistance){
+            ////_poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
+        ////}
+        ////else{
             //else teleport
-            _poseManager.SetRotoTraslationPosition(destination);
-        }
+            ////_poseManager.SetRotoTraslationPosition(destination);
+        ////}
 
         //lerp with constant speed
         //_humanViz.transform.position = Vector3.MoveTowards(_humanViz.transform.position, point.position, _lidarTrackingLerp);
@@ -505,7 +506,14 @@ public class LidarManager : Monosingleton<LidarManager>
             //GameObject personCollider = GameObject.Find("PersonCollider");
             //personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp);
             //no lerp
-            personCollider.transform.position = point.position;
+        if(Vector3.Distance(personCollider.transform.position, point.position) < _maxPersonJumpDistance && Vector3.Distance(point.position, this.transform.position) > _closestPersonDistanceThreshold){
+            //personCollider.transform.position = point.position;
+            //lerp
+            personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
+            //move with constant speed
+            //personCollider.transform.position = Vector3.MoveTowards(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
+            _poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
+        }
             //position personCollider at point distance in direction of trueMiddleTransform
             //personCollider.transform.position = trueMiddleTransform.position.normalized * point.position.magnitude;
             
@@ -513,6 +521,9 @@ public class LidarManager : Monosingleton<LidarManager>
         ////_personTracker.GetComponent<MeshRenderer>().enabled = true;
         //_humanViz.GetComponent<MeshRenderer>().enabled = true;
     }
+
+    public float _colliderLerpSpeedMultiplier = 4f;
+    public float _closestPersonDistanceThreshold = 1f;
 
     //Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly
     void LidarTracking(){
@@ -1364,7 +1375,7 @@ public class LidarManager : Monosingleton<LidarManager>
             //float convertedValue = ConvertRange(value);
             float convertedValue = (((float) value) / 100.0f)-0.5f;
             convertedValue = convertedValue * _lidarScale;
-            float circleposition = (float)pos / (float)arraySize;
+            float circleposition = (float)((pos + 180)%360) / (float)arraySize;
             float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * convertedValue;
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * convertedValue;
             Vector3 posit = _points[pos].transform.position;
