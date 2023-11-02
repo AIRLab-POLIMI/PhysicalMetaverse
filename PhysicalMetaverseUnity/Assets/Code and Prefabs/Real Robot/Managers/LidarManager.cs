@@ -464,7 +464,27 @@ public class LidarManager : Monosingleton<LidarManager>
         //for each point in the blob, check distance from world center and keep the smallest
         int closestIndex = found;
         float minDistance = 1000f;
-        for(int k = found; k < found + count; k++){
+        /*for(int k = found; k < found + count; k++){
+            if(k >= 360){
+                k -= 360;
+            }
+            //get distance from world center
+            float distance = Vector3.Distance(_points[k].transform.position, new Vector3(0,0,0));
+            if(distance < minDistance && distance > _closestPersonDistanceThreshold){
+                minDistance = distance;
+                closestIndex = k;
+            }
+        }*/
+        //look only among 10% of points from the middle
+        int start = trueMiddle - (int)(max*_checkPercent);
+        int end = trueMiddle + (int)(max*_checkPercent);
+        if(start < 0){
+            start += 360;
+        }
+        if(end >= 360){
+            end -= 360;
+        }
+        for(int k = start; k < end; k++){
             if(k >= 360){
                 k -= 360;
             }
@@ -524,6 +544,7 @@ public class LidarManager : Monosingleton<LidarManager>
 
     public float _colliderLerpSpeedMultiplier = 4f;
     public float _closestPersonDistanceThreshold = 1f;
+    public float _checkPercent = 0.7f;
 
     //Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly
     void LidarTracking(){

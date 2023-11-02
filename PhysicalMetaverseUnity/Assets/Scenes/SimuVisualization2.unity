@@ -33963,8 +33963,8 @@ Transform:
   m_GameObject: {fileID: 1724598784}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 5.6, y: -4.7308, z: -57.8}
-  m_LocalScale: {x: 4.017984, y: 4.017984, z: 4.017984}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 11, y: 11, z: 11}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1065572993}
   m_RootOrder: 9
@@ -40890,12 +40890,17 @@ PrefabInstance:
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
       propertyPath: _maxPersonJumpDistance
-      value: 12
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
       propertyPath: _personSkippableBlobPoints
-      value: 3
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
+        type: 3}
+      propertyPath: _colliderLerpSpeedMultiplier
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
@@ -40920,12 +40925,12 @@ PrefabInstance:
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
       propertyPath: _disableBackPillarsRanges.Array.data[0]
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
       propertyPath: _disableBackPillarsRanges.Array.data[1]
-      value: 10
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353763, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}

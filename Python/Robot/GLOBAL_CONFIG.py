@@ -19,7 +19,7 @@ odile_ip = '192.168.0.102'
 
 #  ROBOT FEATURES  ###################################
 
-LIDAR_ENABLED = 1 #Lidar.py
+LIDAR_ENABLED = 0 #Lidar.py
 GYRO_ENABLED = 0 #GyroSerial.py
 OLD_POSE_ENABLED = 0
 LOGITECH_ENABLED = 0

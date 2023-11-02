@@ -105,7 +105,7 @@ while True:
         #replace "] " with newline
         pose_json = pose_json.replace("] ", "]\n")
         #append "1.0000." to the end of the string
-        pose_json = pose_json + "80.00."
+        pose_json = pose_json + "120.0."
 
         # Send the JSON-formatted pose data via UDP
         if ADD_KEY:
