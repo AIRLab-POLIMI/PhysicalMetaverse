@@ -7,45 +7,100 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
 
-//to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
-//this manager receives x, y of the biggest blob of one chosen color in image frame and positions a sphere at such coordinates
-public class StationManager : MonoBehaviour
+public class StationManager : Monosingleton<StationManager>
 {
-    public GameObject _stationPrefab;
+    [Header("ACTIONS")]
+    [Space]
+    [SerializeField] private bool _RESET_STATIONS = true;
+    [SerializeField] private bool _ENABLE_LOG = false;
+    [SerializeField] private bool _UPDATE_STATIONS_BEHAVIOUR = false;
+    [SerializeField] private float _consumeMultiplier = 3f;
+    [SerializeField] private float _activationPermanenceTime = 1f;
+
+
+    [Space]
+    [Space]
+    [Header("ACTIONS")]
+    [Space]
+    [SerializeField] private GameObject _stationPrefab;
 
     private Transform _cameraStartRotationAngle;
-    public Transform _cameraRotationAngle;
-    public OdometryManager _odometryManager;
+    [SerializeField] private Transform _cameraRotationAngle;
+    [SerializeField] private OdometryManager _odometryManager;
     //transforms list _untrackedStations
     private List<Transform> _untrackedStations = new List<Transform>();
     //float list untrackedangles
-    public List<float> _untrackedAngles = new List<float>();
-    //public station ips strings list
-    public List<string> _stationIps = new List<string>();
+    [SerializeField] private List<float> _untrackedAngles = new List<float>();
+    //[SerializeField] private station ips strings list
+    [SerializeField] private List<string> _stationIps = new List<string>();
     //udp packet storage
     private byte[] data;
-    public static int _totalStations = 2;
-    public Transform _orientationTransform;
-    private float[] _lastPingTimes = new float[_totalStations];
+    [SerializeField] private int _totalStations = 7;
+    [SerializeField] private Transform _orientationTransform;
+    private float[] _lastPingTimes;
     //stations list
-    public List<int[]> _stationsData = new List<int[]>();
+    [SerializeField] private List<int[]> _stationsData = new List<int[]>();
     //gameobject station list
-    public List<GameObject> _stations = new List<GameObject>();
-    public LidarManager _lidarManager;
+    [SerializeField] private List<GameObject> _stations = new List<GameObject>();
     
 
     //spawned
     private bool spawned = false;
+    [Space]
+    [Space]
+    [Header("CAMERA EXTRINSIC CALIBRATION")]
+    [Space]
+    //[Range(-5f, 5f)]    
+    //[SerializeField] private float _perspectiveRotationCorrection = 1f;
+    [Range(1f, 100f)]
+    [SerializeField] private float _scale = 2f;
+    [Range(1f, 500f)]
+    [SerializeField] private float _imageFrameScale = 480f;
+    //[SerializeField] private float _imageRatio = 4f/3f;
+    
+    [Range(1f, 100f)]
+    [SerializeField] private float _perspectiveCorrection = 1f;
+    
+    [Range(10f, 100f)]
+    [SerializeField] private float _zScale = 1f;
 
-    private GameObject[] spheres;
+    [Range(-15f, 15)]
+    [SerializeField] private float zOffset = 0f;
 
-    public int _minColorSize = 300;
-    private bool _colorTracked = false;
-    public bool ENABLE_LOG = false;
+    //[Range(-15f, 15)]
+    //[SerializeField] private float yOffset = 0f;
+    [Range(-15f, 15)]
+    [SerializeField] private float xOffset = 0f;
+    private float _currentZ = 0f;
+    [SerializeField] private float _yPosition = -0.8f;
+    
+    //[Range(0.01f, 2f)]
+    //[SerializeField] private float _cameraSidesCorrection = 1f;
+    
+    [Range(0.1f, 3f)]
+    [SerializeField] private float _zTrackedTolerance = 1.0f;
+    [SerializeField] private bool _TOLERANCE_CHECK = false;
+    
+    [Space]
+    [Space]
+    [Header("LERP")]
+    [Space]
+    [Range(0.01f, 2f)]
+    [SerializeField] private float _speed = 0.1f;
+    //[SerializeField] private STATIONS_DECAY_TIME
+    [SerializeField] private float STATIONS_DECAY_TIME = 0.3f; //TODO REPLACE WITH DRIFTED TOO MUCH AWAY WITHOUT SEEING AGAIN
+    //[SerializeField] private TRACKING_DECAY_TIME
+    [SerializeField] private float TRACKING_DECAY_TIME = 0.1f;
+    [SerializeField] private bool _lerp = false;
+    [SerializeField] private string _rightStationMessage = "R:1";
+    [SerializeField] private string _wrongStationMessage = "W:10";
+    [SerializeField] private int _completedStations = 0;
+    private GameObject _sphere;
+    private float _lidarScale = 1f;
     public void OnMsgRcv(byte[] msg)
     {
         //disable Debug.Log for this object
-        Debug.unityLogger.logEnabled = ENABLE_LOG;
+        Debug.unityLogger.logEnabled = _ENABLE_LOG;
         data = msg;
         char[] bytesAsChars = new char[msg.Length];
         for (int i = 0; i < msg.Length; i++)
@@ -59,6 +114,7 @@ public class StationManager : MonoBehaviour
     }   
     void Start()
     {
+        _totalStations = _stationIps.Count;
         //create an untracked gameobject for each station add it to _untrackedStations, parent is this object
         for (int i = 0; i < _totalStations; i++)
         {
@@ -71,6 +127,10 @@ public class StationManager : MonoBehaviour
         //copy y angle of _cameraRotationAngle to _cameraStartRotationAngle
         _cameraStartRotationAngle = new GameObject().transform;
         _cameraStartRotationAngle.eulerAngles = new Vector3(0, _cameraRotationAngle.eulerAngles.y, 0);
+        _lastPingTimes = new float[_totalStations];
+
+        //get lidar scale
+        _lidarScale = LidarManager.Instance.GetLidarScale();
     }
 
     //a receive looks like
@@ -80,7 +140,6 @@ public class StationManager : MonoBehaviour
     //function to parse it into an array of arrays of 3 integers
     private List<int[]> ParseData(string data)
     {
-        _lastPingTime = Time.time;
         //split data with key byte 195 as separator
         string[] messages = data.Split((char)195);
         //clear stations
@@ -124,11 +183,6 @@ public class StationManager : MonoBehaviour
         return _stationsData;
     }
 
-    [Range(0.1f, 3f)]
-    public float _zTrackedTolerance = 1.0f;
-    public bool _TOLERANCE_CHECK = false;
-
-    [Range(-5f, 5f)]    public float _perspectiveRotationCorrection = 1f;
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
     private void FixedUpdate()
@@ -140,12 +194,36 @@ public class StationManager : MonoBehaviour
         }
         else
         {
-            //get lidar manager instance
-            _lidarManager = LidarManager.Instance;
             SpawnStations();
         }
         //rotate this gameobject like delta y angle of _cameraStartRotationAngle
         //this.transform.eulerAngles = new Vector3(0, -(_cameraRotationAngle.eulerAngles.y - _cameraStartRotationAngle.eulerAngles.y)*(_currentZ/_perspectiveRotationCorrection), 0);
+        if(_RESET_STATIONS){
+            _RESET_STATIONS = false;
+            ResetStations();
+        }
+
+        if(_UPDATE_STATIONS_BEHAVIOUR){
+            _UPDATE_STATIONS_BEHAVIOUR = false;
+            UpdateStationsBehaviour();
+        }
+    }
+
+    private void UpdateStationsBehaviour(){
+        //for each station
+        foreach (GameObject station in _stations)
+        {
+            station.GetComponent<SingleStationManager>().UpdateBehaviour(_consumeMultiplier, _fadeSpeed, _activationPermanenceTime);
+        }
+    }
+
+    [SerializeField] private float _fadeSpeed = 0.1f;
+    private void ResetStations(){
+        //for each ip send RESET using networking manager
+        foreach (string ip in _stationIps)
+        {
+            NetworkingManager.Instance.SendString("RESET", ip);
+        }
     }
 
     private void ExpireStations()
@@ -154,30 +232,7 @@ public class StationManager : MonoBehaviour
         _stationsData.Clear();
     }
 
-    [Range(1f, 100f)]
-    public float _scale = 2f;
-    [Range(1f, 500f)]
-    public float _imageFrameScale = 480f;
-    public float _imageRatio = 4f/3f;
-    
-    [Range(1f, 100f)]
-    public float _perspectiveCorrection = 1f;
-    
-    [Range(10f, 100f)]
-    public float _zScale = 1f;
 
-    [Range(-15f, 15)]
-    public float zOffset = 0f;
-
-    [Range(-15f, 15)]
-    public float yOffset = 0f;
-    [Range(-15f, 15)]
-    public float xOffset = 0f;
-    
-    [Range(0.01f, 2f)]
-    public float _cameraSidesCorrection = 1f;
-
-    private GameObject _sphere;
     //spawn spheres
     private void SpawnStations()
     {
@@ -185,11 +240,8 @@ public class StationManager : MonoBehaviour
         {
             GameObject station = Instantiate(_stationPrefab);
             _stations.Add(station);
-            _lidarManager.AddStationInteraction(station);
             //set station's untrackedParent to untrackedStation
-            station.GetComponent<SingleStationManager>()._untrackedParent = _untrackedStations[i];
-            station.GetComponent<SingleStationManager>()._stationManager = this.transform;
-            station.GetComponent<SingleStationManager>()._odometryManager = _odometryManager;
+            station.GetComponent<SingleStationManager>().SetUntrackedParent(_untrackedStations[i]);
             station.transform.localScale = new Vector3(_scale, _scale, _scale);
             //random color
             station.GetComponent<Renderer>().material.color = new Color(UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0f, 1f), UnityEngine.Random.Range(0, 1f));
@@ -203,25 +255,13 @@ public class StationManager : MonoBehaviour
             station.GetComponent<SingleStationManager>().SetIp(_stationIps[i]);
             //set orientation transform
             station.GetComponent<SingleStationManager>().SetOrientationTransform(_orientationTransform);
+            LidarManager.Instance.AddStationInteraction(station.GetComponent<SingleStationManager>().GetStationInteraction());
         }
         spawned = true;
         //call LidarManager method SpawnLidarBlobs
-        _lidarManager.SpawnLidarBlobs();
+        LidarManager.Instance.SpawnLidarBlobs();
     }
-    [Range(0.01f, 2f)]
-    public float _speed = 0.1f;
-    public int _untrackedAngle = 0;
-    public Transform _sun;
-    private Transform _untrackedLocation;
-    //_lastPingTime
-    private float _lastPingTime = 0f;
-    //public STATIONS_DECAY_TIME
-    public float STATIONS_DECAY_TIME = 0.3f; //TODO REPLACE WITH DRIFTED TOO MUCH AWAY WITHOUT SEEING AGAIN
-    //public TRACKING_DECAY_TIME
-    public float TRACKING_DECAY_TIME = 0.1f;
-    public float _yPosition = -0.8f;
-    public bool _lerp = false;
-    private float _currentZ = 0f;
+    
     private void MoveStations()
     {
         try
@@ -240,13 +280,13 @@ public class StationManager : MonoBehaviour
                     //set station position, data is formatted as [station code, x, y, size(diagonal)]
                     //((GameObject)_stations[i]).transform.localPosition = new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3]/10.0f + zOffset);
                     //if _stations[i].GetComponent<SingleStationManager>()._tracked
-                    if (station.GetComponent<SingleStationManager>()._tracked)
+                    if (station.GetComponent<SingleStationManager>().GetTracked())
                     {
                         //lerp
                         //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3] / 10.0f + zOffset), _speed);
                         //switch x and y
                         //station.transform.localPosition = Vector3.Lerp(station.transform.localPosition, new Vector3((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset, (((int[])_stationsData[i])[2] / _imageFrameScale * _imageRatio ) + yOffset, ((int[])_stationsData[i])[3] / _zScale + zOffset), _speed);
-                        _currentZ = ((int[])_stationsData[i])[3] / _zScale + zOffset;
+                        _currentZ = ((int[])_stationsData[i])[3] / _zScale * _lidarScale + zOffset;
                         float currentX = ((((int[])_stationsData[i])[1] / _imageFrameScale) + xOffset)*(_currentZ/_perspectiveCorrection);
                         //block Y to -0.8
                         if(_lerp)
@@ -274,27 +314,26 @@ public class StationManager : MonoBehaviour
         }
     }
 
-    //move spheres
-    //private void MoveSphere()
-    //{
-    //    try{
-    //        //set the sphere's position
-    //        //_sphere.transform.position = new Vector3(parsedData[1]/_imageFrameScale + xOffset, parsedData[0]/_imageFrameScale + yOffset, zOffset);
-    //        //linear movement to new position using _stations
-    //        if (_colorTracked)
-    //            //_sphere.transform.position = Vector3.Lerp(_sphere.transform.position, new Vector3(parsedData[1]/_imageFrameScale + xOffset, yOffset, zOffset - parsedData[0]/_imageFrameScale), _speed);
-    //            _sphere.transform.position = Vector3.Lerp(_sphere.transform.position, _untrackedLocation.position, _speed);
-    //        else{
-    //            //rotate sphere around center of ther world around y axis _untrackedAngle, lerp use RotateAround to angle
-    //            _sphere.transform.RotateAround(Vector3.zero, Vector3.up, -(_untrackedAngle-(int)_sun.transform.eulerAngles.y));
-    //            _untrackedAngle = (int)_sun.transform.eulerAngles.y;
-    //        }
-    //    }
-    //    catch(Exception e)
-    //    {
-    //        Debug.Log(e);
-    //    }
-    //}
+    public void CompleteRightStation(){
+        NetworkingManager.Instance.SendString(_rightStationMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        _completedStations++;
+        GameManager.Instance.UpdateScore(_completedStations);
+    }
+    
+    public void CompleteWrongStation(){
+        NetworkingManager.Instance.SendString(_wrongStationMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        GameManager.Instance.SubtractTime(ParseTime(_wrongStationMessage));
+    }
+    
+    //parse time from _wrongStationMessage
+    private int ParseTime(string message){
+        string[] splitted = message.Split(':');
+        return int.Parse(splitted[1]);
+    }
+
+    public List<GameObject> GetStations(){
+        return _stations;
+    }
 }
 
 

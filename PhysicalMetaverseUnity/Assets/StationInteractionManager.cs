@@ -21,6 +21,7 @@ public class StationInteractionManager : MonoBehaviour
     //gameObject.GetComponent<Renderer>().material.color
     private Color _thisColor;
     // Start is called before the first frame update
+    /*
     void Start()
     {
         _thisColor = gameObject.GetComponent<Renderer>().material.color;
@@ -40,6 +41,7 @@ public class StationInteractionManager : MonoBehaviour
 
         //reset udp station
     }
+    */
 
     // Update is called once per frame
     void Update()

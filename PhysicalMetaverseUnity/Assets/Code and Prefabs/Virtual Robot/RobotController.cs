@@ -224,17 +224,17 @@ public class RobotController : MonoBehaviour
                 _odometryManager._right = true;
             }
             //y axis
-            if (currentAnalogVal.y > 0.5f)
+            if (currentAnalogVal.y < -0.5f)
             {
                 //move forward
-                controller.Move(transform.forward * currentAnalogVal.y / _moveUpdate);
+                controller.Move(transform.forward * (-currentAnalogVal.y) / _moveUpdate);
                 //set odometry
                 _odometryManager._forward = true;
             }
-            else if (currentAnalogVal.y < -0.5f)
+            else if (currentAnalogVal.y > 0.5f)
             {
                 //move backward
-                controller.Move(transform.forward * currentAnalogVal.y / _moveUpdate);
+                controller.Move(transform.forward * (-currentAnalogVal.y) / _moveUpdate);
                 //set odometry
                 _odometryManager._backward = true;
             }
@@ -255,12 +255,27 @@ public class RobotController : MonoBehaviour
         Debug.unityLogger.logEnabled = true;
     }
 
+    [SerializeField] private float _sprintMultiplier = 4f;
+    [SerializeField] private bool _AUTO_ROTATE = false;
+    [SerializeField] private bool _AUTO_MOVE = false;
     void KeyboardUpdate(){
         //set all _odometryManager to false
         _odometryManager._forward = false;
         _odometryManager._backward = false;
         _odometryManager._left = false;
         _odometryManager._right = false;
+        _odometryManager._rotateLeft = false;
+        _odometryManager._rotateRight = false;
+
+        float _originalMoveUpdate = _moveUpdate;
+        float _originalAngleUpdate = _angleUpdate;
+
+        //if shift is pressed, divide by sprintmultiplier move update
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            _moveUpdate /= _sprintMultiplier;
+            _angleUpdate /= _sprintMultiplier;
+        }
         
         if (Input.anyKey)
         {
@@ -312,6 +327,9 @@ public class RobotController : MonoBehaviour
                                 {
                                     //rotate odile right
                                     controller.transform.eulerAngles += new Vector3(0, (index % 2 == 0 ? 1 : -1) / _angleUpdate, 0);
+                                    //set odometry right or left to true
+                                    _odometryManager._rotateRight = index % 2 == 0 ? true : false;
+                                    _odometryManager._rotateLeft = index % 2 == 0 ? false : true;
                                 }
                             }
                             else{
@@ -341,6 +359,21 @@ public class RobotController : MonoBehaviour
             UpdateKeysKeyboard();
             _updateKeysButton = false;
         }
+
+        if(_AUTO_ROTATE){
+            //rotate odile right
+            controller.transform.eulerAngles += new Vector3(0, 1 / _angleUpdate, 0);
+            _odometryManager._rotateRight = true;
+        }
+        if(_AUTO_MOVE){
+            //move odile forward
+            controller.Move(transform.forward * 1 / _moveUpdate);
+            _odometryManager._forward = true;
+        }
+
+        _moveUpdate = _originalMoveUpdate;
+        _angleUpdate = _originalAngleUpdate;
+
     }
 
     //prevaxisvalue dictionary

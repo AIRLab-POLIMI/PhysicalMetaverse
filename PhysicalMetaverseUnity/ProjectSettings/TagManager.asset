@@ -14,6 +14,11 @@ TagManager:
   - Hole
   - InvalidStation
   - StationInteraction
+  - QRInvalidator
+  - Person
+  - FedeHand
+  - Sphere
+  - Pillar
   layers:
   - Default
   - TransparentFX
@@ -23,7 +28,7 @@ TagManager:
   - UI
   - Ground
   - 
-  - 
+  - PostProcessing
   - 
   - 
   - 

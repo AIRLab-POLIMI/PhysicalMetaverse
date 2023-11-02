@@ -14,9 +14,20 @@ using UnityEngine.Serialization;
 using System.Net;
 public class NetworkingManager : Monosingleton<NetworkingManager>
 {
+    [Header("ACTIONS")]
+    [Space]
+    [SerializeField] private bool ENABLE_LOG = false;
+    [SerializeField] private bool ENABLE_SEND_STRING_LOG = true;
+
+
+    [Space]
+    [Space]
+    [Header("SETTINGS")]
+    [Space]
+    [SerializeField] private string _gameManagerPythonIP = "192.168.0.222";
     [SerializeField] private GameObject _setupScreen;
     
-    [SerializeField] public SetupSO setup;
+    [SerializeField] private SetupSO setup;
     
     private EndPointSO _jetsonEndpoint;
 
@@ -37,8 +48,8 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     [SerializeField] private ByteSO jetsonSensorsReadyKey;
 
     [SerializeField] private ByteSO jetsonPingKey;
-    public bool TCP_PRESENTATIONS = false;
-    public bool _skipTcp = true;
+    [SerializeField] private bool TCP_PRESENTATIONS = false;
+    [SerializeField] private bool _skipTcp = true;
  
     private readonly UdpMessenger _udpMessenger = new UdpMessenger();
 
@@ -58,6 +69,14 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
     private bool pingedBack = false;
 
     private Thread clientReceiveThread;
+    
+    [Space]
+    [Space]
+    [Header("STRING SENDER")]
+    [Space]
+    [SerializeField] private bool _SEND_ONE_STRING = true;
+    [SerializeField] private string _stringToSend = "";
+    [SerializeField] private string _singleStringDestIp = "";
 
     protected override void Init() =>
         SetInitialized(false);
@@ -77,10 +96,11 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         
     }
 
+
     #endregion
 
     #region PRESENTATION
-
+    
     private IEnumerator Presentations()
     {
         _setupScreen.SetActive(true);
@@ -271,7 +291,7 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
 
     #region LOOP
 
-    public bool ENABLE_LOG = false;
+
     private void Update()
     {
         if(!_skipTcp){
@@ -289,6 +309,11 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
             CheckPingNew();
         }
         //SendPing();
+    }
+
+    private void FixedUpdate(){
+        if(_SEND_ONE_STRING)
+            SendString(_stringToSend, _singleStringDestIp);
     }
 
     private void ReceiveMessages()
@@ -562,7 +587,16 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         //endpoint
         IPEndPoint sendTo = new IPEndPoint(IPAddress.Parse(ip), myUdpPort);
         _udpMessenger.SendUdp(bytes, sendTo);
+        if(ENABLE_SEND_STRING_LOG){
+            Debug.Log("<NetworkingManager> Sent UDP string \"" + data + "\" to " + ip);
+        }
+    }
+
+    public string GetPythonGamemanagerIp()
+    {
+        return _gameManagerPythonIP;
     }
 
     #endregion
+
 }

@@ -478,7 +478,7 @@ void serial_loop() {
 
 void loop() {  
 
-  watchdog_tick();
+  //watchdog_tick();
 
   // the EYE needs a dedicated step for the BLINK, to be executed at every timestep
   

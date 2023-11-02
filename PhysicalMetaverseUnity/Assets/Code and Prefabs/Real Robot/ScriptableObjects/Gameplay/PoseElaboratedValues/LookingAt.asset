@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   priorityLevel: 2
   startValue: 0.5
-  runtimeValue: 0.5
+  runtimeValue: 0.8429414
   initOutside: 1

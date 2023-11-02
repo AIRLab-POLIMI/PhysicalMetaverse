@@ -10,6 +10,7 @@ public class InputManager : Monosingleton<InputManager>
     // variable to keep track of last sent time
     public float deltaSendTime = 0.01f;
     private float _prevSendTime = 0;
+    public bool ENABLE_LOG = false;
     
     // head angles variables
     [SerializeField] private string headXAngleKey = "ay";
@@ -22,17 +23,24 @@ public class InputManager : Monosingleton<InputManager>
     private EndPointSO _jetsonEndpoint;
     public string _jetsonIp;
     public Transform _poseRotationTransform;
+    public bool _rotate180 = true;
     
     #region Event Functions
     
         void Update()
         {
+            //disable Debug.Log for this object
+            Debug.unityLogger.logEnabled = ENABLE_LOG;
             // Send the camera's X and Y angles via UDP every 0.05 seconds
             if (Time.time - _prevSendTime > deltaSendTime)
             {
                 // NetworkManager.Instance.SendMsg(GetUdpMessage());
                 //UDPManager.Instance.SendStringUpdToDefaultEndpoint(GetUdpMessage());
-                string udpMessage = GetUdpMessage();
+                string udpMessage = RoutineController.Instance.IsRunning 
+                    ? RoutineController.Instance.GetMsg() 
+                    : GetUdpMessage();
+                /*if(udpMessage != "")
+                    Debug.Log("udp " + udpMessage);*/
                 //if not null
                 if (udpMessage != "")
                     //send using NetworkManager
@@ -40,17 +48,45 @@ public class InputManager : Monosingleton<InputManager>
 
                 _prevSendTime = Time.time;
             }
+            //rotate pose with speed
+            if(!RoutineController.Instance.IsRunning)
+                //rotate pose with speed
+                RotatePoseWithSpeed();
+            Debug.unityLogger.logEnabled = true;
+        }
+        
+        private void FixedUpdate(){
+            Odometry();
+        }
+
+        private void Odometry(){
+            //use Ljx and Ljy to set odometry forward rotateright floats
+            float LjxNorm = NormalizeJoy(Ljx);
+            float LjyNorm = NormalizeJoy(Ljy);
+            //set forward to Ljy, rotate to Ljy
+            _odometryManager._forwardFloat = LjyNorm;
+            _odometryManager._rotateRightFloat = LjxNorm;
+        }
+
+        private float NormalizeJoy(float val){
+            val = (val - 127)/127;
+            return val;
         }
     
     #endregion
         
         void Start(){
+            //rotate this transform 180 if true
+            if (_rotate180)
+                transform.Rotate(0, 180, 0);
             //get ip string from _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonIp = _jetsonEndpoint.IP.ToString();
         }
 
     #region Compose UDP Mess
+
+    public OdometryManager _odometryManager;
 
     //range 0 255 variable Ljx
     [Range(0, 255)] public int Ljx = 0;
@@ -72,8 +108,8 @@ public class InputManager : Monosingleton<InputManager>
                 msg = AddMsg(msg, controller.GetUdpMessage(_headAngles.y));
             
             //log if not empty
-            if (msg != "")
-                Debug.Log(msg);
+            //if (msg != "")
+                //Debug.Log(msg);
             // if msg is not empty, SendMsg
             //parse from msg Ljx, Ljy, Lrx, Lry in format  Lrx:161_Lrz:161
             foreach (string keyVal in msg.Split(Constants.MsgDelimiter))
@@ -83,14 +119,22 @@ public class InputManager : Monosingleton<InputManager>
                 //if key is Ljx
                 if (keyValSplit[0] == "Ljx")
                 {
+                    //int oldLjx = Ljx;
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Ljx);
+                    //if(Ljx == 127){
+                    //    Ljx = oldLjx;
+                    //}
                 }
                 //if key is Ljy
                 if (keyValSplit[0] == "Ljy")
                 {
+                    //int oldLjy = Ljy;
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Ljy);
+                    //if(Ljy == 127){
+                    //    Ljy = oldLjy;
+                    //}
                 }
                 //if key is Lrx
                 if (keyValSplit[0] == "Lrx")
@@ -104,7 +148,7 @@ public class InputManager : Monosingleton<InputManager>
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Lry);
                 }
-            }
+            }   
             return msg;
         }
 
@@ -120,16 +164,47 @@ public class InputManager : Monosingleton<InputManager>
             return prevMsg + Constants.MsgDelimiter + nextMsg;
         }
         
-        
+        public Vector3 _headYTarget = new Vector3();
+        public Vector3 _headYCurrent = new Vector3();
+        private float _prevTimeYAngle = 0;
+        private float _headYDeltaTime = 0.03f;
+        [Range (0.01f, 180f)]
+        public float _headYServoSpeed = 0.1f;
+
+        private void RotatePoseWithSpeed(){ //TODO NEED TO OVERSHOOT, FRAME IS ALREADY ALIGNED
+            // vector3 head.eulerAngles + 180 on y angle
+            _headYTarget = head.eulerAngles;
+            //log _headYTarget
+            //Debug.Log("_headYTarget: " + _headYTarget);
+            _headYTarget.y += 180;
+            _headYTarget.y -= 360;
+            //clamp -89 89
+            _headYTarget.y = Mathf.Clamp(_headYTarget.y, -89, 89);
+            //_poseRotationTransform.localRotation = Quaternion.Euler(0, _headYTarget.y, 0);
+            if (Time.time - _prevTimeYAngle > _headYDeltaTime)
+            {
+                //if close set to same
+                if (Mathf.Abs(_headYCurrent.y - _headYTarget.y) <= _headYServoSpeed)
+                    _headYCurrent.y = _headYTarget.y;
+                else{
+                    if(_headYCurrent.y < _headYTarget.y)
+                        _headYCurrent.y += _headYServoSpeed;
+                    else if(_headYCurrent.y > _headYTarget.y)
+                        _headYCurrent.y -= _headYServoSpeed;
+                }
+                //clamp between -89 and 89
+                _headYCurrent.y = Mathf.Clamp(_headYCurrent.y, -89, 89);
+                //rotate _poseRotationTransform by y
+                _poseRotationTransform.localRotation = Quaternion.Euler(0, _headYTarget.y, 0);
+                _prevTimeYAngle = Time.time;
+            }
+        }
         private string GetHeadAnglesMsg()
         {
-            // vector3 head.eulerAngles + 180 on y angle
-            Vector3 head180 = head.eulerAngles;
-            head180.y += 180;
             //rotate _poseRotationTransform by y
-            _poseRotationTransform.localRotation = Quaternion.Euler(0, head180.y, 0);
+            //_poseRotationTransform.localRotation = Quaternion.Euler(0, _headYTarget.y, 0);
             _headAngles = RotationHelper.SubtractAllAngles(
-                head180, 
+                _headYTarget, 
                 Constants.JoystickAngleNormalisation);
             
             // rescale from 0-180 to -3-3 and clamp
@@ -158,7 +233,7 @@ public class InputManager : Monosingleton<InputManager>
                       headXAngleKey + Constants.KeyValDelimiter + xAngle.ToString();
                 //replace commas with dots
                 msg = msg.Replace(",", ".");
-                Debug.Log("msg: " + msg);
+                //Debug.Log("msg: " + msg);
             }
             return msg;
         }

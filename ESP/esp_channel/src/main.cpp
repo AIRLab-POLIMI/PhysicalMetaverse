@@ -10,8 +10,8 @@
 // // IP = 192.168.1.60 -> THIS DEVICE
 // // IP = 192.168.1.61 -> OTHER DEVICE (the one you are comm with through UDP)
 
-IPAddress staticIP(192, 168, 0, 60);  // this device static IP
-IPAddress defaultDestinationIP(192, 168, 0, 104);       
+IPAddress staticIP(192, 168, 137, 57);  // this device static IP
+IPAddress defaultDestinationIP(192, 168, 137, 1);       
                                       // other device IP
                                       // NB you can have as many "other IPs" as you want; 
                                       // the one you pass in the ESPUDP constructor is just the default. 
@@ -204,10 +204,12 @@ bool getUDPMessage() {
     return checkKeyValueMessages();
 }
 
+int blink_amount = 12;
+
 void blink() {
     if (CORRECT_STATION) {
         //blink green pin every 300ms for 4 times
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < blink_amount; i++) {
             digitalWrite(green_pin, HIGH);
             delay(300);
             digitalWrite(green_pin, LOW);
@@ -216,7 +218,7 @@ void blink() {
     }
     else {
         //blink red pin every 300ms for 4 times
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < blink_amount; i++) {
             digitalWrite(red_pin, HIGH);
             delay(300);
             digitalWrite(red_pin, LOW);
@@ -229,11 +231,22 @@ void blink() {
     digitalWrite(red_pin, LOW);
     digitalWrite(green_pin, LOW);
     //turn on blue pin
-    digitalWrite(blue_pin, HIGH);
+    digitalWrite(blue_pin, LOW);
 }
 
 
 // ______________________________________________________________________________________________MAIN
+
+const int trigPin = 13;
+const int echoPin = 15;
+
+//define sound speed in cm/uS
+#define SOUND_SPEED 0.034
+#define CM_TO_INCH 0.393701
+
+long duration;
+float distanceCm;
+float distanceInch;
 
 void setup_variables() {
     // setup your variables here
@@ -252,6 +265,11 @@ void setup_variables() {
         digitalWrite(red_pin, HIGH);
     }
     blinking_state = IDLE;
+
+
+    Serial.begin(115200); // Starts the serial communication
+    pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+    pinMode(echoPin, INPUT); // Sets the echoPin as an Input
 }
 
 void setup()
@@ -293,4 +311,28 @@ void loop()
     delay(100);
     // you can add a DELAY if you don't want to force high frequency check and eventual response
     // delay (50);
+
+    // Clears the trigPin
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(2);
+    // Sets the trigPin on HIGH state for 10 micro seconds
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    
+    // Reads the echoPin, returns the sound wave travel time in microseconds
+    duration = pulseIn(echoPin, HIGH);
+    
+    // Calculate the distance
+    distanceCm = duration * SOUND_SPEED/2;
+    
+    // Convert to inches
+    distanceInch = distanceCm * CM_TO_INCH;
+    
+    // Prints the distance in the Serial Monitor
+    Serial.println(distanceCm);
+    //distance round to int
+    distanceCm = round(distanceCm);
+    //write_key_value_pair to destination ip
+    espUdp.write_key_value_pair("d", distanceCm, "192.168.137.1", 25666);
 }

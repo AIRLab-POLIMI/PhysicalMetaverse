@@ -5,36 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/Visualization.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 0
-    path: Assets/Scenes/MainMenu.unity
-    guid: ffcd254d9802b47bbb793a4d51a99968
-  - enabled: 0
-    path: Assets/Scenes/Level.unity
-    guid: d1d7c83f83e80aa4b80a8a1929ca8f3b
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: Assets/Scenes/Main.unity
-    guid: 231611a0a6f97f44a9807abe5d2691ae
-  - enabled: 0
-    path: Assets/Scenes/Odile.unity
-    guid: 5a926df488f40494c924c742217835a1
-  - enabled: 0
-    path: Assets/Scenes/FPVRobot.unity
-    guid: f68db832d50615643aeb04052bd6a222
-  - enabled: 0
-    path: Assets/Scenes/OdileOnline.unity
-    guid: 0c65ce37d92616f4a8abbc3859cff165
-  - enabled: 0
-    path: Assets/Scenes/SimuVisuOnline.unity
-    guid: 72954515cf1202c4ab59fa77269bf5d2
   - enabled: 1
-    path: Assets/Scenes/SimuVisualization.unity
-    guid: eec71a0f462b8be4c91311f0de06d45f
+    path: Assets/Scenes/MirrorXCitiesOdile.unity
+    guid: 1a4c15f763ebf2945be678a99b447787
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260,
       type: 2}

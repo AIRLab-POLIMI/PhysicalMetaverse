@@ -1,4 +1,4 @@
-#include <VarSpeedServo.h>
+//#include <VarSpeedServo.h>
 #include <Wire.h>
 #include "TriskarBase.h"
 
@@ -310,7 +310,7 @@ void speeds_loop() {
 }
 
 void loop() {
-  watchdog_tick();
+  //watchdog_tick();
   serial_loop();
   //Set values to triskarBase
   //speeds_loop();

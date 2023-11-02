@@ -8,7 +8,7 @@ import time
 
 # Define the UDP IP address and port to receive the stream
 UDP_IP = '0.0.0.0'  # Listen to all incoming UDP packets
-UDP_PORT = 12345    # Use the same port as the sender
+UDP_PORT = 25666    # Use the same port as the sender
 
 # Create a socket object to receive data over UDP, timeout in 2s
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,7 +21,7 @@ cv2.namedWindow("Received Stream", cv2.WINDOW_NORMAL)
 while True:
     try:
         # Receive the packed data from the sender
-        data, addr = sock.recvfrom(65536)
+        data, addr = sock.recvfrom(10000)
         #if data contains "time"
         if data[0:4] == b'time':
             #data is timestring = "time " + str(time.time()), extract delta time

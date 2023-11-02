@@ -46,6 +46,9 @@ public class UdpCameraStreamer : MonoBehaviour
             //jpg compress
             byte[] jpg = tex.EncodeToJPG(50);
             udpClient.Send(jpg, jpg.Length);
+            //avoid memory leak
+            Destroy(tex);
+            
         }
     }
 }
