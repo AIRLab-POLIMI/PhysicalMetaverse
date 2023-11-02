@@ -475,6 +475,11 @@ public class LidarManager : Monosingleton<LidarManager>
                 closestIndex = k;
             }
         }*/
+        _biggestBlobSize = max;
+        //if max is less than MIN_BLOB_SIZE return
+        if(max < _minBlobSize){
+            return;
+        }
         //look only among 10% of points from the middle
         int start = trueMiddle - (int)(max*_checkPercent);
         int end = trueMiddle + (int)(max*_checkPercent);
@@ -532,7 +537,8 @@ public class LidarManager : Monosingleton<LidarManager>
             personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
             //move with constant speed
             //personCollider.transform.position = Vector3.MoveTowards(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
-            _poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
+            ////_poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
+            _poseManager.SetRotoTraslationPosition(destination);
         }
             //position personCollider at point distance in direction of trueMiddleTransform
             //personCollider.transform.position = trueMiddleTransform.position.normalized * point.position.magnitude;
@@ -545,6 +551,8 @@ public class LidarManager : Monosingleton<LidarManager>
     public float _colliderLerpSpeedMultiplier = 4f;
     public float _closestPersonDistanceThreshold = 1f;
     public float _checkPercent = 0.7f;
+    public float _minBlobSize = 10f;
+    public float _biggestBlobSize = 10f;
 
     //Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly
     void LidarTracking(){
