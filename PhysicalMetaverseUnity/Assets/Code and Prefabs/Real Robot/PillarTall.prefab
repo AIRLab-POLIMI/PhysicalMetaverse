@@ -56,7 +56,7 @@ MonoBehaviour:
   _movementDetected: 0
   _personTrackingWeight: 0
   _personWeight: 1
-  _movementWeight: 4
+  _movementWeight: 5
   _alternateMaterial: {fileID: 2100000, guid: de6d33c8572f86c4ab1bc13221a28da9, type: 2}
   _debugMaterial: 1
   _movementDetectionMaterial: {fileID: 2100000, guid: b3fda3fed0778e44184df09b6215f15d,
