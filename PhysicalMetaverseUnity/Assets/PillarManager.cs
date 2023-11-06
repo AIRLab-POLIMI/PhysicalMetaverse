@@ -4,6 +4,8 @@ using UnityEngine;
 using System;
 public class PillarManager : MonoBehaviour
 {
+    //distance
+    [SerializeField] private float _distance = 1f;
     [SerializeField] private bool _blobEnabled = true;
     [SerializeField] private bool _disableMesh = true;
     private bool _prevCollided = false;
@@ -53,6 +55,14 @@ public class PillarManager : MonoBehaviour
             GetComponent<Renderer>().material = _alternateMaterial;
             _originalMaterial = _alternateMaterial;
         }
+    }
+
+    //void setdistance
+    public void SetDistance(float distance){
+        if(distance > 100f){
+            distance = 0;
+        }
+        _distance = distance;
     }
 
     public void SetPillarId(int id){
@@ -135,14 +145,14 @@ public class PillarManager : MonoBehaviour
         //if _personColliding return 1
         if(_personColliding){
             _personTrackingWeight = _personWeight;
-            return _personTrackingWeight;
+            return _personTrackingWeight * (int)_distance;
         }
         //if _movementDetected return 2
         if(_movementDetected){
             _personTrackingWeight = _movementWeight;
-            return _personTrackingWeight;
+            return _personTrackingWeight * (int)_distance;
         }
-        return _personTrackingWeight;
+        return _personTrackingWeight * (int)_distance;
     }
 
     void OnTriggerStay(Collider other){
