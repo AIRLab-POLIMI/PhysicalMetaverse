@@ -17241,6 +17241,7 @@ MonoBehaviour:
   _rotateLeft: 0
   _rotateRight: 0
   _floor: {fileID: 704753281}
+  _personCollider: {fileID: 1724598784}
   _forwardFloat: 0
   _rightFloat: 0
   _rotateRightFloat: 0
