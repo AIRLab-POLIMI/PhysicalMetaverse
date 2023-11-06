@@ -49,15 +49,23 @@ public class OdometryManager : Monosingleton<OdometryManager>
         //move and rotate floor with speed
         if(_forward){
             _floor.transform.position += Vector3.forward * _boolSpeed * Time.deltaTime;
+            //move personcollider
+            _personCollider.transform.position += Vector3.forward * _boolSpeed * Time.deltaTime;
         }
         if(_backward){
             _floor.transform.position -= Vector3.forward * _boolSpeed * Time.deltaTime;
+            //move personcollider
+            _personCollider.transform.position -= Vector3.forward * _boolSpeed * Time.deltaTime;
         }
         if(_left){
             _floor.transform.position -= Vector3.right * _boolSpeed * Time.deltaTime;
+            //move personcollider
+            _personCollider.transform.position -= Vector3.right * _boolSpeed * Time.deltaTime;
         }
         if(_right){
             _floor.transform.position += Vector3.right * _boolSpeed * Time.deltaTime;
+            //move personcollider
+            _personCollider.transform.position += Vector3.right * _boolSpeed * Time.deltaTime;
         }
         if(_rotateLeft){
             _floor.transform.RotateAround(this.transform.position, Vector3.up, _boolRotateSpeed * Time.deltaTime);
@@ -76,16 +84,22 @@ public class OdometryManager : Monosingleton<OdometryManager>
         if(absForwardFloat > _odometryDeadzone){
             //move floor forward
             _floor.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * _forwardFloat;
+            //move personcollider
+            _personCollider.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * _forwardFloat;
         }
         float absRightFloat = Mathf.Abs(_rightFloat);
         if(absRightFloat > _odometryDeadzone){
             //move floor right
             _floor.transform.position += Vector3.right * _movementSpeed * Time.deltaTime * _rightFloat;
+            //rotate around 0 0 0
+            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * _rightFloat);
         }
         float absRotateRightFloat = Mathf.Abs(_rotateRightFloat);
         if(absRotateRightFloat > _odometryDeadzone){
             //rotate floor right around this transform
             _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
+            //rotate around 0 0 0
+            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
         }
         //if any set _odometryActive
         if(_forward || _backward || _left || _right || _rotateLeft || _rotateRight || absForwardFloat > _odometryDeadzone || absRightFloat > _odometryDeadzone || absRotateRightFloat > _odometryDeadzone){
