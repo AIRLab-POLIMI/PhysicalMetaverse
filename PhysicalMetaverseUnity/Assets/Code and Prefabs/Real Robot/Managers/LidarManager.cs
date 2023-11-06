@@ -18,6 +18,8 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private bool _UPDATE_PILLAR_BEHAVIOUR = true;
     [SerializeField] private bool _STATION_TO_CLOSEST = true;
     [SerializeField] private bool _DISABLE_LIDAR = false;
+    //_LIDAR_ROTATION
+    [SerializeField] private float _LIDAR_ROTATION = 0;
     [Space]
     [Space]
 
@@ -1404,7 +1406,7 @@ public class LidarManager : Monosingleton<LidarManager>
             //float convertedValue = ConvertRange(value);
             float convertedValue = (((float) value) / 100.0f)-0.5f;
             convertedValue = convertedValue * _lidarScale;
-            float circleposition = (float)((pos + 180)%360) / (float)arraySize;
+            float circleposition = (float)((pos + _LIDAR_ROTATION)%360) / (float)arraySize;
             float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * convertedValue;
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * convertedValue;
             Vector3 posit = _points[pos].transform.position;
