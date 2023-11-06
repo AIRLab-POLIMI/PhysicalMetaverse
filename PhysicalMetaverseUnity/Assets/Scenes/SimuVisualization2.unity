@@ -14975,7 +14975,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh36926
+  m_Name: pb_Mesh35670
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -19238,7 +19238,7 @@ PrefabInstance:
     - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
       propertyPath: _missChance
-      value: 0.01
+      value: 0.033
       objectReference: {fileID: 0}
     - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
@@ -19248,7 +19248,7 @@ PrefabInstance:
     - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
       propertyPath: _noiseChance
-      value: 0.058
+      value: 0.366
       objectReference: {fileID: 0}
     - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
@@ -19258,7 +19258,7 @@ PrefabInstance:
     - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
       propertyPath: _noiseMagnitude
-      value: 0.068
+      value: 0.268
       objectReference: {fileID: 0}
     - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
@@ -33493,7 +33493,7 @@ GameObject:
   - component: {fileID: 1724598786}
   m_Layer: 0
   m_Name: PersonCollider
-  m_TagString: Untagged
+  m_TagString: Person
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33562,7 +33562,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b9f9b2dc68d99034bb5076831d312561, type: 2}
+  - {fileID: 2100000, guid: ba868db90445df14780b24a1b6c95974, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -40562,6 +40562,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
+      propertyPath: _minBlobSize
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
+        type: 3}
       propertyPath: personCollider
       value: 
       objectReference: {fileID: 1724598784}
@@ -40598,7 +40603,7 @@ PrefabInstance:
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
       propertyPath: _maxPersonJumpDistance
-      value: 6
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
@@ -40608,7 +40613,7 @@ PrefabInstance:
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
       propertyPath: _colliderLerpSpeedMultiplier
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}

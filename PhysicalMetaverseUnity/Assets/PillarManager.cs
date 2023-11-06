@@ -9,6 +9,16 @@ public class PillarManager : MonoBehaviour
     private bool _prevCollided = false;
     [SerializeField] private int _pillarId = 0;
     [SerializeField] private int _stationId = 0;
+    //bool _personColliding
+    [SerializeField] private bool _personColliding = false;
+    //bool _movementDetected
+    [SerializeField] private bool _movementDetected = false;
+    //_personTrackingWeight
+    [SerializeField] private int _personTrackingWeight = 0;
+    //_personWeight
+    [SerializeField] private int _personWeight = 1;
+    //_movementWeight
+    [SerializeField] private int _movementWeight = 40;
     //serializefield alternate material
     [SerializeField] private Material _alternateMaterial = null;
     //serializefield bool debug material
@@ -17,6 +27,7 @@ public class PillarManager : MonoBehaviour
     private Material _originalMaterial = null;
     //private movement detection material serialize
     [SerializeField] private Material _movementDetectionMaterial = null;
+    [SerializeField] private Material _personTrackingMaterial = null;
     //_StationTrackingMaterial
     [SerializeField] private Material _StationTrackingMaterial = null;
 
@@ -53,14 +64,10 @@ public class PillarManager : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        GetPersonTrackingWeight();
         //if frame count is even
         if(Time.frameCount % 2 == 0){
-            _stationId = -1;
-            LidarManager.Instance.SetBlobAt(_pillarId, -1);
-            LidarManager.Instance.SetPersonBlobAt(_pillarId, -1);
-            //set collisions to false
-            _collisionPillarLeft = false;
-            _collisionPillarRight = false;
+            ResetValues();
         }
         if(Time.frameCount - _trackingFrame > _materialRestoreDeltaFrame){
             GetComponent<Renderer>().material = _alternateMaterial;
@@ -77,7 +84,9 @@ public class PillarManager : MonoBehaviour
                     GetComponent<Renderer>().material = _movementDetectionMaterial;
                 //if all OdometryManager instance is false set this station id to 9
                 _stationId = 9;
-                LidarManager.Instance.SetPersonBlobAt(_pillarId, _stationId);
+                //movement detected
+                _movementDetected = true;
+                LidarManager.Instance.SetPersonBlobAt(_pillarId, GetPersonTrackingWeight());
             }
             //if(_currentPositionMagnitude > _prevPositionMagnitude){
             //    GetComponent<Renderer>().material = _alternateMaterial;
@@ -108,6 +117,32 @@ public class PillarManager : MonoBehaviour
         }
         */
         
+    }
+
+    private void ResetValues(){
+        _stationId = -1;
+        _movementDetected = false;
+        _personColliding = false;
+        LidarManager.Instance.SetBlobAt(_pillarId, -1);
+        LidarManager.Instance.SetPersonBlobAt(_pillarId, 0);
+        //set collisions to false
+        _collisionPillarLeft = false;
+        _collisionPillarRight = false;
+    }
+
+    public int GetPersonTrackingWeight(){
+        _personTrackingWeight = 0;
+        //if _personColliding return 1
+        if(_personColliding){
+            _personTrackingWeight = _personWeight;
+            return _personTrackingWeight;
+        }
+        //if _movementDetected return 2
+        if(_movementDetected){
+            _personTrackingWeight = _movementWeight;
+            return _personTrackingWeight;
+        }
+        return _personTrackingWeight;
     }
 
     void OnTriggerStay(Collider other){
@@ -159,9 +194,10 @@ public class PillarManager : MonoBehaviour
             //GetComponent<MeshRenderer>().enabled = false;
             //set station id to 9
             _stationId = 9;
-            LidarManager.Instance.SetPersonBlobAt(_pillarId, _stationId);
+            _personColliding = true;
+            LidarManager.Instance.SetPersonBlobAt(_pillarId, GetPersonTrackingWeight());
             if(_debugMaterial)
-                GetComponent<Renderer>().material = _movementDetectionMaterial;
+                GetComponent<Renderer>().material = _personTrackingMaterial;
             //set y to _personPillarDown
             //transform.position = new Vector3(transform.position.x, _personPillarDown, transform.position.z);
             //lerp

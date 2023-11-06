@@ -52,9 +52,16 @@ MonoBehaviour:
   _disableMesh: 1
   _pillarId: 0
   _stationId: 0
+  _personColliding: 0
+  _movementDetected: 0
+  _personTrackingWeight: 0
+  _personWeight: 1
+  _movementWeight: 4
   _alternateMaterial: {fileID: 2100000, guid: de6d33c8572f86c4ab1bc13221a28da9, type: 2}
   _debugMaterial: 1
   _movementDetectionMaterial: {fileID: 2100000, guid: b3fda3fed0778e44184df09b6215f15d,
+    type: 2}
+  _personTrackingMaterial: {fileID: 2100000, guid: ba868db90445df14780b24a1b6c95974,
     type: 2}
   _StationTrackingMaterial: {fileID: 2100000, guid: 2ab94992418f14c4db96bd76bb54b434,
     type: 2}

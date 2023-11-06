@@ -151,6 +151,11 @@ public class PoseManager : Monosingleton<PoseManager>
         _rotoTraslation.position = position;
     }
 
+    public void LerpRotoTraslationPosition(Vector3 position, float lerpSpeed)
+    {
+        _rotoTraslation.position = Vector3.Lerp(_rotoTraslation.position, position, lerpSpeed);
+    }
+
     public bool GetManualMovement()
     {
         return _MANUAL_MOVEMENT;
