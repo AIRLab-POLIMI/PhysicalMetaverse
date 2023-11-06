@@ -25,6 +25,10 @@ public class PoseManager : Monosingleton<PoseManager>
     //
     [SerializeField] private  bool _MANUAL_MOVEMENT = false;
     [SerializeField] private  bool _MIRROR_MODE = true;
+    //_SENSOR_DISTANCE
+    [SerializeField] private bool _SENSOR_DISTANCE = false;
+    //_lidarDistanceMultiplier
+    [SerializeField] private float _lidarDistanceMultiplier = 0.2f;
 
     //vizcontroller list
     [SerializeField] private List<VizController> _vizControllerList;
@@ -203,7 +207,10 @@ public class PoseManager : Monosingleton<PoseManager>
     void Update()
     {
         CalculatePoseJoints();
-        CalculateDistanceFromCamera();
+        if(_SENSOR_DISTANCE)
+            CalculateDistanceFromCamera();
+        else
+            LidarDistance();
         CalculateHeadAngles();
         CalculateQuantityOfMovement();
         CalculatePersonDetected();
@@ -274,6 +281,11 @@ public class PoseManager : Monosingleton<PoseManager>
         }
 
         _distanceFromCamera = _oldZDistance;
+    }
+
+    private void LidarDistance(){
+        //_distanceFromCamera = rototraslation distance from 0 0 0
+        _distanceFromCamera = Vector3.Distance(_rotoTraslation.position, Vector3.zero) * _lidarDistanceMultiplier;
     }
 
     //float nose height
