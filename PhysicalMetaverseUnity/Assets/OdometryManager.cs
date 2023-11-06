@@ -97,7 +97,6 @@ public class OdometryManager : Monosingleton<OdometryManager>
             if(Time.time - _prevTime > _odometryCooldown)
                 _odometryActive = false;
         }
-        
     }
 
     public bool GetOdometryActive(){
