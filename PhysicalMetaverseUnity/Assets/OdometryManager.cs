@@ -17,6 +17,8 @@ public class OdometryManager : Monosingleton<OdometryManager>
     //bool rotate right
     public bool _rotateRight = false;
     public GameObject _floor;
+    //_personCollider
+    public GameObject _personCollider;
     public float _forwardFloat = 0f;
     public float _rightFloat = 0f;
     public float _rotateRightFloat = 0f;
@@ -59,9 +61,13 @@ public class OdometryManager : Monosingleton<OdometryManager>
         }
         if(_rotateLeft){
             _floor.transform.RotateAround(this.transform.position, Vector3.up, _boolRotateSpeed * Time.deltaTime);
+            //rotate around 0 0 0 
+            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _boolRotateSpeed * Time.deltaTime);
         }
         if(_rotateRight){
             _floor.transform.RotateAround(this.transform.position, Vector3.up, -_boolRotateSpeed * Time.deltaTime);
+            //rotate around 0 0 0
+            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, -_boolRotateSpeed * Time.deltaTime);
         }
         //if(_forwardFloat > _odometryDeadzone){
         //abs value _forwardFloat
