@@ -86,7 +86,9 @@ class SerialChannel:
         # - if there isn't, return None
         try:
             if self.ser.in_waiting > 0:
-                return self.ser.readline().decode('utf-8').rstrip()
+                line = self.ser.readline()
+                print(line)
+                return line.decode('utf-8').rstrip()
             else:
                 return None
         except Exception as e:

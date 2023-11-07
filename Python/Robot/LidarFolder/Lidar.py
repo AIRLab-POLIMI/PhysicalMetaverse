@@ -80,7 +80,7 @@ class Lidar:
                     if self.sendEnabled:
                         #print("Sending")
                         connection.send(LIDAR_KEY, to_send)
-                        print(to_send)
+                        #print(to_send)
 
                 else:
                     print("not sending lidar, changed values < sensitivity")
@@ -140,8 +140,8 @@ class Lidar:
                 # send
                 connection.send(LIDAR_KEY, self.to_send)
 
-                print(self.to_send)
-                print("\n")
+                #print(self.to_send)
+                #print("\n")
                 break
             pass
         except KeyboardInterrupt:
