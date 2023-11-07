@@ -67,7 +67,9 @@ elif GLOBAL_CONFIG.ARMS_ENABLED and not GLOBAL_CONFIG.BASE_ENABLED:
         DofName.HEAD_LR:odile_arduino_port,
         DofName.TAIL_BF: odile_arduino_port,
         DofName.TAIL_UD: odile_arduino_port,
-        DofName.TAIL_LR: odile_arduino_port
+        DofName.TAIL_LR: odile_arduino_port,
+        DofName.BLACKBUSTO: odile_arduino_port,
+        DofName.BLACKASTE: odile_arduino_port
         
     }
 elif GLOBAL_CONFIG.ARMS_ENABLED and GLOBAL_CONFIG.BASE_ENABLED:
@@ -94,7 +96,9 @@ elif GLOBAL_CONFIG.ARMS_ENABLED and GLOBAL_CONFIG.BASE_ENABLED:
         DofName.HEAD_LR:odile_arduino_port,
         DofName.TAIL_BF: odile_arduino_port,
         DofName.TAIL_UD: odile_arduino_port,
-        DofName.TAIL_LR: odile_arduino_port
+        DofName.TAIL_LR: odile_arduino_port,
+        DofName.BLACKBUSTO: odile_arduino_port,
+        DofName.BLACKASTE: odile_arduino_port
         
     }
 elif not GLOBAL_CONFIG.ARMS_ENABLED and not GLOBAL_CONFIG.BASE_ENABLED:

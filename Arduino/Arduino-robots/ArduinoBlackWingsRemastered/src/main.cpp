@@ -31,6 +31,9 @@
 #define SERVO_PETALS_KEY "SP"
 #define SERVO_BUSTO_KEY "SB"
 #define SERVO_WINGS_KEY "SW"
+// ODILE HEAD
+#define HEAD_UD "HUD"
+#define HEAD_LR "HLR"
 
 
 // SETUP
@@ -68,12 +71,12 @@ float _MAX_ANGULAR = 6.23;  //rad/s
 // driver pins
 // NB since the NEWPING LIBRARY uses a TIMER connected to PWM PINS 9 and 10, 
 //    any motor connected to those PINs will not work: avoid PINs 9 and 10
-#define _MR_A 3
-#define _MR_B 5
-#define _ML_A 7
-#define _ML_B 4
-#define _MB_A 8
-#define _MB_B 6
+#define _MR_A 13
+#define _MR_B 12
+#define _ML_A 8
+#define _ML_B 7
+#define _MB_A 4
+#define _MB_B 2
 
 #define MAX_DC_MOTOR_SIGNAL 100 //255 
 
@@ -141,6 +144,10 @@ void set_wheel_speeds() {
 //#define SERVO_PETALS_PIN 12
 #define SERVO_WINGS_PIN 9
 
+//HEAD PINS
+#define PIN_SERVO_HEAD_BEAK_T2 6
+#define PIN_SERVO_HEAD_BEAK_P 5
+
 // servos are 180 DEG servos. 
 // POSITIONS: The center position is 90. Leftmost is 0. Rightmost is 180.
 
@@ -171,14 +178,24 @@ void set_wheel_speeds() {
 #define SERVO_w (float)(MAX_WING_ANGLE_OPEN - MIN_WING_ANGLE_OPEN)
 #define SERVO_b (float)(MAX_WING_ANGLE_ROTATE - MIN_WING_ANGLE_ROTATE)
 
+//HEAD ANGLES
+#define MIN_ANGLE_HEAD_BEAK_T2 20
+#define MAX_ANGLE_HEAD_BEAK_T2 80
+#define MIN_ANGLE_HEAD_BEAK_P 1
+#define MAX_ANGLE_HEAD_BEAK_P 179
+
 // SERVO ARM POS
 float petals_pos;
 float wings_pos;
 float busto_pos;
+float B_LR_pos;
+float B_UD_pos;
 
 Servo servo_petals;
 Servo servo_wings;
 Servo servo_busto;
+Servo servo_head_beak_t2;
+Servo servo_head_beak_p;
 
 
 void reset_all_servos() {
@@ -195,25 +212,31 @@ void reset_all_servos() {
   busto_pos = MID_WING_ANGLE_ROTATE;
   servo_busto.write(MID_WING_ANGLE_ROTATE);
 
+  // head is centered
+  B_LR_pos = (MAX_ANGLE_HEAD_BEAK_P + MIN_ANGLE_HEAD_BEAK_P) / 2;
+  B_UD_pos = (MAX_ANGLE_HEAD_BEAK_T2 + MIN_ANGLE_HEAD_BEAK_T2) / 2;
+  servo_head_beak_t2.write(B_UD_pos);
+  servo_head_beak_p.write(B_LR_pos);
+
   // Serial.println("[reset_all_servos] ---- COMPLETE");
 }
 
-void set_servo_pos(float pos, Servo servo) {
+void set_servo_pos(float pos, Servo servo, int MIN, int MAX) {
 
   // pos arrives in range [-1, 1] - rescale it in [PETAL_ANGLE_OPENED, PETAL_ANGLE_CLOSED]
-  pos = (((pos + 1.0f) / 2.0f) * SERVO_m)  + (float)PETAL_ANGLE_CLOSED;
+  float servo_m = (float) MAX - MIN;
+  pos = ((((pos+1.0f) * servo_m) / 2.0f)+(float)MIN);
 
   // Make sure the position is within the limit.
   // it could not be the case if the incoming normalized setpoint was not in [-1, 1]
-  if (pos < PETAL_ANGLE_CLOSED) {
-    pos = PETAL_ANGLE_CLOSED;
-  } else if (pos > PETAL_ANGLE_OPENED) {
-    pos = PETAL_ANGLE_OPENED;
+  if (pos < MIN) {
+    pos = MIN;
+  } else if (pos > MAX) {
+    pos = MAX;
   }
 
-  // Set the pos
+  //write_serial("pos "+String(pos) + " mean "+ String(servo_m));
   servo.write(pos);
-
   // write_serial("[SET SERVO POS] - target pos: " + String(servo_target_pos) + " - SPEED: " + String(speed));
 }
 
@@ -260,6 +283,10 @@ void set_servos_pos() {
   //set_servo_pos(petals_pos, servo_petals);
   set_wings_pos(wings_pos, servo_wings);
   set_busto_pos(busto_pos, servo_busto);
+
+  set_servo_pos(B_LR_pos, servo_head_beak_p, MIN_ANGLE_HEAD_BEAK_P, MAX_ANGLE_HEAD_BEAK_P);
+  set_servo_pos(B_UD_pos, servo_head_beak_t2, MIN_ANGLE_HEAD_BEAK_T2, MAX_ANGLE_HEAD_BEAK_T2);
+
 }
 
 void initialize_servos(){
@@ -267,6 +294,9 @@ void initialize_servos(){
   //servo_petals.attach(SERVO_PETALS_PIN);
   servo_wings.attach(SERVO_WINGS_PIN);
   servo_busto.attach(SERVO_BUSTO_PIN);
+
+  servo_head_beak_t2.attach(PIN_SERVO_HEAD_BEAK_T2);
+  servo_head_beak_p.attach(PIN_SERVO_HEAD_BEAK_P);
 
   // brief delay
   delay(200);
@@ -300,6 +330,15 @@ void onWingsValueRcv(float newVal) {
     wings_pos = -1;
 }
 
+float onServosValueRcv(float newVal) {
+  // pos arrives in range [-1, 1]. Saturate it to those bounds.
+  float var = newVal;
+  if (var > 1)
+    var = 1;
+  if (var < -1)
+    var = -1;
+  return var;
+}
 
 
 
@@ -387,6 +426,16 @@ void message_response(KeyValueMsg keyValueMsg){
     dirty = true;
     // Serial.print(" - - BUSTO VAL RCV: ");
     // Serial.println(value);
+    last_command_time = millis();
+    }
+  else if (key == HEAD_UD) {
+    B_UD_pos = onServosValueRcv(value.toFloat());
+    dirty = true;
+    last_command_time = millis();
+    }
+  else if (key == HEAD_LR) {
+    B_LR_pos = onServosValueRcv(value.toFloat());
+    dirty = true;
     last_command_time = millis();
     }
   else {

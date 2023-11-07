@@ -49,7 +49,7 @@ class DofName(Enum):
     EYE_Y = DofInt("EY", -3, 3)
     # --- BLACKWING
     BLACKBUSTO = Dof("SB", -1, 1)
-    BLACKASTE = Dof("SA", -1, 1)
+    BLACKASTE = Dof("SW", -1, 1)
     # --- SONOMA
     SHOULDER = Dof("SS", -1, 1)
     ELBOW = Dof("SE", -1, 1)
