@@ -30,10 +30,11 @@ public class OdometryManager : Monosingleton<OdometryManager>
     public bool _odometryActive = false;
     public float _odometryCooldown = 0.5f; //time required by the robot to halt after a movement
     private float _prevTime = 0f;
+    private NetworkingManager _networkingManager;
     // Start is called before the first frame update
     void Start()
     {
-        
+        _networkingManager = NetworkingManager.Instance;
     }
 
     // Update is called once per frame
@@ -51,11 +52,17 @@ public class OdometryManager : Monosingleton<OdometryManager>
             _floor.transform.position += Vector3.forward * _boolSpeed * Time.deltaTime;
             //move personcollider
             _personCollider.transform.position += Vector3.forward * _boolSpeed * Time.deltaTime;
+            //_networkingManager send Ljy:255
+            _networkingManager.SendString("Ljy:0","192.168.0.102");
         }
-        if(_backward){
+        else if(_backward){
             _floor.transform.position -= Vector3.forward * _boolSpeed * Time.deltaTime;
             //move personcollider
             _personCollider.transform.position -= Vector3.forward * _boolSpeed * Time.deltaTime;
+            _networkingManager.SendString("Ljy:255","192.168.0.102");
+        }
+        else{
+            _networkingManager.SendString("Ljy:127","192.168.0.102");
         }
         if(_left){
             _floor.transform.position -= Vector3.right * _boolSpeed * Time.deltaTime;
@@ -71,11 +78,16 @@ public class OdometryManager : Monosingleton<OdometryManager>
             _floor.transform.RotateAround(this.transform.position, Vector3.up, _boolRotateSpeed * Time.deltaTime);
             //rotate around 0 0 0 
             _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _boolRotateSpeed * Time.deltaTime);
+            _networkingManager.SendString("Ljx:0","192.168.0.102");
         }
-        if(_rotateRight){
+        else if(_rotateRight){
             _floor.transform.RotateAround(this.transform.position, Vector3.up, -_boolRotateSpeed * Time.deltaTime);
             //rotate around 0 0 0
             _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, -_boolRotateSpeed * Time.deltaTime);
+            _networkingManager.SendString("Ljx:255","192.168.0.102");
+        }
+        else{
+            _networkingManager.SendString("Ljx:127","192.168.0.102");
         }
         //if(_forwardFloat > _odometryDeadzone){
         //abs value _forwardFloat
