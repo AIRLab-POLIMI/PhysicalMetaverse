@@ -296,7 +296,10 @@ def loop(sock):#,camera):
             #send body landmarks via udp
             #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
             #body.landmarks string
-            to_send = str(body.landmarks).encode()
+            to_send = str(body.landmarks) + "120.0."
+            #print
+            print(to_send)
+            to_send = to_send.encode()
             if(KEY_VALUE):
                 to_send = POSE_KEY + to_send
             

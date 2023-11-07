@@ -40620,6 +40620,11 @@ PrefabInstance:
       propertyPath: _camera
       value: 
       objectReference: {fileID: 1341182829}
+    - target: {fileID: 376172146433703723, guid: f157f0afc72c7dc4e95458381ab6e58c,
+        type: 3}
+      propertyPath: _rotate90
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 376172146433703726, guid: f157f0afc72c7dc4e95458381ab6e58c,
         type: 3}
       propertyPath: m_Name
