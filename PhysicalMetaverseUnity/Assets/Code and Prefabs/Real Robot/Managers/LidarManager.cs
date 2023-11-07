@@ -15,7 +15,7 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private bool _MERGE_WALLS = false;
     [SerializeField] private bool _LIDAR_TRACKING = true;
     [SerializeField] private bool _PERSON_TRACKING = true;
-    [SerializeField] private bool _WEIGH_DISTANCE = false;
+    [SerializeField] private bool _WEIGH_DISTANCE = false; //COMMENTED IN PillarManager
     [SerializeField] private bool _UPDATE_PILLAR_BEHAVIOUR = true;
     [SerializeField] private bool _STATION_TO_CLOSEST = true;
     [SerializeField] private bool _DISABLE_LIDAR = false;
@@ -87,6 +87,10 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private float _lidarTrackingLerp = 0.5f;
     [SerializeField] private float _humanVizOffset = 1f;
     [SerializeField] private float _maxPersonJumpDistance = 8f;
+    //person weight
+    [SerializeField] private int _personWeight = 2;
+    //_movementWeight
+    [SerializeField] private int _movementWeight = 3;
     [SerializeField] private GameObject personCollider;
     [SerializeField] private GameObject _personJumpDistance;
     [SerializeField] private float _personPillarDown = -3f;
@@ -196,6 +200,14 @@ public class LidarManager : Monosingleton<LidarManager>
         _personBlobs = new int[arraySize];
         for(int i = 0; i < arraySize; i++){
             _personBlobs[i] = -1;
+        }
+
+        //for each pillar do  
+            /*_points[i].GetComponent<PillarManager>().SetPersonWeight(_personWeight);
+            _points[i].GetComponent<PillarManager>().SetMovementWeight(_movementWeight);*/
+        foreach(GameObject pillar in _points){
+            pillar.GetComponent<PillarManager>().SetPersonWeight(_personWeight);
+            pillar.GetComponent<PillarManager>().SetMovementWeight(_movementWeight);
         }
         
         DisableBackPillars();
@@ -1426,8 +1438,8 @@ public class LidarManager : Monosingleton<LidarManager>
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * convertedValue;
             Vector3 posit = _points[pos].transform.position;
             _points[pos].transform.position = new Vector3(x, posit.y, z); //TODO CHANGE HERE FOR PILLAR LERP
-            if(_WEIGH_DISTANCE)
-                _points[pos].GetComponent<PillarManager>().SetDistance(convertedValue);
+            
+            _points[pos].GetComponent<PillarManager>().SetDistance(convertedValue);
 
             _points[pos].transform.localScale = new Vector3(convertedValue / 10, _points[pos].transform.localScale.y,
                 convertedValue / 10);

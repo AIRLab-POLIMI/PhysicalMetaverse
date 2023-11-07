@@ -6,6 +6,8 @@ public class PillarManager : MonoBehaviour
 {
     //distance
     [SerializeField] private float _distance = 1f;
+    //_disableColliderDistance
+    [SerializeField] private float _disableColliderDistance = 1f;
     [SerializeField] private bool _blobEnabled = true;
     [SerializeField] private bool _disableMesh = true;
     private bool _prevCollided = false;
@@ -18,9 +20,9 @@ public class PillarManager : MonoBehaviour
     //_personTrackingWeight
     [SerializeField] private int _personTrackingWeight = 0;
     //_personWeight
-    [SerializeField] private int _personWeight = 1;
+    [SerializeField] private int _personWeight = 2;
     //_movementWeight
-    [SerializeField] private int _movementWeight = 40;
+    [SerializeField] private int _movementWeight = 3;
     //serializefield alternate material
     [SerializeField] private Material _alternateMaterial = null;
     //serializefield bool debug material
@@ -65,6 +67,16 @@ public class PillarManager : MonoBehaviour
         _distance = distance;
     }
 
+    //set person weight
+    public void SetPersonWeight(int weight){
+        _personWeight = weight;
+    }
+
+    //set movement weight
+    public void SetMovementWeight(int weight){
+        _movementWeight = weight;
+    }
+
     public void SetPillarId(int id){
         _pillarId = id;
         //ad id to end of name
@@ -74,6 +86,14 @@ public class PillarManager : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        //if distance is less than _disableColliderDistance disable collider, else enable it
+        if(_distance < _disableColliderDistance){
+            GetComponent<Collider>().enabled = false;
+        }
+        else
+        {
+            GetComponent<Collider>().enabled = true;
+        }
         GetPersonTrackingWeight();
         //if frame count is even
         if(Time.frameCount % 2 == 0){
@@ -145,14 +165,14 @@ public class PillarManager : MonoBehaviour
         //if _personColliding return 1
         if(_personColliding){
             _personTrackingWeight = _personWeight;
-            return _personTrackingWeight * (int)_distance;
+            return _personTrackingWeight;// * (int)_distance;
         }
         //if _movementDetected return 2
         if(_movementDetected){
             _personTrackingWeight = _movementWeight;
-            return _personTrackingWeight * (int)_distance;
+            return _personTrackingWeight;// * (int)_distance;
         }
-        return _personTrackingWeight * (int)_distance;
+        return _personTrackingWeight;// * (int)_distance;
     }
 
     void OnTriggerStay(Collider other){
