@@ -137,7 +137,7 @@ void set_wheel_speeds() {
 // ______________________________________________________________________________________________ SERVOS
 
 
-#define SERVO_BUSTO_PIN 13
+#define SERVO_BUSTO_PIN 10
 //#define SERVO_PETALS_PIN 12
 #define SERVO_WINGS_PIN 9
 
@@ -553,7 +553,7 @@ void final_setup() {
 void setup() {
 
   // 1 start serial and await a bit for warmup;
-  Serial.begin(500000);
+  Serial.begin(115200);
   delay(200);
 
   // 2 initialize variables
