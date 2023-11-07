@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _distance: 1
-  _disableColliderDistance: 1
+  _disableColliderDistance: 1.2
   _blobEnabled: 1
   _disableMesh: 1
   _pillarId: 0
