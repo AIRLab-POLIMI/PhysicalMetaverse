@@ -3,7 +3,7 @@ WINDOWS = 1
 
 UNITY_TIMEOUT = 999 #used by unity_channel.py
 NETWORKING_TIMEOUT = 999 #used by networking_channel.py
-VR_IP = "192.168.0.100" #used by controllers in main_control.py
+VR_IP = "192.168.0.103" #used by controllers in main_control.py
 DEFAULT_UNITY_IP = VR_IP #used by connection.py
 TCP_PRESENTATIONS = 0 #used by connection.py
 

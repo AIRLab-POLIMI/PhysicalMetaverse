@@ -39,9 +39,9 @@ class DofInt(Dof):
 # natural name they have in this ENUM
 class DofName(Enum):
     # --- BASE
-    FORWARD = Dof("BF", -100, 100)
-    STRAFE = Dof("BS", -100, 100)
-    ANGULAR = Dof("BB", -5, 5)
+    FORWARD = Dof("BF", -255, 255)
+    STRAFE = Dof("BS", -255, 255)
+    ANGULAR = Dof("BB", -7, 7)
     # --- SIID
     PETALS = Dof("SP", -1, 1)
     LED = DofInt("L", 0, 255)
