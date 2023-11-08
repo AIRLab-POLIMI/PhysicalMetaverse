@@ -10605,7 +10605,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &613259287
 Transform:
   m_ObjectHideFlags: 0
@@ -19196,7 +19196,7 @@ PrefabInstance:
     - target: {fileID: 7374127562143781760, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7374127562143781761, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
@@ -24461,6 +24461,8 @@ MonoBehaviour:
   _headYTarget: {x: 0, y: 0, z: 0}
   _headYCurrent: {x: 0, y: 0, z: 0}
   _headYServoSpeed: 0.1
+  _headYOffset: 0
+  _headAngleAtDistanceOne: 3
 --- !u!1 &1277004624
 GameObject:
   m_ObjectHideFlags: 0
@@ -40681,6 +40683,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
+      propertyPath: _movementWeight
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
+        type: 3}
       propertyPath: _odometryManager
       value: 
       objectReference: {fileID: 975876602}
@@ -40717,7 +40724,7 @@ PrefabInstance:
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
       propertyPath: _maxPersonJumpDistance
-      value: 12
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
