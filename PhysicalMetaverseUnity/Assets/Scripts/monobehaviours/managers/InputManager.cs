@@ -11,6 +11,7 @@ public class InputManager : Monosingleton<InputManager>
     public float deltaSendTime = 0.01f;
     private float _prevSendTime = 0;
     public bool ENABLE_LOG = false;
+    private PoseManager _poseManager;
     
     // head angles variables
     [SerializeField] private string headXAngleKey = "ay";
@@ -76,6 +77,7 @@ public class InputManager : Monosingleton<InputManager>
     #endregion
         
         void Start(){
+            _poseManager = PoseManager.Instance;
             //rotate this transform 180 if true
             if (_rotate180)
                 transform.Rotate(0, 180, 0);
@@ -207,10 +209,11 @@ public class InputManager : Monosingleton<InputManager>
                 _headYTarget, 
                 Constants.JoystickAngleNormalisation);
             
+            _headAngles.x += HeadTiltOffset();
             // rescale from 0-180 to -3-3 and clamp
             var xAngle = Mathf.Clamp(
-                MathHelper.MapRange(_headAngles.x, 0, 180, -3, 3),
-                -3, 3);
+                MathHelper.MapRange(_headAngles.x, 0, 180, -6, 6),
+                -6, 6);
             var yAngle = Mathf.Clamp(
                 MathHelper.MapRange(_headAngles.y, 0, 180, -3, 3),
                 -3, 3);
@@ -221,7 +224,7 @@ public class InputManager : Monosingleton<InputManager>
             // if xAngle or yAngle are -3 or 3 and their prevAngle value is not exactly -3 or 3, send
             var msg = "";
             if (Mathf.Abs(xAngle - _prevXAngle) > headAnglesTolerance || Mathf.Abs(yAngle - _prevYAngle) > headAnglesTolerance ||
-                (Mathf.Abs(xAngle - _prevXAngle) > 0.0001f && (xAngle >= 3 || xAngle <= -3)) ||
+                (Mathf.Abs(xAngle - _prevXAngle) > 0.0001f && (xAngle >= 6 || xAngle <= -6)) ||
                 (Mathf.Abs(yAngle - _prevYAngle) > 0.0001f && (yAngle >= 3 || yAngle <= -3)))
             {
                 //update prevAngle
@@ -237,6 +240,13 @@ public class InputManager : Monosingleton<InputManager>
             }
             return msg;
         }
-        
+
+        private float HeadTiltOffset()
+        {
+            _headYOffset = 1/_poseManager.GetDistanceFromCamera()*_headAngleAtDistanceOne;
+            return _headYOffset;
+        }
+        public float _headYOffset = 0f;
+        public float _headAngleAtDistanceOne = 20f;
     #endregion 
 }
