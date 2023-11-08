@@ -12,10 +12,18 @@ ODILE_ARDUINO_PLUGGED = True
 BASE_ENABLED = True
 ARMS_ENABLED = True
 SKIP_ARDUINO_SETUP = True
-serial_default_port = "/dev/ttyUSB0"
-serial_base_port = "/dev/ttyACM0" #"/dev/ttyACM0" #"/dev/ttyUSB0" #use ----dmesg | tail---- to find arduino
-lidar_port = "/dev/ttyUSB1"
+serial_default_port = "/dev/arduino_servo"
+serial_base_port = "/dev/arduino_base" #"/dev/ttyACM0" #"/dev/ttyUSB0" #use ----dmesg | tail---- to find arduino
+lidar_port = "/dev/cp2102_uart"
 odile_ip = '192.168.0.102'
+#to set static USB ports:
+#dmesg | tail
+#use data to make something like SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="cp2102_uart", MODE="0666"
+#sudo vi /etc/udev/rules.d/99-ch341-uart-usb.rules
+#press i, add line, press esc, type :wq, press enter
+#sudo udevadm control --reload-rules
+#test with udevadm info -a -n /dev/cp2102_uart
+#just ask chatgpt
 
 #  ROBOT FEATURES  ###################################
 
@@ -24,7 +32,7 @@ GYRO_ENABLED = 0 #GyroSerial.py
 OLD_POSE_ENABLED = 0
 LOGITECH_ENABLED = 0
 KEYVALUE_RECEIVE_ENABLED = 0
-DEPTHAI_ENABLED = 0 #DepthAICamera.py
+DEPTHAI_ENABLED = 1 #DepthAICamera.py
 QR_ENABLED = 1 #MultipleQRDetectReal.py
 
 ####################################################

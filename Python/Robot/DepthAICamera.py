@@ -185,54 +185,57 @@ def computeDistance(frame, depthFrame, body):
 
 def loop(connection, queue):
     # Run blazepose on next frame
-    frame, body = tracker.next_frame()
-    if frame is None: print("framenone")
-
-    inDisparity = queue.get()  # blocking call, will wait until a new data has arrived
-    depthFrame = inDisparity.getFrame()
-    # Normalization for better visualization
-    depthFrame = (depthFrame * (255 / tracker.depth.initialConfig.getMaxDisparity())).astype(np.uint8)
-    #type of frame is numpy.ndarray
-    #showOnlyBlue(frame, connection)
-    # Draw 2d skeleton
-    #frame = renderer.draw(frame, body)
-
-    #print(body)
-    #print body properly, it is mediapipe_utils.Body
     try:
-        frame, depthFrame, distance = computeDistance(frame, depthFrame, body)
-        #print(body.landmarks)
-        #print("sent")
-        #send body landmarks via udp
-        #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
-        #body.landmarks string
-        #make sure distance is a string with 4 decimals
-        distance = str(distance)
-        if len(distance) > 5:
-            distance = distance[:5]
-        elif len(distance) < 5:
-            distance = distance + "0" * (5 - len(distance))
-        to_send = str(body.landmarks) + str(distance) + "."
-        print("SENT POSE " + str(to_send))
-        to_send = to_send.encode()
-        
-        connection.send(POSE_KEY, to_send)
+        frame, body = tracker.next_frame()
+        if frame is None: print("framenone")
+
+        inDisparity = queue.get()  # blocking call, will wait until a new data has arrived
+        depthFrame = inDisparity.getFrame()
+        # Normalization for better visualization
+        depthFrame = (depthFrame * (255 / tracker.depth.initialConfig.getMaxDisparity())).astype(np.uint8)
+        #type of frame is numpy.ndarray
+        #showOnlyBlue(frame, connection)
+        # Draw 2d skeleton
+        #frame = renderer.draw(frame, body)
+
+        #print(body)
+        #print body properly, it is mediapipe_utils.Body
+        try:
+            frame, depthFrame, distance = computeDistance(frame, depthFrame, body)
+            #print(body.landmarks)
+            #print("sent")
+            #send body landmarks via udp
+            #udp.sendto(str(body.landmarks).encode(), ("192.168.0.100", 5005))
+            #body.landmarks string
+            #make sure distance is a string with 4 decimals
+            distance = str(distance)
+            if len(distance) > 5:
+                distance = distance[:5]
+            elif len(distance) < 5:
+                distance = distance + "0" * (5 - len(distance))
+            to_send = str(body.landmarks) + str(distance) + "."
+            print("SENT POSE " + str(to_send))
+            to_send = to_send.encode()
             
-        #print("SENT CAMERA " + str(to_send))# + str(body.landmarks))
+            connection.send(POSE_KEY, to_send)
+                
+            #print("SENT CAMERA " + str(to_send))# + str(body.landmarks))
+            
+        #print exception
+        except Exception as e:
+            print(e)
+            #traceback.print_exc()
         
-    #print exception
-    except Exception as e:
-        print(e)
-        #traceback.print_exc()
-    
-    if showing:
-        cv2.imshow("frame", frame)
-        cv2.imshow("disparity", depthFrame)
-        cv2.waitKey(1)
-    # Show 2d skeleton
-    #key = renderer.waitKey(delay=1)
-    #if key == 27 or key == ord('q'):
-    #    print("keybreak")
+        if showing:
+            cv2.imshow("frame", frame)
+            cv2.imshow("disparity", depthFrame)
+            cv2.waitKey(1)
+        # Show 2d skeleton
+        #key = renderer.waitKey(delay=1)
+        #if key == 27 or key == ord('q'):
+        #    print("keybreak")
+    except:
+        print("camera error")
 
 def showOnlyBlue(frame, connection):
     #downscale frame to 1/4 resolution
