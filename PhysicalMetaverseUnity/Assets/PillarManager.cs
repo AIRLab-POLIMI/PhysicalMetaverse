@@ -83,6 +83,8 @@ public class PillarManager : MonoBehaviour
         gameObject.name += id.ToString();
     }
     
+    public float _relativeDistance = 0f;
+    public float _movementTrackingThresholdClose = 1.7f;
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -107,6 +109,7 @@ public class PillarManager : MonoBehaviour
         float relativeDistance = (float)Math.Max(_currentPositionMagnitude, _prevPositionMagnitude) / (float)Math.Min(_currentPositionMagnitude, _prevPositionMagnitude);
         //if magnitude of difference between prevposition and current position is greater than _movementTrackingThreshold set material to _movementDetectionMaterial
         //if(Vector3.Magnitude(transform.position - _prevPosition) > _movementTrackingThreshold){
+        //_relativeDistance = relativeDistance;
         if(relativeDistance > _movementTrackingThreshold){
             //set material to _movementDetectionMaterial
             if(!OdometryManager.Instance.GetOdometryActive()){//&& _currentPositionMagnitude < _prevPositionMagnitude){

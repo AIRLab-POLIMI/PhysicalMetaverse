@@ -72,6 +72,8 @@ MonoBehaviour:
   _movementTrackingThreshold: 1.1
   _materialRestoreDeltaFrame: 10
   _latestDisableMeshFrame: 0
+  _relativeDistance: 0
+  _movementTrackingThresholdClose: 9999
   _personPillarDown: -3
   _pillarLerpSpeed: 0.1
   _backUpReducer: 3
