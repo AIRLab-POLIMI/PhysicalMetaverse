@@ -48,6 +48,8 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     private float prevRcvTime = 0f;
     //serialize person detected
     [SerializeField] private bool _personDetected = false;
+    //serialize pose confirmation area
+    [SerializeField] private GameObject _poseConfirmationArea;
     
     public bool ENABLE_LOG = false;
     public bool MESH_ENABLED = true;
@@ -289,9 +291,15 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
             //transform.localPosition = new Vector3(transform.localPosition.x, -100f, transform.localPosition.z);
             //disable _odileViz
             _odileViz.GetComponent<RobotPoseContoller>().Hide(true);
+
+            //disable _poseConfirmationArea
+            _poseConfirmationArea.SetActive(false);
         }
         else{
             _personDetected = true;
+            //enable _poseConfirmationArea
+            _poseConfirmationArea.SetActive(true);
+
         }
         //set odileviz rotation to orientation of vector from zero to odileviz
         Vector3 direction = _poseManager.GetRotoTraslation().position - Vector3.zero;

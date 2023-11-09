@@ -93,6 +93,8 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private int _personWeight = 2;
     //_movementWeight
     [SerializeField] private int _movementWeight = 3;
+    //_poseWeight
+    [SerializeField] private int _poseWeight = 20;
     [SerializeField] private GameObject personCollider;
     [SerializeField] private GameObject _personJumpDistance;
     [SerializeField] private float _personPillarDown = -3f;
@@ -218,6 +220,7 @@ public class LidarManager : Monosingleton<LidarManager>
         foreach(GameObject pillar in _points){
             pillar.GetComponent<PillarManager>().SetPersonWeight(_personWeight);
             pillar.GetComponent<PillarManager>().SetMovementWeight(_movementWeight);
+            pillar.GetComponent<PillarManager>().SetPoseWeight(_poseWeight);
         }
         
         DisableBackPillars();
@@ -598,7 +601,7 @@ public class LidarManager : Monosingleton<LidarManager>
         if(personCollider.transform.position.magnitude < _closestPersonDistanceThreshold){
             personCollider.transform.position = personCollider.transform.position.normalized * _closestPersonDistanceThreshold;
         }
-        _poseManager.LerpRotoTraslationPosition(destination, 1f);
+        _poseManager.LerpRotoTraslationPosition(destination, _lidarTrackingLerp);
 
         //scale _personJumpDistance as _maxPersonJumpDistance
         _personJumpDistance.transform.localScale = new Vector3(_maxPersonJumpDistance * 7.5f, _maxPersonJumpDistance * 7.5f, _maxPersonJumpDistance * 7.5f);

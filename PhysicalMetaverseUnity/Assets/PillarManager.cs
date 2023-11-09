@@ -81,6 +81,12 @@ public class PillarManager : MonoBehaviour
         _movementWeight = weight;
     }
 
+    [SerializeField] private int _poseWeight = 0;
+    //set _poseWeight
+    public void SetPoseWeight(int weight){
+        _poseWeight = weight;
+    }
+
     public void SetPillarId(int id){
         _pillarId = id;
         //ad id to end of name
@@ -160,6 +166,7 @@ public class PillarManager : MonoBehaviour
         _stationId = -1;
         _movementDetected = false;
         _personColliding = false;
+        _poseDetected = false;
         LidarManager.Instance.SetBlobAt(_pillarId, -1);
         LidarManager.Instance.SetPersonBlobAt(_pillarId, 0);
         //set collisions to false
@@ -167,19 +174,28 @@ public class PillarManager : MonoBehaviour
         _collisionPillarRight = false;
     }
 
+    private int _poseConfirmationWeight = 0;
+    //serialize bool _poseDetected
+    [SerializeField] private bool _poseDetected = false;
     public int GetPersonTrackingWeight(){
         _personTrackingWeight = 0;
+        if(_poseDetected){
+            _poseConfirmationWeight = _poseWeight;
+        }
+        else{
+            _poseConfirmationWeight = 0;
+        }
         //if _personColliding return 1
         if(_personColliding){
-            _personTrackingWeight = _personWeight;
+            _personTrackingWeight = _personWeight + _poseConfirmationWeight;
             return _personTrackingWeight;// * (int)_distance;
         }
         //if _movementDetected return 2
         if(_movementDetected){
-            _personTrackingWeight = _movementWeight;
+            _personTrackingWeight = _movementWeight + _poseConfirmationWeight + _poseConfirmationWeight/2;
             return _personTrackingWeight;// * (int)_distance;
         }
-        return _personTrackingWeight;// * (int)_distance;
+        return _personTrackingWeight + _poseConfirmationWeight;// * (int)_distance;
     }
 
     void OnTriggerStay(Collider other){
@@ -240,6 +256,11 @@ public class PillarManager : MonoBehaviour
             //lerp
             //transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, _personPillarDown, transform.position.z), _pillarLerpSpeed);
             //TODO CHANGE HERE FOR PILLAR LERP
+        }
+
+        //if tag PCA _poseDetected
+        if(other.gameObject.CompareTag("PCA")){
+            _poseDetected = true;
         }
 
         //if collision with Pillar tag check if id greater or less than this and set left and right booleans
