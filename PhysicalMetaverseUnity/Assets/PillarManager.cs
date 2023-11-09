@@ -95,6 +95,7 @@ public class PillarManager : MonoBehaviour
     
     public float _relativeDistance = 0f;
     public float _movementTrackingThresholdClose = 1.7f;
+    public int _resetFrameCount = 4;
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -108,7 +109,7 @@ public class PillarManager : MonoBehaviour
         }
         GetPersonTrackingWeight();
         //if frame count is even
-        if(Time.frameCount % 2 == 0){
+        if(Time.frameCount % _resetFrameCount == 0){
             ResetValues();
         }
         if(Time.frameCount - _trackingFrame > _materialRestoreDeltaFrame){
@@ -249,6 +250,9 @@ public class PillarManager : MonoBehaviour
             _stationId = 9;
             _personColliding = true;
             LidarManager.Instance.SetPersonBlobAt(_pillarId, GetPersonTrackingWeight());
+            //LidarManager.Instance.SetBasePersonJumpDistance(10f);
+            //set other's scale to 10
+            //other.gameObject.transform.localScale = new Vector3(10, 10, 10);
             if(_debugMaterial)
                 GetComponent<Renderer>().material = _personTrackingMaterial;
             //set y to _personPillarDown

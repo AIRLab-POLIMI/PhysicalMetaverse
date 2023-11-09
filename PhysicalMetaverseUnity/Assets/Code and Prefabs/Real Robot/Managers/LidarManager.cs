@@ -107,6 +107,11 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private float _odometryPersonJumpDistance = 4f;
     //serialize _basePersonJumpDistance
     [SerializeField] private float _basePersonJumpDistance = 16f;
+    //setter
+    public void SetBasePersonJumpDistance(float value){
+        _basePersonJumpDistance = value;
+    }
+
 
     [Space]
     [Space]
@@ -615,6 +620,7 @@ public class LidarManager : Monosingleton<LidarManager>
             personCollider.transform.localScale = _personColliderBaseScale;
             _maxPersonJumpDistance = _basePersonJumpDistance;
         }
+        _maxPersonJumpDistance = Math.Abs(50f - _biggestBlobSize/20f)/3f;
             //position personCollider at point distance in direction of trueMiddleTransform
             //personCollider.transform.position = trueMiddleTransform.position.normalized * point.position.magnitude;
             
