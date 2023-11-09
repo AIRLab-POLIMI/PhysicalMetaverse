@@ -53,13 +53,13 @@ public class OdometryManager : Monosingleton<OdometryManager>
             //move personcollider
             _personCollider.transform.position += Vector3.forward * _boolSpeed * Time.deltaTime;
             //_networkingManager send Ljy:255
-            _networkingManager.SendString("Ljy:0","192.168.0.102");
+            _networkingManager.SendString("Ljy:255","192.168.0.102");
         }
         else if(_backward){
             _floor.transform.position -= Vector3.forward * _boolSpeed * Time.deltaTime;
             //move personcollider
             _personCollider.transform.position -= Vector3.forward * _boolSpeed * Time.deltaTime;
-            _networkingManager.SendString("Ljy:255","192.168.0.102");
+            _networkingManager.SendString("Ljy:0","192.168.0.102");
         }
         else{
             _networkingManager.SendString("Ljy:127","192.168.0.102");
