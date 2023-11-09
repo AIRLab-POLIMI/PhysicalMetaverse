@@ -221,7 +221,7 @@ public class PillarManager : MonoBehaviour
             }*/
         }
         
-        if(other.gameObject.CompareTag("Person")){
+        if(other.gameObject.CompareTag("Person") && _stationId<0){
             //_latestDisableMeshFrame = Time.frameCount;
             //disable mesh
             //GetComponent<MeshRenderer>().enabled = false;
