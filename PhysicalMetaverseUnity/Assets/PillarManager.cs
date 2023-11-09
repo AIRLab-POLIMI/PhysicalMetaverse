@@ -48,9 +48,11 @@ public class PillarManager : MonoBehaviour
     private int _trackingFrame = 0;
     [SerializeField] private int _materialRestoreDeltaFrame = 2;
     [SerializeField] private int _latestDisableMeshFrame = 0;
+    private PoseReceiver _poseReceiver;
     // Start is called before the first frame update
     void Start()
     {
+        _poseReceiver = PoseReceiver.Instance;
         //if debug material is true
         if(_debugMaterial){
             //set material to alternate material
