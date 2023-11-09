@@ -38,11 +38,17 @@ public class VirtualLidar : MonoBehaviour
             }
         }
     }
-
+    private float _prevTime = 0;
+    //serialize scan delta time
+    [SerializeField] private float _scanDeltaTime = 0.1f;
     // Update is called once per frame
     void FixedUpdate()
     {
-        LidarScan();
+        if (Time.time - _prevTime > _scanDeltaTime)
+        {
+            _prevTime = Time.time;
+            LidarScan();
+        }
     }
 
     void LidarScan(){

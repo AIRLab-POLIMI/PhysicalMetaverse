@@ -17,7 +17,7 @@ public class InputManager : Monosingleton<InputManager>
     [SerializeField] private string headXAngleKey = "ay";
     [SerializeField] private string headYAngleKey = "az";
     [Range(0, 1)][SerializeField] private float headAnglesTolerance = 0.2f;
-    private Vector3 _headAngles;
+    [SerializeField] private Vector3 _headAngles;
     private float _prevXAngle;
     private float _prevYAngle;
     [SerializeField] public SetupSO setup;
@@ -208,7 +208,7 @@ public class InputManager : Monosingleton<InputManager>
             _headAngles = RotationHelper.SubtractAllAngles(
                 _headYTarget, 
                 Constants.JoystickAngleNormalisation);
-            
+            _headAngles.x = (_headAngles.x - 90f) * _headTiltSensitivity + 90f;
             _headAngles.x += HeadTiltOffset();
             // rescale from 0-180 to -3-3 and clamp
             var xAngle = Mathf.Clamp(
@@ -247,6 +247,7 @@ public class InputManager : Monosingleton<InputManager>
             return _headYOffset;
         }
         public float _headYOffset = 0f;
+        public float _headTiltSensitivity = 0.3f;
         public float _headAngleAtDistanceOne = 20f;
     #endregion 
 }

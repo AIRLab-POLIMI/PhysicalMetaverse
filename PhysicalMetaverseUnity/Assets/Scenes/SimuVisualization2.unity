@@ -11229,7 +11229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &613259287
 Transform:
   m_ObjectHideFlags: 0
@@ -15362,7 +15362,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh36950
+  m_Name: pb_Mesh35676
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -19399,7 +19399,7 @@ PrefabInstance:
     - target: {fileID: 7374127562143781760, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7374127562143781761, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
@@ -19474,7 +19474,7 @@ PrefabInstance:
     - target: {fileID: 7374127562143781766, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
       propertyPath: m_VersionIndex
-      value: 1237
+      value: 1240
       objectReference: {fileID: 0}
     - target: {fileID: 7374127562143781767, guid: 6107dffa056178f4eae49269534cd4ae,
         type: 3}
@@ -24652,6 +24652,7 @@ MonoBehaviour:
   headXAngleKey: ay
   headYAngleKey: az
   headAnglesTolerance: 0.023
+  _headAngles: {x: 0, y: 0, z: 0}
   setup: {fileID: 11400000, guid: 722b005341b6c4e5ba894c0711bdf1f4, type: 2}
   _jetsonIp: 
   _poseRotationTransform: {fileID: 1199414983}
@@ -24665,6 +24666,7 @@ MonoBehaviour:
   _headYCurrent: {x: 0, y: 0, z: 0}
   _headYServoSpeed: 0.1
   _headYOffset: 0
+  _headTiltSensitivity: 0.3
   _headAngleAtDistanceOne: 3
 --- !u!1 &1277004624
 GameObject:
@@ -40909,6 +40911,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _disablePillarsRange
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
+        type: 3}
+      propertyPath: _CENTER_JUMP_DISTANCE
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}

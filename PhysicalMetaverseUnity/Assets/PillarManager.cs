@@ -23,6 +23,8 @@ public class PillarManager : MonoBehaviour
     [SerializeField] private int _personWeight = 2;
     //_movementWeight
     [SerializeField] private int _movementWeight = 3;
+    //_DISABLE_MOVEMENT_WITH_ODOMETRY
+    [SerializeField] private bool _DISABLE_MOVEMENT_WITH_ODOMETRY = false;
     //serializefield alternate material
     [SerializeField] private Material _alternateMaterial = null;
     //serializefield bool debug material
@@ -114,7 +116,7 @@ public class PillarManager : MonoBehaviour
         //_relativeDistance = relativeDistance;
         if(relativeDistance > _movementTrackingThreshold){
             //set material to _movementDetectionMaterial
-            if(!OdometryManager.Instance.GetOdometryActive()){//&& _currentPositionMagnitude < _prevPositionMagnitude){
+            if(!OdometryManager.Instance.GetOdometryActive() || !_DISABLE_MOVEMENT_WITH_ODOMETRY){//&& _currentPositionMagnitude < _prevPositionMagnitude){
                 if(_debugMaterial)
                     GetComponent<Renderer>().material = _movementDetectionMaterial;
                 //if all OdometryManager instance is false set this station id to 9
