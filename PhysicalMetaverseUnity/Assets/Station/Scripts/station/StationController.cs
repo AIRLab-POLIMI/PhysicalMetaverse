@@ -82,6 +82,7 @@ public class StationController : MonoBehaviour
     private float _startActivationTime = 0;
     private bool _activationStarted = false;
     private float _activationPermanenceTime = 1f;
+    private SphereController _sphereController;
     public void SetRight(bool right){
         _isRight = right;
     }
@@ -104,6 +105,8 @@ public class StationController : MonoBehaviour
 
         interactionRangeCollider.Init(sphereColliderTag);
         activationRangeCollider.Init(sphereColliderTag);
+
+        _sphereController = SphereController.Instance;
 
         Hide();
     }
@@ -342,6 +345,7 @@ public class StationController : MonoBehaviour
                 {
                     _activationStarted = true;
                     _startActivationTime = Time.time;
+                    _sphereController.BlinkSphere();
                 }
                 else
                 {
@@ -354,6 +358,7 @@ public class StationController : MonoBehaviour
             }
             else
             {
+                _sphereController.StopBlink();
                 _activationStarted = false;
             }
         }

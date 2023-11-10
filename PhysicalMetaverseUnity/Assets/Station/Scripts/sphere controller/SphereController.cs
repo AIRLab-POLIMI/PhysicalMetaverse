@@ -24,6 +24,20 @@ public class SphereController : Monosingleton<SphereController>
         [Tooltip("input values below this threshold set scale and brightness to 0. Until that values, they reach the MIN value")]
         [Range(0, 1)]
         [SerializeField] private float minThreshold;
+        //_blinkIntensity
+        [Range(0, 5)]
+        [SerializeField] private float _blinkIntensity;
+        //_blinkfrequency
+        [Range(0, 100)]
+        [SerializeField] private float _blinkFrequency;
+        //_blinkScale
+        [Range(1, 4)]
+        [SerializeField] private float _blinkScale;
+        //blink sphere bool
+        [SerializeField] private bool _blinkSphere;
+        //_blinkTime
+        [Range(0, 5)]
+        [SerializeField] private float _blinkTime = 2f;
 
 
     private float _curInput;
@@ -52,6 +66,12 @@ public class SphereController : Monosingleton<SphereController>
     private void Update()
     {
         OnNewInputRcv(controllerInput.action.ReadValue<float>());
+        //if _blinkSphere is true, blink the sphere
+        if (_blinkSphere)
+        {
+            BlinkSphere();
+            _blinkSphere = false;
+        }
     }
     
     
@@ -83,6 +103,36 @@ public class SphereController : Monosingleton<SphereController>
         var newBrightness = MapRange(_curInput, 0, 1, minBrightness, maxBrightness);
         
         sphereMeshController.OnInputChanged(newBrightness, newScale);
+    }
+
+    private bool _blinking;
+
+    //blink sphere public coroutine, use a sinusoid to blink the sphere between min and max values
+    public void BlinkSphere()
+    {
+        _blinking = true;
+        StartCoroutine(BlinkSphereCoroutine(_blinkTime));
+    }
+
+    private System.Collections.IEnumerator BlinkSphereCoroutine(float duration)
+    {
+        float t = 0;
+        while (t < duration && _blinking)
+        {
+            t += Time.deltaTime;
+            var newScale = Mathf.Lerp(minScale, maxScale, _blinkScale * _blinkIntensity*Mathf.Sin(t * _blinkFrequency));
+            var newBrightness = Mathf.Lerp(minBrightness, _blinkScale * maxBrightness, _blinkIntensity*Mathf.Sin(t * _blinkFrequency));
+            sphereMeshController.OnInputChanged(newBrightness, newScale);
+            yield return null;
+        }
+        _blinking = false;
+    }
+
+    public void StopBlink()
+    {
+        //set sphere to zero
+        SetSphere();
+        _blinking = false;
     }
     
     private static float MapRange(float x, float minIn, float maxIn, float minOut, float maxOut) =>

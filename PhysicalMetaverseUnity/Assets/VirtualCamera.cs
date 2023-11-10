@@ -23,11 +23,14 @@ public class VirtualCamera : MonoBehaviour
 
     [SerializeField] bool _ENABLE_QR = true;
     [SerializeField] bool _ENABLE_POSE = true;
+    //VR enabled
+    [SerializeField] bool _VR_ENABLED = true;
     // Start is called before the first frame update
     void Start()
     {
-        //disable TrackedPoseDriver
-        _XRCamera.GetComponent<TrackedPoseDriver>().enabled = false;
+        if(!_VR_ENABLED)
+            //disable TrackedPoseDriver
+            _XRCamera.GetComponent<TrackedPoseDriver>().enabled = false;
         //run python script C:\Users\Alessandro\Documents\Maurizio\PhysicalMetaverse\Python\MultipleQRDetect.py
 
         if(_ENABLE_QR){
@@ -54,8 +57,9 @@ public class VirtualCamera : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        //set XRCamera local rotation to VirtualCamera rotation minus robotBase rotation euler angles
-        _XRCamera.transform.localRotation = Quaternion.Euler(_virtualCamera.transform.rotation.eulerAngles - _robotBase.transform.rotation.eulerAngles);
+        if(!_VR_ENABLED)
+            //set XRCamera local rotation to VirtualCamera rotation minus robotBase rotation euler angles
+            _XRCamera.transform.localRotation = Quaternion.Euler(_virtualCamera.transform.rotation.eulerAngles - _robotBase.transform.rotation.eulerAngles);
         
     }
 
