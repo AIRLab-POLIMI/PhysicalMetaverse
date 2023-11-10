@@ -25,6 +25,8 @@ public class InputManager : Monosingleton<InputManager>
     public string _jetsonIp;
     public Transform _poseRotationTransform;
     public bool _rotate180 = true;
+    public int _moveXDeadzone = 10;
+    public int _moveYDeadzone = 70;
     
     #region Event Functions
     
@@ -49,8 +51,14 @@ public class InputManager : Monosingleton<InputManager>
                     //log udpMessage
                     //Debug.Log("udpMessage: " + udpMessage);
                 }
-
-                udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx;
+                //TODO put deadzone where it's supposed to be
+                //_moveXDeadzone on Ljx
+                if (Mathf.Abs(Ljx - 127) < _moveXDeadzone)
+                    Ljx = 127;
+                //_moveYDeadzone on Ljy
+                if (Mathf.Abs(Ljy - 127) < _moveYDeadzone)
+                    Ljy = 127;
+                udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx + "_l:-0.7" + "_r:0.2";
                 NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
 
                 _prevSendTime = Time.time;
@@ -224,12 +232,14 @@ public class InputManager : Monosingleton<InputManager>
             // rescale from 0-180 to -3-3 and clamp
             var xAngle = Mathf.Clamp(
                 MathHelper.MapRange(_headAngles.x, 0, 180, -6, 6),
-                -6, 6);
+                -3, _maxTiltValue);
             var yAngle = Mathf.Clamp(
                 MathHelper.MapRange(_headAngles.y, 0, 180, -3, 3),
                 -3, 3);
 
             yAngle /= 3;
+
+            yAngle = Mathf.Clamp(yAngle + _headPanOffset, -3, 3);
             
             // if xAngle or yAngle is too close by 'tolerance' to previous value, don't send
             // if xAngle or yAngle are -3 or 3 and their prevAngle value is not exactly -3 or 3, send
@@ -260,5 +270,8 @@ public class InputManager : Monosingleton<InputManager>
         public float _headYOffset = 0f;
         public float _headTiltSensitivity = 0.3f;
         public float _headAngleAtDistanceOne = 20f;
+        public float _maxTiltValue = 2f;
+        //head pan offset
+        public float _headPanOffset = 0f;
     #endregion 
 }

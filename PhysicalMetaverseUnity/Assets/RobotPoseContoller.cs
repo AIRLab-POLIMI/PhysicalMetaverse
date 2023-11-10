@@ -460,6 +460,7 @@ public class RobotPoseContoller : VizController
         float distance = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_currentHandTracker.transform.position.x, _currentHandTracker.transform.position.y, 0));
         //Debug.Log("Distance " + distance);
         float height = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
+
         //clamp
         height = Mathf.Clamp(height, -1, 1);
         //log height

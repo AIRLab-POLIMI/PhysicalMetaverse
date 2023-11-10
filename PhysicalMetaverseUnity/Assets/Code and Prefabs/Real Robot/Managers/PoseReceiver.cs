@@ -290,7 +290,7 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
             //move transform down 100y
             //transform.localPosition = new Vector3(transform.localPosition.x, -100f, transform.localPosition.z);
             //disable _odileViz
-            _odileViz.GetComponent<RobotPoseContoller>().Hide(true);
+            ////_odileViz.GetComponent<RobotPoseContoller>().Hide(true);
 
             //disable _poseConfirmationArea
             _poseConfirmationArea.SetActive(false);
@@ -607,15 +607,14 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         float footY = _spheres[23].transform.localPosition.y;
         float footX = _spheres[23].transform.localPosition.x;
         //move father z like _zDistance * _zDistanceMultiplier
-        ////transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, _zDistance * _zDistanceMultiplier);
+        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, _zDistance * _zDistanceMultiplier);
         //move father y to make it so _spheres[23].transform.localPosition.y; goes to absolute 0
-        ////transform.localPosition = new Vector3(transform.localPosition.x, -footY, transform.localPosition.z);
+        transform.localPosition = new Vector3(transform.localPosition.x, -footY, transform.localPosition.z);
         //use footX and perspective correction to move father x
-        ////transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
+        transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         //enable _odileViz
         _odileViz.SetActive(true);
-        _odileViz.GetComponent<RobotPoseContoller>().Hide(false);
         if(_CENTER_TO_VIZ){
             //find mid point between left shoulder and right hip
             Vector3 bellyButton = (_spheres[11].transform.localPosition + _spheres[24].transform.localPosition)/2;

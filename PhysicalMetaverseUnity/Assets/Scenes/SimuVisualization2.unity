@@ -5203,7 +5203,7 @@ Transform:
   m_GameObject: {fileID: 345379663}
   m_LocalRotation: {x: -1, y: 0, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: -0.001, z: 0.32}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.0518, y: 2.0518, z: 2.0518}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1421010081}
@@ -16123,8 +16123,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 896300954}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -9.918}
-  m_LocalScale: {x: 0.0012471387, y: 0.0062280553, z: 0.0013845406}
+  m_LocalPosition: {x: 0, y: 0, z: -3.16}
+  m_LocalScale: {x: 0.12622976, y: 0.63037574, z: 0.14013697}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 111168160}
@@ -24370,8 +24370,8 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1259777777}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -9.905}
-  m_LocalScale: {x: 0.0014932258, y: 0.0074569844, z: 0.00165774}
+  m_LocalPosition: {x: 0, y: 0, z: -3.1469984}
+  m_LocalScale: {x: 0.15113759, y: 0.7547624, z: 0.16778898}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1342449548}
@@ -24662,6 +24662,8 @@ MonoBehaviour:
   _jetsonIp: 
   _poseRotationTransform: {fileID: 1199414983}
   _rotate180: 1
+  _moveXDeadzone: 10
+  _moveYDeadzone: 70
   _odometryManager: {fileID: 975876602}
   Ljx: 0
   Ljy: 0
@@ -24673,6 +24675,8 @@ MonoBehaviour:
   _headYOffset: 0
   _headTiltSensitivity: 0.3
   _headAngleAtDistanceOne: 3
+  _maxTiltValue: 0.4
+  _headPanOffset: -0.3
 --- !u!1 &1277004624
 GameObject:
   m_ObjectHideFlags: 0
@@ -42442,7 +42446,7 @@ PrefabInstance:
     - target: {fileID: 6519660980425091106, guid: aa34bbf7fae5014458dcccc10a1cb6d3,
         type: 3}
       propertyPath: _gameDurationSeconds
-      value: 600
+      value: 900
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa34bbf7fae5014458dcccc10a1cb6d3, type: 3}
@@ -42559,6 +42563,16 @@ PrefabInstance:
       propertyPath: _setupScreen
       value: 
       objectReference: {fileID: 1855795999}
+    - target: {fileID: 8637557680593042168, guid: 2609b5b87dfb6384f9747d6ddf4391da,
+        type: 3}
+      propertyPath: _stringToSend
+      value: L:0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8637557680593042168, guid: 2609b5b87dfb6384f9747d6ddf4391da,
+        type: 3}
+      propertyPath: _singleStringDestIp
+      value: 192.168.0.102
+      objectReference: {fileID: 0}
     - target: {fileID: 8637557680593042169, guid: 2609b5b87dfb6384f9747d6ddf4391da,
         type: 3}
       propertyPath: m_RootOrder

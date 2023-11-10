@@ -55,9 +55,9 @@ public class OdometryManager : Monosingleton<OdometryManager>
 
         if(absForwardFloat > _odometryDeadzone){
             //move floor forward
-            _floor.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * _forwardFloat;
+            _floor.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * -_forwardFloat;
             //move personcollider
-            _personCollider.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * _forwardFloat;
+            _personCollider.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * -_forwardFloat;
             _analogTouched = true;
         }
         float absRightFloat = Mathf.Abs(_rightFloat);
@@ -71,9 +71,9 @@ public class OdometryManager : Monosingleton<OdometryManager>
         float absRotateRightFloat = Mathf.Abs(_rotateRightFloat);
         if(absRotateRightFloat > _odometryDeadzone){
             //rotate floor right around this transform
-            _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
+            _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
             //rotate around 0 0 0
-            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
+            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
             _analogTouched = true;
         }
         //move and rotate floor with speed

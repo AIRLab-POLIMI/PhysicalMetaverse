@@ -18,7 +18,7 @@ public class GameManager : Monosingleton<GameManager>
     
     [Header("TIME")]
     
-    [Range(0, 600)] [SerializeField] private int _gameDurationSeconds;
+    [Range(0, 1200)] [SerializeField] private int _gameDurationSeconds;
     [SerializeField] private int _remainingTime;
     [SerializeField] private float _normalisedElapsedTime;    
     private bool _gameOver;
