@@ -43,9 +43,15 @@ public class InputManager : Monosingleton<InputManager>
                 /*if(udpMessage != "")
                     Debug.Log("udp " + udpMessage);*/
                 //if not null
-                if (udpMessage != "")
+                if (udpMessage != ""){
                     //send using NetworkManager
                     NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
+                    //log udpMessage
+                    //Debug.Log("udpMessage: " + udpMessage);
+                }
+
+                udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx;
+                NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
 
                 _prevSendTime = Time.time;
             }
@@ -121,6 +127,8 @@ public class InputManager : Monosingleton<InputManager>
                 //if key is Ljx
                 if (keyValSplit[0] == "Ljx")
                 {
+                    //from msg remove substrings like LJx:255_Ljy:255
+                    msg = msg.Replace(keyVal, "");
                     //int oldLjx = Ljx;
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Ljx);
@@ -131,6 +139,8 @@ public class InputManager : Monosingleton<InputManager>
                 //if key is Ljy
                 if (keyValSplit[0] == "Ljy")
                 {
+                    //from msg remove substrings like LJx:255_Ljy:255
+                    msg = msg.Replace(keyVal, "");
                     //int oldLjy = Ljy;
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Ljy);
@@ -150,6 +160,7 @@ public class InputManager : Monosingleton<InputManager>
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Lry);
                 }
+
             }   
             return msg;
         }

@@ -46,7 +46,36 @@ public class OdometryManager : Monosingleton<OdometryManager>
     public float _rotationSpeed = 1f;
     public float _movementSpeed = 1f;
     public float _odometryDeadzone = 0.2f;
+    private bool _analogTouched = false;
     void FixedUpdate(){
+        _analogTouched = false;
+        //if(_forwardFloat > _odometryDeadzone){
+        //abs value _forwardFloat
+        float absForwardFloat = Mathf.Abs(_forwardFloat);
+
+        if(absForwardFloat > _odometryDeadzone){
+            //move floor forward
+            _floor.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * _forwardFloat;
+            //move personcollider
+            _personCollider.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * _forwardFloat;
+            _analogTouched = true;
+        }
+        float absRightFloat = Mathf.Abs(_rightFloat);
+        if(absRightFloat > _odometryDeadzone){
+            //move floor right
+            _floor.transform.position += Vector3.right * _movementSpeed * Time.deltaTime * _rightFloat;
+            //rotate around 0 0 0
+            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * _rightFloat);
+            _analogTouched = true;
+        }
+        float absRotateRightFloat = Mathf.Abs(_rotateRightFloat);
+        if(absRotateRightFloat > _odometryDeadzone){
+            //rotate floor right around this transform
+            _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
+            //rotate around 0 0 0
+            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
+            _analogTouched = true;
+        }
         //move and rotate floor with speed
         if(_forward){
             _floor.transform.position += Vector3.forward * _boolSpeed * Time.deltaTime;
@@ -62,7 +91,9 @@ public class OdometryManager : Monosingleton<OdometryManager>
             _networkingManager.SendString("Ljy:0","192.168.0.102");
         }
         else{
-            _networkingManager.SendString("Ljy:127","192.168.0.102");
+            
+            if(!_analogTouched)
+                _networkingManager.SendString("Ljy:127","192.168.0.102");
         }
         if(_left){
             _floor.transform.position -= Vector3.right * _boolSpeed * Time.deltaTime;
@@ -87,31 +118,9 @@ public class OdometryManager : Monosingleton<OdometryManager>
             _networkingManager.SendString("Ljx:255","192.168.0.102");
         }
         else{
-            _networkingManager.SendString("Ljx:127","192.168.0.102");
-        }
-        //if(_forwardFloat > _odometryDeadzone){
-        //abs value _forwardFloat
-        float absForwardFloat = Mathf.Abs(_forwardFloat);
-
-        if(absForwardFloat > _odometryDeadzone){
-            //move floor forward
-            _floor.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * _forwardFloat;
-            //move personcollider
-            _personCollider.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * _forwardFloat;
-        }
-        float absRightFloat = Mathf.Abs(_rightFloat);
-        if(absRightFloat > _odometryDeadzone){
-            //move floor right
-            _floor.transform.position += Vector3.right * _movementSpeed * Time.deltaTime * _rightFloat;
-            //rotate around 0 0 0
-            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * _rightFloat);
-        }
-        float absRotateRightFloat = Mathf.Abs(_rotateRightFloat);
-        if(absRotateRightFloat > _odometryDeadzone){
-            //rotate floor right around this transform
-            _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
-            //rotate around 0 0 0
-            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * _rotateRightFloat);
+            
+            if(!_analogTouched)
+                _networkingManager.SendString("Ljx:127","192.168.0.102");
         }
         //if any set _odometryActive
         if(_forward || _backward || _left || _right || _rotateLeft || _rotateRight || absForwardFloat > _odometryDeadzone || absRightFloat > _odometryDeadzone || absRotateRightFloat > _odometryDeadzone){
