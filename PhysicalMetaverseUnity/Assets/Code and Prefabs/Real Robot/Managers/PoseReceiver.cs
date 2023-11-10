@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 //this manager receives the 34 body landmarks detected by the depthai camera and positions a sphere at each landmark
 public class PoseReceiver : Monosingleton<PoseReceiver>
 {
+    public float _poseInvalidationTime = 0.4f;
     private PoseManager _poseManager;
     //dictionary of all joints
     private Dictionary<string, Transform> _joints = new Dictionary<string, Transform>();
@@ -48,6 +49,8 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     private float prevRcvTime = 0f;
     //serialize person detected
     [SerializeField] private bool _personDetected = false;
+    //poseInvalidated
+    [SerializeField] private bool _poseInvalidated = false;
     //serialize pose confirmation area
     [SerializeField] private GameObject _poseConfirmationArea;
     
@@ -90,6 +93,13 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     public bool GetPersonDetected(){
         return _personDetected;
     }
+
+    
+    //SetPoseInvalidated
+    public void SetPoseInvalidated(){
+        _poseInvalidated = true;
+    }
+
     //struct containing a string and a gameobject
     [System.Serializable]
     public class PoseJointsDict
@@ -251,6 +261,8 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     public float _poseDecayTime = 0.4f;
     public GameObject _odileViz;
 
+    private float _prevInvalidatedTime = 0f;
+
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
     private void Update()
@@ -297,10 +309,26 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         }
         else{
             _personDetected = true;
+            _poseInvalidated = false;
             //enable _poseConfirmationArea
             _poseConfirmationArea.SetActive(true);
 
         }
+
+        //if not poseinvalidated _prevInvalidatedTime = Time.time
+        if(!_poseInvalidated){
+            _prevInvalidatedTime = Time.time;
+        }
+
+        //if time since _prevInvalidatedTime is more than poseInvalidationTime _poseManager ShowViz false
+        if(Time.time - _prevInvalidatedTime > _poseInvalidationTime){
+            _poseManager.ShowViz(false);
+        }
+        else{
+            _poseManager.ShowViz(true);
+        }
+        
+
         //set odileviz rotation to orientation of vector from zero to odileviz
         Vector3 direction = _poseManager.GetRotoTraslation().position - Vector3.zero;
         float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg + 90f;
