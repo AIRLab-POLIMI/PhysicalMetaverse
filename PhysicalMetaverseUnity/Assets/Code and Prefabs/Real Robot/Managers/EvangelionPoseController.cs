@@ -122,6 +122,9 @@ public class EvangelionPoseController : VizController
         {
             targetOffset = GetDistanceRatio(poseMidpoint, 32, 32)/2;
             colorSlider = LookingAt.runtimeValue;
+            //if _poseManager person detected is false set lookingat to 0
+            ////if(!_poseManager.GetPersonDetected())
+                ////colorSlider = 0f;
         }
 
         offset = Mathf.Lerp(offset, targetOffset, Time.deltaTime / 2);
