@@ -37,11 +37,31 @@ public class InputManager : Monosingleton<InputManager>
             // Send the camera's X and Y angles via UDP every 0.05 seconds
             if (Time.time - _prevSendTime > deltaSendTime)
             {
+                //TODO put deadzone where it's supposed to be
+                //_moveXDeadzone on Ljx
+                if (Mathf.Abs(Ljx - 127) < _moveXDeadzone)
+                    Ljx = 127;
+                //_moveYDeadzone on Ljy
+                if (Mathf.Abs(Ljy - 127) < _moveYDeadzone)
+                    Ljy = 127;
+                string udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx + "_r:0.2";
+                NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
                 // NetworkManager.Instance.SendMsg(GetUdpMessage());
                 //UDPManager.Instance.SendStringUpdToDefaultEndpoint(GetUdpMessage());
-                string udpMessage = RoutineController.Instance.IsRunning 
-                    ? RoutineController.Instance.GetMsg() 
-                    : GetUdpMessage();
+                ////udpMessage = RoutineController.Instance.IsRunning 
+                ////    ? RoutineController.Instance.GetMsg()
+                ////    : GetUdpMessage();
+
+                    //if coroutine is running else
+                if (RoutineController.Instance.IsRunning){
+                    Ljx = 127;
+                    Ljy = 127;
+                    //get msg from RoutineController
+                    udpMessage = RoutineController.Instance.GetMsg();
+                }
+                else
+                    //get msg from GetUdpMessage
+                    udpMessage = GetUdpMessage();
                 /*if(udpMessage != "")
                     Debug.Log("udp " + udpMessage);*/
                 //if not null
@@ -51,15 +71,6 @@ public class InputManager : Monosingleton<InputManager>
                     //log udpMessage
                     //Debug.Log("udpMessage: " + udpMessage);
                 }
-                //TODO put deadzone where it's supposed to be
-                //_moveXDeadzone on Ljx
-                if (Mathf.Abs(Ljx - 127) < _moveXDeadzone)
-                    Ljx = 127;
-                //_moveYDeadzone on Ljy
-                if (Mathf.Abs(Ljy - 127) < _moveYDeadzone)
-                    Ljy = 127;
-                udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx + "_l:-0.7" + "_r:0.2";
-                NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
 
                 _prevSendTime = Time.time;
             }

@@ -597,10 +597,19 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         _personCollider.transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), _personCollider.transform.localPosition.y, _personCollider.transform.localPosition.z);
         _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x * _poseMultiplier, _personCollider.transform.localPosition.y, _personCollider.transform.localPosition.z * _poseMultiplier);
         _personCollider.transform.position = new Vector3(-_personCollider.transform.position.x, _personCollider.transform.position.y, -_personCollider.transform.position.z);
+        //y angle = _cameraTransform.eulerAngles.y clamped between -90 and 90
+        float yAngle = _cameraTransform.eulerAngles.y - 180;
+        yAngle = Mathf.Clamp(yAngle, -90f, 90f);
+        _yAngle = yAngle;
+        //rotate around 0 by _cameraTransform y angle
+        _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, yAngle);
         //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         
     }
     public float _poseMultiplier = 200f;
     public GameObject _personCollider;
+    //public camera transform
+    public Transform _cameraTransform;
+    public float _yAngle;
 }
 
