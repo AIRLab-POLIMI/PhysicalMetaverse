@@ -27,6 +27,7 @@ public class InputManager : Monosingleton<InputManager>
     public bool _rotate180 = true;
     public int _moveXDeadzone = 10;
     public int _moveYDeadzone = 70;
+    private bool _prevRoutineRunning = false;
     
     #region Event Functions
     
@@ -37,6 +38,13 @@ public class InputManager : Monosingleton<InputManager>
             // Send the camera's X and Y angles via UDP every 0.05 seconds
             if (Time.time - _prevSendTime > deltaSendTime)
             {
+                string udpMessage = "";
+                if(_prevRoutineRunning && !RoutineController.Instance.IsRunning){
+                    _prevRoutineRunning = false;
+                    udpMessage = RoutineController.Instance.GetInitialPositionMsg();
+                    NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
+                }
+
                 //TODO put deadzone where it's supposed to be
                 //_moveXDeadzone on Ljx
                 if (Mathf.Abs(Ljx - 127) < _moveXDeadzone)
@@ -44,7 +52,7 @@ public class InputManager : Monosingleton<InputManager>
                 //_moveYDeadzone on Ljy
                 if (Mathf.Abs(Ljy - 127) < _moveYDeadzone)
                     Ljy = 127;
-                string udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx + "_r:0.2";
+                udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx + "_r:0.2";
                 NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
                 // NetworkManager.Instance.SendMsg(GetUdpMessage());
                 //UDPManager.Instance.SendStringUpdToDefaultEndpoint(GetUdpMessage());
@@ -54,6 +62,7 @@ public class InputManager : Monosingleton<InputManager>
 
                     //if coroutine is running else
                 if (RoutineController.Instance.IsRunning){
+                    _prevRoutineRunning = true;
                     Ljx = 127;
                     Ljy = 127;
                     //get msg from RoutineController
@@ -109,6 +118,9 @@ public class InputManager : Monosingleton<InputManager>
             //get ip string from _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonIp = _jetsonEndpoint.IP.ToString();
+            string udpMessage = RoutineController.Instance.GetInitialPositionMsg();
+            udpMessage += "_Ljy:127_Ljx:127";
+            NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
         }
 
     #region Compose UDP Mess

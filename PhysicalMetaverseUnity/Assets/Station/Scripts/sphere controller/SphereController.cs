@@ -125,7 +125,6 @@ public class SphereController : Monosingleton<SphereController>
             sphereMeshController.OnInputChanged(newBrightness, newScale);
             yield return null;
         }
-        _blinking = false;
     }
 
     public void StopBlink()

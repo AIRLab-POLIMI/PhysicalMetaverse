@@ -261,7 +261,7 @@ public class StationController : MonoBehaviour
         // play the audiosource only once then stop
         audioSource.PlayOneShot(audioSource.clip);
         
-        RoutineController.Instance.Activate();
+        //RoutineController.Instance.Activate();
         
         // OnInteractableExit(false);
         OnInteractableExit();
@@ -322,6 +322,7 @@ public class StationController : MonoBehaviour
             _activationPermanenceTime = time;
         }
 
+        private bool _prevInRange = false;
         private void CheckActivated()
         {
             //if _station IsInvalidated() true return, can't activate a station if it is not valid
@@ -341,11 +342,13 @@ public class StationController : MonoBehaviour
             
             // if it's in range and it's interactable, trigger activated
             if (inRange && _isInteractable){
+                _prevInRange = true;
                 if (!_activationStarted)
                 {
                     _activationStarted = true;
                     _startActivationTime = Time.time;
                     _sphereController.BlinkSphere();
+                    RoutineController.Instance.Activate();
                 }
                 else
                 {
@@ -358,7 +361,11 @@ public class StationController : MonoBehaviour
             }
             else
             {
-                _sphereController.StopBlink();
+                if (_prevInRange){
+                    _prevInRange = false;
+                    _sphereController.StopBlink();
+                    RoutineController.Instance.Stop();
+                }
                 _activationStarted = false;
             }
         }
