@@ -19070,8 +19070,8 @@ MonoBehaviour:
   _speed: 1
   _odometryActive: 0
   _odometryCooldown: 0.5
-  _rotationSpeed: 20.31
-  _movementSpeed: 2.2
+  _rotationSpeed: 17.5
+  _movementSpeed: 0.82
   _odometryDeadzone: 0.2
 --- !u!1 &977942186
 GameObject:
