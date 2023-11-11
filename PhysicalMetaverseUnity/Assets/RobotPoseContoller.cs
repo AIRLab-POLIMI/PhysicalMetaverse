@@ -447,6 +447,8 @@ public class RobotPoseContoller : VizController
             _prevHide = false;
         }
     }
+    public float _distanceLeft;
+    public float _distanceRight;
 
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist
     void InverseKinematics(){
@@ -458,8 +460,30 @@ public class RobotPoseContoller : VizController
         //print distance from VRotate to hand tracker without z component
         //float distance = Vector3.Distance(_odileJoints["VRotate"].position, _handTracker.transform.position);
         float distance = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_currentHandTracker.transform.position.x, _currentHandTracker.transform.position.y, 0));
+        //distancexz
+        float distancexz = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, 0, _odileJoints["VRotate"].position.z), new Vector3(_currentHandTracker.transform.position.x, 0, _currentHandTracker.transform.position.z));
+        _distanceLeft = distancexz;
         //Debug.Log("Distance " + distance);
         float height = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
+        
+        _currentHandTracker = _rightHandTracker;
+        float distanceRight = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_currentHandTracker.transform.position.x, _currentHandTracker.transform.position.y, 0));
+        //distancexz
+        float distancexzRight = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, 0, _odileJoints["VRotate"].position.z), new Vector3(_currentHandTracker.transform.position.x, 0, _currentHandTracker.transform.position.z));
+        _distanceRight = distancexzRight;
+        //Debug.Log("Distance " + distance);
+        float heightRight = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
+
+        //check which distance has bigger abs value and set current to that
+        if(_distanceRight > _distanceLeft){
+            distance = distanceRight;
+            height = heightRight;
+            _currentHandTracker = _rightHandTracker;
+        }
+        else{
+            _currentHandTracker = _leftHandTracker;
+        }
+        
 
         //clamp
         height = Mathf.Clamp(height, -1, 1);
