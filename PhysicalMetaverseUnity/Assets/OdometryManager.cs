@@ -46,6 +46,7 @@ public class OdometryManager : Monosingleton<OdometryManager>
     public float _rotationSpeed = 1f;
     public float _movementSpeed = 1f;
     public float _odometryDeadzone = 0.2f;
+    public GameObject _directionalLight;
     private bool _analogTouched = false;
     void FixedUpdate(){
         _analogTouched = false;
@@ -74,6 +75,7 @@ public class OdometryManager : Monosingleton<OdometryManager>
             _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
             //rotate around 0 0 0
             _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
+            _directionalLight.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
             _analogTouched = true;
         }
         //move and rotate floor with speed
