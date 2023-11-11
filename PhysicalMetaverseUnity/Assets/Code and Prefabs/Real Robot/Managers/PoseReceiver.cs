@@ -635,10 +635,17 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         }
         //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         
-        //orient _poseConfirmationAreaTransform like the vector going from 0 0 0 to personcollider
-        Vector3 direction = _personCollider.transform.position - Vector3.zero;
-        float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
-        _poseConfirmationAreaTransform.rotation = Quaternion.Euler(0, angle, 0);
+        //_AIM_POSE_CONFIRMATION_AREA
+        if(_AIM_POSE_CONFIRMATION_AREA && _POSITION_WITH_CAMERA_PERSPECTIVE){
+            //orient _poseConfirmationAreaTransform like the vector going from 0 0 0 to personcollider
+            Vector3 direction = _personCollider.transform.position - Vector3.zero;
+            //debug ray 
+            Debug.DrawRay(Vector3.zero, direction, Color.red);
+            //get angle between direction and Vector3.forward
+            float angle = Vector3.SignedAngle(direction, Vector3.forward, Vector3.up);
+            //set _poseConfirmationAreaTransform rotation to angle
+            _poseConfirmationAreaTransform.rotation = Quaternion.Euler(0, -angle, 0);
+        }
     }
     public float _poseMultiplier = 200f;
     public GameObject _personCollider;
@@ -647,5 +654,6 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     public Transform _poseConfirmationAreaTransform;
     public float _yAngle;
     public bool _POSITION_WITH_CAMERA_PERSPECTIVE = false;
+    public bool _AIM_POSE_CONFIRMATION_AREA = true;
 }
 
