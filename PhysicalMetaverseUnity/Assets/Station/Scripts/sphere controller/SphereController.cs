@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
 
 
 public class SphereController : Monosingleton<SphereController>
@@ -44,6 +45,8 @@ public class SphereController : Monosingleton<SphereController>
     
     private void Start()
     {
+        //get _rightHandController from father
+        _rightHandController = GetComponentInParent<XRBaseController>();
         OnGameStarted();
     }
 
@@ -124,6 +127,8 @@ public class SphereController : Monosingleton<SphereController>
             var newBrightness = Mathf.Lerp(minBrightness, _blinkScale * maxBrightness, _blinkIntensity*Mathf.Sin(t * _blinkFrequency));
             sphereMeshController.OnInputChanged(newBrightness, newScale);
             yield return null;
+            //vibrate _rightHandController
+            _rightHandController.SendHapticImpulse(0.5f, 0.1f);
         }
     }
 
@@ -134,6 +139,7 @@ public class SphereController : Monosingleton<SphereController>
         _blinking = false;
     }
     
+    public XRBaseController _rightHandController;
     private static float MapRange(float x, float minIn, float maxIn, float minOut, float maxOut) =>
         minOut + ((maxOut - minOut) / (maxIn - minIn)) * (x - minIn);
 }

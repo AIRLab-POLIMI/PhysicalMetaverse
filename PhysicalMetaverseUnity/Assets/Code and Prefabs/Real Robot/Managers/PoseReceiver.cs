@@ -633,11 +633,16 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, yAngle);
         //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         
+        //orient _poseConfirmationAreaTransform like the vector going from 0 0 0 to personcollider
+        Vector3 direction = _personCollider.transform.position - Vector3.zero;
+        float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
+        _poseConfirmationAreaTransform.rotation = Quaternion.Euler(0, angle, 0);
     }
     public float _poseMultiplier = 200f;
     public GameObject _personCollider;
     //public camera transform
     public Transform _cameraTransform;
+    public Transform _poseConfirmationAreaTransform;
     public float _yAngle;
 }
 
