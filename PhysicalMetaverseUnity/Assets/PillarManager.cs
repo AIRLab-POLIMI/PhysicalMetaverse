@@ -28,7 +28,7 @@ public class PillarManager : MonoBehaviour
     //serializefield alternate material
     [SerializeField] private Material _alternateMaterial = null;
     //serializefield bool debug material
-    [SerializeField] private bool _debugMaterial = false;
+    public bool _debugMaterial = false;
     //private original material
     private Material _originalMaterial = null;
     //private movement detection material serialize
@@ -60,6 +60,9 @@ public class PillarManager : MonoBehaviour
             //set material to alternate material
             GetComponent<Renderer>().material = _alternateMaterial;
             _originalMaterial = _alternateMaterial;
+        }
+        else{
+            _alternateMaterial = new Material(GetComponent<Renderer>().material);
         }
     }
 

@@ -277,6 +277,7 @@ public class StationManager : Monosingleton<StationManager>
                 {
                     //eanble station
                     station.SetActive(true);
+                    station.GetComponent<SingleStationManager>().GetStationInteraction().gameObject.SetActive(true);
                     //set station position, data is formatted as [station code, x, y, size(diagonal)]
                     //((GameObject)_stations[i]).transform.localPosition = new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3]/10.0f + zOffset);
                     //if _stations[i].GetComponent<SingleStationManager>()._tracked
@@ -308,8 +309,10 @@ public class StationManager : Monosingleton<StationManager>
             if (_elapsedTime > TRACKING_DECAY_TIME)
             {
                 _stations[i].GetComponent<SingleStationManager>().SetTracked(false);
-                if (_elapsedTime > STATIONS_DECAY_TIME)
+                if (_elapsedTime > STATIONS_DECAY_TIME){
+                    _stations[i].GetComponent<SingleStationManager>().GetStationInteraction().gameObject.SetActive(false);
                     _stations[i].SetActive(false);
+                }
             }
         }
     }

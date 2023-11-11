@@ -164,6 +164,12 @@ public class StationController : MonoBehaviour
     
     private void Update()
     {
+        //check if _station gameobject is active
+        if(!_station.activeSelf){
+            //disable this gameobject
+            this.gameObject.SetActive(false);
+        }
+        
         if (_isHidden)
             return;
         
