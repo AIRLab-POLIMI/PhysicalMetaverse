@@ -34,6 +34,9 @@ public class SphereController : Monosingleton<SphereController>
         //_blinkScale
         [Range(1, 4)]
         [SerializeField] private float _blinkScale;
+        //scaleScale
+        [Range(1, 3)]
+        [SerializeField] private float _scaleScale;
         //blink sphere bool
         [SerializeField] private bool _blinkSphere;
         //_blinkTime
@@ -123,7 +126,7 @@ public class SphereController : Monosingleton<SphereController>
         while (t < duration && _blinking)
         {
             t += Time.deltaTime;
-            var newScale = Mathf.Lerp(minScale, maxScale, _blinkScale * _blinkIntensity*Mathf.Sin(t * _blinkFrequency));
+            var newScale = Mathf.Lerp(minScale, _scaleScale * maxScale, _blinkIntensity*Mathf.Sin(t * _blinkFrequency));
             var newBrightness = Mathf.Lerp(minBrightness, _blinkScale * maxBrightness, _blinkIntensity*Mathf.Sin(t * _blinkFrequency));
             sphereMeshController.OnInputChanged(newBrightness, newScale);
             yield return null;

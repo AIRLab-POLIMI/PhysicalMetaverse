@@ -617,20 +617,22 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         //find y of bottom left foot
         float footY = _spheres[23].transform.localPosition.y;
         float footX = _spheres[23].transform.localPosition.x;
-        //move father z like _zDistance * _zDistanceMultiplier
-        _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x, _personCollider.transform.localPosition.y, _zDistance * _zDistanceMultiplier);
-        //move father y to make it so _spheres[23].transform.localPosition.y; goes to absolute 0
-        _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x, -footY, _personCollider.transform.localPosition.z);
-        //use footX and perspective correction to move father x
-        _personCollider.transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), _personCollider.transform.localPosition.y, _personCollider.transform.localPosition.z);
-        _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x * _poseMultiplier, _personCollider.transform.localPosition.y, _personCollider.transform.localPosition.z * _poseMultiplier);
-        _personCollider.transform.position = new Vector3(-_personCollider.transform.position.x, _personCollider.transform.position.y, -_personCollider.transform.position.z);
-        //y angle = _cameraTransform.eulerAngles.y clamped between -90 and 90
-        float yAngle = _cameraTransform.eulerAngles.y - 180;
-        yAngle = Mathf.Clamp(yAngle, -90f, 90f);
-        _yAngle = yAngle;
-        //rotate around 0 by _cameraTransform y angle
-        _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, yAngle);
+        if(_POSITION_WITH_CAMERA_PERSPECTIVE){
+            //move father z like _zDistance * _zDistanceMultiplier
+            _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x, _personCollider.transform.localPosition.y, _zDistance * _zDistanceMultiplier);
+            //move father y to make it so _spheres[23].transform.localPosition.y; goes to absolute 0
+            _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x, -footY, _personCollider.transform.localPosition.z);
+            //use footX and perspective correction to move father x
+            _personCollider.transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), _personCollider.transform.localPosition.y, _personCollider.transform.localPosition.z);
+            _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x * _poseMultiplier, _personCollider.transform.localPosition.y, _personCollider.transform.localPosition.z * _poseMultiplier);
+            _personCollider.transform.position = new Vector3(-_personCollider.transform.position.x, _personCollider.transform.position.y, -_personCollider.transform.position.z);
+            //y angle = _cameraTransform.eulerAngles.y clamped between -90 and 90
+            float yAngle = _cameraTransform.eulerAngles.y - 180;
+            yAngle = Mathf.Clamp(yAngle, -90f, 90f);
+            _yAngle = yAngle;
+            //rotate around 0 by _cameraTransform y angle
+            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, yAngle);
+        }
         //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         
         //orient _poseConfirmationAreaTransform like the vector going from 0 0 0 to personcollider
@@ -644,5 +646,6 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     public Transform _cameraTransform;
     public Transform _poseConfirmationAreaTransform;
     public float _yAngle;
+    public bool _POSITION_WITH_CAMERA_PERSPECTIVE = false;
 }
 
