@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using Core;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
 public class RoutineController : Monosingleton<RoutineController>
 {
 
+    [SerializeField] bool _playCoroutine = false;
+    [SerializeField] bool _stopCoroutine = false;
     [SerializeField] float routineDuration;
     
     [SerializeField] List<RoutineComponent> routineComponents;
@@ -28,6 +31,17 @@ public class RoutineController : Monosingleton<RoutineController>
             component.Start(routineDuration);
     }
     
+    private void FixedUpdate(){
+        if(_playCoroutine){
+            _playCoroutine = false;
+            Activate();
+        }
+        //if _stopCoroutine call Stop()
+        if(_stopCoroutine){
+            _stopCoroutine = false;
+            Stop();
+        }
+    }
     
     #region Activate Routine
 

@@ -52,7 +52,7 @@ public class InputManager : Monosingleton<InputManager>
                 //_moveYDeadzone on Ljy
                 if (Mathf.Abs(Ljy - 127) < _moveYDeadzone)
                     Ljy = 127;
-                udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx + "_r:0.2";
+                udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx + "_Rbt:20";
                 NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
                 // NetworkManager.Instance.SendMsg(GetUdpMessage());
                 //UDPManager.Instance.SendStringUpdToDefaultEndpoint(GetUdpMessage());
