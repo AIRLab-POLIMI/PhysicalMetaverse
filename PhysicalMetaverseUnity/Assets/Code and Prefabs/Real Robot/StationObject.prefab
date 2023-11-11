@@ -51,7 +51,7 @@ MonoBehaviour:
   _ENABLE_LOG: 0
   _UPDATE_STATIONS_BEHAVIOUR: 1
   _consumeMultiplier: 3
-  _activationPermanenceTime: 3
+  _activationPermanenceTime: 1
   _stationPrefab: {fileID: 6699460793187042399, guid: 670ff607560aedb4e9707afb7a1d6df9,
     type: 3}
   _cameraRotationAngle: {fileID: 0}

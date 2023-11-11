@@ -6,19 +6,13 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 
 //replace back all .localPosition to .position if there are problems
 
 //to test run the scene while jetson is running "python3 demo.py" in ~/Desktop/TesiMaurizioVetere/ProgettiPython/depthai_blazepose
 //this manager receives the 34 body landmarks detected by the depthai camera and positions a sphere at each landmark
-public class PoseReceiver : Monosingleton<PoseReceiver>
+public class PersonManagerV2 : MonoBehaviour
 {
-    public float _poseInvalidationTime = 0.4f;
-    private PoseManager _poseManager;
-    //dictionary of all joints
-    private Dictionary<string, Transform> _joints = new Dictionary<string, Transform>();
-
     //make a slider to adjust the rotation angle
     //public float rotationAngle = -20f;
     [Range(-90f, 90f)]
@@ -33,40 +27,14 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     private int[][] parsedData;
 
     //spawned
-    [SerializeField] private bool _spawned = false;
-    //get
-    public bool GetSpawned(){
-        return _spawned;
-    }
+    public bool _spawned = false;
 
-    [SerializeField] private GameObject[] _spheres;
-    //public getspheres
-    public GameObject[] GetSpheres(){
-        return _spheres;
-    }
+    public GameObject[] _spheres;
 
     //prev rcv time
     private float prevRcvTime = 0f;
-    //serialize person detected
-    [SerializeField] private bool _personDetected = false;
-    //poseInvalidated
-    [SerializeField] private bool _poseInvalidated = false;
-    //serialize pose confirmation area
-    [SerializeField] private GameObject _poseConfirmationArea;
     
     public bool ENABLE_LOG = false;
-    public bool MESH_ENABLED = true;
-    public bool _mesh_status = true;
-    public bool _CENTER_TO_VIZ = true;
-    public bool _GET_SPHERES = true;
-
-    //serializefied center viz offsets
-    [SerializeField] private float _centerVizXOffset = 0f;
-    [SerializeField] private float _centerVizYOffset = 0f;
-    [SerializeField] private float _centerVizZOffset = 0f;
-    //serializefield transform offset with root
-    [SerializeField] private Vector3 _rootOffset;
-    public GameObject _pose;
     public void OnMsgRcv(byte[] msg)
     {
         //disable Debug.Log for this object
@@ -82,24 +50,9 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         parsedData = ParseData(message);
         //log difference between times
         Debug.Log(Time.time - prevRcvTime);
-        
-        //set prevRcvTime only if lenght of parsedData is >= 33
-        if(parsedData.Length >= 33){
-            prevRcvTime = Time.time;
-        }
+        prevRcvTime = Time.time;
         Debug.unityLogger.logEnabled = true;
     }
-    //get _personDetected
-    public bool GetPersonDetected(){
-        return _personDetected;
-    }
-
-    
-    //SetPoseInvalidated
-    public void SetPoseInvalidated(){
-        _poseInvalidated = true;
-    }
-
     //struct containing a string and a gameobject
     [System.Serializable]
     public class PoseJointsDict
@@ -112,7 +65,6 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     public List<PoseJointsDict> _poseJoints = new List<PoseJointsDict>();
     void Start()
     {
-        _poseManager = PoseManager.Instance;
         newObject = new GameObject("Transformer");
         newTransform = newObject.AddComponent<Transform>();
         //create empty gameobjects Head, Left Arm, Right Arm, Left Leg, Right Leg with parent this
@@ -126,10 +78,7 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         leftLeg.transform.parent = this.transform;
         GameObject rightLeg = new GameObject("Right Leg");
         rightLeg.transform.parent = this.transform;
-        //rotate pose 180
-        _pose.transform.rotation = Quaternion.Euler(0, 180, 0);
 
-        _originalEarsOffset = _earsOffset;
     }
 
     //a receive looks like
@@ -182,13 +131,9 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     {
         //string ending float, read chars from length - 5 to length - 1
         string endingFloat = data.Substring(data.Length - 6, 6);
-        //replace dot with comma
-        endingFloat = endingFloat.Replace(".", ",");
-        //remove final comma
-        endingFloat = endingFloat.Substring(0, endingFloat.Length - 1);
         _zDistance = float.Parse(endingFloat);
-        _zDistance /= 100;
-        Debug.Log(endingFloat);
+        _zDistance /= 1000;
+        Debug.Log(_zDistance);
         string dataWithoutEndingFloat = data.Substring(0, data.Length - 6);
         //split the data into lines
         string[] lines = dataWithoutEndingFloat.Split('\n');
@@ -251,123 +196,27 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         return parsedData;
     }
 
-    //public get distance
-    public float GetDistance(){
-        return _zDistance;
-    }
-    
-    //range 0.1 1 _poseDecayTime
-    [Range(0.1f, 1f)]
-    public float _poseDecayTime = 0.4f;
-    public GameObject _odileViz;
-
-    private float _prevInvalidatedTime = 0f;
-
     //at the first receive spawn one sphere for each element fo the array, then at each receive move the spheres to the new position
     //data is an array of numbers not a string
     private void Update()
-    {   
+    {
         //if first receive
         if (data != null)
         {
-            if(!_spawned){
+            if(!_spawned)
                 //call function to spawn spheres
-                if(_GET_SPHERES){
-                    UseExistingSpheres();
-                    CheckMeshEnabled();
-                }
-                else{
-                    SpawnSpheres();
-                }
-                _joints.Clear();
-                //print names of all spheres
-                foreach (GameObject sphere in _spheres)
-                {
-                    //print(sphere.name);
-                    _joints.Add(sphere.name, sphere.transform);
-                }
-            }
+                SpawnSpheres();
             
             //move spheres to position
             MoveSpheres();
-            data = null;//if mesh enable, else disable mesh
-
-            CheckMeshEnabled();
+            data = null;
         }
 
-        //if time since last receive is more than pose decay time move spheres to y = -100
-        if (Time.time - prevRcvTime > _poseDecayTime)
-        {
-            _personDetected = false;
-            //move transform down 100y
-            //transform.localPosition = new Vector3(transform.localPosition.x, -100f, transform.localPosition.z);
-            //disable _odileViz
-            ////_odileViz.GetComponent<RobotPoseContoller>().Hide(true);
-
-            //disable _poseConfirmationArea
-            _poseConfirmationArea.SetActive(false);
-        }
-        else{
-            _personDetected = true;
-            _poseInvalidated = false;
-            //enable _poseConfirmationArea
-            _poseConfirmationArea.SetActive(true);
-
-        }
-
-        //if not poseinvalidated _prevInvalidatedTime = Time.time
-        if(!_poseInvalidated){
-            _prevInvalidatedTime = Time.time;
-        }
-
-        //if time since _prevInvalidatedTime is more than poseInvalidationTime _poseManager ShowViz false
-        if(Time.time - _prevInvalidatedTime > _poseInvalidationTime){
-            _poseManager.ShowViz(false);
-        }
-        else{
-            _poseManager.ShowViz(true);
-        }
-        
-
-        //set odileviz rotation to orientation of vector from zero to odileviz
-        Vector3 direction = _poseManager.GetRotoTraslation().position - Vector3.zero;
-        float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg + 90f;
-        _poseManager.SetRotationOffset(angle);
-    }
-
-    //get _joints
-    public Dictionary<string, Transform> GetJoints(){
-        return _joints;
-    }
-
-    private void CheckMeshEnabled(){
-        if (MESH_ENABLED)
-        {
-            if(_mesh_status){
-                //disable mesh of all spheres
-                foreach (GameObject sphere in _spheres)
-                {
-                    sphere.GetComponent<MeshRenderer>().enabled = false;
-                }
-            }
-            else{
-                //enable mesh of all spheres
-                foreach (GameObject sphere in _spheres)
-                {
-                    sphere.GetComponent<MeshRenderer>().enabled = true;
-                }
-            }
-            _mesh_status = !_mesh_status;
-            MESH_ENABLED = false;
-        }
     }
 
     //spawn spheres
     private void SpawnSpheres()
     {
-        //if parsedData.Length shorter than 30 return
-        if (parsedData.Length < 30)
-            return;
         _spheres = new GameObject[parsedData.Length];
         //list of strings containing Shoulder, Elbow, Wrist, Hip, Knee, Ankle
         List<string> joints = new List<string> { "Shoulder", "Elbow", "Wrist", "Hip", "Knee", "Ankle" };
@@ -377,7 +226,6 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         {
             //spawn a sphere
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.transform.localScale = new Vector3(60f/_scale, 60f/_scale, 60f/_scale);
             //name the sphere
             sphere.name = "Sphere (" + i + ")";
             //scale 10
@@ -386,8 +234,6 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
             //from 24 to 32 make spheres green only on even numbers, from 23 to 31 make spheres blue only on odd numbers
             if (i >= 0 && i <= 11)
             {
-                //localscale to 0.1
-                sphere.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                 sphere.GetComponent<Renderer>().material.color = Color.cyan;
                 //name face + i
                 //if 3 or 6 call left or right eye
@@ -402,13 +248,7 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
                     sphere.GetComponent<Renderer>().material.color = Color.black;
                 }
                 else
-                {
-                    //if i 0 call it Nose
-                    if (i == 0)
-                        sphere.name = "Nose";
-                    else
-                        sphere.name = "Face (" + i + ")";
-                }
+                    sphere.name = "Face (" + i + ")";
             }
             if (i >= 11 && i <= 21)
             {
@@ -470,25 +310,8 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         //set all spheres as children of this gameobject
         foreach (GameObject sphere in _spheres)
         {
-            sphere.transform.parent = _pose.transform;
+            sphere.transform.parent = this.transform;
         }
-    }
-
-    private void UseExistingSpheres(){
-        _spheres = new GameObject[parsedData.Length];
-        int i = 0;
-        //add each child of _pose to _spheres
-        foreach(Transform sphere in _pose.gameObject.GetComponentsInChildren<Transform>()){
-            //skip _pose
-            if(sphere.gameObject == _pose.gameObject)
-                continue;
-            _spheres[i] = sphere.gameObject;
-            //set the position of the sphere
-            sphere.localPosition = new Vector3(i, 0, 0);
-            i++;
-        }
-        //set spawned to true
-        _spawned = true;
     }
     //gameobject sphere 34
     private GameObject sphere34;
@@ -545,9 +368,9 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
                 // Specify the rotation angle in degrees
                 //float rotationAngle = -20f; // You can adjust the angle as desired
                 //rotation center in 0 0
-                ////Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
+                Vector3 rotationCenter = new Vector3(224.1144f/_scale, -26f/_scale, -359.3866f/_scale); // You can adjust the center of rotation as desired
                 // Rotate the sphere around the center of rotation
-                ////newTransform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
+                newTransform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
                 //move sphere by Offset
                 newTransform.localPosition = new Vector3(sphere.transform.localPosition.x + xOffset, sphere.transform.localPosition.y + yOffset, sphere.transform.localPosition.z + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
                 //sphere lerp to newTransform
@@ -570,8 +393,6 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
     }
 
     public bool _rotate90 = false;
-    [SerializeField] private float _earsOffset = 0.1f;
-    private float _originalEarsOffset = 0.1f;
     private void MoveSpheres()
     {
         try{
@@ -617,43 +438,14 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
         //find y of bottom left foot
         float footY = _spheres[23].transform.localPosition.y;
         float footX = _spheres[23].transform.localPosition.x;
-        if(_POSITION_WITH_CAMERA_PERSPECTIVE){
-            //move father z like _zDistance * _zDistanceMultiplier
-            _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x, _personCollider.transform.localPosition.y, _zDistance * _zDistanceMultiplier);
-            //move father y to make it so _spheres[23].transform.localPosition.y; goes to absolute 0
-            _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x, -footY, _personCollider.transform.localPosition.z);
-            //use footX and perspective correction to move father x
-            _personCollider.transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), _personCollider.transform.localPosition.y, _personCollider.transform.localPosition.z);
-            _personCollider.transform.localPosition = new Vector3(_personCollider.transform.localPosition.x * _poseMultiplier, _personCollider.transform.localPosition.y, _personCollider.transform.localPosition.z * _poseMultiplier);
-            _personCollider.transform.position = new Vector3(-_personCollider.transform.position.x, _personCollider.transform.position.y, -_personCollider.transform.position.z);
-            //y angle = _cameraTransform.eulerAngles.y clamped between -90 and 90
-            float yAngle = _cameraTransform.eulerAngles.y - 180;
-            yAngle = Mathf.Clamp(yAngle, -90f, 90f);
-            _yAngle = yAngle;
-            //rotate around 0 by _cameraTransform y angle
-            _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, yAngle);
-        }
+        //move father z like _zDistance * _zDistanceMultiplier
+        transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, _zDistance * _zDistanceMultiplier);
+        //move father y to make it so _spheres[23].transform.localPosition.y; goes to absolute 0
+        transform.localPosition = new Vector3(transform.localPosition.x, -footY, transform.localPosition.z);
+        //use footX and perspective correction to move father x
+        transform.localPosition = new Vector3(footX*(_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         //transform.localPosition = new Vector3((_zDistance/_perspectiveCorrection), transform.localPosition.y, transform.localPosition.z);
         
-        //_AIM_POSE_CONFIRMATION_AREA
-        if(_AIM_POSE_CONFIRMATION_AREA && _POSITION_WITH_CAMERA_PERSPECTIVE){
-            //orient _poseConfirmationAreaTransform like the vector going from 0 0 0 to personcollider
-            Vector3 direction = _personCollider.transform.position - Vector3.zero;
-            //debug ray 
-            Debug.DrawRay(Vector3.zero, direction, Color.red);
-            //get angle between direction and Vector3.forward
-            float angle = Vector3.SignedAngle(direction, Vector3.forward, Vector3.up);
-            //set _poseConfirmationAreaTransform rotation to angle
-            _poseConfirmationAreaTransform.rotation = Quaternion.Euler(0, -angle, 0);
-        }
     }
-    public float _poseMultiplier = 200f;
-    public GameObject _personCollider;
-    //public camera transform
-    public Transform _cameraTransform;
-    public Transform _poseConfirmationAreaTransform;
-    public float _yAngle;
-    public bool _POSITION_WITH_CAMERA_PERSPECTIVE = false;
-    public bool _AIM_POSE_CONFIRMATION_AREA = true;
 }
 

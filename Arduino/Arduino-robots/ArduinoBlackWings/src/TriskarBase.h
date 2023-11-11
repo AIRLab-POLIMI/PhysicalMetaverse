@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-#define MAX_DC_MOTOR_SIGNAL 100 //255 
+#define MAX_DC_MOTOR_SIGNAL 160 //255 
 #define NMOTOR 3
 #define DEFAULT_MIN_SPEED 3
 

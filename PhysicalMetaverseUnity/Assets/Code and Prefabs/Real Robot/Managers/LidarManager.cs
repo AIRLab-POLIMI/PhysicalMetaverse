@@ -15,6 +15,8 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private bool _MERGE_WALLS = false;
     [SerializeField] private bool _LIDAR_TRACKING = true;
     [SerializeField] private bool _PERSON_TRACKING = true;
+    //_CENTER_JUMP_DISTANCE
+    [SerializeField] private bool _CENTER_JUMP_DISTANCE = true;
     [SerializeField] private bool _WEIGH_DISTANCE = false; //COMMENTED IN PillarManager
     [SerializeField] private bool _UPDATE_PILLAR_BEHAVIOUR = true;
     [SerializeField] private bool _STATION_TO_CLOSEST = true;
@@ -91,12 +93,25 @@ public class LidarManager : Monosingleton<LidarManager>
     [SerializeField] private int _personWeight = 2;
     //_movementWeight
     [SerializeField] private int _movementWeight = 3;
+    //_poseWeight
+    [SerializeField] private int _poseWeight = 20;
     [SerializeField] private GameObject personCollider;
     [SerializeField] private GameObject _personJumpDistance;
     [SerializeField] private float _personPillarDown = -3f;
     [SerializeField] private float _pillarLerpSpeed = 0.1f;
     [SerializeField] private float _backUpReducer = 3f;
     [SerializeField] private int _PERSON_ID = 9;
+    //serialize _odometryPersonColliderScale
+    [SerializeField] private float _odometryPersonColliderScale = 18f;
+    //serialize _odometryPersonJumpDistance
+    [SerializeField] private float _odometryPersonJumpDistance = 4f;
+    //serialize _basePersonJumpDistance
+    [SerializeField] private float _basePersonJumpDistance = 16f;
+    //setter
+    public void SetBasePersonJumpDistance(float value){
+        _basePersonJumpDistance = value;
+    }
+
 
     [Space]
     [Space]
@@ -147,7 +162,9 @@ public class LidarManager : Monosingleton<LidarManager>
     private void Start()
     {
         _poseManager = PoseManager.Instance;
-        //if _DISABLE_LIDAR disable this
+
+        _personColliderBaseScale = new Vector3(personCollider.transform.localScale.x, personCollider.transform.localScale.y, personCollider.transform.localScale.z);
+        _personColliderOdometryScaleVector = new Vector3(_odometryPersonColliderScale, _odometryPersonColliderScale, _odometryPersonColliderScale);
         if(_DISABLE_LIDAR)
             this.gameObject.SetActive(false);
         //instantiate blob tracker
@@ -208,6 +225,7 @@ public class LidarManager : Monosingleton<LidarManager>
         foreach(GameObject pillar in _points){
             pillar.GetComponent<PillarManager>().SetPersonWeight(_personWeight);
             pillar.GetComponent<PillarManager>().SetMovementWeight(_movementWeight);
+            pillar.GetComponent<PillarManager>().SetPoseWeight(_poseWeight);
         }
         
         DisableBackPillars();
@@ -332,15 +350,13 @@ public class LidarManager : Monosingleton<LidarManager>
 
         if (_SMOOTH_WITH_ODOMETRY)
             Odometry();
-    }
 
-    void Update()
-    {
         if(_LIDAR_TRACKING)
             LidarTracking();
         if(_PERSON_TRACKING)
             PersonTracking();
     }
+
     
     void UpdatePillarBehaviour(float personPillarDown, float pillarLerpSpeed, float backUpReducer){
         _UPDATE_PILLAR_BEHAVIOUR = false;
@@ -532,8 +548,6 @@ public class LidarManager : Monosingleton<LidarManager>
         //point = trueMiddleTransform;
         //lerp corresponding blobtracker at point
         ////_personTracker.transform.position = Vector3.Lerp(////_personTracker.transform.position, point.position, _lidarTrackingLerp);
-        //destination equal to point minus 1 in direction of vector zero
-        Vector3 destination = point.position - point.position.normalized * _humanVizOffset;
         //if distance is less than maxjumpdistance lerp
         ////if(Vector3.Distance(_poseManager.GetRotoTraslation().transform.position, destination) < _maxPersonJumpDistance){
             ////_poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
@@ -555,20 +569,58 @@ public class LidarManager : Monosingleton<LidarManager>
             //GameObject personCollider = GameObject.Find("PersonCollider");
             //personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp);
             //no lerp
-        if(Vector3.Distance(personCollider.transform.position, point.position) < _maxPersonJumpDistance && Vector3.Distance(point.position, this.transform.position) > _closestPersonDistanceThreshold){
-            //personCollider.transform.position = point.position;
-            //lerp
-            personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
-            //move with constant speed
-            //personCollider.transform.position = Vector3.MoveTowards(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
-            ////_poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
-            _poseManager.LerpRotoTraslationPosition(destination, _lidarTrackingLerp);
+        if(!_CENTER_JUMP_DISTANCE){
+            if(Vector3.Distance(personCollider.transform.position, point.position) < _maxPersonJumpDistance && Vector3.Distance(point.position, this.transform.position) > _closestPersonDistanceThreshold){
+                //personCollider.transform.position = point.position;
+                //lerp
+                ////personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
+                _lastValidPosition = point.position;
+                //move with constant speed
+                //personCollider.transform.position = Vector3.MoveTowards(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
+                ////_poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
+                ///
+                ////_poseManager.LerpRotoTraslationPosition(destination, _lidarTrackingLerp);
+                //move to same
+                _personJumpDistance.transform.position = personCollider.transform.position;
+            }
         }
+        else{
+            if(Vector3.Distance(Vector3.zero, point.position) < _maxPersonJumpDistance && Vector3.Distance(point.position, this.transform.position) > _closestPersonDistanceThreshold){
+                //personCollider.transform.position = point.position;
+                //lerp
+                ////personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
+                _lastValidPosition = point.position;
+                //move with constant speed
+                //personCollider.transform.position = Vector3.MoveTowards(personCollider.transform.position, point.position, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
+                ////_poseManager.SetRotoTraslationPosition(Vector3.Lerp(_poseManager.GetRotoTraslation().transform.position, destination, _lidarTrackingLerp));
+                ///
+                ////_poseManager.LerpRotoTraslationPosition(destination, _lidarTrackingLerp);
+                //move to 0
+                _personJumpDistance.transform.position = Vector3.zero;
+            }
+        }
+        //destination equal to point minus 1 in direction of vector zero
+        Vector3 destination = _lastValidPosition - _lastValidPosition.normalized * _humanVizOffset;
+        personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, _lastValidPosition, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
+        //if personCollider.transform.position magnitude is less than _closestPersonDistanceThreshold resize it to _closestPersonDistanceThreshold
+        if(personCollider.transform.position.magnitude < _closestPersonDistanceThreshold){
+            personCollider.transform.position = personCollider.transform.position.normalized * _closestPersonDistanceThreshold;
+        }
+        _poseManager.LerpRotoTraslationPosition(destination, _lidarTrackingLerp);
 
         //scale _personJumpDistance as _maxPersonJumpDistance
         _personJumpDistance.transform.localScale = new Vector3(_maxPersonJumpDistance * 7.5f, _maxPersonJumpDistance * 7.5f, _maxPersonJumpDistance * 7.5f);
-        //move to same
-        _personJumpDistance.transform.position = personCollider.transform.position;
+
+        //if _odometryManager GetOdometryActive is true set personcollider scale to _odometryPersonColliderScale
+        if(_odometryManager.GetOdometryActive()){
+            personCollider.transform.localScale = _personColliderOdometryScaleVector;
+            _maxPersonJumpDistance = _odometryPersonJumpDistance;
+        }
+        else{
+            personCollider.transform.localScale = _personColliderBaseScale;
+            _maxPersonJumpDistance = _basePersonJumpDistance;
+        }
+        _maxPersonJumpDistance = Math.Abs(50f - _biggestBlobSize/20f)/3f;
             //position personCollider at point distance in direction of trueMiddleTransform
             //personCollider.transform.position = trueMiddleTransform.position.normalized * point.position.magnitude;
             
@@ -576,7 +628,9 @@ public class LidarManager : Monosingleton<LidarManager>
         ////_personTracker.GetComponent<MeshRenderer>().enabled = true;
         //_humanViz.GetComponent<MeshRenderer>().enabled = true;
     }
-
+    private Vector3 _personColliderBaseScale;
+    private Vector3 _personColliderOdometryScaleVector;
+    private Vector3 _lastValidPosition = new Vector3(10,0,0);
     public float _colliderLerpSpeedMultiplier = 4f;
     public float _closestPersonDistanceThreshold = 1f;
     public float _checkPercent = 0.7f;

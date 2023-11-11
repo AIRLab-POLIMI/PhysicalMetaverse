@@ -23,10 +23,12 @@ public class PillarManager : MonoBehaviour
     [SerializeField] private int _personWeight = 2;
     //_movementWeight
     [SerializeField] private int _movementWeight = 3;
+    //_DISABLE_MOVEMENT_WITH_ODOMETRY
+    [SerializeField] private bool _DISABLE_MOVEMENT_WITH_ODOMETRY = false;
     //serializefield alternate material
     [SerializeField] private Material _alternateMaterial = null;
     //serializefield bool debug material
-    [SerializeField] private bool _debugMaterial = false;
+    public bool _debugMaterial = false;
     //private original material
     private Material _originalMaterial = null;
     //private movement detection material serialize
@@ -48,14 +50,19 @@ public class PillarManager : MonoBehaviour
     private int _trackingFrame = 0;
     [SerializeField] private int _materialRestoreDeltaFrame = 2;
     [SerializeField] private int _latestDisableMeshFrame = 0;
+    private PoseReceiver _poseReceiver;
     // Start is called before the first frame update
     void Start()
     {
+        _poseReceiver = PoseReceiver.Instance;
         //if debug material is true
         if(_debugMaterial){
             //set material to alternate material
             GetComponent<Renderer>().material = _alternateMaterial;
             _originalMaterial = _alternateMaterial;
+        }
+        else{
+            _alternateMaterial = new Material(GetComponent<Renderer>().material);
         }
     }
 
@@ -77,12 +84,21 @@ public class PillarManager : MonoBehaviour
         _movementWeight = weight;
     }
 
+    [SerializeField] private int _poseWeight = 0;
+    //set _poseWeight
+    public void SetPoseWeight(int weight){
+        _poseWeight = weight;
+    }
+
     public void SetPillarId(int id){
         _pillarId = id;
         //ad id to end of name
         gameObject.name += id.ToString();
     }
     
+    public float _relativeDistance = 0f;
+    public float _movementTrackingThresholdClose = 1.7f;
+    public int _resetFrameCount = 4;
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -96,7 +112,7 @@ public class PillarManager : MonoBehaviour
         }
         GetPersonTrackingWeight();
         //if frame count is even
-        if(Time.frameCount % 2 == 0){
+        if(Time.frameCount % _resetFrameCount == 0){
             ResetValues();
         }
         if(Time.frameCount - _trackingFrame > _materialRestoreDeltaFrame){
@@ -107,9 +123,10 @@ public class PillarManager : MonoBehaviour
         float relativeDistance = (float)Math.Max(_currentPositionMagnitude, _prevPositionMagnitude) / (float)Math.Min(_currentPositionMagnitude, _prevPositionMagnitude);
         //if magnitude of difference between prevposition and current position is greater than _movementTrackingThreshold set material to _movementDetectionMaterial
         //if(Vector3.Magnitude(transform.position - _prevPosition) > _movementTrackingThreshold){
+        //_relativeDistance = relativeDistance;
         if(relativeDistance > _movementTrackingThreshold){
             //set material to _movementDetectionMaterial
-            if(!OdometryManager.Instance.GetOdometryActive()){//&& _currentPositionMagnitude < _prevPositionMagnitude){
+            if(!OdometryManager.Instance.GetOdometryActive() || !_DISABLE_MOVEMENT_WITH_ODOMETRY){//&& _currentPositionMagnitude < _prevPositionMagnitude){
                 if(_debugMaterial)
                     GetComponent<Renderer>().material = _movementDetectionMaterial;
                 //if all OdometryManager instance is false set this station id to 9
@@ -153,6 +170,7 @@ public class PillarManager : MonoBehaviour
         _stationId = -1;
         _movementDetected = false;
         _personColliding = false;
+        _poseDetected = false;
         LidarManager.Instance.SetBlobAt(_pillarId, -1);
         LidarManager.Instance.SetPersonBlobAt(_pillarId, 0);
         //set collisions to false
@@ -160,19 +178,28 @@ public class PillarManager : MonoBehaviour
         _collisionPillarRight = false;
     }
 
+    private int _poseConfirmationWeight = 0;
+    //serialize bool _poseDetected
+    [SerializeField] private bool _poseDetected = false;
     public int GetPersonTrackingWeight(){
         _personTrackingWeight = 0;
+        if(_poseDetected){
+            _poseConfirmationWeight = _poseWeight;
+        }
+        else{
+            _poseConfirmationWeight = 0;
+        }
         //if _personColliding return 1
         if(_personColliding){
-            _personTrackingWeight = _personWeight;
+            _personTrackingWeight = _personWeight + _poseConfirmationWeight;
             return _personTrackingWeight;// * (int)_distance;
         }
         //if _movementDetected return 2
         if(_movementDetected){
-            _personTrackingWeight = _movementWeight;
+            _personTrackingWeight = _movementWeight + _poseConfirmationWeight + _poseConfirmationWeight/2;
             return _personTrackingWeight;// * (int)_distance;
         }
-        return _personTrackingWeight;// * (int)_distance;
+        return _personTrackingWeight + _poseConfirmationWeight;// * (int)_distance;
     }
 
     void OnTriggerStay(Collider other){
@@ -218,7 +245,7 @@ public class PillarManager : MonoBehaviour
             }*/
         }
         
-        if(other.gameObject.CompareTag("Person")){
+        if(other.gameObject.CompareTag("Person") && _stationId<0){
             //_latestDisableMeshFrame = Time.frameCount;
             //disable mesh
             //GetComponent<MeshRenderer>().enabled = false;
@@ -226,6 +253,9 @@ public class PillarManager : MonoBehaviour
             _stationId = 9;
             _personColliding = true;
             LidarManager.Instance.SetPersonBlobAt(_pillarId, GetPersonTrackingWeight());
+            //LidarManager.Instance.SetBasePersonJumpDistance(10f);
+            //set other's scale to 10
+            //other.gameObject.transform.localScale = new Vector3(10, 10, 10);
             if(_debugMaterial)
                 GetComponent<Renderer>().material = _personTrackingMaterial;
             //set y to _personPillarDown
@@ -233,6 +263,11 @@ public class PillarManager : MonoBehaviour
             //lerp
             //transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, _personPillarDown, transform.position.z), _pillarLerpSpeed);
             //TODO CHANGE HERE FOR PILLAR LERP
+        }
+
+        //if tag PCA _poseDetected
+        if(other.gameObject.CompareTag("PCA")){
+            _poseDetected = true;
         }
 
         //if collision with Pillar tag check if id greater or less than this and set left and right booleans

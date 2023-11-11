@@ -122,6 +122,9 @@ public class EvangelionPoseController : VizController
         {
             targetOffset = GetDistanceRatio(poseMidpoint, 32, 32)/2;
             colorSlider = LookingAt.runtimeValue;
+            //if _poseManager person detected is false set lookingat to 0
+            ////if(!_poseManager.GetPersonDetected())
+                ////colorSlider = 0f;
         }
 
         offset = Mathf.Lerp(offset, targetOffset, Time.deltaTime / 2);
@@ -195,7 +198,7 @@ public class EvangelionPoseController : VizController
 
         //swarmDimension = 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f);
         //lerp
-        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_poseManager.GetDistanceFromCamera() + (1f - _neutralDistance), 3f), Time.deltaTime * 10f);
+        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_poseManager.GetDistanceFromCamera(), 4f) + 0.5f, Time.deltaTime * 10f);
         
 
     }

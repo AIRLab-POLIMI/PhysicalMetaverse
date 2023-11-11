@@ -18,7 +18,6 @@ def detectQR():
         polygon_Points=polygon_Points.reshape(-1,1,2)
         rect_Points= barcode.rect
         cv2.polylines(frame,[polygon_Points],True,color, 3)
-        cv2.putText(frame, barcode.data.decode('utf-8') , (rect_Points[0],rect_Points[1]), cv2.FONT_HERSHEY_PLAIN, 0.9, color, 2)
 
         #draw the 4 points as big dots
         #for point in polygon_Points:
@@ -57,6 +56,9 @@ def detectQR():
             else:
                 # Actual size of the square in the real world (e.g., in meters)
                 actual_square_size_meters = 0.2  # Replace this with the actual measurement
+            
+            
+            cv2.putText(frame, str(barcodeValue) , (rect_Points[0],rect_Points[1]), cv2.FONT_HERSHEY_PLAIN, 0.9, color, 2)
 
             # Calculate the angular size in radians
             angular_size_rad = 2 * math.atan(length_to_measure / (2 * focal_length_mm))

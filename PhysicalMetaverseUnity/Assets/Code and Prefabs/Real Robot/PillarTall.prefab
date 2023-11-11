@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _distance: 1
-  _disableColliderDistance: 1.2
+  _disableColliderDistance: 1
   _blobEnabled: 1
   _disableMesh: 1
   _pillarId: 0
@@ -59,6 +59,7 @@ MonoBehaviour:
   _personTrackingWeight: 0
   _personWeight: 2
   _movementWeight: 3
+  _DISABLE_MOVEMENT_WITH_ODOMETRY: 1
   _alternateMaterial: {fileID: 2100000, guid: de6d33c8572f86c4ab1bc13221a28da9, type: 2}
   _debugMaterial: 1
   _movementDetectionMaterial: {fileID: 2100000, guid: b3fda3fed0778e44184df09b6215f15d,
@@ -72,6 +73,11 @@ MonoBehaviour:
   _movementTrackingThreshold: 1.1
   _materialRestoreDeltaFrame: 10
   _latestDisableMeshFrame: 0
+  _poseWeight: 0
+  _relativeDistance: 0
+  _movementTrackingThresholdClose: 9999
+  _resetFrameCount: 4
+  _poseDetected: 0
   _personPillarDown: -3
   _pillarLerpSpeed: 0.1
   _backUpReducer: 3

@@ -19,6 +19,8 @@ TagManager:
   - FedeHand
   - Sphere
   - Pillar
+  - PCA
+  - PIA
   layers:
   - Default
   - TransparentFX

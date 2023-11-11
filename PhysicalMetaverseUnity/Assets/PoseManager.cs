@@ -39,6 +39,9 @@ public class PoseManager : Monosingleton<PoseManager>
     //current viz string
     [SerializeField] private VizController _currentVizController;
 
+    //serialize _rototraslationYOffset
+    [SerializeField] private float _rototraslationYOffset = 0f;
+
 
     [ContextMenu("Next Viz")]
     /*public void NextViz(){
@@ -157,6 +160,7 @@ public class PoseManager : Monosingleton<PoseManager>
 
     public void LerpRotoTraslationPosition(Vector3 position, float lerpSpeed)
     {
+        position.y = _rototraslationYOffset;
         _rotoTraslation.position = Vector3.Lerp(_rotoTraslation.position, position, lerpSpeed);
     }
 
@@ -199,6 +203,7 @@ public class PoseManager : Monosingleton<PoseManager>
                 }
             }
         }
+        _rototraslationYOffset = _rotoTraslation.localPosition.y;
         NextViz();
         NextViz();
     }
