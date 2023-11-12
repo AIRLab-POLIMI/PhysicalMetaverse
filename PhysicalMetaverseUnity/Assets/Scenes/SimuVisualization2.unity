@@ -43097,7 +43097,7 @@ PrefabInstance:
     - target: {fileID: 376172146433703723, guid: f157f0afc72c7dc4e95458381ab6e58c,
         type: 3}
       propertyPath: _rotate90
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 376172146433703723, guid: f157f0afc72c7dc4e95458381ab6e58c,
         type: 3}
@@ -43107,7 +43107,7 @@ PrefabInstance:
     - target: {fileID: 376172146433703723, guid: f157f0afc72c7dc4e95458381ab6e58c,
         type: 3}
       propertyPath: MESH_ENABLED
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 376172146433703723, guid: f157f0afc72c7dc4e95458381ab6e58c,
         type: 3}
@@ -43152,7 +43152,7 @@ PrefabInstance:
     - target: {fileID: 376172146433703723, guid: f157f0afc72c7dc4e95458381ab6e58c,
         type: 3}
       propertyPath: _POSITION_WITH_CAMERA_PERSPECTIVE
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 376172146433703726, guid: f157f0afc72c7dc4e95458381ab6e58c,
         type: 3}
