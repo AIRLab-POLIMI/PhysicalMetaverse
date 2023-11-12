@@ -571,9 +571,10 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
 
     public bool _rotate90 = false;
     [SerializeField] private float _earsOffset = 0.1f;
-    private float _originalEarsOffset = 0.1f;
+    private float _originalEarsOffset = 0.5f;
     private void MoveSpheres()
     {
+        _earsOffset = _originalEarsOffset / (_poseManager.GetDistanceFromCamera()/0.3f);
         try{
             //for each sphere
             for (int i = 0; i < parsedData.Length; i++)
@@ -591,6 +592,8 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
                 //rotate spheres position by 45 degrees with fulcrum at 
                 Vector3 rotationAxis = Vector3.right; // You can adjust the axis according to your requirements
 
+
+                /*   //OLD POSE CAMERA, WORKS BUT NO GAZE
                 // Specify the rotation angle in degrees
                 //float rotationAngle = -20f; // You can adjust the angle as desired
                 //rotation center in 0 0
@@ -598,9 +601,28 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
                 // Rotate the sphere around the center of rotation
                 sphere.transform.RotateAround(rotationCenter, rotationAxis, rotationAngle);
                 //move sphere by Offset
-                sphere.transform.localPosition = new Vector3(((sphere.transform.localPosition.x * _xScale) + xOffset), (sphere.transform.localPosition.y * _yScale) + yOffset, (sphere.transform.localPosition.z * _zScale) + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
+                sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, (sphere.transform.localPosition.z * _zScale) + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
                 //move gradually
                 //sphere.transform.localPosition = Vector3.Lerp(sphere.transform.localPosition, new Vector3(parsedData[i][0], parsedData[i][1], parsedData[i][2]), 0.05f);
+                */
+
+                if (i == 0 || i > 10)
+                {
+                    //move sphere by Offset
+                    sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, (sphere.transform.localPosition.z * _zScale) + zOffset);// + 1/sphere34.transform.localPosition.y * zMultiplier);
+                    //sphere.transform.localPosition = sphere.transform.localPosition + _rootOffset;
+                }
+                else{
+                    //if i is not 7 or 8
+                    if(i != 7 && i != 8)
+                        //set z as z of nose
+                        //move sphere by Offset
+                        sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, _spheres[0].transform.localPosition.z);
+                    else
+                        //move sphere by Offset
+                        sphere.transform.localPosition = new Vector3((sphere.transform.localPosition.x * _xScale) + xOffset, (sphere.transform.localPosition.y * _yScale) + yOffset, _spheres[0].transform.localPosition.z + _earsOffset);
+                    //sphere.transform.localPosition = new Vector3(sphere.transform.localPosition.x + _rootOffset.x, sphere.transform.localPosition.y + _rootOffset.y, sphere.transform.localPosition.z);
+                }
 
             }
         }

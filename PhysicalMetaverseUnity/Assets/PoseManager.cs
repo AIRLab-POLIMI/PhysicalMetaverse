@@ -506,13 +506,16 @@ public class PoseManager : Monosingleton<PoseManager>
     [SerializeField] private float _exitX = 5.9f;
     private void CalculatePersonDetected()
     {
+        /*MIRROR
         //if abs x less than _exitX
         if(Mathf.Abs(_rotoTraslation.localPosition.x) < _exitX){
             _personDetected = true;
         }
         else{
             _personDetected = false;
-        }
+        }*/
+        //get from posereceiver
+        _personDetected = _poseReceiver.GetPersonDetected();
     }
 
     [SerializeField] private float _rotationOffset = 0f;
