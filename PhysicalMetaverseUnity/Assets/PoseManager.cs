@@ -160,6 +160,11 @@ public class PoseManager : Monosingleton<PoseManager>
             _pillarMeshDisabler.SetActive(false);
         }
     }
+
+    //getviz
+    public Viz GetViz(){
+        return _currentViz;
+    }
     
 
     public Dictionary<string, Transform> GetPoseJoints()

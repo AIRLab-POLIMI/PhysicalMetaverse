@@ -14,6 +14,7 @@ public class EvangelionPoseController : VizController
     
     [SerializeField] private FloatSO LookingAt;
     [SerializeField] private float _quantityOfMovement;
+    [SerializeField] private float _quantityOfMovementMultiplier = 0.3f;
     
     [SerializeField] private FloatSO distanceFromCenter;
 
@@ -91,22 +92,39 @@ public class EvangelionPoseController : VizController
     [SerializeField] private float _scaledTime = 0f;
     private void Update()
     {
-        _quantityOfMovement = _poseManager.GetQuantityOfMovement();
-        if(_HIDE){
-            Hide(_hideStatus);
+        if(_poseManager.GetPersonDetected()){
+            _quantityOfMovement = _poseManager.GetQuantityOfMovement() * _quantityOfMovementMultiplier;
+            if(_HIDE){
+                Hide(_hideStatus);
+            }
+            //PARAMETERS:
+            //-DistanceFromCenter 
+            //-QtyOfMovement-> 0 to 0.3 circa
+            //-LookingAt-> 0 to 1
+            //-Pose Midpoint -> 0 to max converted angle (circa 60)
+            /*
+            float amplitude = 20f - (1f * distanceFromCenter.runtimeValue);    // the amplitude of the sine wave
+            float frequency = 1f + 5f * (QtyOfMovement.runtimeValue);    // the frequency of the sine wave
+            float speed = 1f + (QtyOfMovement.runtimeValue * 10f);        // the speed at which the object moves up and down
+            float lookingAtElaborated = 1 - Math.Abs(LookingAt.runtimeValue - 0.5f);
+            */
+            UpdateValues();
         }
-        //PARAMETERS:
-        //-DistanceFromCenter 
-        //-QtyOfMovement-> 0 to 0.3 circa
-        //-LookingAt-> 0 to 1
-        //-Pose Midpoint -> 0 to max converted angle (circa 60)
-        /*
-        float amplitude = 20f - (1f * distanceFromCenter.runtimeValue);    // the amplitude of the sine wave
-        float frequency = 1f + 5f * (QtyOfMovement.runtimeValue);    // the frequency of the sine wave
-        float speed = 1f + (QtyOfMovement.runtimeValue * 10f);        // the speed at which the object moves up and down
-        float lookingAtElaborated = 1 - Math.Abs(LookingAt.runtimeValue - 0.5f);
-        */
-        UpdateValues();
+        else{
+            //_quantityOfMovement = 0f;
+            //lerp
+            _quantityOfMovement = Mathf.Lerp(_quantityOfMovement, 0f, Time.deltaTime * speed);
+            //distance from center = 20
+            //distanceFromCenter.runtimeValue = 20f;
+            //lerp
+            distanceFromCenter.runtimeValue = Mathf.Lerp(distanceFromCenter.runtimeValue, _neutralDistance, Time.deltaTime * _distanceFromCenterSpeed);
+            //lookingat = 0
+            //LookingAt.runtimeValue = 0f;
+            //lerp
+            LookingAt.runtimeValue = Mathf.Lerp(LookingAt.runtimeValue, 0f, Time.deltaTime * speed);
+
+        }
+        
         int poseMidpoint = -1;
         
         if(MinConvertedAngle.runtimeValue != -1)
@@ -138,7 +156,7 @@ public class EvangelionPoseController : VizController
         
         
         if(!_SPEED_MODE)
-            swarmDimension = _quantityOfMovement * 5;
+            swarmDimension = _quantityOfMovement;
 
 
 
@@ -161,14 +179,17 @@ public class EvangelionPoseController : VizController
                 new Vector3(_points[i].transform.position.x, y, _points[i].transform.position.z);
                 */
             //change time with timeMultiplier
-            _scaledTime = _poseManager.GetScaledTime();
+            _scaledTime = _poseManager.GetScaledTime() * _quantityOfMovementMultiplier;
             _points[i].transform.position = new Vector3(_points[i].transform.position.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_scaledTime + i * offset)), _points[i].transform.position.z);
             _points[i].transform.localScale = new Vector3(1, swarmDimension, 1);
             _points[i].GetComponent<Renderer>().material.color = LerpColor(color1, color3, colorSlider);
-
         }
+
     }
     [SerializeField] private float _distanceFromCenterMultiplier = 1f;
+    [SerializeField] private float _distanceFromCenterSpeed = 1f;
+    //camera transform
+    [SerializeField] private Transform _cameraTransform;
     //serialize _baseAmplitude
     [SerializeField] private float _baseAmplitude = 20f;
     //lookingatmultiplier
@@ -185,8 +206,10 @@ public class EvangelionPoseController : VizController
     
 
     private void UpdateValues(){
-        // get distanceFromCenter.runtimeValue from odileviz x position abs
-        distanceFromCenter.runtimeValue = Mathf.Abs(_poseManager.GetRotoTraslation().position.x) * _distanceFromCenterMultiplier;
+        //distanceFromCenter = angle between forward and rototrasaltion position
+        //distanceFromCenter.runtimeValue = Vector3.Angle(Vector3.forward, _poseManager.GetRotoTraslation().position) * _distanceFromCenterMultiplier;
+        //lerp
+        distanceFromCenter.runtimeValue = Mathf.Lerp(distanceFromCenter.runtimeValue, Vector3.Angle(_cameraTransform.forward, -_poseManager.GetRotoTraslation().position) * _distanceFromCenterMultiplier, Time.deltaTime * _distanceFromCenterSpeed);
         //LookingAt 
         //_odileLookAngle from _odileViz GetLookAngle
         _odileLookAngle = _poseManager.GetHeadAngleY();
@@ -198,7 +221,7 @@ public class EvangelionPoseController : VizController
 
         //swarmDimension = 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f);
         //lerp
-        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_poseManager.GetDistanceFromCamera(), 4f) + 0.5f, Time.deltaTime * 10f);
+        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_poseManager.GetDistanceFromCamera(), 4f) + 0.5f, Time.deltaTime * speed);
         
 
     }

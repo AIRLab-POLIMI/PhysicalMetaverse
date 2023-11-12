@@ -322,7 +322,9 @@ public class PoseReceiver : Monosingleton<PoseReceiver>
 
         //if time since _prevInvalidatedTime is more than poseInvalidationTime _poseManager ShowViz false
         if(Time.time - _prevInvalidatedTime > _poseInvalidationTime){
-            _poseManager.ShowViz(false);
+            //if viz is not Evangelion
+            if(_poseManager.GetViz() != PoseManager.Viz.Evangelion)
+                _poseManager.ShowViz(false);
         }
         else{
             _poseManager.ShowViz(true);
