@@ -8,6 +8,8 @@ public class DOFController : MonoBehaviour
     [SerializeField] private string _controlledAngle = "x";
     //variable float angle
     [SerializeField] private float _angle = 0f;
+    //deltaangle
+    [SerializeField] private float _deltaAngle = 0f;
     [SerializeField] private float _sensitivity = 1f;
     //bool active
     [SerializeField] private bool _active = true;
@@ -16,7 +18,7 @@ public class DOFController : MonoBehaviour
     [SerializeField] private bool _upsideDownFix = false;
     //private initial quaternion rotation
     private Quaternion _initialRotation;
-    private float _angleOffset = 0f;
+    [SerializeField] private float _angleOffset = 0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -71,18 +73,21 @@ public class DOFController : MonoBehaviour
                     transform.localEulerAngles = new Vector3(Mathf.LerpAngle(transform.localEulerAngles.x, _angle + _angleOffset, _lerpSpeed), transform.localEulerAngles.y, transform.localEulerAngles.z);
                 else
                     transform.localEulerAngles = new Vector3(_angle + _angleOffset, transform.localEulerAngles.y, transform.localEulerAngles.z);
+                _deltaAngle = transform.localEulerAngles.x;
             }
             if(_controlledAngle == "y"){
                 if(_lerp)
                     transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, Mathf.LerpAngle(transform.localEulerAngles.y, _angle + _angleOffset, _lerpSpeed), transform.localEulerAngles.z);
                 else
                     transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, _angle + _angleOffset, transform.localEulerAngles.z);
+                _deltaAngle = transform.localEulerAngles.y;
             }
             if(_controlledAngle == "z"){
                 if(_lerp)
                     transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, Mathf.LerpAngle(transform.localEulerAngles.z, _angle + _angleOffset, _lerpSpeed));
                 else
                     transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y, _angle + _angleOffset);
+                _deltaAngle = transform.localEulerAngles.z;
             }
         }
     }
