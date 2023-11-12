@@ -21,6 +21,7 @@ TagManager:
   - Pillar
   - PCA
   - PIA
+  - PMD
   layers:
   - Default
   - TransparentFX

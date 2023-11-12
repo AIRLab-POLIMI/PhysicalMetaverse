@@ -99,6 +99,7 @@ public class PoseManager : Monosingleton<PoseManager>
         _vizGameObjectsList[index].GetComponent<VizController>().SetHide(false);
     }
 
+    [SerializeField] private GameObject _pillarMeshDisabler;
     //ShowViz
     public void ShowViz(bool show){
         //find current in _vizControllerList
@@ -108,11 +109,14 @@ public class PoseManager : Monosingleton<PoseManager>
             //enable
             _vizGameObjectsList[index].SetActive(true);
             _vizGameObjectsList[index].GetComponent<VizController>().SetHide(false);
+            //enable PillarMeshDisabler
+            _pillarMeshDisabler.SetActive(true);
         }
         else{
             //disable
             _vizGameObjectsList[index].SetActive(false);
             _vizGameObjectsList[index].GetComponent<VizController>().SetHide(true);
+            _pillarMeshDisabler.SetActive(false);
         }
     }
     

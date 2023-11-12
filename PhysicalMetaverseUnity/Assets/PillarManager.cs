@@ -167,6 +167,7 @@ public class PillarManager : MonoBehaviour
     }
 
     private void ResetValues(){
+        GetComponent<MeshRenderer>().enabled = true;
         _stationId = -1;
         _movementDetected = false;
         _personColliding = false;
@@ -263,6 +264,12 @@ public class PillarManager : MonoBehaviour
             //lerp
             //transform.position = Vector3.Lerp(transform.position, new Vector3(transform.position.x, _personPillarDown, transform.position.z), _pillarLerpSpeed);
             //TODO CHANGE HERE FOR PILLAR LERP
+        }
+
+        //if tag is PIA disable mesh
+        if(other.gameObject.CompareTag("PMD")){
+            //disable mesh
+            GetComponent<MeshRenderer>().enabled = false;
         }
 
         //if tag PCA _poseDetected

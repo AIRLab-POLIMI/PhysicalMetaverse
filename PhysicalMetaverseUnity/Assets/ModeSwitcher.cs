@@ -16,6 +16,8 @@ public class ModeSwitcher : MonoBehaviour
     public GameObject _simulation;
     //gameobject _pillar
     public GameObject _pillar;
+    //pillarmeshdisabler
+    public GameObject _pillarMeshDisabler;
     //enum containing DEBUG, SIMULATION, REAL
     public enum Mode
     {
@@ -71,6 +73,8 @@ public class ModeSwitcher : MonoBehaviour
             _simulation.SetActive(false);
             //disable _pillar
             _pillar.GetComponent<PillarManager>()._debugMaterial = false;
+            //hide _pillarMeshDisabler mesh
+            _pillarMeshDisabler.GetComponent<MeshRenderer>().enabled = false;
         }
     }
 

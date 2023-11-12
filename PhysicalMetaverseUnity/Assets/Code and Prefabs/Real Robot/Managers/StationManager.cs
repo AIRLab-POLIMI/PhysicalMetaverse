@@ -201,6 +201,8 @@ public class StationManager : Monosingleton<StationManager>
         if(_RESET_STATIONS){
             _RESET_STATIONS = false;
             ResetStations();
+            ResetStations();
+            ResetStations();
         }
 
         if(_UPDATE_STATIONS_BEHAVIOUR){
