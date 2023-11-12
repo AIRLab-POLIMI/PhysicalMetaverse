@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class PoseManager : Monosingleton<PoseManager>
 {
+    //enum viz Odile, Siid, Evangelion
+    public enum Viz{
+        Odile,
+        Siid,
+        Evangelion
+    }
+    [SerializeField] private Viz _currentViz;
+    private Viz _prevViz;
     [SerializeField] private PoseReceiver _poseReceiver;
     [SerializeField] private Transform _rotoTraslation;
     //_camera
@@ -97,6 +105,39 @@ public class PoseManager : Monosingleton<PoseManager>
         //enable
         _vizGameObjectsList[index].SetActive(true);
         _vizGameObjectsList[index].GetComponent<VizController>().SetHide(false);
+    }
+
+    public void SetViz(Viz enumViz){
+        string vizName = "";
+        //switch viz
+        switch (enumViz)
+        {
+            case Viz.Odile:
+                vizName = "VOdileViz";
+                break;
+            case Viz.Siid:
+                vizName = "siid";
+                break;
+            case Viz.Evangelion:
+                vizName = "EvangelionViz";
+                break;
+            default:
+                break;
+        }
+        //find viz in _vizControllerDict
+        VizController viz = _vizControllerDict[vizName];
+        //set current viz to viz
+        _currentVizController = viz;
+        //disable all 
+        foreach (GameObject vizGameObject in _vizGameObjectsList)
+        {
+            //disable
+            vizGameObject.SetActive(false);
+            vizGameObject.GetComponent<VizController>().SetHide(true);
+        }
+        //enable
+        _vizControllerDict[vizName].gameObject.SetActive(true);
+        _vizControllerDict[vizName].SetHide(false);
     }
 
     [SerializeField] private GameObject _pillarMeshDisabler;
@@ -210,6 +251,7 @@ public class PoseManager : Monosingleton<PoseManager>
         _rototraslationYOffset = _rotoTraslation.localPosition.y;
         NextViz();
         NextViz();
+        SetViz(_currentViz);
     }
 
     // Update is called once per frame
@@ -226,6 +268,13 @@ public class PoseManager : Monosingleton<PoseManager>
         CalculateRotoTraslation();
         if(_MIRROR_MODE)
             CalculateParallax();
+
+        //if _currentViz different from _prevViz
+        if(_currentViz != _prevViz){
+            SetViz(_currentViz);
+            _prevViz = _currentViz;
+        }
+
     }
 
     private bool _notPopulated = true;
