@@ -390,14 +390,27 @@ public class StationController : MonoBehaviour
     public void CompleteStation()
     {
         BlinkStation();
+        BlinkStation();
+        BlinkStation();
+        BlinkStation();
+        BlinkStation();
+        //IGNORE MESSAGES THAT ARE TOO CLOSE IN GAME MANAGER
         //id station isright is false send W:10
         if (!_isRight)
         {
+            StationManager.Instance.CompleteWrongStation();
+            StationManager.Instance.CompleteWrongStation();
+            StationManager.Instance.CompleteWrongStation();
+            StationManager.Instance.CompleteWrongStation();
             StationManager.Instance.CompleteWrongStation();
         }
         //else send R:1
         else
         {
+            StationManager.Instance.CompleteRightStation();
+            StationManager.Instance.CompleteRightStation();
+            StationManager.Instance.CompleteRightStation();
+            StationManager.Instance.CompleteRightStation();
             StationManager.Instance.CompleteRightStation();
         }
     }
