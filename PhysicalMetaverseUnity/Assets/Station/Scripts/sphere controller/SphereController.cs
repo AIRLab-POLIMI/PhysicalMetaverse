@@ -120,9 +120,19 @@ public class SphereController : Monosingleton<SphereController>
         StartCoroutine(BlinkSphereCoroutine(_blinkTime));
     }
 
+    [SerializeField] private GameObject _qRInvalidationAreaVeryClose;
     private System.Collections.IEnumerator BlinkSphereCoroutine(float duration)
     {
         float t = 0;
+        //disable _qRInvalidationAreaVeryClose
+        try
+        {
+            _qRInvalidationAreaVeryClose.SetActive(false);
+        }
+        catch (Exception e)
+        {
+            Debug.Log("No qr invalidation area to disable: " + e);
+        }
         while (t < duration && _blinking)
         {
             t += Time.deltaTime;
@@ -133,6 +143,8 @@ public class SphereController : Monosingleton<SphereController>
             //vibrate _rightHandController
             _rightHandController.SendHapticImpulse(0.5f, 0.1f);
         }
+        //enable _qRInvalidationAreaVeryClose
+        _qRInvalidationAreaVeryClose.SetActive(true);
     }
 
     public void StopBlink()
