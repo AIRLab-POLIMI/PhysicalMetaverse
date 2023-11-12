@@ -10,7 +10,7 @@ from classes.util_methods import parse_serial_message, bytes_to_unicode_str
 pygame.init()
 
 # get the current wifi IP address
-_network_channel = NetworkChannel("192.168.0.103")
+_network_channel = NetworkChannel("192.168.1.12")
 # _network_channel = NetworkChannel("172.20.10.3")
 _network_channel.setup_udp()
 
@@ -208,7 +208,9 @@ def idle_tick():
 
 
 def start_running(game_duration_sec):
-    global _running, _start_time, _countdown_seconds, _numRightPressed, clickedBoxes
+    global _running, _start_time, _countdown_seconds, _numRightPressed, clickedBoxes, _ended
+    _ended = False
+    _completedStations.clear()
 
     end_sound.play()
 
@@ -231,12 +233,15 @@ def bad_ending():
 
 
 def good_ending():
+    global _ended
+    _ended = True
     win_sound.play()
     start_idle(True)
 
+_completedStations = []
 
 def running_tick():
-
+    global _ended,_completedStations
     # print(f"[RUNNING] running tick")
 
     # 1 - await for a message from the oculus quest.
@@ -252,14 +257,21 @@ def running_tick():
 
         for key_val_msg in key_val_msgs:
             if key_val_msg.key == _right_pressed_key:
-                print(f"[RUNNING] right btn message received")
-                on_right_btn_pressed(key_val_msg.value)
+                #if value not in completed stations list
+                if key_val_msg.value not in _completedStations:
+                    _completedStations.append(key_val_msg.value)
+                    print(f"[RUNNING] right btn message received")
+                    on_right_btn_pressed(key_val_msg.value)
+                    print(_numRightPressed)
             elif key_val_msg.key == _wrong_pressed_key:
-                print(f"[RUNNING] wrong btn message received with decrease of '{key_val_msg.value}' seconds")
-                on_wrong_btn_pressed(key_val_msg.value)
+                if key_val_msg.value not in _completedStations:
+                    _completedStations.append(key_val_msg.value)
+                    print(f"[RUNNING] wrong btn message received with decrease of '{key_val_msg.value}' seconds")
+                    on_wrong_btn_pressed(key_val_msg.value)
             elif key_val_msg.key == _goodending_key:
-                print(f"[RUNNING] gameover message received")
-                good_ending()
+                if(not _ended):
+                    print(f"[RUNNING] gameover message received")
+                    good_ending()
                 return # exit the function
             elif key_val_msg.key == _start_key:
                 # print(f"[IDLE] start message received - game duration is {key_val_msg.value} seconds")
@@ -270,6 +282,7 @@ def running_tick():
 
     current_time = time.time()
     elapsed_time = current_time - _start_time
+    
     remaining_time = max(_countdown_seconds - int(elapsed_time), 0)
 
     # Calculate minutes and seconds
@@ -291,7 +304,7 @@ def running_tick():
 
     # Break the loop and play end sound when the countdown is done
     # the game is over with a BAD ending
-    if remaining_time <= 0:
+    if remaining_time <= 0 and _numRightPressed < 3:
         bad_ending()
 
 

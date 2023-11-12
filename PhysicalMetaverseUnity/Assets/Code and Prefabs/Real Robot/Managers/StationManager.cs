@@ -92,7 +92,7 @@ public class StationManager : Monosingleton<StationManager>
     //[SerializeField] private TRACKING_DECAY_TIME
     [SerializeField] private float TRACKING_DECAY_TIME = 0.1f;
     [SerializeField] private bool _lerp = false;
-    [SerializeField] private string _rightStationMessage = "R:1";
+    [SerializeField] private string _rightStationKey = "R";
     [SerializeField] private string _wrongStationMessage = "W:10";
     [SerializeField] private int _completedStations = 0;
     private GameObject _sphere;
@@ -319,15 +319,23 @@ public class StationManager : Monosingleton<StationManager>
         }
     }
 
-    public void CompleteRightStation(){
-        NetworkingManager.Instance.SendString(_rightStationMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+    public void CompleteRightStation(int stationId){
+        string message = _rightStationKey + ":" + stationId;
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
         _completedStations++;
         GameManager.Instance.UpdateScore(_completedStations);
     }
     
-    public void CompleteWrongStation(){
-        NetworkingManager.Instance.SendString(_wrongStationMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
-        GameManager.Instance.SubtractTime(ParseTime(_wrongStationMessage));
+    public void CompleteWrongStation(int stationId){
+        string message = "W" + ":" + ((int)(ParseTime(_wrongStationMessage) + stationId));
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        GameManager.Instance.SubtractTime(ParseTime(message));
     }
     
     //parse time from _wrongStationMessage

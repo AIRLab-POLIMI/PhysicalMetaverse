@@ -105,6 +105,9 @@ public class GameManager : Monosingleton<GameManager>
         _gameOver = true;
         _winPanel.SetActive(true);
         NetworkingManager.Instance.SendString(_winMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(_winMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(_winMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(_winMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
     }
 
     private void LoseTheGame(){
@@ -121,6 +124,9 @@ public class GameManager : Monosingleton<GameManager>
     public void ResetTime(){
         //send reset time to python
         string data = "S:" + _gameDurationSeconds.ToString();
+        NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
         NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
         //gamemanager teststationsmanager set _normalisedElapsedTime 0 gameDurationSeconds time string
         _normalisedElapsedTime = 0;

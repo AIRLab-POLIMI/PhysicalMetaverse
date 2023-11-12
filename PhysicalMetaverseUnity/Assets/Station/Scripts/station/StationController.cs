@@ -398,20 +398,12 @@ public class StationController : MonoBehaviour
         //id station isright is false send W:10
         if (!_isRight)
         {
-            StationManager.Instance.CompleteWrongStation();
-            StationManager.Instance.CompleteWrongStation();
-            StationManager.Instance.CompleteWrongStation();
-            StationManager.Instance.CompleteWrongStation();
-            StationManager.Instance.CompleteWrongStation();
+            StationManager.Instance.CompleteWrongStation(_station.GetComponent<SingleStationManager>().GetStationId());
         }
         //else send R:1
         else
         {
-            StationManager.Instance.CompleteRightStation();
-            StationManager.Instance.CompleteRightStation();
-            StationManager.Instance.CompleteRightStation();
-            StationManager.Instance.CompleteRightStation();
-            StationManager.Instance.CompleteRightStation();
+            StationManager.Instance.CompleteRightStation(_station.GetComponent<SingleStationManager>().GetStationId());
         }
     }
 

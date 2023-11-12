@@ -43929,6 +43929,11 @@ PrefabInstance:
       objectReference: {fileID: 903719851}
     - target: {fileID: 3710862982715126311, guid: 35d67e760483357499af078d5fb11f37,
         type: 3}
+      propertyPath: _wrongStationMessage
+      value: W:100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3710862982715126311, guid: 35d67e760483357499af078d5fb11f37,
+        type: 3}
       propertyPath: _orientationTransform
       value: 
       objectReference: {fileID: 835397783}
@@ -44706,6 +44711,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _singleStringDestIp
       value: 192.168.0.102
+      objectReference: {fileID: 0}
+    - target: {fileID: 8637557680593042168, guid: 2609b5b87dfb6384f9747d6ddf4391da,
+        type: 3}
+      propertyPath: _gameManagerPythonIP
+      value: 192.168.1.12
       objectReference: {fileID: 0}
     - target: {fileID: 8637557680593042169, guid: 2609b5b87dfb6384f9747d6ddf4391da,
         type: 3}
