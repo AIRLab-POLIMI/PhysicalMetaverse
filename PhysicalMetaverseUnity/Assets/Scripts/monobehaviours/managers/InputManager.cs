@@ -119,7 +119,7 @@ public class InputManager : Monosingleton<InputManager>
             _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonIp = _jetsonEndpoint.IP.ToString();
             string udpMessage = RoutineController.Instance.GetInitialPositionMsg();
-            udpMessage += "_Ljy:127_Ljx:127";
+            udpMessage += "_Ljy:127_Ljx:127_az:0_ay:0";
             NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
         }
 

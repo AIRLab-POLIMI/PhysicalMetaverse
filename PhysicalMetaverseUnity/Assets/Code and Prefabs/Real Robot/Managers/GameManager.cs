@@ -127,12 +127,12 @@ public class GameManager : Monosingleton<GameManager>
         //disable environment
         _environmentVisualization.SetActive(false);
     }
-
+    
     private void WriteFile(){
         //write file
         string fileName = "Result_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt";
         string filePath = _resultFilePath + "/" + fileName;
-        string data = "Score: " + _score + "\n" + "Errors: " + _errors + "\n" + "Time: " + _normalisedElapsedTime + "\n" + "GameDuration: " + _gameDurationSeconds;
+        string data = "Score: " + _score + "\n" + "Errors: " + _errors + "\n" + "Time: " + _normalisedElapsedTime + "\n" + "GameDuration: " + _gameDurationSeconds + "Viz: " + PoseManager.Instance.GetViz() + "\n";
         System.IO.File.WriteAllText(filePath, data);
         //log
         Debug.Log("Wrote file " + fileName + " in " + _resultFilePath);
