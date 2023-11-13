@@ -56,8 +56,11 @@ public class LidarManager : Monosingleton<LidarManager>
     [Header("DENOISING")]
     [Space]
     [SerializeField] private OdometryManager _odometryManager;
-    [Range(0.0f, 1.0f)]
+    [Range(0.0f, 2.0f)]
     [SerializeField] private float _odometrySpeed = 0.23f;
+    //_odometryRotationSpeed
+    [Range(0.0f, 100.0f)]
+    [SerializeField] private float _odometryRotationSpeed = 0.23f;
     [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
     private int[] currentPositions;
     [SerializeField] float fadeDuration = 0.05f; // Duration of the fade-out effect in seconds
@@ -369,33 +372,57 @@ public class LidarManager : Monosingleton<LidarManager>
     {
         if (_odometryManager._forward)
         {
-            transform.position -= Vector3.forward * _odometrySpeed * Time.deltaTime;
+            transform.position -= Vector3.forward * -_odometrySpeed * Time.deltaTime;
             //fade material alpha a bit, no lerp
             
         }
         if (_odometryManager._backward)
         {
-            transform.position += Vector3.forward * _odometrySpeed * Time.deltaTime;
+            transform.position += Vector3.forward * -_odometrySpeed * Time.deltaTime;
             
         }
         if (_odometryManager._left)
         {
-            transform.position += Vector3.right * _odometrySpeed * Time.deltaTime;
+            transform.position += Vector3.right * -_odometrySpeed * Time.deltaTime;
             
         }
         if (_odometryManager._right)
         {
-            transform.position -= Vector3.right * _odometrySpeed * Time.deltaTime;
+            transform.position -= Vector3.right * -_odometrySpeed * Time.deltaTime;
             
         }
         if (_odometryManager._rotateLeft)
         {
-            transform.Rotate(Vector3.up * _odometrySpeed * Time.deltaTime);
+            //transform.Rotate(Vector3.up * _odometryRotationSpeed * Time.deltaTime);
+            //rotate around 0 0 0 instead of own
+            transform.RotateAround(Vector3.zero, Vector3.up, _odometryRotationSpeed * Time.deltaTime);
             
         }
         if (_odometryManager._rotateRight)
         {
-            transform.Rotate(Vector3.down * _odometrySpeed * Time.deltaTime);
+            //transform.Rotate(Vector3.down * _odometryRotationSpeed * Time.deltaTime);
+            //rotate around 0 0 0 instead of own
+            transform.RotateAround(Vector3.zero, Vector3.up, -_odometryRotationSpeed * Time.deltaTime);
+            
+        }
+        //_forwardFloatDeadzone
+        if (_odometryManager._forwardFloatDeadzone != 0)
+        {
+            transform.position -= Vector3.forward * -_odometryManager._forwardFloatDeadzone * _odometrySpeed * Time.deltaTime;
+            
+        }
+        //_rightFloatDeadzone
+        if (_odometryManager._rightFloatDeadzone != 0)
+        {
+            transform.position += Vector3.right * -_odometryManager._rightFloatDeadzone * _odometrySpeed * Time.deltaTime;
+            
+        }
+        //_rotateRightFloatDeadzone
+        if (_odometryManager._rotateRightFloatDeadzone != 0)
+        {
+            //transform.Rotate(Vector3.down * _odometryManager._rotateRightFloatDeadzone * _odometryRotationSpeed * Time.deltaTime);
+            //rotate around 0 0 0 instead of own
+            transform.RotateAround(Vector3.zero, Vector3.up, -_odometryManager._rotateRightFloatDeadzone * _odometryRotationSpeed * Time.deltaTime);
             
         }
     }

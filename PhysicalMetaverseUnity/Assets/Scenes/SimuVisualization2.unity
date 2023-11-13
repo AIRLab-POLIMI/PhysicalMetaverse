@@ -18913,6 +18913,9 @@ MonoBehaviour:
   _forwardFloat: 0
   _rightFloat: 0
   _rotateRightFloat: 0
+  _forwardFloatDeadzone: 0
+  _rightFloatDeadzone: 0
+  _rotateRightFloatDeadzone: 0
   _boolSpeed: 1.22
   _boolRotateSpeed: 50
   _speed: 1
@@ -37424,7 +37427,7 @@ MonoBehaviour:
   _simulation: {fileID: 1786909777}
   _pillar: {fileID: 9071454379544978574, guid: 43cb5a197d0e5114f877d1a87c853382, type: 3}
   _pillarMeshDisabler: {fileID: 1224544702}
-  _mode: 2
+  _mode: 1
 --- !u!4 &1876277658 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8637557680593042169, guid: 2609b5b87dfb6384f9747d6ddf4391da,
@@ -54301,6 +54304,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}
+      propertyPath: _odometrySpeed
+      value: 1.275
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
+        type: 3}
       propertyPath: personCollider
       value: 
       objectReference: {fileID: 1724598784}
@@ -54363,6 +54371,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _maxPersonJumpDistance
       value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
+        type: 3}
+      propertyPath: _odometryRotationSpeed
+      value: 44
       objectReference: {fileID: 0}
     - target: {fileID: 2504211291624353761, guid: fed7ff6bc27f8b8428999f68a0a2d480,
         type: 3}

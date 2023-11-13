@@ -22,6 +22,10 @@ public class OdometryManager : Monosingleton<OdometryManager>
     public float _forwardFloat = 0f;
     public float _rightFloat = 0f;
     public float _rotateRightFloat = 0f;
+    public float _forwardFloatDeadzone = 0f;
+    public float _rightFloatDeadzone = 0f;
+    public float _rotateRightFloatDeadzone = 0f;
+
 
     public float _boolSpeed = 1f;
     public float _boolRotateSpeed = 1f;
@@ -49,12 +53,16 @@ public class OdometryManager : Monosingleton<OdometryManager>
     public GameObject _directionalLight;
     private bool _analogTouched = false;
     void FixedUpdate(){
+        _forwardFloatDeadzone = 0f;
+        _rightFloatDeadzone = 0f;
+        _rotateRightFloatDeadzone = 0f;
         _analogTouched = false;
         //if(_forwardFloat > _odometryDeadzone){
         //abs value _forwardFloat
         float absForwardFloat = Mathf.Abs(_forwardFloat);
 
         if(absForwardFloat > _odometryDeadzone){
+            _forwardFloatDeadzone = _forwardFloat;
             //move floor forward
             _floor.transform.position -= Vector3.forward * _movementSpeed * Time.deltaTime * -_forwardFloat;
             //move personcollider
@@ -63,6 +71,7 @@ public class OdometryManager : Monosingleton<OdometryManager>
         }
         float absRightFloat = Mathf.Abs(_rightFloat);
         if(absRightFloat > _odometryDeadzone){
+            _rightFloatDeadzone = _rightFloat;
             //move floor right
             _floor.transform.position += Vector3.right * _movementSpeed * Time.deltaTime * _rightFloat;
             //rotate around 0 0 0
@@ -71,6 +80,7 @@ public class OdometryManager : Monosingleton<OdometryManager>
         }
         float absRotateRightFloat = Mathf.Abs(_rotateRightFloat);
         if(absRotateRightFloat > _odometryDeadzone){
+            _rotateRightFloatDeadzone = _rotateRightFloat;
             //rotate floor right around this transform
             _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
             //rotate around 0 0 0
