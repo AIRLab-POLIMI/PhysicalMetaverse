@@ -8,6 +8,8 @@ public class EvangelionPoseController : VizController
     private PoseManager _poseManager;
     //bool hide
     [SerializeField] private bool _HIDE = false;
+    //_scale
+    [SerializeField] private float _scale = 1f;
     private bool _hideStatus = true;
     [SerializeField] private IntSO MaxConvertedAngle;
     [SerializeField] private IntSO MinConvertedAngle;
@@ -54,7 +56,7 @@ public class EvangelionPoseController : VizController
         
         
         
-        startY = this.transform.position.y;
+        startY = this.transform.localPosition.y;
 
         for (int i = 0; i < arraySize; ++i)
         {
@@ -62,10 +64,15 @@ public class EvangelionPoseController : VizController
             float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * radius;
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * radius;
             z = this.transform.position.z;
+            //scale
+            x *= _scale;
+            amplitude *= _scale;
             GameObject obj = Instantiate(_pointPrefab, new Vector3(x, startY, z), Quaternion.identity);
             //GameObject obj = Instantiate(lidarPoint, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.LookRotation(new Vector3(x, 0.0f, z)));
             obj.transform.parent = transform;
             obj.GetComponent<Renderer>().material.color = color1;
+            //scale point to _scale
+            obj.transform.localScale = new Vector3(_scale, _scale, _scale);
             //obj.transform.position += obj.transform.forward*8.0f;
             _points[i] = obj;
             
@@ -109,6 +116,8 @@ public class EvangelionPoseController : VizController
             float lookingAtElaborated = 1 - Math.Abs(LookingAt.runtimeValue - 0.5f);
             */
             UpdateValues();
+            //change time with timeMultiplier
+            _scaledTime = _poseManager.GetScaledTime() * _quantityOfMovementMultiplier;
         }
         else{
             //_quantityOfMovement = 0f;
@@ -149,6 +158,8 @@ public class EvangelionPoseController : VizController
         
 
         float targetAmplitude = _baseAmplitude - distanceFromCenter.runtimeValue;
+
+        targetAmplitude *= _scale;
         
         
         
@@ -178,10 +189,8 @@ public class EvangelionPoseController : VizController
             _points[i].transform.position =
                 new Vector3(_points[i].transform.position.x, y, _points[i].transform.position.z);
                 */
-            //change time with timeMultiplier
-            _scaledTime = _poseManager.GetScaledTime() * _quantityOfMovementMultiplier;
-            _points[i].transform.position = new Vector3(_points[i].transform.position.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_scaledTime + i * offset)), _points[i].transform.position.z);
-            _points[i].transform.localScale = new Vector3(1, swarmDimension, 1);
+            _points[i].transform.localPosition = new Vector3(_points[i].transform.localPosition.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_scaledTime + i * offset)), _points[i].transform.localPosition.z);
+            _points[i].transform.localScale = new Vector3(_scale, swarmDimension * _scale, _scale);
             _points[i].GetComponent<Renderer>().material.color = LerpColor(color1, color3, colorSlider);
         }
 
@@ -204,12 +213,19 @@ public class EvangelionPoseController : VizController
     //sensitivity 0.13
     //threshold 0.71
     
-
+    public float _distanceFromCenterAngle = 0f;
     private void UpdateValues(){
         //distanceFromCenter = angle between forward and rototrasaltion position
         //distanceFromCenter.runtimeValue = Vector3.Angle(Vector3.forward, _poseManager.GetRotoTraslation().position) * _distanceFromCenterMultiplier;
+        //_distanceFromCenterAngle = only y angle between _cameraTransform.forward and -_poseManager.GetRotoTraslation().position
+        //project both on xz plane
+        _distanceFromCenterAngle = Vector3.Angle(new Vector3(_cameraTransform.forward.x, 0f, _cameraTransform.forward.z), new Vector3(-_poseManager.GetRotoTraslation().position.x, 0f, -_poseManager.GetRotoTraslation().position.z));
+        ///if less than 9 set to 9
+        if(_distanceFromCenterAngle < 90f)
+            _distanceFromCenterAngle = 90f;
+        _distanceFromCenterAngle *= _distanceFromCenterMultiplier;
         //lerp
-        distanceFromCenter.runtimeValue = Mathf.Lerp(distanceFromCenter.runtimeValue, Vector3.Angle(_cameraTransform.forward, -_poseManager.GetRotoTraslation().position) * _distanceFromCenterMultiplier, Time.deltaTime * _distanceFromCenterSpeed);
+        distanceFromCenter.runtimeValue = Mathf.Lerp(distanceFromCenter.runtimeValue, _distanceFromCenterAngle, Time.deltaTime * _distanceFromCenterSpeed);
         //LookingAt 
         //_odileLookAngle from _odileViz GetLookAngle
         _odileLookAngle = _poseManager.GetHeadAngleY();

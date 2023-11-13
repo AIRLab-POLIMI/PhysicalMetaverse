@@ -218,6 +218,8 @@ public class PoseManager : Monosingleton<PoseManager>
     {
         return _MANUAL_MOVEMENT;
     }
+    //gameobject list _externalVizzes
+    [SerializeField] private List<GameObject> _externalVizzes;
 
     // Start is called before the first frame update
     void Start()
@@ -251,6 +253,18 @@ public class PoseManager : Monosingleton<PoseManager>
                         _vizGameObjectsList.Add(childOfChild.gameObject);
                     }
                 }
+            }
+        }
+        //among _externalVizzes find viz controllers
+        foreach (GameObject externalViz in _externalVizzes)
+        {
+            //if child has vizcontroller
+            if(externalViz.GetComponent<VizController>() != null){
+                //add to list
+                _vizControllerList.Add(externalViz.GetComponent<VizController>());
+                //add vizcontroller name to _vizControllerDict
+                _vizControllerDict.Add(externalViz.name, externalViz.GetComponent<VizController>());
+                _vizGameObjectsList.Add(externalViz);
             }
         }
         _rototraslationYOffset = _rotoTraslation.localPosition.y;

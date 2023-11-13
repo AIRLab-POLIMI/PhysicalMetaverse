@@ -122,8 +122,6 @@ public class GameManager : Monosingleton<GameManager>
         _gameOver = true;
         _losePanel.SetActive(true);
         WriteFile();
-        //disable _networkingManager
-        _networkingManager.SetActive(false);
         //disable environment
         _environmentVisualization.SetActive(false);
     }
