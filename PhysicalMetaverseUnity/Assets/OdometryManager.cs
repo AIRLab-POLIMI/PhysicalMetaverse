@@ -81,8 +81,17 @@ public class OdometryManager : Monosingleton<OdometryManager>
         float absRotateRightFloat = Mathf.Abs(_rotateRightFloat);
         if(absRotateRightFloat > _odometryDeadzone){
             _rotateRightFloatDeadzone = _rotateRightFloat;
+            float maxRotationSpeed = LidarManager.Instance.GetOdometryRotationMaxSpeed();
+            float currentRotationSpeed = LidarManager.Instance.GetOdometryRotationCurrentSpeed();
+            //currentRotationSpeed : maxRotationSpeed = fixedRotationSpeed : _rotationSpeed
+            float fixedRotationSpeed = currentRotationSpeed * _rotationSpeed / maxRotationSpeed;
+            
+
             //rotate floor right around this transform
-            _floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
+            _floor.transform.RotateAround(this.transform.position, Vector3.up, fixedRotationSpeed * Time.deltaTime * -_rotateRightFloat);
+            //_rotationSpeed
+            //_floor.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
+
             //rotate around 0 0 0
             _personCollider.transform.RotateAround(Vector3.zero, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);
             _directionalLight.transform.RotateAround(this.transform.position, Vector3.up, _rotationSpeed * Time.deltaTime * -_rotateRightFloat);

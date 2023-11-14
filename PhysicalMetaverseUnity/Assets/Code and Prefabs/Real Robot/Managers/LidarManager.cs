@@ -61,6 +61,23 @@ public class LidarManager : Monosingleton<LidarManager>
     //_odometryRotationSpeed
     [Range(0.0f, 100.0f)]
     [SerializeField] private float _odometryRotationSpeed = 0.23f;
+    //get
+    public float GetOdometryRotationMaxSpeed(){
+        return _odometryRotationSpeed;
+    }
+    [SerializeField] private float _odometryRotationCurrentSpeed = 0.23f;
+    //get _odometryRotationCurrentSpeed
+    public float GetOdometryRotationCurrentSpeed(){
+        return _odometryRotationCurrentSpeed;
+    }
+    
+    
+    //serialize bool _startRotation
+    [SerializeField] private bool _startRotation = false;
+    //private prevstartrotation
+    private bool _prevStartRotation = false;
+    //odometry rotation acceleration
+    [SerializeField] private float _odometryRotationAcceleration = 0.1f;
     [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
     private int[] currentPositions;
     [SerializeField] float fadeDuration = 0.05f; // Duration of the fade-out effect in seconds
@@ -417,13 +434,26 @@ public class LidarManager : Monosingleton<LidarManager>
             transform.position += Vector3.right * -_odometryManager._rightFloatDeadzone * _odometrySpeed * Time.deltaTime;
             
         }
+
         //_rotateRightFloatDeadzone
         if (_odometryManager._rotateRightFloatDeadzone != 0)
         {
+            _startRotation = true;
+            _odometryRotationCurrentSpeed += _odometryRotationAcceleration * Time.deltaTime;
+            //clamp to abs _odometyRotationSpeed
+            if(_odometryRotationCurrentSpeed > _odometryRotationSpeed){
+                _odometryRotationCurrentSpeed = _odometryRotationSpeed;
+            }
             //transform.Rotate(Vector3.down * _odometryManager._rotateRightFloatDeadzone * _odometryRotationSpeed * Time.deltaTime);
             //rotate around 0 0 0 instead of own
-            transform.RotateAround(Vector3.zero, Vector3.up, -_odometryManager._rotateRightFloatDeadzone * _odometryRotationSpeed * Time.deltaTime);
+            //transform.RotateAround(Vector3.zero, Vector3.up, -_odometryManager._rotateRightFloatDeadzone * _odometryRotationCurrentSpeed * Time.deltaTime);
+            _prevStartRotation = true;
             
+        }
+        else{
+            _startRotation = false;
+            _odometryRotationCurrentSpeed = 0f;
+            _prevStartRotation = false;
         }
     }
 

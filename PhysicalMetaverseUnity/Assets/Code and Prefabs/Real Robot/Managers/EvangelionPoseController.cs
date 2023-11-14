@@ -16,7 +16,9 @@ public class EvangelionPoseController : VizController
     
     [SerializeField] private FloatSO LookingAt;
     [SerializeField] private float _quantityOfMovement;
-    [SerializeField] private float _quantityOfMovementMultiplier = 0.3f;
+    [SerializeField] private float _quantityOfMovementMultiplier = 0.5f;
+    [SerializeField] private float _maxQuantityOfMovement = 3.5f;
+    [SerializeField] private float _unDetectedTimeMultiplier = 0.1f;
     
     [SerializeField] private FloatSO distanceFromCenter;
 
@@ -31,8 +33,8 @@ public class EvangelionPoseController : VizController
     private float startY;
 
     //TESTING
-    private float amplitude = 0f;
-    private float speed = 1f;
+    [SerializeField] private float amplitude = 0f;
+    public float _lerpSpeed = 1f;
     [SerializeField] private float offset = 0f;
     private float targetOffset;
     [SerializeField] private float swarmDimension = 1f;
@@ -96,11 +98,33 @@ public class EvangelionPoseController : VizController
         Hide(setHide);
     }
 
-    [SerializeField] private float _scaledTime = 0f;
+    //time
+    [SerializeField] private float _time = 0f;
+    //_prevPersonDetectedTime
+    private float _prevPersonDetectedTime = 0f;
+    //_poseDecayTime
+    [SerializeField] private float _poseDecayTime = 1f;
     private void Update()
     {
+        _distanceFromCenterAngle = Vector3.Angle(new Vector3(_cameraTransform.forward.x, 0f, _cameraTransform.forward.z), new Vector3(-_poseManager.GetRotoTraslation().position.x, 0f, -_poseManager.GetRotoTraslation().position.z));
+        //normalize
+        _distanceFromCenterAngleNormalized = (180f - _distanceFromCenterAngle)/ 90f;
+        //normalized max 1
+        _distanceFromCenterAngleNormalized = Mathf.Clamp01(_distanceFromCenterAngleNormalized);
+        //LookingAt 
+        //_odileLookAngle from _odileViz GetLookAngle
+        _odileLookAngle = _poseManager.GetHeadAngleY();
+        _odileLookAngle -= 270f;
+        //_distanceFromCamera = _poseManager.GetDistanceFromCamera();
         if(_poseManager.GetPersonDetected()){
+            _prevPersonDetectedTime = Time.time;
+        }
+        //min 1
+        _distanceFromCamera = Mathf.Max(_poseManager.GetDistanceFromCamera() / _distanceFromCameraMultiplier, _minDistanceFromCamera);
+        if(Time.time - _prevPersonDetectedTime > _poseDecayTime){
             _quantityOfMovement = _poseManager.GetQuantityOfMovement() * _quantityOfMovementMultiplier;
+            //max = _maxQuantityOfMovement * _quantityOfMovementMultiplier
+            _quantityOfMovement = Mathf.Min(_quantityOfMovement, _maxQuantityOfMovement * _quantityOfMovementMultiplier);
             if(_HIDE){
                 Hide(_hideStatus);
             }
@@ -115,44 +139,24 @@ public class EvangelionPoseController : VizController
             float speed = 1f + (QtyOfMovement.runtimeValue * 10f);        // the speed at which the object moves up and down
             float lookingAtElaborated = 1 - Math.Abs(LookingAt.runtimeValue - 0.5f);
             */
-            UpdateValues();
             //change time with timeMultiplier
-            _scaledTime = _poseManager.GetScaledTime() * _quantityOfMovementMultiplier;
+            //_scaledTime = _poseManager.GetScaledTime() * _timeMultiplier;
+            _time = _time + Time.deltaTime * _quantityOfMovement;
+            UpdateValues();
         }
         else{
-            //_quantityOfMovement = 0f;
-            //lerp
-            _quantityOfMovement = Mathf.Lerp(_quantityOfMovement, 0f, Time.deltaTime * speed);
-            //distance from center = 20
-            //distanceFromCenter.runtimeValue = 20f;
-            //lerp
-            distanceFromCenter.runtimeValue = Mathf.Lerp(distanceFromCenter.runtimeValue, _neutralDistance, Time.deltaTime * _distanceFromCenterSpeed);
-            //lookingat = 0
-            //LookingAt.runtimeValue = 0f;
-            //lerp
-            LookingAt.runtimeValue = Mathf.Lerp(LookingAt.runtimeValue, 0f, Time.deltaTime * speed);
+            _time = _time + Time.deltaTime * _unDetectedTimeMultiplier;
+            ResetValues();
 
         }
+        swarmDimension = Mathf.Lerp(swarmDimension, 1f / _distanceFromCamera + 0.5f, Time.deltaTime * _lerpSpeed);
         
-        int poseMidpoint = -1;
         
-        if(MinConvertedAngle.runtimeValue != -1)
-            poseMidpoint = (MaxConvertedAngle.runtimeValue + MinConvertedAngle.runtimeValue) / 2;
-
-
-        if (poseMidpoint == -1)
-        {
-            targetOffset = 0f;
-            colorSlider = 0.0f;
-        }
-        else
-        {
-            targetOffset = GetDistanceRatio(poseMidpoint, 32, 32)/2;
-            colorSlider = LookingAt.runtimeValue;
-            //if _poseManager person detected is false set lookingat to 0
-            ////if(!_poseManager.GetPersonDetected())
-                ////colorSlider = 0f;
-        }
+        //colorSlider = LookingAt.runtimeValue;
+        colorSlider = 1-_distanceFromCenterAngleNormalized;
+        //if _poseManager person detected is false set lookingat to 0
+        ////if(!_poseManager.GetPersonDetected())
+            ////colorSlider = 0f;
 
         offset = Mathf.Lerp(offset, targetOffset, Time.deltaTime / 2);
         
@@ -163,7 +167,7 @@ public class EvangelionPoseController : VizController
         
         
         
-        amplitude = Mathf.Lerp(amplitude, targetAmplitude, Time.deltaTime * speed);
+        amplitude = Mathf.Lerp(amplitude, targetAmplitude, Time.deltaTime * _lerpSpeed);
         
         
         if(!_SPEED_MODE)
@@ -189,7 +193,7 @@ public class EvangelionPoseController : VizController
             _points[i].transform.position =
                 new Vector3(_points[i].transform.position.x, y, _points[i].transform.position.z);
                 */
-            _points[i].transform.localPosition = new Vector3(_points[i].transform.localPosition.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_scaledTime + i * offset)), _points[i].transform.localPosition.z);
+            _points[i].transform.localPosition = new Vector3(_points[i].transform.localPosition.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_time + i * offset)), _points[i].transform.localPosition.z);
             _points[i].transform.localScale = new Vector3(_scale, swarmDimension * _scale, _scale);
             _points[i].GetComponent<Renderer>().material.color = LerpColor(color1, color3, colorSlider);
         }
@@ -213,23 +217,15 @@ public class EvangelionPoseController : VizController
     //sensitivity 0.13
     //threshold 0.71
     
-    public float _distanceFromCenterAngle = 0f;
+    public float _distanceFromCenterAngle = 0f; //zero is 180 degree * _distanceFromCenterMultiplier
+    public float _distanceFromCenterAngleNormalized = 0f;
     private void UpdateValues(){
         //distanceFromCenter = angle between forward and rototrasaltion position
         //distanceFromCenter.runtimeValue = Vector3.Angle(Vector3.forward, _poseManager.GetRotoTraslation().position) * _distanceFromCenterMultiplier;
         //_distanceFromCenterAngle = only y angle between _cameraTransform.forward and -_poseManager.GetRotoTraslation().position
         //project both on xz plane
         _distanceFromCenterAngle = Vector3.Angle(new Vector3(_cameraTransform.forward.x, 0f, _cameraTransform.forward.z), new Vector3(-_poseManager.GetRotoTraslation().position.x, 0f, -_poseManager.GetRotoTraslation().position.z));
-        ///if less than 9 set to 9
-        if(_distanceFromCenterAngle < 90f)
-            _distanceFromCenterAngle = 90f;
-        _distanceFromCenterAngle *= _distanceFromCenterMultiplier;
-        //lerp
-        distanceFromCenter.runtimeValue = Mathf.Lerp(distanceFromCenter.runtimeValue, _distanceFromCenterAngle, Time.deltaTime * _distanceFromCenterSpeed);
-        //LookingAt 
-        //_odileLookAngle from _odileViz GetLookAngle
-        _odileLookAngle = _poseManager.GetHeadAngleY();
-        _odileLookAngle -= 270f;
+
         //angle of vector from 0 to odile position
         _odileAngle = Vector3.Angle(Vector3.right, _poseManager.GetRotoTraslation().position);
         _odileAngle -= 90f;
@@ -237,9 +233,26 @@ public class EvangelionPoseController : VizController
 
         //swarmDimension = 1f / Mathf.Pow(robotPoseContoller.GetFilteredDistance() + (1f - _neutralDistance), 3f);
         //lerp
-        swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_poseManager.GetDistanceFromCamera(), 4f) + 0.5f, Time.deltaTime * speed);
+        //swarmDimension = Mathf.Lerp(swarmDimension, 1f / Mathf.Pow(_distanceFromCamera, 4f) + 0.5f, Time.deltaTime * speed);
         
 
+    }
+    public float _distanceFromCamera;
+    //distance from camera multiplier
+    [SerializeField] private float _distanceFromCameraMultiplier = 0.01f;
+    public float _minDistanceFromCamera = 0.3f;
+    private void ResetValues(){
+            //_quantityOfMovement = 0f;
+            //lerp
+            _quantityOfMovement = Mathf.Lerp(_quantityOfMovement, 0f, Time.deltaTime * _lerpSpeed);
+            //distance from center = 20
+            //distanceFromCenter.runtimeValue = 20f;
+            //lerp
+            distanceFromCenter.runtimeValue = Mathf.Lerp(distanceFromCenter.runtimeValue, 90 * _distanceFromCenterMultiplier, Time.deltaTime * _distanceFromCenterSpeed);
+            //lookingat = 0
+            //LookingAt.runtimeValue = 0f;
+            //lerp
+            LookingAt.runtimeValue = Mathf.Lerp(LookingAt.runtimeValue, 0f, Time.deltaTime * _lerpSpeed);
     }
 
     //fire hide button
