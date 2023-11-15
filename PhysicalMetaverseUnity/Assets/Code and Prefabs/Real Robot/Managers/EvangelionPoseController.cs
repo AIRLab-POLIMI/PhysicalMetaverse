@@ -36,7 +36,7 @@ public class EvangelionPoseController : VizController
     [SerializeField] private float amplitude = 0f;
     public float _lerpSpeed = 1f;
     [SerializeField] private float offset = 0f;
-    private float targetOffset;
+    [SerializeField] private float targetOffset;
     [SerializeField] private float swarmDimension = 1f;
     //serialize _neutralDistance
     [SerializeField] private float _neutralDistance = 0.8f;
@@ -63,7 +63,7 @@ public class EvangelionPoseController : VizController
         for (int i = 0; i < arraySize; ++i)
         {
             float circleposition = ((float)i / (float)360) - (4.0f/45.0f);
-            float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * radius;
+            float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * radius *2f;
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * radius;
             z = this.transform.position.z;
             //scale
@@ -97,18 +97,18 @@ public class EvangelionPoseController : VizController
     {
         Hide(setHide);
     }
-
+    [SerializeField] private int poseMidpoint = 0;
     //time
     [SerializeField] private float _time = 0f;
     //_prevPersonDetectedTime
-    private float _prevPersonDetectedTime = 0f;
+    public float _prevPersonDetectedTime = 0f;
     //_poseDecayTime
     [SerializeField] private float _poseDecayTime = 1f;
     private void Update()
     {
         _distanceFromCenterAngle = Vector3.Angle(new Vector3(_cameraTransform.forward.x, 0f, _cameraTransform.forward.z), new Vector3(-_poseManager.GetRotoTraslation().position.x, 0f, -_poseManager.GetRotoTraslation().position.z));
         //normalize
-        _distanceFromCenterAngleNormalized = (180f - _distanceFromCenterAngle)/ 90f;
+        _distanceFromCenterAngleNormalized = ((180f*180f) - _distanceFromCenterAngle*_distanceFromCenterAngle)/ (90f*90f);
         //normalized max 1
         _distanceFromCenterAngleNormalized = Mathf.Clamp01(_distanceFromCenterAngleNormalized);
         //LookingAt 
@@ -121,7 +121,7 @@ public class EvangelionPoseController : VizController
         }
         //min 1
         _distanceFromCamera = Mathf.Max(_poseManager.GetDistanceFromCamera() / _distanceFromCameraMultiplier, _minDistanceFromCamera);
-        if(Time.time - _prevPersonDetectedTime > _poseDecayTime){
+        if(Time.time - _prevPersonDetectedTime < _poseDecayTime){
             _quantityOfMovement = _poseManager.GetQuantityOfMovement() * _quantityOfMovementMultiplier;
             //max = _maxQuantityOfMovement * _quantityOfMovementMultiplier
             _quantityOfMovement = Mathf.Min(_quantityOfMovement, _maxQuantityOfMovement * _quantityOfMovementMultiplier);
@@ -160,8 +160,8 @@ public class EvangelionPoseController : VizController
 
         offset = Mathf.Lerp(offset, targetOffset, Time.deltaTime / 2);
         
-
-        float targetAmplitude = _baseAmplitude - distanceFromCenter.runtimeValue;
+        //float targetAmplitude = _baseAmplitude - distanceFromCenter.runtimeValue;colorSlider
+        float targetAmplitude = _baseAmplitude - colorSlider;
 
         targetAmplitude *= _scale;
         
@@ -173,8 +173,8 @@ public class EvangelionPoseController : VizController
         if(!_SPEED_MODE)
             swarmDimension = _quantityOfMovement;
 
-
-
+        poseMidpoint = (MaxConvertedAngle.runtimeValue + MinConvertedAngle.runtimeValue) / 2;
+        targetOffset = GetDistanceRatio(poseMidpoint, 32, 32)/2;    
         for (int i = 0; i < arraySize; i++)
         {
             /*
@@ -194,7 +194,7 @@ public class EvangelionPoseController : VizController
                 new Vector3(_points[i].transform.position.x, y, _points[i].transform.position.z);
                 */
             _points[i].transform.localPosition = new Vector3(_points[i].transform.localPosition.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_time + i * offset)), _points[i].transform.localPosition.z);
-            _points[i].transform.localScale = new Vector3(_scale, swarmDimension * _scale, _scale);
+            _points[i].transform.localScale = new Vector3(_scale*2f, swarmDimension * _scale, _scale);
             _points[i].GetComponent<Renderer>().material.color = LerpColor(color1, color3, colorSlider);
         }
 
