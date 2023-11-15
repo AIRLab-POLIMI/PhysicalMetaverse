@@ -40,6 +40,7 @@ public class EvangelionPoseController : VizController
     [SerializeField] private float swarmDimension = 1f;
     //serialize _neutralDistance
     [SerializeField] private float _neutralDistance = 0.8f;
+    public float _xScale = 1.5f;
     private float colorSlider = 0f;
 
     private Color color1 = Color.gray;
@@ -63,7 +64,7 @@ public class EvangelionPoseController : VizController
         for (int i = 0; i < arraySize; ++i)
         {
             float circleposition = ((float)i / (float)360) - (4.0f/45.0f);
-            float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * radius *2f;
+            float x = Mathf.Sin(circleposition * Mathf.PI * 2.0f) * radius *_xScale;
             float z = Mathf.Cos(circleposition * Mathf.PI * 2.0f) * radius;
             z = this.transform.position.z;
             //scale
@@ -119,9 +120,9 @@ public class EvangelionPoseController : VizController
         if(_poseManager.GetPersonDetected()){
             _prevPersonDetectedTime = Time.time;
         }
-        //min 1
-        _distanceFromCamera = Mathf.Max(_poseManager.GetDistanceFromCamera() / _distanceFromCameraMultiplier, _minDistanceFromCamera);
         if(Time.time - _prevPersonDetectedTime < _poseDecayTime){
+            //min 1
+            _distanceFromCamera = Mathf.Max(_poseManager.GetDistanceFromCamera() / _distanceFromCameraMultiplier, _minDistanceFromCamera);
             _quantityOfMovement = _poseManager.GetQuantityOfMovement() * _quantityOfMovementMultiplier;
             //max = _maxQuantityOfMovement * _quantityOfMovementMultiplier
             _quantityOfMovement = Mathf.Min(_quantityOfMovement, _maxQuantityOfMovement * _quantityOfMovementMultiplier);
@@ -145,6 +146,7 @@ public class EvangelionPoseController : VizController
             UpdateValues();
         }
         else{
+            _distanceFromCamera = 100f;
             _time = _time + Time.deltaTime * _unDetectedTimeMultiplier;
             ResetValues();
 
@@ -161,7 +163,7 @@ public class EvangelionPoseController : VizController
         offset = Mathf.Lerp(offset, targetOffset, Time.deltaTime / 2);
         
         //float targetAmplitude = _baseAmplitude - distanceFromCenter.runtimeValue;colorSlider
-        float targetAmplitude = _baseAmplitude - colorSlider;
+        float targetAmplitude = _baseAmplitude - (_distanceFromCenterAngleNormalized)*10f;
 
         targetAmplitude *= _scale;
         
@@ -194,7 +196,7 @@ public class EvangelionPoseController : VizController
                 new Vector3(_points[i].transform.position.x, y, _points[i].transform.position.z);
                 */
             _points[i].transform.localPosition = new Vector3(_points[i].transform.localPosition.x, startY + amplitude * Mathf.Sin( _frequencyMultiplier * (_time + i * offset)), _points[i].transform.localPosition.z);
-            _points[i].transform.localScale = new Vector3(_scale*2f, swarmDimension * _scale, _scale);
+            _points[i].transform.localScale = new Vector3(_scale*_xScale, swarmDimension * _scale, _scale);
             _points[i].GetComponent<Renderer>().material.color = LerpColor(color1, color3, colorSlider);
         }
 
