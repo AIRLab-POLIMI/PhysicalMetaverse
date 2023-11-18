@@ -1,0 +1,1297 @@
+% A LaTeX template for MSc Thesis submissions to 
+% Politecnico di Milano (PoliMi) - School of Industrial and Information Engineering
+%
+% S. Bonetti, A. Gruttadauria, G. Mescolini, A. Zingaro
+% e-mail: template-tesi-ingind@polimi.it
+%
+% Last Revision: October 2021
+%
+% Copyright 2021 Politecnico di Milano, Italy. NC-BY
+
+\documentclass{Configuration_Files/PoliMi3i_thesis}
+
+%------------------------------------------------------------------------------
+%	REQUIRED PACKAGES AND  CONFIGURATIONS
+%------------------------------------------------------------------------------
+
+% CONFIGURATIONS
+\usepackage{parskip} % For paragraph layout
+\usepackage{setspace} % For using single or double spacing
+\usepackage{emptypage} % To insert empty pages
+\usepackage{multicol} % To write in multiple columns (executive summary)
+\setlength\columnsep{15pt} % Column separation in executive summary
+\setlength\parindent{0pt} % Indentation
+\raggedbottom  
+
+% PACKAGES FOR TITLES
+\usepackage{titlesec}
+% \titlespacing{\section}{left spacing}{before spacing}{after spacing}
+\titlespacing{\section}{0pt}{3.3ex}{2ex}
+\titlespacing{\subsection}{0pt}{3.3ex}{1.65ex}
+\titlespacing{\subsubsection}{0pt}{3.3ex}{1ex}
+\usepackage{color}
+
+% PACKAGES FOR LANGUAGE AND FONT
+\usepackage[english]{babel} % The document is in English  
+\usepackage[utf8]{inputenc} % UTF8 encoding
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage[11pt]{moresize} % Big fonts
+
+% PACKAGES FOR IMAGES
+\usepackage{graphicx}
+\usepackage{transparent} % Enables transparent images
+\usepackage{eso-pic} % For the background picture on the title page
+\usepackage{subfig} % Numbered and caption subfigures using \subfloat.
+\usepackage{tikz} % A package for high-quality hand-made figures.
+\usetikzlibrary{}
+\graphicspath{{./Images/}} % Directory of the images
+\usepackage{caption} % Coloured captions
+\usepackage{xcolor} % Coloured captions
+\usepackage{amsthm,thmtools,xcolor} % Coloured "Theorem"
+\usepackage{float}
+
+% STANDARD MATH PACKAGES
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage[overload]{empheq} % For braced-style systems of equations.
+\usepackage{fix-cm} % To override original LaTeX restrictions on sizes
+
+% PACKAGES FOR TABLES
+\usepackage{tabularx}
+\usepackage{longtable} % Tables that can span several pages
+\usepackage{colortbl}
+
+% PACKAGES FOR ALGORITHMS (PSEUDO-CODE)
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% PACKAGES FOR REFERENCES & BIBLIOGRAPHY
+\usepackage[colorlinks=true,linkcolor=black,anchorcolor=black,citecolor=black,filecolor=black,menucolor=black,runcolor=black,urlcolor=black]{hyperref} % Adds clickable links at references
+\usepackage[nameinlink,capitalise,noabbrev]{cleveref}
+\usepackage[square, numbers, sort&compress]{natbib} % Square brackets, citing references with numbers, citations sorted by appearance in the text and compressed
+\bibliographystyle{abbrvnat} % You may use a different style adapted to your field
+
+% OTHER PACKAGES
+\usepackage{pdfpages} % To include a pdf file
+\usepackage{afterpage}
+\usepackage{lipsum} % DUMMY PACKAGE
+\usepackage{fancyhdr} % For the headers
+\fancyhf{}
+
+% Input of configuration file. Do not change config.tex file unless you really know what you are doing. 
+\input{Configuration_Files/config}
+
+%----------------------------------------------------------------------------
+%	NEW COMMANDS DEFINED
+%----------------------------------------------------------------------------
+
+% EXAMPLES OF NEW COMMANDS
+\newcommand{\bea}{\begin{eqnarray}} % Shortcut for equation arrays
+\newcommand{\eea}{\end{eqnarray}}
+\newcommand{\e}[1]{\times 10^{#1}}  % Powers of 10 notation
+
+%----------------------------------------------------------------------------
+%	ADD YOUR PACKAGES (be careful of package interaction)
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+%	ADD YOUR DEFINITIONS AND COMMANDS (be careful of existing commands)
+%----------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------
+%	BEGIN OF YOUR DOCUMENT
+%----------------------------------------------------------------------------
+
+\begin{document}
+
+\fancypagestyle{plain}{%
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[RO,RE]{\thepage} %RO=right odd, RE=right even
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}}
+
+%----------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------
+
+\pagestyle{empty} % No page numbers
+\frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the preamble pages
+
+\puttitle{
+	title=Title, % Title of the thesis
+	name=Maurizio Vetere, % Author Name and Surname
+	course=Computer Science and Engineering - Ingegneria Informatica, % Study Programme (in Italian)
+	ID  = 10540567,  % Student ID number (numero di matricola)
+	advisor= Prof. Andrea Bonarini, % Supervisor name
+	coadvisor={Federico Espositi}, % Co-Supervisor name, remove this line if there is none
+	academicyear={2022-23},  % Academic Year
+} % These info will be put into your Title page 
+
+%----------------------------------------------------------------------------
+%	PREAMBLE PAGES: ABSTRACT (inglese e italiano), EXECUTIVE SUMMARY
+%----------------------------------------------------------------------------
+\startpreamble
+\setcounter{page}{1} % Set page counter to 1
+
+% ABSTRACT IN ENGLISH
+\chapter*{Abstract} 
+Here goes the Abstract in English of your thesis followed by a list of keywords.
+The Abstract is a concise summary of the content of the thesis (single page of text)
+and a guide to the most important contributions included in your thesis.
+The Abstract is the very last thing you write.
+It should be a self-contained text and should be clear to someone who hasn't (yet) read the whole manuscript.
+The Abstract should contain the answers to the main scientific questions that have been addressed in your thesis.
+It needs to summarize the adopted motivations and the adopted methodological approach as well as the findings of your work and their relevance and impact.
+The Abstract is the part appearing in the record of your thesis inside POLITesi,
+the Digital Archive of PhD and Master Theses (Laurea Magistrale) of Politecnico di Milano.
+The Abstract will be followed by a list of four to six keywords.
+Keywords are a tool to help indexers and search engines to find relevant documents.
+To be relevant and effective, keywords must be chosen carefully.
+They should represent the content of your work and be specific to your field or sub-field.
+Keywords may be a single word or two to four words. 
+\\
+\\
+\textbf{Keywords:} here, the keywords, of your thesis % Keywords
+
+% ABSTRACT IN ITALIAN
+\chapter*{Abstract in lingua italiana}
+Qui va l'Abstract in lingua italiana della tesi seguito dalla lista di parole chiave.
+\\
+\\
+\textbf{Parole chiave:} qui, vanno, le parole chiave, della tesi % Keywords (italian)
+
+%----------------------------------------------------------------------------
+%	RINGRAZIAMENTI
+%----------------------------------------------------------------------------
+
+\chapter*{Ringraziamenti}
+
+Innanzitutto, desidero esprimere la mia profonda gratitudine a...
+
+\textbf{Famiglia:} Vorrei ringraziare la mia famiglia per il sostegno incondizionato e l'amore che mi hanno sempre dimostrato durante questo percorso.
+
+\textbf{Docenti:} Un ringraziamento speciale ai miei docenti per la loro guida preziosa e la passione nel trasmettere conoscenze.
+
+\textbf{Amici:} Grazie ai miei amici che hanno condiviso gioie e sfide con me, rendendo questo viaggio accademico più significativo.
+
+\textbf{Colleghi:} Un ringraziamento ai miei colleghi di studio e di ricerca per la collaborazione e il supporto reciproco.
+
+\textbf{Altro:} Voglio ringraziare tutte le persone che, direttamente o indirettamente, hanno contribuito al mio percorso accademico e personale.
+
+Questo progetto non sarebbe stato possibile senza il sostegno di ognuno di voi.
+
+\cleardoublepage
+
+%----------------------------------------------------------------------------
+%	LIST OF CONTENTS/FIGURES/TABLES/SYMBOLS
+%----------------------------------------------------------------------------
+
+% TABLE OF CONTENTS
+\thispagestyle{empty}
+\tableofcontents % Table of contents 
+\thispagestyle{empty}
+\cleardoublepage
+
+%-------------------------------------------------------------------------
+%	THESIS MAIN TEXT
+%-------------------------------------------------------------------------
+% In the main text of your thesis you can write the chapters in two different ways:
+%
+%(1) As presented in this template you can write:
+%    \chapter{Title of the chapter}
+%    *body of the chapter*
+%
+%(2) You can write your chapter in a separated .tex file and then include it in the main file with the following command:
+%    \chapter{Title of the chapter}
+%    \input{chapter_file.tex}
+%
+% Especially for long thesis, we recommend you the second option.
+
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+\mainmatter % Begin numeric (1,2,3...) page numbering
+
+% --------------------------------------------------------------------------
+% NUMBERED CHAPTERS % Regular chapters following
+% --------------------------------------------------------------------------
+\chapter{Introduction}
+\section{Aim of this project}
+This work addresses a critical challenge within the realm of embodied non-humanoid avatars.
+\\A person that embodies a non-humanoid avatar is inevitably going to perceive and act in the environment through a body that is not his own: in order to have the user feel such body as his own there has to be a technological system that flawlessly translates the avatar's perceptions for the user to sense, and sends the user's inputs for the avatar to actuate.
+\\Furthermore this system, that we will call "Sensory Translation System", has to maintain meaningful communication between the Avatar's Controller and other people that are in physical proximity of the Avatar.
+We want to focus on one-to-one interaction, so there will be just one person interacting with the avatar that we are going to call "The Visitor". For the moment, we have also considered only the visual channel for communication, so interaction happes through non verbal cues. In order to assess the quality of communication between the parties we engaged them in a structured activity with a shared objective.
+\\
+\\
+This work is a vital component of the larger ongoing Physical Metaverse project and it builds upon the achievements of previous theses within the project. Specifically, it draws upon the integration of an initial  Sensory Translation System developed by Giuseppe Epifani as his Master thesis, then further developed in this thesis, and two different robots: Odile, an emotional robot built as her thesis by Erica Panelli, and Blackwings, a theatrical performance robot built by professor Andrea Bonarini.
+\\What sets this thesis apart from previous work is the introduction of a shared cooperative activity between the Visitor and the Controller, and the fact that the Controller will participate to the activity using a Physical Avatar (a Robot) mediated by the Sensory Translation System.
+\\
+\section{The importance of this Project}
+The importance of this project can be highlighted from several angles:
+\begin{itemize}
+\item Technological Advancements: The development of a Sensory Translation System that can successfully mediate communication in a shared physical environment is a significant technological advancement. It has the potential to shape the future of human-robot interaction and immersive experiences.
+\item Cross-Disciplinary Impact: This work sits at the intersection of robotics, human-computer interaction, and psychology. It offers insights that can benefit various fields, from assistive technology and healthcare to entertainment and education.
+\item Human-Centered Design: By emphasizing nonverbal communication and shared activities, this project focuses on making technology more human-centered. It addresses the fundamental human need for meaningful interaction and collaboration, transcending language and cultural barriers.
+\item Practical Applications: The development of a sensory translation system that can perceive and translate nonverbal cues has practical applications in a variety of industrial applications. For instance, it can enhance communication between people with language barriers, individuals with disabilities, and even in virtual and augmented reality settings.
+\item Academic Progression: As part of the Physical Metaverse project, this research contributes to the academic growth and knowledge base of the institution. It adds a new layer to the ongoing exploration of embodied avatars and human-robot interaction.
+\end{itemize}
+
+In summary, this work is driven by the need to create innovative technology that fosters meaningful communication in shared physical environments, advancing both the state of the art of technology and our understanding of how humans interact with non-humanoid avatars. It has far-reaching implications for technology, society, and interdisciplinary research, making it a highly relevant and valuable endeavor.
+
+\section {Thesis structure}
+This dissertation consists of 8 chapters.
+\\In order:
+\begin{itemize}
+    \item Chapter 1 - \textbf{Introduction}
+\\Provides an overview of the project, its objective and its utility.
+    \item Chapter 2 - \textbf{Theoretical Framework}
+\\Explores the theoretical foundations relevant to the project.
+    \item Chapter 3 - \textbf{Project Implementation}
+\\Describes the practical aspects and methodologies employed in implementing the project.
+    \item Chapter 4 - \textbf{The System}
+\\Details the functionalities of the system developed.
+    \item Chapter 5 - \textbf{The Hardware}
+\\Provides specifications and details about the physical components used in the project.
+    \item Chapter 6 - \textbf{External Software}
+\\Discusses the external software tools and frameworks integrated into the project.
+    \item Chapter 7 - \textbf{The Experiments}
+\\Presents information on the experimental procedures, testing, and analysis.
+    \item Chapter 8 - \textbf{Conclusions}
+\\Summarizes key findings, outcomes, and possible directions for future development.
+\end{itemize}
+
+\chapter{Theoretical Framework}
+
+\section{Human and Robot Perception}
+The intricacies of human perception extend to the profound capacity to interpret stimuli received through sensory organs. This process involves a harmonious collaboration of various brain regions and sensory systems, culminating in a coherent understanding of the surrounding world. In the robotic domain, perception involves machines sensing and deciphering their environment through sophisticated sensors and algorithms.
+Recent strides in robotic perception, driven by advancements in sensors, machine learning, and computational power, have revolutionized applications across industrial automation, autonomous vehicles, and daily life. These advancements not only empower teleoperation in challenging environments but also foster greater control and manipulation of robots in remote and inaccessible settings.
+
+\section{Teleoperation}
+Teleoperation, the act of remotely guiding devices, finds its strength in empowering human operators to maneuver in hazardous and unpredictable environments. This approach not only facilitates real-time adaptability but also opens avenues for remote experts to guide less experienced personnel, enhancing overall performance and minimizing errors.
+\\However, teleoperation grapples with challenges such as latency and limited situational awareness. While various technologies, from basic remote control to advanced methods like haptic feedback and augmented reality, exist, each has its unique limitations. Embracing embodiment in teleoperation, be it physical or virtual, emerges as a promising avenue to surmount these challenges, providing operators with an immersive and intuitive experience.
+
+\subsection{Embodiment in Teleoperation}
+Embodiment, the sense of "being there" in a remote environment, emerges as a game-changer in enhancing teleoperation. Whether through a physical robotic avatar mirroring real-time movements or a virtual representation in a digital realm, embodiment offers valuable feedback, elevating the operator's sense of presence and situational awareness.
+
+\subsection{Virtual Reality in Teleoperation}
+The synergy between Virtual Reality (VR) and teleoperation holds promise in creating a seamless embodiment experience. VR's immersive environment, coupled with haptic feedback and multimodal interfaces, addresses challenges posed by latency and enhances the operator's control and presence in the remote setting. Careful consideration of sensor selection, data processing, and feedback mechanisms is crucial for designing effective VR-based teleoperation systems.
+
+\section{Human-Robot Interaction}
+Human-Robot Interaction (HRI), a dynamic interdisciplinary field, aspires to develop robots capable of intuitive and natural interaction with humans. This pursuit requires a deep understanding of human psychology, social behavior, and the technical intricacies of robot design and programming.
+
+\subsection{The Role of the Physical Avatar}
+The introduction of physical avatars, remotely controlled robots facilitating communication and interaction, marks a transformative development. With applications ranging from telepresence and teleoperation to social interaction and therapy, physical avatars promise to redefine human-robot communication. Their potential to enhance natural and intuitive interaction positions them as catalysts for future research and development.
+
+\section{Activities and Games}
+
+\section{Wizard of Oz Experiments} %TODO Ma questo sta nel capitolo "Theoretical Framework"? Perché?
+
+\section{Related Works} %TODO non so se questa èuna sezione a parte o te li trovi distribuiti nelle altre sezioni. Vediamo quando ne hai scritto.
+
+\chapter{Project Implementation}
+
+
+This chapter outlines the entire execution of the project, explaining step by step how we reached the final state of the system. We will walk through the stages that, from becoming familiar with the previously existing system, led to the results of the latest experiments conducted with the new system. You will find the description of the final system in the next chapter.
+
+The ultimate goal of this project is to have two individuals, a Visitor and a Controller, collaboratively engaging in a goal-oriented activity. During the activity, the Controller will not be physically present, unlike the Visitor. Instead, the Controller will participate through a Physical Avatar (a robot in our case) controlled remotely, mediated by a Sensory Translation System.
+
+The Visitor will be unaware that the robot with which they are interacting is, in fact, controlled by another person. Simultaneously, the Controller will not know that the entity they see in the virtual world, namely a Human Translation of the Visitor, is also a person.
+
+We can say that our system has succeeded if, at the end of the tests, we can confidently assert the following:
+
+\begin{itemize}
+    \item The two participants were able to understand each other.
+    \item The two participants were able to work together.
+\end{itemize}
+It's noteworthy that whether they won or lost is not the primary focus, as the activity could prove to be too difficult or too easy. What we aim to study is the quality of communication and interaction.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{FullSystem.png}
+    \caption{Overview of the Full System}
+    \label{fig:full_system}
+\end{figure}
+
+
+\section{Starting point}
+The implementation of the system began by building upon the foundation laid in the previous thesis, "Non-Verbal Communication Through a Robotic Physical Avatar: A Study Using Minimal Sensor Information." The initial setup involved a physical avatar and its sensory translation system, featuring a VR headset and two joystick controllers.
+
+Expanding upon this existing framework, we introduced new sensors and features informed by the insights gleaned from past tests. A pivotal addition during this phase was the incorporation of the DepthAI camera, providing a fresh perspective on the perceived human pose. 
+
+\begin{figure}[H]
+    \centering
+    \subfloat[The past experiments' setup.\label{fig:old_maze}]{
+        \includegraphics[width=\textwidth/3]{OldMaze.PNG}
+    }
+    \quad
+    \subfloat[The starting robot.\label{fig:old_robot}]{
+        \includegraphics[width=\textwidth/3]{OldRobot.PNG}
+    }
+    \caption{The starting point of this thesis.}
+    \label{fig:quadtree2}
+\end{figure}
+
+The work seamlessly resumed from where it had been left in the aforementioned thesis. By retrieving both hardware and code, the system was restored to its state during the final experimental phase. After conducting preliminary exploratory tests to assess various features, the results were analyzed to identify focal points for further development.
+
+An early observation from these experiments highlighted a recurring concern—the lack of a defined "purpose." This absence adversely affected the embodiment of the Controller in the Physical Avatar. Recognizing this, the subsequent work aimed to address and rectify this issue to enhance the overall effectiveness of the system.
+
+\subsection{Lidar Visualization}
+Before delving into the addition of new features, we opted to focus on refining existing elements. This approach aimed to familiarize ourselves with the system and discern the tools already at our disposal, minimizing the need for redundant development. Guided by test results, attention was then directed towards stabilizing the lidar visualization.
+
+\begin{figure}[H]
+    \centering
+    \subfloat[Previous system's Lidar Visualization\label{fig:old_lidar}]{
+        \includegraphics[width=\textwidth/3]{OldLidar.PNG}}
+    \quad
+    \subfloat[New Lidar Visualization. The addition of the Sun (see later) can already be noticed.\label{fig:new_lidar}]{
+        \includegraphics[width=\textwidth/3]{NewLidar.PNG}
+    }
+    \caption{First experiment on the visualization's graphics}
+    \label{fig:quadtree2}
+\end{figure}
+
+Drawing from insights gained in the Computer Graphics course, we recognized the impact of manipulating light and color in a virtual environment on perceptual immersion. Consequently, we initiated changes to the textures of the pillars representing lidar-detected points. A uniform tint and geometric shapes that blended seamlessly proved instrumental in enhancing the stability of the overall visualization. Experimentation with fade-in and fade-out effects was also conducted. While these effects appeared to stabilize the environment, they introduced an unavoidable delay in visualization, negatively impacting the quality of embodiment.
+
+While working on the visualization of these pillars, considerations were made on extracting information and potentially grouping them into walls. However, a notable limitation emerged – the system lacked a "memory." The Controller remained consistently centered in the virtual world without any rotation. The surrounding pillars approached or receded, mirroring the 360-value array (one distance for each angle) received from the lidar. Crucially, the pillars only moved closer or farther away; none shifted laterally. This characteristic led to the characterization of the system as "memoryless."
+
+Aware of SLAM algorithms, we hesitated to adopt them at this stage. We viewed them as potentially diverging from the envisioned Sensory Translation System, as relying heavily on computer processing could distort the perception we aimed to maintain.
+
+\subsection{The Sun}
+After these initial trials, we were ready to develop new features. The first addition was the incorporation of a "sun" to provide an additional reference point for the Controller, who could easily lose orientation in such a homogeneous environment. To display the sun in the visualization, we needed the current orientation of the robot. From this orientation, we could rotate the sun in the virtual world (remembering that the controller neither rotates nor translates; it's the world that changes around them).
+
+To obtain this data, we utilized an onboard IMU on the robot, acknowledging that even a slight drift would not significantly compromise the experience. The results were satisfying; it became possible to constantly understand the orientation relative to the starting point by observing shadows in the surrounding environment.
+
+\subsection{Human Pose Estimation}
+
+When the DepthAI camera, long considered an essential component for advancing the Sensory Translation System, became available, we immediately began experimentation. After some research, we discovered the versatile Python repository for Human Pose Estimation, known as "DepthAI Blazepose."
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{UnityHumanPose.PNG}
+    \caption{3D visualization of the Pose in Unity.}
+    \label{fig:unity_human_pose}
+\end{figure}
+We seamlessly integrated the code into the robot's Jetson pipeline. The software loads a neural network onto the camera, which starts running it and sends the recorded video images and an array of pose landmark coordinates (containing features of the first detected human) via USB connection. We transmitted this array to Unity via UDP, adhering to the Key:Value format already used in the original Unity project. Upon receiving these values in the Unity project, we positioned spheres representing the pose's joints in the virtual world in front of the Controller.
+
+The primary challenge encountered was a Computer Vision issue. Although it was possible to recognize the person captured by the camera in the 3D reconstruction, their position and orientation relative to the observer needed adjustment through extrinsic calibration.
+
+Using Unity's graphical interface made this calibration relatively straightforward. Instead of explicitly calculating the transformation matrix representing the calibration, we opted to expose adjustable slider variables. With each update, these variables modified the position and orientation of the spheres—essentially, offsets and scales on the x, y, and z coordinates of the received points.
+
+In this initial phase the results were satisfactory, placing the virtual person in a completely coherent position relative to the observer.
+
+\subsection{Color tracking}
+
+In anticipation of introducing a real-world activity through this sensory translation, we decided to work on the Controller's perception of relevant objects in the environment. The aim was to enable the Controller to extract useful information, not just for navigation but also to understand the affordances of the shared space. An initial, perhaps "naive" experiment involved detecting colored shapes in the camera image.
+
+\begin{figure}[H]
+    \centering
+    \subfloat[The Robot is far from the blue box, the biggest blue ball in the screen represents the box.\label{fig:color_tracking1}]{
+        \includegraphics[width=\textwidth/(3)]{ColorTracking1.PNG}}
+    \quad
+    \subfloat[The Robot approaches the box, the blue ball is visualized as closer.\label{fig:color_tracking2}]{
+        \includegraphics[width=\textwidth/(3)]{ColorTracking2.PNG}
+    }
+    \quad
+    \subfloat[The Robot rotates right, leaving the box to its side, the blue ball is now on the side of the view.\label{fig:color_tracking3}]{
+        \includegraphics[width=\textwidth/(3)]{ColorTracking3.PNG}
+    }
+    \caption{Reconstruction of the blue box's location.}
+    \label{fig:blue_box}
+\end{figure}
+
+In practice, the results were immediately interesting and proved highly valuable later in the project. The practical goal was to display the position of blue boxes in the virtual environment that the physical robot could see. These boxes were placed on chairs of similar heights for camera angle consistency.
+
+To achieve this, we applied a color mask, in this case, blue, to the image and detected the largest "blob" (group of pixels) corresponding to that color. The assumption was that the largest blob represented the box the robot was observing. This, too, turned out to be a Computer Vision problem, perhaps even more complex than the previous one. The precise position of the object was crucial this time, and relying on color made it susceptible to changes in light intensity, potentially invalidating any calibration.
+
+Concerning the translation of position from image space to world space, we quickly resolved it by making a simple assumption: the height of the boxes above the ground and their size were fixed. This way, a distant box would appear lower in the image, while a closer one would appear higher, hence given size and height in two dimensions we could recover their distance and in general position in three dimensions.
+
+Another issue arose as the boxes easily exited the camera's field of view when the robot rotated. To address this, we experimented with integrating the position of a box lost by the camera using a combination of dead reckoning from sent movement input and IMU, the same used for the sun. As expected, the estimated position's reliability quickly dropped when undetected, but still it was better than nothing.
+
+The process was evidently empirical and exploratory, but the visualization effectively worked, allowing for the identification of the boxes.
+
+\section{Study on activities}
+Dopo la fase iniziale di esplorazione e comprensione di capacità e potenzialità del sistema abbiamo deciso di fermarci e iniziare a discutere a quale tipo di attività nello specifico avremmo voluto lavorare. Dopo numerosi incontri e discussioni abbiamo elaborato due modi di classificare le nostre attività, una sorta di bussola per guidarci nella scelta di quella più rilevante ai nostri scopi.
+Categorization 1
+ASSI QUANTITATIVI
+Categorization 2
+BOLLE QUALITATIVE
+
+\section{Wizard of Oz formulation}
+Durante lo studio di paper per la formazione di un background alla tesi mi sono imbattuto in “The Oz of Wizard: Simulating the Human for Interaction Research
+Aaron Steinfeld
+Robotics Institute
+Carnegie Mellon University Pittsburgh, PA 15213 412-268-6346”, dal quale ho realizzato che avevamo più modi per formulare il nostro sistema, visto che eseguire direttamente tests con tecnologia e utenti reali si è rivelato presto troppo ambizioso. Le seguenti formulazioni hanno quindi rappresentato un’importante bussola per l'analisi e lo sviluppo di questo sistema. Di seguito sono esposte tre diverse formulazioni rifacendosi ai canoni del paper citato, richiamiamo inoltre alla formulazione originale del sistema come confronto \cref{fig:full_system}.
+
+
+\subsection{Virtual Visitor and Virtual Avatar}
+
+Prima di continuare chiariamo due nuovi elementi che saranno usati nelle successive formulazioni del sistema.
+Nascevano come formulazioni alternative per fasi di test preliminari, tuttavia l'abbondanza di occasioni per test con una versione simil-definitiva del sistema non ha mai portato allo sviluppo di applicativi specifici per questi casi.
+
+Ricordiamo che nel sistema reale abbiamo un Visitor che si trova fisicamente prossimo al Physical Avatar per svolgere una goal oriented activity. Il Physical Avatar a sua volta è teleoperato dal Controller attraverso il Sensory Translation System.
+
+\begin{figure}[H]
+    \centering
+    \subfloat[Simulated Visitor.\label{fig:simulated_human}]{
+        \includegraphics[width=0.45\textwidth]{SimulatedHuman.png} % Adjust width as needed
+    }
+    \caption{Simulated version of the Visitor.}
+    \label{fig:quadtree2_visitor}
+\end{figure}
+
+Lato Visitor quindi abbiamo la persona  di fronte a una telecamera situata sull'Avatar Fisico e il software di pose tracking. Con il nostro sistema è possibile di fatto utilizzare qualunque telecamera per il pose tracking, non solo la DepthAI, a patto che i landmarks di output della posa rispettino il formato Mediapipe.
+Ancora più importante non è strettamente necessario che la telecamera si trovi sull'Avatar Fisico, di fatto potremmo simulare (e simuleremo) l'intero sistema per avere un Avatar Virtuale, l'unica cosa che conta è che la posizione relativa assunta tra telecamera, Avatar e Visitor nel mondo virtuale sia coerente.
+Sarebbe inoltre possibile non effettuare alcuna pose detection e generare i landmarks della posa coerenti in altri modi, questa modalità non è tuttavia stata usata nella trattazione.
+
+
+\begin{figure}[H]
+    \centering
+    \subfloat[Simulated Controller.\label{fig:simulated_robot}]{
+        \includegraphics[width=0.45\textwidth]{SimulatedRobot.png} % Adjust width as needed
+    }
+    \caption{Simulated version of the Controller.}
+    \label{fig:quadtree2_controller}
+\end{figure}
+Lato Controller invece abbiamo un utente che comanda il Physical Avatar tramite un Sistema di Traduzione Sensoriale. Questo sistema si può rivedere in due modi:
+\begin{itemize}
+    \item da un lato possiamo semplificare il Sensory Translation System al semplice schermo di un computer dove i controlli sono tastiera e mouse
+    \item dall'altro possiamo sostituire l'avatar fisico con uno virtuale
+\end{itemize}
+Vedremo che durante lo sviluppo abbiamo usato combinazioni di entrambe le cose, talvolta con il VR headset (Sensory Translation System) per muoversi nel mondo virtuale e altre con tastiera e monitor per controllare il Robot Fisico (Physical Avatar).
+
+\subsection{Virtual Avatar and Virtual Visitor with real pose tracking}
+\includegraphics[width=\textwidth]{RealHumanVirtualRobot.png}
+Questa è la variante del sistema più significativa nello studio. Massimizza infatti la dimensione di “informazione da umano a robot” formulata in precedenza che è poi l’obiettivo principale di questa trattazione. Di fatto per la maggior parte del tempo durante lo sviluppo il setup per i test è stato questo.
+
+In questa formulazione il Sistema di Traduzione Sensoriale si semplifica a un personal computer, rendendo molto più semplice testare il sistema anche per utenti esterni al laboratorio tramite connessione internet. Perchè questa versione funzioni avremo in laboratorio una persona che indossa il visore e si posiziona di fronte al robot e in particolare alla telecamera DepthAI. Questa volta il visore non servirà alla Traduzione Sensoriale, bensì servirà a permettere alla persona reale di entrare nel mondo virtuale e incontrare l'Avatar Virtuale. La persona invece di camminare fisicamente in giro per la stanza si sposterà con i joystick del visore, rimanendo quindi sempre in condizioni ideali di piena visione da parte della telecamera di pose tracking.
+
+Questa configurazione è stata realmente testata ed è esposta più nel dettaglio nel capitolo apposito.
+
+\subsection{Virtual Avatar with real Sensory Translation System, Virtual Visitor}
+\includegraphics[width=\textwidth]{RealRobotVirtualHuman.png}
+Questa variante del sistema studia l’asse che rappresenta la direzione di comunicazione complementare a quella precedente. Vuole infatti capire cosa il robot potrebbe comunicare all’umano, permettendo di testare il sistema reale senza che persone esterne debbano venire in laboratorio e interagire con l'Avatar Fisico.
+
+Realisticamente questa versione non avrà il beneficio di raggiungere più utenti, perchè per forza di cose saranno seduti di fronte al loro computer e la loro webcam, se presente, catturerà solo la parte superiore del busto senza nemmeno le braccia, che saranno impegnate alla tastiera o al mouse.
+
+E’ possibile rinunciare allo spostamento della persona nello spazio per recuperare almeno una Human Pose di qualità: se infatti l’utente sarà in piedi a una certa distanza dal computer potrà comunicare non verbalmente muovendo il proprio corpo.
+
+E’ anche possibile mantenere lo spostamento nello spazio e rinunciare alla fedeltà della human pose aggiungendo un’opportuna interfaccia che permetta di generare sequenze di pose senza telecamera, ma in ogni caso questa formulazione non è stata approfondita nello studio.
+
+\subsection{Virtual robot, virtual human}
+\includegraphics[width=\textwidth]{VirtualRobotVirtualHuman.png}
+Questa formulazione non ha avuto riscontri pratici, ma è esposta per completezza. in questa versione possiamo potenzialmente raggiungere ancora più utenti ma abbiamo gli svantaggi di entrambe le due precedenti. Rivedendo radicalmente il modo di interpretare e estrarre valore dagli esperimenti si potrebbero forse ricavare dati utili anche con questa formulazione, puntando sulla quantità di dati che genererebbe.
+
+\subsection{Variants that could be of interest}
+\includegraphics[width=\textwidth]{OnlyHumans.png}
+Ragionando sulle formulazioni precedenti sono emerse altre varianti esterne allo schema del sistema finale che potrebbero risultare di interesse nello sviluppo.
+
+La prima è un ambiente nel quale ci sono solo Avatar Virtuali con STSs che al posto di svolgere human translation semplicemente mostrano gli altri Avatar: l’utilità di questo ambiente starebbe nel fatto che può portare all’emergenza di nuovi comportamenti da parte dei Controllers non inizialmente pensati.
+
+\includegraphics[width=\textwidth]{OnlyRobots.png}
+La seconda è un ambiente complementare al precedente, in cui si troverebbero utenti che vedono e vengono visti tramite Human Translation. Anche questa versione può portare a emergere comportamenti che altrimenti non osserveremmo.
+
+\section{The Virtual Version}
+
+\subsection{The pilot demo}
+\includegraphics[width=\textwidth]{ThePilotDemo.PNG}
+
+\subsection{The multiplayer demo}
+
+\subsection{The online multiplayer}
+
+
+\section{Preparation of Odile}
+
+After outlining the chosen activity for consideration in the project, we decided to collaborate with the student that was nearing completion of the Odile robot. There were communication issues between Arduino and the servomotors that we were able to resolve. Our primary contribution to completing the robot was the development of a system that connected the pan and tilt of the robot's camera to the orientation of the headset worn by the controller. This allowed for a much more natural and expressive control in Odile's final experiments.
+
+From the first-person control of the robot, a latency issue in video transmission became apparent. To address this, we developed a GUI that enables real-time adjustments to the transmitted image size and JPG quality. By reducing these parameters, latency decreases. As expected it was observed that latency grows linearly with size and sublinearly with quality. Playing with the sliders allowed for quickly finding a functional compromise for real-time robot control.
+
+The chosen activity in Odile's experiments was very similar to what we will implement and was in fact influenced by our choice. The difference was that the physical avatar and the visitor's roles were switched, with the former being the guide in this case.
+
+The results were promising for the continuation of this project.
+
+\section{The Simulation}
+
+La simulazione è un digital twin del sistema reale ed è stato un attore fondamentale nello sviluppo del progetto. Grazie ad esso si è tagliato drasticamente numero di volte in cui serviva azionare il robot reale per testare il sensory translation system e, ancora più importante, è stato possibile isolare qualunque complicazione hardware legata al sistema reale dalle sfide lato software in termini di algoritmi.
+
+Siccome la simulazione non ha comunque stretti requisiti in termini di fedeltà fisica con il sistema reale è stato possibile svilupparla direttamente in unity, a strettissimo contatto con la visualizzazione.
+
+Un fattore importante per la simulazione era però il fatto che fosse completamente trasparente al sensory translation system, ovvero che la si potesse usare intercambiabilmente con il robot reale, in modo da non appesantire inutilmente lo sviluppo del progetto.
+
+Durante lo sviluppo ci si è spesso ritrovati addirittura a lavorare con una versione dell’avatar per metà dei componenti fisico, nel robot, e per l’altra metà virtuale, in simulazione.
+
+\subsection{Virtual Odile}
+
+“Virtual Odile” è il protagonista della simulazione: una copia virtuale dell’avatar fisico “Odile”. Si trova in Unity ed è dotato di un “Jetson virtuale” e di copie virtuali dei sensori. Questo Jetson virtuale riceve i dati dai sensori e li invia a localhost tramite protocollo UDP, sfruttando tutta l’infrastruttura di ricezione già esistente nella visualizzazione, la quale semplicemente non ha bisogno di differenziare da quale ip vengono i dati ma li riceve e mostra e basta.
+
+Virtual Odile è situato in una stanza virtuale con degli ostacoli, del tutto simile agli ambienti nel quale posizioniamo il robot reale, per semplificare lo sviluppo e la comunicazione fra moduli si trova inoltre nello stesso spazio virtuale della visualizzazione, lontano dal controllore e invisibile, tra l’altro in un certo senso coerente con il fatto che chi indossa il VR si trova nello stesso spazio fisico del robot reale anche se non in immediata prossimità.
+
+In seguito sono esposti i sensori virtuali:
+
+\subsubsection{Virtual Lidar}
+
+Virtual Lidar è un interessante caso di modellazione di sensore, sfrutta un algoritmo di ray casting eseguito nell’ambiente virtuale 3D in unity per simulare il lidar reale, con l’aggiunta di rumore al fine di imitare le difficoltà tecniche del vero lidar e prevenire lo sviluppo di algoritmi che funzionassero solo nel “caso ideale”. E’ degno di nota che “l’effetto scia” lasciato dal lidar reale quando il robot ruota, anche se non modellato, non è del tutto trascurabile, in ogni caso gli algoritmi sviluppati in simulazione si sono rivelati abbastanza robusti da resistere a questa complicazione a patto che il robot ruoti abbastanza lentamente, cosa in ogni caso necessaria al fine di non disorientare il Controllore.
+
+\subsubsection{Virtual Camera}
+
+Virtual camera si appoggia a codice Python del robot reale, è utilizzato per rilevare i codici QR delle stazioni nel mondo virtuale. Il componente Unity è una telecamera che trasmette immagini della stanza virtuale via protocollo UDP a localhost, dove lo script Python è in ascolto. L’unica differenza che di fatto questo script ha da quello eseguito nel robot reale è il “canale” sul quale riceve le immagini: nel robot reale è la porta seriale dove è connessa la webcam, mentre nella simulazione è il socket UDP. Questo componente è stato fondamentale nella calibrazione estrinseca della telecamera, ovvero la traduzione della posizione di un oggetto nell’immagine in prospettiva alla sua posizione tridimensionale relativa al controllore nel mondo virtuale.
+
+\subsubsection{Virtual Pose Recognition}
+
+Anche virtual pose recognition si appoggia a codice Python, in questo caso però è uno script completamente differente da quello eseguito nel robot, l’output è comunque lo stesso al fine di mantenere uguali le interfacce tra componenti. Il suo scopo è quello di testare il funzionamento della visualizzazione degli esseri umani nel mondo virtuale quando non è necessaria la precisione della telecamera DepthAI. Lo script Python riceve il feed di una webcam collegata al computer e tramite una rete neurale estrae le features della posa dell’essere umano osservato, dopodichè le invia alla visualizzazione con lo stesso identico formato utilizzato dal robot reale.
+
+\subsubsection{Virtual Bump and Virtual Sun}
+
+Queste due funzionalità, che nel robot reale sono svolte da una IMU, in Unity vengono svolte dall’analisi delle trasformazioni o dal controllo su collisioni, tutti dati noti nell’ambiente virtuale, i relativi messaggi vengono poi inviati tramite jetson virtuale con lo stesso protocollo del robot reale.
+
+\subsubsection{Virtual Body}
+
+Il corpo virtuale del robot è una riproduzione fedele a quello reale in termini di gradi di libertà e dimensioni. E’ possibile far muovere nello spazio Odile Virtuale con gli stessi comandi che vengono inviati al robot reale, cosa molto importante per poter testare gli algoritmi sul lidar virtuale e calibrare le telecamere più rapidamente.
+
+La riproduzione del braccio di Odile ha anche permesso di testare la traduzione dei movimenti umani a Odile Virtuale, la prima human viz utilizzata alla Digital Week.
+
+\section{Digital Week preparation}
+
+A inizio ottobre a Milano ha luogo la Milano Digital Week, un evento annuale dedicato all'innovazione digitale e alla tecnologia che si svolge a Milano, Italia. Durante questa settimana, si organizzano conferenze, incontri, workshop e mostre che mettono in luce le ultime tendenze digitali e tecnologiche, coinvolgendo professionisti, imprese e appassionati del settore. L'obiettivo è promuovere la conoscenza e la diffusione della tecnologia e dell'innovazione digitale in diversi settori, tra cui l'industria, l'arte, la cultura e molto altro.
+
+Un anno prima di questo lavoro il team di Physical Metaverse ha partecipato tramite il Politecnico di Milano con un suo evento: Connect to the Machine. In questo evento veniva data la possibilità a visitatori esterni di partecipare a due esperienze, nella prima si indossava un headset VR e ci si immergeva in un mondo virtuale, ovvero il primo Sensory Translation System del Physical Metaverse, mentre dall’altro si poteva interagire fisicamente con Siid, il primo avatar fisico controllato tramite traduzione sensoriale. Le due esperienze venivano presentate come separate ai visitatori, in modo da limitare il più possibile il bias al momento del completamento dei questionari.
+
+Quest’anno Physical Metaverse ha di nuovo partecipato alla Digital Week, portando il nuovo sistema sviluppato con questa tesi. Il nome dell’evento era “Playful Machines”, e in maniera del tutto simile all’anno scorso i visitatori potevano partecipare a due esperienze. Stavolta il Sensory Translation System era quello sviluppato in questa tesi, mentre il robot era Odile, con le modifiche apportate in questo lavoro. Inoltre stavolta l’interazione con l’avatar fisico è stata resa strutturata con l’attività di “Escape Room” e solo una persona alla volta poteva trovarsi nello spazio fisico a interagire con l’avatar.
+
+In preparazione a questo evento è stata richiesta un grandissima quantità di lavoro, perchè si voleva ottenere molto in anticipo (sui tempi prefissati da questa trattazione) una versione già pronta all’uso per utenti esterni.
+
+Dico spesso che per completare questo lavoro, forse esagerando o forse no, sarebbero serviti o il triplo delle persone o il doppio del tempo, tuttavia ce l’abbiamo fatta comunque per merito di una grande esperienza nel campo e di assistenza da parte dell’intelligenza artificiale.
+
+\subsection{The activity}
+\includegraphics[width=\textwidth]{DigitalWeekend.png}
+Con un incontro di confronto abbiamo deciso di delineare chiaramente cosa avremmo portato all’evento: per delineare il tutto in modo efficace ed efficiente ci siamo concentrati soprattutto sull’interazione fra Visitor e Avatar Virtuale, considerando che la Traduzione Sensoriale sarebbe venuta di conseguenza.
+
+L’attività si sarebbe quindi svolta in due luoghi contemporaneamente: da una parte ci sarebbe stato il Controller, che tramite il Sensory Translation System avrebbe impersonato l’avatar fisico, mentre dall’altra l’Avatar Fisico e il Visitor.
+
+L’attività fra Avatar Fisico e Visitor sarebbe stata una sorta di Escape Room come quella degli esperimenti di Odile, stavolta con il Visitor a guidare l’avatar verso gli obiettivi giusti. Abbiamo deciso di chiamare gli obiettivi “Stazioni”. La presenza di “Ostacoli” con una affordance ben definita era una feature nuova nel sistema, da definire chiaramente. Fortunatamente sono stati fatti esperimenti in passato in vista di questa feature, quindi da subito è stato scartato il Color Tracking. La soluzione più semplice e rapida al momento ci è sembrata quella di apporre codici QR sulle stazioni, in modo che il robot vedendoli con la telecamera avrebbe potuto non solo localizzarli nello spazio ma anche differenziarne il significato: come nell’esperimento di Odile non tutte le stazioni erano obiettivi validi.
+
+Questa era l’interfaccia delle stazioni con il robot, in termini di interfaccia tra stazioni e Visitor abbiamo deciso di aggiungere un Esp con un led, il quale sarebbe stato verde o rosso a seconda che la stazione fosse giusta o sbagliata, in modo che il visitor intuitivamente avrebbe potuto decidere verso quali stazioni indirizzare l’Avatar Fisico.
+
+Al completamento di una stazione abbiamo voluto delineare un feedback il più esplicito possibile, facendo sia lampeggiare il led fino a spegnerlo, che eseguire un movimento programmato al braccio del robot, prendendo in un certo senso ispirazione dai droidi nella fantascienza e in particolare R2D2 di Star Wars.
+
+Dagli esperimenti di Odile abbiamo anche ripreso l’aggiunta di uno schermo nella stanza, chiamato Game Manager, il quale dà una panoramica del progresso nel gioco al Visitor, mostrando il tempo rimanente e il numero di stazioni completate.
+
+In seguito è descritto il processo di sviluppo delle features necessarie all’evento.
+
+\subsection{The Simulation}
+
+Un requisito fondamentale allo sviluppo erano la possibilità di testare in modo più agile possibile l’avatar nell’ambiente e la riconfigurabilità di avatar e ambiente, in quanto era ancora tutto da sviluppare e non si conoscevano chiaramente eventuali difficoltà implementative che avremmo potuto incontrare. Così il primo step è stato lo sviluppo di una simulazione che rappresenta di fatto il Digital Twin del nostro robot.
+
+Grazie a questa simulazione abbiamo potuto testare le features software sviluppate con largo anticipo su implementazioni fisiche, in modo da ridurre al minimo il trial and error nelle fasi più costose del progetto in termini di tempo e risorse materiali.
+
+Nella sezione \href{https://docs.google.com/document/d/1_oHQyfN3Rls1Onoe8GPsAkBPQEaSgN63hHX0KCW-OhU/edit\#heading=h.ugcex1ghxrlt}{The Simulation} è possibile trovare nel dettaglio lo sviluppo di questa componente.
+
+Le features in seguito sono state testate per la maggior parte del tempo in simulazione, passando al sistema fisico solo nei test finali.
+
+\subsection{Merge Walls}
+
+Merge Walls è una feature che avevo in mente
+
+\subsection{QR Code Stations}
+
+Per l’analisi dei codici QR abbiamo deciso, dopo una ricerca in rete, di affidarci alla libreria Python "PYZbar", la quale a partire da un feed video dà in output, se sono presenti codici QR nell’immagine, i quattro vertici dei quadrati che circoscrivono ogni codice e i valori codificati. Rielaborando queste informazioni abbiamo creato un array contenente valore codificato, X e Y dei centri dei codici QR nell’immagine, e distanza dalla telecamera, e lo abbiamo inviato con il formato Key:Value al VR. In simulazione abbiamo poi risolto il problema di Computer Vision di traduzione da Image Space a World Space.
+
+Dopo una rapida calibrazione degli slider di calibrazione estrinseca i risultati erano soddisfacenti, tuttavia era possibile tracciare una stazione solo mentre veniva effettivamente vista dalla telecamera, ma dato il campo visivo abbastanza ristretto questa veniva persa molto facilmente. Essendo in simulazione si sono fatte prima delle prove esplorative usando l’odometria e come si immaginava funzionavano molto bene, tuttavia come ben noto l’odometria raramente funziona nel mondo reale, l’idea era però di usarla solo localmente, ovvero circoscritta a brevi periodi e facendo “fadeare” la stazione tracciata con questa tecnica, in modo da comunicare come l’informazione nel tempo perdesse attendibilità in mancanza di riconferma da parte della telecamera.
+
+La simulazione ha permesso di trovare quale fosse la configurazione fisica più efficiente per garantire che una stazione venisse effettivamente rilevata quando era nel campo visivo della telecamera: sperimentalmente la conclusione è stata quella di dare una forma esagonale alle stazioni e un codice QR su ogni faccia, in modo che se una faccia non venisse vista sicuramente le sue adiacenti venissero rilevate.
+
+\subsection{Lidar Tracking}
+
+Vista la scarsa applicabilità dell’odometria nel mondo reale abbiamo deciso di passare a un metodo diverso: tracciare le stazioni usando l’informazione a 360 gradi del lidar. L’intuizione è nata vedendo che quando viene rilevata una stazione essa inevitabilmente va a sovrapporsi a un gruppo di pillars rilevati dal lidar, e questi pillars rappresentano la forma fisica della stazione: quando la stazione viene “persa” dalla telecamera i pillars sono facilmente tracciabili ad occhio e, a patto di ricordarsi quale gruppo corrisponde a quale stazione, è possibile tenere traccia delle stazioni dalla sola informazione del lidar.
+
+Ciò di cui stiamo parlando fa probabilmente risuonare un nome a chi lavora con robots e lidars: SLAM. Il punto di “break-even” tra una tecnica sviluppata a mano e l’utilizzo di un qualche algoritmo di SLAM stava probabilmente venendo superato in questa fase del progetto tuttavia, date le scadenze e l’idea originale di denaturare il meno possibile l’informazione sensoriale, abbiamo deciso almeno per ora di rimanere coerenti con la nostra scelta iniziale. Più tardi torneremo su SLAM e tratteremo un confronto fra il metodo sviluppato e tale tecnica.
+
+Tornando al Lidar Tracking, l’intuizione si è rivelata del tutto valida e ha portato allo sviluppo di un algoritmo capace di tracciare le stazioni fondendo le informazioni provenienti da telecamera e lidar con risultati sulla posizione più stabili che non soltanto da telecamera: come spiegato in precedenza le singole stazioni hanno infatti più codici QR e siccome in ogni istante uno o più di essi possono essere detectati la visualizzazione risultava piuttosto traballante in prossimità delle stazioni, grazie al lidar tracking è diventato possibile visualizzare la stazione semplicemente al centro dell’ostacolo fisico rappresentato da essa.
+
+\subsection{Human Translation}
+
+Delineare la traduzione da umano rilevato a entità non umanoide ha richiesto un’altro incontro di confronto, abbiamo quindi deciso di riproporre Odile come compagno nell’attività, stavolta in forma virtuale, però mantenendo il suo ruolo di guida che ha funzionato nei test precedenti. A parte la traslazione nello spazio, che abbiamo voluto mantenere invariata da ciò che osserva la telecamera DepthAI, avevamo a disposizione i gradi di libertà della testa, dove si trovava la telecamera in Odile reale, e del braccio. Come mappare la testa è risultato immediato, semplicemente tracciando il gaze del visitor e traducendolo a gaze di odile virtuale. Il problema su come comandare il braccio è risultato invece molto meno di immediata risoluzione: dovevamo decidere come tradurre la posa della persona reale al braccio di Odile introducendo il minor bias possibile. Dopo alcune prove non troppo soddisfacenti con cinematica diretta del braccio destro dell’umano abbiamo deciso di provare con la cinematica inversa: la posizione della mano nello spazio relativamente alla persona avrebbe indicato quella dell’end effector del braccio di Odile relativamente al corpo robotico. Rimaneva un problema di bias su quale braccio scegliere, oppure se usare entrambi e se sì in che modo: almeno in questa fase con tempi ristretti abbiamo semplicemente scelto il braccio destro.
+
+La cinematica inversa ha dato risultati promettenti fin da subito, tuttavia era chiaro che sarebbe servito molto più tempo di quello a disposizione prima della Digital Week per arrivare a una calibrazione veramente efficace e di ancora più tempo per studiare traduzioni che fossero significative nella nostra ricerca, così per il momento ci siamo accontentati di qualcosa di almeno funzionante.
+
+\subsection{The Installation}
+
+Completate tutte le componenti riguardanti l’interazione mancava solamente la costruzione dell’ambiente in cui svolgere l’attività. 
+
+\begin{itemize}
+    \item Physical room
+    \item Virtual environment
+\end{itemize}
+
+\subsection{The questionnaire}
+
+\section{Digital Week live tuning}
+
+\subsection{Day One}
+
+\paragraph{Considerations}
+
+Il primo giorno è iniziato con numerosi problemi hardware che ci hanno obbligato a ritardare di qualche ora l’inizio dell’evento, il più significativo è stato la rottura del servomotore di pan della telecamera a causa del cedimento della porzione del collo che non volevamo attuare. Nel tentativo di identificare il problema (non potevamo escludere errori lato software) abbiamo purtroppo rotto anche il servomotore del tilt al quale, per eseguire una diagnostica abbiamo inviato il segnale del pan: questo si è ritrovato a lavorare in un range per il quale non era strutturalmente preparato e così a seguito di numerosi stalli passati inosservati si è fuso. La lezione appresa è stata che troppa fretta (alcune persone nel mentre arrivavano chiedendo quando si sarebbe potuto iniziare) può portare a commettere errori grossolani anche un team composto da tesista, dottorando e professore.
+
+In ogni caso nel primo pomeriggio il sistema è tornato operativo e abbiamo potuto iniziare con le attività.
+
+Il ritardo dovuto a guasti ci ha impedito di effettuare le opportune calibrazioni sul robot nell’ambiente reale programmate per la mattina (per motivi organizzativi anche esterni era il primo momento utile in cui avremmo potuto eseguirle), così i primi visitatori non hanno purtroppo potuto provare la versione ottimale del sistema, in ogni caso si sono trovati in generale comunque soddisfatti.
+
+Si è rivelata fondamentale la scelta di non buildare l’applicazione di Traduzione Sensoriale da eseguire nel visore, ma di eseguirla invece in modalità esecuzione di Unity tramite collegamento seriale con il computer. Questa scelta ci ha permesso di eseguire calibrazioni durante le esperienze degli utenti tramite l’inspector del game engine senza disturbarli, cosa che nel giro di tre o quattro prove ha migliorato di molto l’esperienza utente.
+
+L’aspetto più problematico del sistema è stata la latenza nella trasmissione della posa dalla telecamera DepthAI, questa infatti ha reso difficile seguire Visitatori che si muovevano particolarmente veloci.
+
+\paragraph{Fixes and Improvements}
+
+Considerati i feedback dati di persona dagli utenti durante la giornata e le osservazioni svolte sul loro comportamento e la loro performance nel mondo virtuale abbiamo ritenuto necessario apportare modifiche indispensabili al miglioramento dell’esperienza utente di chi indossava il visore.
+
+La prima, e più sostanziosa, è stata l’aggiunta di una texture sul pavimento. Ricordando che il Controllore non si muove davvero nel mondo virtuale, ma è quest’ultimo che cambia dando una sensazione di movimento, serviva un modo per traslare e ruotare il pavimento per dare una sensazione di movimento, così abbiamo deciso di sfruttare una feature passata in secondo piano durante lo sviluppo: l’odometria. Infatti non serviva tanto precisione in questo effetto, quanto che fosse reattivo ai comandi dell’utente. Quello che si voleva trasmettere era un feedback immediato ai controlli di movimento, spesso non molto visibile dalla rappresentazione del lidar che poteva apparire lenta o variare comunque di poco certe volte.
+
+Altre modifiche hanno migliorato il controllo generale del robot, aggiungendo una zona morta all’analogico e rimuovendo il “watchdog” che in arduino fermava periodicamente la base durante il movimento.
+
+\subsection{Day Two}
+
+\paragraph{Considerations}
+
+Per il secondo giorno c’era un generale senso di ottimismo e si è rivelato fondato. Grazie ai miglioramenti della notte precedente gli utenti riuscivano molto meglio a spostarsi nel mondo virtuale, ed è aumentato in generale anche l’appeal dei partecipanti verso l’esperienza. Calibrazioni e migliorie durante l’utilizzo del sistema sono continuate anche in questa giornata, sempre senza influenzare o distrarre gli utenti dall’esperienza.
+
+Il problema di latenza della camera DepthAI è comunque rimasto, anche se nei casi più patologici abbiamo cercato di minimizzarlo spostando manualmente da editor l’entità virtuale facendo fede ai punti visualizzati dal lidar, in modo del tutto simile al lidar tracking per le stazioni, solo senza un vero algoritmo. Un interessante consiglio dato dal professore è stato quello di provare a mettere un Kalman filter sullo spostamento dell’entità, \textit{cosa che è stata poi provata successivamente nello sviluppo.}
+
+I risultati di queste esperienze sono esposti nel capitolo dedicato verso la fine di questa trattazione.
+
+\section{Post Digital Week optimizations and improvements}
+
+\begin{itemize}
+    \item SLAM vs pure lidar
+    \item Human pose Kalman filter
+    \item New human visualizations
+    \item Beyond QR, ARUCO tags
+    \item Hoverboard movement control
+\end{itemize}
+ 
+
+\section{XCities Opening Mirrors}
+
+\section{First Contact}
+
+\chapter{The Sensory Translation System}
+
+This chapter will describe in detail the main component of this project: the Sensory Translation System.
+
+The sensory translation in this project primarily focuses on vision, with some auditory components, given that this is still an initial approach in the development of the Physical Metaverse. Thoroughly covering all senses would require a much more extensive treatment and will probably come in later stages of this research.
+
+The sensory translation system works to translate the perceptions of the Physical Avatar for its Controller. To achieve this objective, it leverages a synergy of electronic devices, which will be detailed in the following sections.
+
+In general, our Controller wears a VR headset to see what the avatar is perceiving. Additionally, sounds related to the activity are emitted, and the Controller can control the avatar's movement using joysticks. The Physical Avatar, in the final version represented by the robot Blackwings, is equipped with numerous sensors and actuators:
+
+\begin{itemize}
+    \item A lidar for visualizing obstacles in the environment
+    \item A webcam to detect "stations", the goal of the goal-oriented activity
+    \item A Luxonis DepthAI camera for processing the Visitor's pose without computational burden on the onboard computer
+    \item Two servomotors for the pan and tilt of the DepthAI camera
+    \item A mobile base to enable the robot to move in the environment
+    \item Two servomotors to move Blackwing's wing
+\end{itemize}
+
+\section{Lidar Visualization}
+
+This module comes in two versions. Both share the goal of allowing the controller to navigate the world avoiding obstacles. Abbiamo deciso, almeno in questa fase del nostro studio, di mantenere il più possibile invariata la percezione spaziale degli ostacoli in modo da mantenere una base solida per l’Embodiment necessaria ad altri aspetti della trattazione.
+
+\subsection{Raw lidar}
+
+This version takes as input arrays of 360 distances that represent the lidar’s detections at each scan and render them in the form of pillars in the virtual world. It was already present in the previous Sensory Translation System but has been improved and integrated with the new visualization features. See below for more details about the integration with other modules.
+
+Sono stati fatti alcuni esperimenti nella visualizzazione pura del lidar che andavano a rappresentare sequenze di pillars adiacenti in forma di muri o cilindri a seconda di quanto fosse esteso il gruppo, cercando di mostrare in modo più uniforme pareti e ostacoli. L’algoritmo si chiama Merge Walls ed è stato sviluppato e testato quasi interamente in simulazione (tenendo conto del rumore), tuttavia ci si è presto resi conto che intraprendere questa strada non sarebbe convenuto contro l’implementazione di un algoritmo di SLAM.
+
+Altri esperimenti sono stati svolti nel tentativo di stabilizzare la visualizzazione con effetti di fade in e fade out sui pilastri, ma anche se di fatto svolgevano il loro lavoro andavano inevitabilmente a introdurre un ritardo nella percezione, il quale abbiamo reputato non abbastanza motivato dai vantaggi che dava questo metodo.
+
+Il modo più efficace per dare un’impressione di stabilità è infine stato quello di sostituire le textures dei pilastri con delle tinte unite, affidandosi maggiormente all’azione dell’odometria sulla texture del pavimento per dare la sensazione di movimento, è possibile trovarne i dettagli in seguito.
+
+\subsection{SLAM}
+
+\section{Extrinsic calibration of the Cameras}
+
+Il sistema vuole tradurre l’informazione proveniente dalle immagini bidimensionali da telecamere a posizioni nello spazio virtuale tridimensionale. Questa ricostruzione è un problema noto nel campo della Computer Vision ed esistono algoritmi che tramite la cattura di più immagini di un oggetto noto da più angolazioni danno la matrice di trasformazione da image space a world space. Tuttavia ci sono numerose assunzioni che possiamo fare nel nostro sistema, e non ci serve ricostruire fedelmente tutte e tre le dimensioni, infatti è sempre possibile inferire la quota Y di ogni oggetto presente nel nostro mondo virtuale.
+
+Considerato ciò abbiamo deciso di non riferirci ad algoritmi esistenti per questo compito ma semplicemente di implementare una calibrazione usando come strumento l’inspector di Unity. Abbiamo quindi esposto in forma di sliders tutta una serie di variabili che vanno ad agire sulle coordinate di un oggetto nell’immagine per tradurle allo spazio tridimensionale, e grazie alla reference del lidar abbiamo potuto calibrare a mano con molta rapidità entrambe le telecamere. Il processo ha richiesto meno di una decina di minuti.
+
+Per lo sviluppo e l’identificazione di variabili e funzioni matematiche necessarie a svolgere il nostro compito abbiamo usato la Simulazione, questo ci ha permesso di testare numerose angolazioni e configurazioni con molta semplicità.
+
+Nella pratica le variabili necessarie alla calibrazione sono 7.
+
+Abbiamo offsets su X, Y e Z, scale sempre su X e Z ed infine una variabile che rappresenta il fattore di distorsione dato dalla prospettiva nelle porzioni laterali della visione.
+
+Grazie a queste variabili abbiamo di fatto implicitamente formulato la matrice di trasformazione lineare necessaria alla calibrazione estrinseca.
+
+La traduzione da image space a world space è la seguente:
+
+PositionXYZ = ((ImageX*ScaleX + OffsetX) * (PositionZ*PerspectiveSideCorrection), OffsetY, PositionZ)
+
+PositionZ non viene calcolato in Unity ma direttamente a bordo del robot ed è diverso a seconda della telecamera. La camera QR trova la distanza in metri eseguendo un calcolo sulla lunghezza della diagonale del QR e l’apertura focale della camera, mentre DepthAI usa la stereo vision infrarossi e tramite un processo di linearizzazione del valore ritorna anch’essa la distanza in metri.
+
+\subsection{Depth linearization process}
+
+\section{Stations representation}
+
+\section{Human translation}
+
+\section{The Sun}
+
+E’ una delle prime feature aggiunte, serve a dare un maggiore senso di orientamento nel mondo virtuale. Facendo infatti ruotare il sole nel mondo virtuale in maniera coerente con il movimento dell’avatar fisico si può creare un punto di riferimento fisso che come una bussola permette di fissare una direzione e orientarsi relativamente ad essa.
+
+L’implementazione sul robot si affida in ogni caso all’”odometria”, ma può essere migliorata con l’informazione da parte di una IMU, la quale darà l’orientamento assoluto mentre per spostamenti locali tra un dato e l’altro il lavoro sarà svolto dall’odometria.
+
+\section{Basics of proprioception}
+
+La propriocezione non è un tema principale di questa tesi, tuttavia svilupparla un minimo si è rivelato necessario per favorire l’Embodiment, infatti gli umani sono abituati a vedere il proprio corpo e la totale mancanza di esso non era accettabile nel mondo virtuale.
+
+la propriocezione si riferisce alla capacità del nostro corpo di percepire la sua posizione e i suoi movimenti all'interno dell'ambiente virtuale, anche se non può vederli direttamente. Gli input sensoriali provenienti dal visore e dai controller contribuiscono a questa percezione, consentendo agli utenti di interagire in modo più realistico con il mondo virtuale e di mantenere l'equilibrio e il coordinamento durante l'esperienza di realtà virtuale.
+
+\subsection{The role of Odometry}
+
+Not strictly odometry since it doesn’t measure the actual spinning of the wheels, we could call it “open loop odometry”. Di fatto questo modulo stima lo spostamento del robot semplicemente dall’input su traslazione e rotazione dai comandi dell’utente. Il grande vantaggio che da però sta nella possibilità di dare un feedback immediato sul movimento dell’avatar in forma visiva il più naturale possibile, tutto a favore del Sense of Embodiment.
+
+Il modulo di odometria in se ascolta input sul movimento, mentre il suo uso pratico più efficace sta nell’usare questa informazione per ruotare o traslare il pavimento al di sotto dell’utente, ricordando che nel mondo virtuale il Controller si trova sempre al centro. Questo effetto si nota molto di più rispetto a quello dato dall’aggiornamento del lidar, e serve a incentivare maggiormente il controllo sul movimento dell’avatar fisico, che un utente magari alle prime armi con la realtà virtuale potrebbe trascurare.
+
+
+\chapter{The Hardware}
+\begin{figure}[h]
+    \centering
+    \includegraphics[angle=90, width=\textwidth/2]{SensoryTranslationHardware.PNG}
+    \caption{Hardware used for sensory translation.}
+    \label{fig:sensory_translation_hardware}
+\end{figure}
+\section{The Physical Avatars}
+This project evolved across three distinct physical avatars as they became available through the efforts of other collaborators in the Physical Metaverse project. The modular and portable nature of this project, aligned with the Physical Metaverse philosophy, facilitated seamless hardware transitions. The three physical avatars employed in this project are: "The Robot," "Odile", and "Blackwings". This adaptability allowed for the exploration of diverse robotic platforms, enabling the integration of updated hardware components without hindrance.
+\subsection{The First Robot}
+"The Robot" \cref{fig:old_robot} serves as the foundational element of this thesis and was developed by ex-student Giuseppe Epifani, embodying the inaugural sensory translation system within the Physical Metaverse. This robot empowers users to navigate the environment with a clear perception of obstacles.
+
+This mobile robot exhibits the capability to detect obstacles, bumps, and human movements. At its core is a Jetson Nano, serving as the main processor. The robot receives user movement commands through a USB wireless Logitech controller, and in turn, wirelessly transmits its sensor feed to the user's VR headset.
+
+Equipped with a webcam connected to the Jetson Nano, the robot utilizes a neural network running on the Jetson to recognize humans. Additionally, a lidar, serially connected to the Jetson, plays a crucial role in conveying obstacle perception to the user during navigation.
+
+To facilitate the robot's movement, an Arduino, plugged into the Jetson, transmits controls to a triskarino omni wheel base. This base is essential for the robot's mobility. The Arduino also detects bumps against obstacles through an Inertial Measurement Unit (IMU), enhancing the robot's spatial awareness during navigation.
+\subsection{Odile}
+"Odile," the largest robot boasting the most degrees of freedom among the avatars in the Physical Metaverse, played a pivotal role as the physical avatar in the intermediate phases of this project.
+It was built by ex-student Erica Panelli.
+
+Designed to be mobile with manipulator robot capabilities, Odile's unique feature lies in its ability to express emotions. The robot is controlled by a Raspberry Pi3 and wirelessly receives movement commands from the joysticks of a VR headset. Notably, Odile is equipped with a pan and tilt camera directly controlled by the VR headset's orientation. This camera system was collaboratively developed and integrated into this project.
+
+Mounted on a Triskarone omni wheel base, controlled by an Arduino UNO, Odile also incorporates an Arduino MEGA to manage two arms. One arm features a camera at the end effector, while the other is equipped with a capacitive sensor. The expressive capabilities of Odile were put to the test in a similar Escape Room activity to that of this thesis. In this scenario, roles were reversed between the physical avatar, serving as the guide, and the visitor, responsible for activating objectives.
+
+\subsection{Blackwings}
+Blackwings, crafted by Professor Andrea Bonarini, was initially conceived as a theatrical performance robot. Its distinctive feature lies in a large fabric, referred to as the "wing," which can extend or retract through the activation of two rods driven by a servomotor. Similar to the other robots, Blackwings is a mobile robot with a Triskar base. Upon integration into this project, modifications were made to accommodate new hardware, including the addition of a camera system with pan and tilt functionality. Furthermore, Blackwings was adjusted to increase its height for the incorporation of the updated components.
+
+\section{Oculus Quest 2}
+
+The Oculus Quest 2 emerges as a popular virtual reality headset developed by Oculus, a subsidiary of Meta Platforms, Inc. What distinguishes it is its standalone nature, eliminating the need for a PC or console for operation. This VR device boasts a high-resolution display, a potent processor, and supports 6 degrees of freedom, enabling lifelike movements within virtual environments.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth/2]{oculus2.jpg}
+    \caption{Oculus Quest 2 Headset}
+\end{figure}
+With its wireless and portable design, the Oculus Quest 2 provides convenient access to a diverse array of VR games and applications via the Oculus Store. For expanded content options, users can connect it to a compatible PC using Oculus Link. The inclusion of hand tracking and social features emphasizes its design for immersive and communal VR experiences.
+
+In this research, virtual reality proves to be a potent tool for visualizing concepts that would be challenging, if not impossible, to convey through more conventional means. The integration of virtual reality serves as a crucial component, facilitating the complete immersion of the Controller's sense of sight into the virtual world, effectively eliminating distracting elements.
+\section{Jetson Nano}
+The primary computational unit driving the robotic system is the Nvidia Jetson Nano board. This single-board computer is designed for AI and machine learning applications, emphasizing efficiency and compactness.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{jetsonano.jpg}
+    \caption{Jetson Nano}
+\end{figure}
+The Jetson Nano features a Nvidia Maxwell GPU with 128 CUDA cores, accompanied by a quad-core ARM Cortex-A57 CPU, 4GB of LPDDR4 RAM, and a 16GB eMMC storage module. With support for various AI frameworks and programming languages, including Python and C++, it provides the necessary computational power for handling complex tasks. The operating system utilized is Ubuntu Linux.
+
+Beyond its processing capabilities, the Jetson Nano offers customization and extensibility through expansion ports and connectors. This flexibility facilitates the integration of peripherals and sensors such as cameras, displays, and motors. All sensors within the robot are connected to the Jetson Nano, consolidating data processing within a centralized hub. This configuration ensures a systematic approach to data management and decision-making within the Physical Metaverse framework.
+
+\section{RPLidar A1}
+The RpLIDAR A1 Laser Range Scanner stands as a 360-degree scanning LIDAR crafted for applications such as indoor mapping, robot navigation, and obstacle avoidance. With a laser emitter and receiver working harmoniously, this sensor excels in measuring distances with remarkable precision, offering valuable spatial insights for diverse applications.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{rplidara1.jpg}
+    \caption{RPLIDAR A1}
+\end{figure}
+Capable of scanning up to a maximum range of 12 meters, the RpLIDAR A1 delivers detailed spatial information crucial for mapping and environmental awareness. Emitting a modulated infrared laser signal, it captures reflections from objects, sampled by a Vision Acquisition System (VSC) featuring an embedded DSP. This system processes the data, generating rapid and dense point clouds that form a 2D map of the environment.
+
+In essence, the RpLIDAR A1 emerges as a reliable and accurate sensor, presenting a robust solution for robotic perception and navigation. Its seamless integration into the Physical Metaverse project enhances the environmental awareness of robotic avatars, contributing to the creation of immersive and responsive shared physical spaces.
+
+\section{Camera}
+
+The USB camera utilized in this project is a straightforward device with a 1080p resolution. Its connection to the Nvidia Jetson Nano occurs through a USB port, serving the purpose of capturing video footage of the robot's surroundings and detecting affordances, more specifically the QR Stations. Although this camera lacks advanced features or capabilities, its reliability and cost-effectiveness make it a practical solution for obtaining visual information essential for the robot's functionality.
+
+\section{DepthAI Oak-D Pro}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth/3]{SolderCameraMount.PNG}
+    \caption{Solder}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth/3]{FinishedCameraMount.PNG}
+    \caption{Finished}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth/3]{CameraSliceCura.PNG}
+    \caption{Slice}
+\end{figure}
+
+The DepthAI OAK-D Pro stands as a sophisticated camera module designed for applications demanding advanced computer vision and depth perception capabilities. Featuring stereo depth cameras for 3D depth map creation, an onboard AI accelerator from Intel for real-time AI processing, and a color camera, this module caters to a range of applications in robotics, autonomous vehicles, and augmented reality.
+
+Key Features:
+
+\begin{itemize}
+    \item \textit{Stereo Depth Cameras:} Enable the creation of detailed 3D depth maps.
+    \item \textit{Onboard AI Accelerator:} Facilitates real-time AI processing for enhanced computational capabilities.
+    \item \textit{Versatility:} Applicable in robotics, autonomous vehicles, augmented reality, and beyond.
+    \item \textit{Open-Source Approach:} Encourages customization and innovation, aligning with the open-source DepthAI ecosystem.
+\end{itemize}
+The Oak-D Pro DepthAI Camera serves as a significant hardware addition to the existing system within this thesis. With the ability to run trained models on its hardware and transmit final results to the connected computer, it addresses the system's refresh challenges without necessitating a more powerful onboard processor.
+
+This device not only provides practical solutions but also aligns with a vision foreseen in a Computer Vision lecture. The professor's anticipation of chips handling both image capture and processing finds realization in the DepthAI OAK-D Pro, highlighting the evolution of technology in the realm of computer vision.
+
+\section{Arduino}
+Arduino is an open-source electronics platform designed for creating interactive and programmable projects. It uses a microcontroller that can be programmed to control various electronic components. Arduino is known for its user-friendly Integrated Development Environment (IDE), making it accessible to beginners and professionals. With a variety of board models, input/output pins, and expandable shields, it's widely used in applications ranging from robotics and home automation to wearable technology and art installations. Its low cost, educational value, and a large online community make it a popular choice for electronics enthusiasts and educators.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{arduino.jpg}
+    \caption{Arduino Board}
+\end{figure}
+\section{MPU6050}
+The MPU-6050 is a compact sensor module that's a powerhouse for tracking motion and orientation. Inside, it houses a 3-axis gyroscope and a 3-axis accelerometer, and it talks to microcontrollers through digital interfaces like I2C or SPI. This dual-sensor setup makes it versatile for applications such as robotics, drones, wearables, and gaming controllers, where knowing how something is moving and positioned is crucial.
+
+\section{Servomotors}
+The servomotors used in this project are compact electric motors that excel in providing precise control over angular position. The main models are MG996R and SG90 together with alternate versions of them and they are widely used in maker projects, especially in robotics, remote-controlled vehicles, and model aircraft. These servos come with built-in control electronics, including feedback mechanisms to ensure accurate positioning. They are easy to interface with microcontrollers, typically using PWM signals, and are available in various sizes and torque levels, making them a versatile choice.
+\begin{figure}[h]
+    \centering
+    \subfloat[SG90 Servo Motor\label{fig:sg90}]{
+        \includegraphics[width=0.45\textwidth]{sg90.jpg}
+    }
+    \hfill
+    \subfloat[MG996R Servo Motor\label{fig:mg996r}]{
+        \includegraphics[width=0.45\textwidth]{mg996r.jpg}
+    }
+    \caption{Comparison of SG90 and MG996R Servo Motors}
+\end{figure}
+
+\section{Esp32 and Esp8266}
+The ESP8266 and ESP32 are popular microcontroller platforms for IoT and embedded projects. The ESP8266, with its single-core processor, is a more budget-friendly option, perfect for straightforward Wi-Fi-connected projects. In contrast, the ESP32, powered by a dual-core processor and featuring Wi-Fi and Bluetooth, offers more versatility and capabilities. It's an excellent choice when you need both wireless connectivity options, additional GPIO pins, and more memory for larger applications.
+They are the default Physical Metaverse choice for devices that require wireless capability and that are not directly connected to a more advanced device like Raspberry or Jetson.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{esp32.jpg}
+    \caption{ESP32 Microcontroller}
+\end{figure}
+
+\section{Triskarone Omni Wheel Base}
+Airlab-made omni wheel base that was chosen as default mobile base for the Physical Metaverse robots. It comes in two different sizes but the software is mostly the same.
+
+\section{QR Code Stations}
+The stations serve as the focal points representing the goals in the goal-oriented activity. Structurally, they consist of hexagonal cardboard prisms with QR codes printed on A4 sheets, affixed to each face of the prism.
+
+The hexagonal shape is chosen strategically, considering the camera and algorithm's QR detection angle. Beyond a certain angle, code detection becomes challenging. To address this, we introduced redundancy by placing QR codes on multiple faces of the station.
+
+In a subsequent phase, smaller mapped QR codes were added alongside the hexagonal stations. These smaller QR codes corresponded to the respective stations, facilitating detection by a camera positioned closely, especially when larger codes were temporarily cut in the view.
+
+The station design was entirely driven by the simulation. Prior to constructing all stations, a prototype validated the design, proving its efficacy. This initial prototype remains in use alongside the other stations in the final system.
+
+To convey information to the Visitor regarding correct and activated stations, an ESP with LED indicators is positioned above each station. This implementation serves as a visual cue, allowing the Visitor to discern the status of each station based on the illumination of the corresponding LED on the ESP module.
+
+
+\chapter{External Software}
+
+In this section, we will outline the key external software tools employed in the development of this project.
+
+\section{Git}
+
+Git is a distributed version control system (DVCS) conceived by Linus Torvalds in 2005. It plays a pivotal role in tracking changes within source code during software development. Widely acknowledged as one of the most popular version control systems globally, Git is designed to streamline collaboration among multiple developers, manage codebase changes, and meticulously track the historical evolution of these changes.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{git.png}
+    \caption{Git Logo}
+\end{figure}
+While the majority of this project was developed individually, Git emerged as an indispensable component that significantly contributed to its realization. The complexity of the project, encompassing numerous components and features, surpassed the capacity of a single individual's cognitive load. Hence, having a version control system that allows the creation of "save points" became crucial, enabling a return to specific checkpoints in case issues arose after the addition or modification of certain features.
+
+Moreover, Git fosters the potential for project reuse within the Physical Metaverse framework, aligning with efforts to standardize processes within this overarching initiative. The utilization of Git, therefore, not only streamlines individual development efforts but also aligns with broader collaborative goals and future project scalability.
+
+ 
+
+\section{Unity and C\#}
+
+Unity stands as a versatile game development engine and application framework, renowned for its role in creating video games, simulations, AR/VR applications, and interactive 3D/2D experiences. Equipped with a user-friendly visual editor and broad platform support, Unity simplifies the development process. Its extensive ecosystem of assets and plugins solidifies its position as a preferred tool for game development and interactive applications.
+
+C\# is a modern, strongly-typed programming language developed by Microsoft. In the context of Unity, C\# serves as the primary scripting language, celebrated for its versatility not only in game development but across various software applications. Key features such as garbage collection, exception handling, and memory management contribute to C\#'s reputation as a secure and efficient choice for defining game behaviors and interactions within the Unity environment.
+
+ 
+
+\section{Python}
+
+Python, a renowned high-level programming language, is celebrated for its simplicity and readability. Its versatility spans a spectrum of applications, from web development to data analysis and scientific research. Python's strength lies in its extensive standard library, offering pre-built modules and functions that enhance developer efficiency. As an interpreted language, Python enables rapid development, and its cross-platform nature ensures compatibility across various operating systems. Being open-source, Python thrives on a vibrant community and provides third-party libraries for diverse tasks, including data analysis, web development, and machine learning. Its widespread adoption, coupled with its user-friendly syntax, positions Python as a premier choice for developers across different domains.
+
+Python proved to be of vital importance, imparting agility to the project's development. Predominantly executed on the real robot, Python facilitated swift adjustments to parameters and modifications to behaviors through remote SSH terminal access. This adaptability significantly streamlined the development process, allowing for rapid testing and iteration of features on the physical robot.
+
+ 
+
+\section{VSCode and GitHub Copilot}
+
+Visual Studio Code stands out as a widely-used code editor, esteemed for its speed and extensibility. It serves as a versatile platform for coding in multiple languages, and its functionality is further enriched through an extensive library of extensions.
+
+GitHub Copilot represents an AI-powered coding assistant, working seamlessly alongside your code. It provides real-time suggestions, autocompletions, and even generates code based on your comments and contextual information. GitHub Copilot is meticulously designed to save time and enhance coding efficiency.
+
+The mention of these two tools together emphasizes that power is nothing without control. In the development of this project, GitHub Copilot, omnipresent in the IDE through the VSCode extension, played a pivotal role. It allowed the delegation of numerous low-level development tasks, tasks that would have consumed valuable time and resources, from aspects of the project that necessitated human intellect and creativity. The integration of VSCode and GitHub Copilot exemplifies a powerful synergy that significantly streamlined the development process.
+
+ 
+
+\section{UDP Protocol}
+
+UDP, or User Datagram Protocol, stands out as a connectionless network protocol known for its emphasis on speed and efficiency. Even though it's not precisely "software" we included it here to avoid creating a dedicated chapter for it. It finds applications in scenarios where a slight loss of data is acceptable, such as real-time video streaming or online gaming. In contrast to TCP, UDP operates without ensuring data reliability, making it akin to sending a letter without requiring a receipt. This lightweight approach contributes to its speed, but it may not be suitable for situations where every bit of data must be delivered in a specific order.
+
+For this project, UDP emerged as the ideal candidate. Given that almost every component continuously transmits and receives data, necessitating minimal latency, UDP's characteristics align well with the project's requirements. In the event of errors, the approach is simply to wait for the next message in the stream.
+
+Certain components, like the stations, send a limited number of messages and require these messages to be effectively received. Through careful verification, it was determined that UDP's occasional "fallibility" was not statistically significant enough to warrant the project's burden with additional code and sockets dedicated to a more reliable protocol like TCP. Throughout the development of the project, no packet loss was observed, and even if it occurred, it did not manifest any noticeable repercussions. The pragmatic choice of UDP contributed to the project's efficiency without compromising its reliability.
+
+\section{Tinkercad}
+
+
+Tinkercad: Streamlined 3D Design, Electronics, and Coding
+
+Tinkercad stands out as a web-based platform designed to streamline 3D design, electronics, and coding processes. Particularly popular in educational settings, it provides a user-friendly 3D modeling tool that simplifies the creation of objects, offering an accessible introduction to the fundamentals of 3D printing. Beyond its 3D modeling capabilities, Tinkercad offers a virtual electronics lab where users can construct and test electronic circuits.
+
+In practical terms, I found this software exceptionally user-friendly, especially for the specific application I intended. It facilitates conceptualizing 3D designs through operations like addition and subtraction of predefined volumes, avoiding the intricacies of manipulating individual vertices. This approach ensures a highly parametric workflow, making Tinkercad an invaluable tool for various users, with both free and paid plans catering to a wide audience.
+
+ 
+
+\section{DepthAI BlazePose}
+
+DepthAI Blazepose, hosted on GitHub by developer geaxgx, emerges as a pivotal repository integrating Google Mediapipe's single-body pose tracking models with DepthAI hardware—a versatile platform enabling AI and depth vision on embedded devices. Geared towards computer vision and machine learning enthusiasts, this repository offers two distinctive modes: host mode and edge mode.
+
+\begin{itemize}
+    \item Host Mode: In this mode, neural networks execute on the device, but the majority of processing occurs on the host computer. This configuration facilitates inference on external inputs like videos or images, broadening the application's flexibility.
+    \item Edge Mode: Conversely, edge mode prioritizes on-device processing, leveraging DepthAI's scripting node feature for heightened speed and efficiency. While limited to the device's camera, this mode minimizes data exchange, transmitting only the essential landmarks of the detected body.
+\end{itemize}
+
+Key Features:
+
+\begin{enumerate}
+    \item \textit{Renderer Module:} The repository includes a renderer module capable of displaying the body skeleton in 3D. Users can opt for either inferred 3D coordinates from the landmark model or measured 3D coordinates from the depth map.
+    \item \textit{Landmark Models:} Users can choose from various landmark models, each with distinct accuracy and speed trade-offs, including full, lite, or heavy.
+    \item \textit{Customization:} The repository empowers users with customizable parameters such as internal camera fps, smoothing filters, output video file settings, and more.
+\end{enumerate}
+Underlying Technologies: DepthAI Blazepose harnesses the power of open-source frameworks like Mediapipe models and utils, designed for creating cross-platform solutions across mobile devices, embedded systems, and the web. Complemented by OpenCV for real-time computer vision and Open3D for 3D data processing, the repository showcases a robust integration of cutting-edge technologies.
+
+This repository stands as an exemplary use case, demonstrating how DepthAI hardware coupled with Mediapipe models can form a potent and versatile pose tracking system. Its applications span diverse fields, including fitness, gaming, augmented reality, and beyond, underscoring the transformative potential of edge computing and computer vision in various domains.
+ 
+\chapter{The Experiments}
+
+\section{Digital Week}
+
+\section{XCities}
+
+\chapter{Conclusions} 
+The role of AI in this project
+
+
+
+
+\section{Sections and subsections}
+\label{sec:section_name}
+Chapters are typically subdivided into sections and subsections, and, optionally,
+subsubsections, paragraphs and subparagraphs.
+All can have a title, but only sections and subsections are numbered.
+A new section is created by the command
+\begin{verbatim}
+\section{Title of the section}
+\end{verbatim}
+The numbering can be turned off by using \verb|\section*{}|.
+\\
+A new subsection is created by the command
+\begin{verbatim}
+\subsection{Title of the subsection}
+\end{verbatim}
+and, similarly, the numbering can be turned off by adding an asterisk as follows 
+\begin{verbatim}
+\subsection*{}
+\end{verbatim}
+
+\section{Equations}
+\label{sec:eqs}
+This section gives some examples of writing mathematical equations in your thesis.
+
+Maxwell's equations read:
+\begin{subequations}
+    \label{eq:maxwell}
+    \begin{align}[left=\empheqlbrace]
+    \nabla\cdot \bm{D} & = \rho, \label{eq:maxwell1} \\
+    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} & = \bm{0}, \label{eq:maxwell2} \\
+    \nabla\cdot \bm{B} & = 0, \label{eq:maxwell3} \\
+    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J}. \label{eq:maxwell4}
+    \end{align}
+\end{subequations}
+
+Equation~\eqref{eq:maxwell} is automatically labeled by \texttt{cleveref},
+as well as Equation~\eqref{eq:maxwell1} and Equation~\eqref{eq:maxwell3}.
+Thanks to the \verb|cleveref| package, there is no need to use \verb|\eqref|.
+Remember that Equations have to be numbered only if they are referenced in the text.
+
+Equations~\eqref{eq:maxwell_multilabels1}, \eqref{eq:maxwell_multilabels2}, \eqref{eq:maxwell_multilabels3}, and \eqref{eq:maxwell_multilabels4} show again Maxwell's equations without brace:
+\begin{align}
+    \nabla\cdot \bm{D} & = \rho, \label{eq:maxwell_multilabels1} \\
+    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} &= \bm{0}, \label{eq:maxwell_multilabels2} \\
+    \nabla\cdot \bm{B} & = 0, \label{eq:maxwell_multilabels3} \\
+    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J} \label{eq:maxwell_multilabels4}.
+\end{align}
+
+Equation~\eqref{eq:maxwell_singlelabel} is the same as before,
+but with just one label:
+\begin{equation}
+    \label{eq:maxwell_singlelabel}
+    \left\{
+    \begin{aligned}
+    \nabla\cdot \bm{D} & = \rho, \\
+    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} &= \bm{0},\\
+    \nabla\cdot \bm{B} & = 0, \\
+    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J}.
+    \end{aligned}
+    \right.
+\end{equation}
+
+\section{Figures, Tables and Algorithms}
+Figures, Tables and Algorithms have to contain a Caption that describe their content, and have to be properly reffered in the text.
+
+\subsection{Figures}
+\label{subsec:figures}
+
+For including pictures in your text you can use \texttt{TikZ} for high-quality hand-made figures,
+or just include them as usual with the command
+\begin{verbatim}
+\includegraphics[width=\textwidth]{filename.xxx}
+\end{verbatim}
+Here xxx is the correct format, e.g. \verb|.png|, \verb|.jpg|, \verb|.eps|, \dots.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\textwidth]{logo_polimi_scritta.eps}
+    \caption{Caption of the Figure to appear in the List of Figures.}
+    \label{fig:quadtree}
+\end{figure}
+
+Thanks to the \texttt{\textbackslash subfloat} command, a single figure, such as Figure~\ref{fig:quadtree},
+can contain multiple sub-figures with their own caption and label, e.g. \color{black} Figure~\ref{fig:polimi_logo1} and Figure~\ref{fig:polimi_logo2}. 
+
+\begin{figure}[H]
+    \centering
+    \subfloat[One PoliMi logo.\label{fig:polimi_logo1}]{
+        \includegraphics[scale=0.5]{Images/logo_polimi_scritta.eps}
+    }
+    \quad
+    \subfloat[Another one PoliMi logo.\label{fig:polimi_logo2}]{
+        \includegraphics[scale=0.5]{Images/logo_polimi_scritta2.eps}
+    }
+    \caption{This is a very long caption you don't want to appear in the List of Figures.}
+    \label{fig:quadtree2}
+\end{figure}
+
+
+\subsection{Tables}
+\label{subsec:tables}
+
+Within the environments \texttt{table} and  \texttt{tabular} you can create very fancy tables as the one shown in Table~\ref{table:example}.
+\begin{table}[H]
+    \caption*{\textbf{Title of Table (optional)}}
+    \centering 
+    \begin{tabular}{|p{3em} c c c |}
+    \hline
+    \rowcolor{bluepoli!40} % comment this line to remove the color
+     & \textbf{column 1} & \textbf{column 2} & \textbf{column 3} \T\B \\
+    \hline \hline
+    \textbf{row 1} & 1 & 2 & 3 \T\B \\
+    \textbf{row 2} & $\alpha$ & $\beta$ & $\gamma$ \T\B\\
+    \textbf{row 3} & alpha & beta & gamma \B\\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Caption of the Table to appear in the List of Tables.}
+    \label{table:example}
+\end{table}
+
+You can also consider to highlight selected columns or rows in order to make tables more readable.
+Moreover, with the use of \texttt{table*} and the option \texttt{bp} it is possible to align them at the bottom of the page. One example is presented in Table~\ref{table:exampleC}. 
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{|p{3em} | c | c | c | c | c | c|}
+    \hline
+%    \rowcolor{bluepoli!40}
+     & \textbf{column1} & \textbf{column2} & \textbf{column3} & \textbf{column4} & \textbf{column5} & \textbf{column6} \T\B \\
+    \hline \hline
+    \textbf{row1} & 1 & 2 & 3 & 4 & 5 & 6 \T\B\\
+    \textbf{row2} & a & b & c & d & e & f \T\B\\
+    \textbf{row3} & $\alpha$ & $\beta$ & $\gamma$ & $\delta$ & $\phi$ & $\omega$ \T\B\\
+    \textbf{row4} & alpha & beta & gamma & delta & phi & omega \B\\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Highlighting the columns}
+    \label{table:exampleC}
+\end{table}
+
+\begin{table}[H]
+\centering 
+    \begin{tabular}{|p{3em} c c c c c c|}
+    \hline
+%    \rowcolor{bluepoli!40}
+     & \textbf{column1} & \textbf{column2} & \textbf{column3} & \textbf{column4} & \textbf{column5} & \textbf{column6} \T\B \\
+    \hline \hline
+    \textbf{row1} & 1 & 2 & 3 & 4 & 5 & 6 \T\B\\
+    \hline
+    \textbf{row2} & a & b & c & d & e & f \T\B\\
+    \hline
+    \textbf{row3} & $\alpha$ & $\beta$ & $\gamma$ & $\delta$ & $\phi$ & $\omega$ \T\B\\
+    \hline
+    \textbf{row4} & alpha & beta & gamma & delta & phi & omega \B\\
+    \hline
+    \end{tabular}
+    \\[10pt]
+    \caption{Highlighting the rows}
+    \label{table:exampleR}
+\end{table}
+
+\subsection{Algorithms}
+\label{subsec:algorithms}
+
+Pseudo-algorithms can be written in \LaTeX{} with the \texttt{algorithm} and \texttt{algorithmic} packages.
+An example is shown in Algorithm~\ref{alg:var}.
+\begin{algorithm}[H]
+    \label{alg:example}
+    \caption{Name of the Algorithm}
+    \label{alg:var}
+    \label{protocol1}
+    \begin{algorithmic}[1]
+    \STATE Initial instructions
+    \FOR{$for-condition$}
+    \STATE{Some instructions}
+    \IF{$if-condition$}
+    \STATE{Some other instructions}
+    \ENDIF
+    \ENDFOR
+    \WHILE{$while-condition$}
+    \STATE{Some further instructions}
+    \ENDWHILE
+    \STATE Final instructions
+    \end{algorithmic}
+\end{algorithm} 
+
+\vspace{5mm}
+
+\section{Theorems, propositions and lists}
+
+\subsection{Theorems}
+Theorems have to be formatted as:
+\begin{theorem}
+\label{a_theorem}
+Write here your theorem. 
+\end{theorem}
+\textit{Proof.} If useful you can report here the proof.
+
+\subsection{Propositions}
+Propositions have to be formatted as:
+\begin{proposition}
+Write here your proposition.
+\end{proposition}
+
+\subsection{Lists}
+How to  insert itemized lists:
+\begin{itemize}
+    \item first item;
+    \item second item.
+\end{itemize}
+How to insert numbered lists:
+\begin{enumerate}
+    \item first item;
+    \item second item.
+\end{enumerate}
+
+\section{Use of copyrighted material}
+
+Each student is responsible for obtaining copyright permissions, if necessary, to include published material in the thesis.
+This applies typically to third-party material published by someone else.
+
+\section{Plagiarism}
+
+You have to be sure to respect the rules on Copyright and avoid an involuntary plagiarism.
+It is allowed to take other persons' ideas only if the author and his original work are clearly mentioned.
+As stated in the Code of Ethics and Conduct, Politecnico di Milano \textit{promotes the integrity of research,
+condemns manipulation and the infringement of intellectual property}, and gives opportunity to all those
+who carry out research activities to have an adequate training on ethical conduct and integrity while doing research.
+To be sure to respect the copyright rules, read the guides on Copyright legislation and citation styles available
+at:
+\begin{verbatim}
+https://www.biblio.polimi.it/en/tools/courses-and-tutorials
+\end{verbatim}
+You can also attend the courses which are periodically organized on "Bibliographic citations and bibliography management".
+
+\section{Bibliography and citations}
+Your thesis must contain a suitable Bibliography which lists all the sources consulted on developing the work.
+The list of references is placed at the end of the manuscript after the chapter containing the conclusions.
+We suggest to use the BibTeX package and save the bibliographic references  in the file \verb|Thesis_bibliography.bib|.
+This is indeed a database containing all the information about the references. To cite in your manuscript, use the \verb|\cite{}| command as follows:
+\\
+\textit{Here is how you cite bibliography entries: \cite{knuth74}, or multiple ones at once: \cite{knuth92,lamport94}}.
+\\
+The bibliography and list of references are generated automatically by running BibTeX \cite{bibtex}.
+
+\chapter{Conclusions and future developments}
+\label{ch:conclusions}%
+A final chapter containing the main conclusions of your research/study
+and possible future developments of your work have to be inserted in this chapter.
+
+%-------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%-------------------------------------------------------------------------
+
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+\bibliography{Thesis_bibliography} % The references information are stored in the file named "Thesis_bibliography.bib"
+
+%-------------------------------------------------------------------------
+%	APPENDICES
+%-------------------------------------------------------------------------
+
+\cleardoublepage
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+\appendix
+\chapter{Appendix A}
+If you need to include an appendix to support the research in your thesis, you can place it at the end of the manuscript.
+An appendix contains supplementary material (figures, tables, data, codes, mathematical proofs, surveys, \dots)
+which supplement the main results contained in the previous chapters.
+
+\chapter{Appendix B}
+It may be necessary to include another appendix to better organize the presentation of supplementary material.
+
+
+% LIST OF FIGURES
+\listoffigures
+
+% LIST OF TABLES
+\listoftables
+
+% LIST OF SYMBOLS
+% Write out the List of Symbols in this page
+\chapter*{List of Symbols} % You have to include a chapter for your list of symbols (
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lll}
+        \textbf{Variable} & \textbf{Description} & \textbf{SI unit} \\\hline\\[-9px]
+        $\bm{u}$ & solid displacement & m \\[2px]
+        $\bm{u}_f$ & fluid displacement & m \\[2px]
+    \end{tabular}
+\end{table}
+
+% ACKNOWLEDGEMENTS
+\chapter*{Acknowledgements}
+Here you might want to acknowledge someone.
+
+\cleardoublepage
+
+\end{document}
