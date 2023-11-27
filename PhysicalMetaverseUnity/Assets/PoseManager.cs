@@ -11,6 +11,8 @@ public class PoseManager : Monosingleton<PoseManager>
         Evangelion
     }
     [SerializeField] private Viz _currentViz;
+    //serialize randomizeviz
+    [SerializeField] private bool _randomizeViz = false;
     private Viz _prevViz;
     [SerializeField] private PoseReceiver _poseReceiver;
     [SerializeField] private Transform _rotoTraslation;
@@ -270,6 +272,10 @@ public class PoseManager : Monosingleton<PoseManager>
         _rototraslationYOffset = _rotoTraslation.localPosition.y;
         NextViz();
         NextViz();
+        if(_randomizeViz){
+            //random current viz
+            _currentViz = (Viz)Random.Range(0, 3);
+        }
         SetViz(_currentViz);
     }
 
