@@ -447,6 +447,8 @@ public class RobotPoseContoller : VizController
             _prevHide = false;
         }
     }
+    public float _distanceLeft;
+    public float _distanceRight;
 
     //inverse kinematics of odile joints to get as close as possible to hand tracker, joints to move are VRotate, VArm, VWrist
     void InverseKinematics(){
@@ -458,8 +460,31 @@ public class RobotPoseContoller : VizController
         //print distance from VRotate to hand tracker without z component
         //float distance = Vector3.Distance(_odileJoints["VRotate"].position, _handTracker.transform.position);
         float distance = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_currentHandTracker.transform.position.x, _currentHandTracker.transform.position.y, 0));
+        //distancexz
+        float distancexz = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, 0, _odileJoints["VRotate"].position.z), new Vector3(_currentHandTracker.transform.position.x, 0, _currentHandTracker.transform.position.z));
+        _distanceLeft = distancexz;
         //Debug.Log("Distance " + distance);
         float height = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
+        
+        _currentHandTracker = _rightHandTracker;
+        float distanceRight = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_currentHandTracker.transform.position.x, _currentHandTracker.transform.position.y, 0));
+        //distancexz
+        float distancexzRight = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, 0, _odileJoints["VRotate"].position.z), new Vector3(_currentHandTracker.transform.position.x, 0, _currentHandTracker.transform.position.z));
+        _distanceRight = distancexzRight;
+        //Debug.Log("Distance " + distance);
+        float heightRight = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
+
+        //check which distance has bigger abs value and set current to that
+        if(_distanceRight > _distanceLeft){
+            distance = distanceRight;
+            height = heightRight;
+            _currentHandTracker = _rightHandTracker;
+        }
+        else{
+            _currentHandTracker = _leftHandTracker;
+        }
+        
+
         //clamp
         height = Mathf.Clamp(height, -1, 1);
         //log height
@@ -560,8 +585,42 @@ public class RobotPoseContoller : VizController
     public float _leftDistance;
     public float _neckSensitivity = 50f;
     public float _neckOffset = 25f;
+    public float _neckOffset2 = 40f;
+    public float _neckSensitivity2 = 0.3f;
     private float _zDistance = 1f;
+
     private void NeckKinematics(){
+        _currentHandTracker = _rightHandTracker;
+        //get y angle between up vector and hand tracker
+        ////float yAngle = Vector3.Angle(Vector3.up, _handTracker.transform.position - _odileJoints["VRotate"].position);
+        //set y angle of VRotate to yAngle
+        ////_odileJoints["VRotate"].localRotation = Quaternion.Euler(0, yAngle, -90);
+        //print distance from VRotate to hand tracker without z component
+        //float distance = Vector3.Distance(_odileJoints["VRotate"].position, _handTracker.transform.position);
+        float distance = Vector3.Distance(new Vector3(_odileJoints["VRotate"].position.x, _odileJoints["VRotate"].position.y, 0), new Vector3(_currentHandTracker.transform.position.x, _currentHandTracker.transform.position.y, 0));
+        //Debug.Log("Distance " + distance);
+        float height = _odileJoints["VRotate"].position.y - _currentHandTracker.transform.position.y;
+        //clamp
+        height = Mathf.Clamp(height, -1, 1);
+        //log height
+        //Debug.Log("Height " + height);
+        //distance clamp to 0 1
+        distance = Mathf.Clamp(distance, 0, 1);
+        //height angle, subract 0.5y from distance and get angle using sin-1 on it
+        float heightAngle = Mathf.Asin(height) * Mathf.Rad2Deg;
+        //clamp
+        heightAngle = Mathf.Clamp(heightAngle, -90, 90);
+        heightAngle = heightAngle * _neckSensitivity2;
+        //set VArm x angle to sin-1 distance plus distanceAngle
+        //_odileJoints["VArm"].localRotation = Quaternion.Euler(Mathf.Asin(distance) * Mathf.Rad2Deg, 0, 0) * Quaternion.Euler(heightAngle, 0, 0);
+        //lerp
+        heightAngle = heightAngle - _neckOffset2;
+        _odileJoints["VCamArm"].GetComponent<DOFController>().SetAngle(-heightAngle);
+        _odileJoints["VCamAlign"].GetComponent<DOFController>().SetAngle(heightAngle);
+        //TODO lerp only through positive y, even if it is longer path
+        
+    }
+    private void NeckKinematicsOLD(){
         //get distance of left hand tracker from left hip and set VCamArm dofcontroller
         //_leftDistance = Vector3.Distance(_joints["Right Wrist"].position, _joints["Right Hip"].position) * _oldZDistance;
         //_leftDistance = distance from right wrist to vertical line passing by right hip

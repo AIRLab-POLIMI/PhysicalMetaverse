@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class PoseManager : Monosingleton<PoseManager>
 {
+    //enum viz Odile, Siid, Evangelion
+    public enum Viz{
+        Odile,
+        Siid,
+        Evangelion
+    }
+    [SerializeField] private Viz _currentViz;
+    //serialize randomizeviz
+    [SerializeField] private bool _randomizeViz = false;
+    private Viz _prevViz;
     [SerializeField] private PoseReceiver _poseReceiver;
     [SerializeField] private Transform _rotoTraslation;
     //_camera
@@ -38,6 +48,9 @@ public class PoseManager : Monosingleton<PoseManager>
     [SerializeField] private Dictionary<string, VizController> _vizControllerDict;
     //current viz string
     [SerializeField] private VizController _currentVizController;
+
+    //serialize _rototraslationYOffset
+    [SerializeField] private float _rototraslationYOffset = 0f;
 
 
     [ContextMenu("Next Viz")]
@@ -96,6 +109,40 @@ public class PoseManager : Monosingleton<PoseManager>
         _vizGameObjectsList[index].GetComponent<VizController>().SetHide(false);
     }
 
+    public void SetViz(Viz enumViz){
+        string vizName = "";
+        //switch viz
+        switch (enumViz)
+        {
+            case Viz.Odile:
+                vizName = "VOdileViz";
+                break;
+            case Viz.Siid:
+                vizName = "siid";
+                break;
+            case Viz.Evangelion:
+                vizName = "EvangelionViz";
+                break;
+            default:
+                break;
+        }
+        //find viz in _vizControllerDict
+        VizController viz = _vizControllerDict[vizName];
+        //set current viz to viz
+        _currentVizController = viz;
+        //disable all 
+        foreach (GameObject vizGameObject in _vizGameObjectsList)
+        {
+            //disable
+            vizGameObject.SetActive(false);
+            vizGameObject.GetComponent<VizController>().SetHide(true);
+        }
+        //enable
+        _vizControllerDict[vizName].gameObject.SetActive(true);
+        _vizControllerDict[vizName].SetHide(false);
+    }
+
+    [SerializeField] private GameObject _pillarMeshDisabler;
     //ShowViz
     public void ShowViz(bool show){
         //find current in _vizControllerList
@@ -105,12 +152,20 @@ public class PoseManager : Monosingleton<PoseManager>
             //enable
             _vizGameObjectsList[index].SetActive(true);
             _vizGameObjectsList[index].GetComponent<VizController>().SetHide(false);
+            //enable PillarMeshDisabler
+            _pillarMeshDisabler.SetActive(true);
         }
         else{
             //disable
             _vizGameObjectsList[index].SetActive(false);
             _vizGameObjectsList[index].GetComponent<VizController>().SetHide(true);
+            _pillarMeshDisabler.SetActive(false);
         }
+    }
+
+    //getviz
+    public Viz GetViz(){
+        return _currentViz;
     }
     
 
@@ -157,6 +212,7 @@ public class PoseManager : Monosingleton<PoseManager>
 
     public void LerpRotoTraslationPosition(Vector3 position, float lerpSpeed)
     {
+        position.y = _rototraslationYOffset;
         _rotoTraslation.position = Vector3.Lerp(_rotoTraslation.position, position, lerpSpeed);
     }
 
@@ -164,6 +220,8 @@ public class PoseManager : Monosingleton<PoseManager>
     {
         return _MANUAL_MOVEMENT;
     }
+    //gameobject list _externalVizzes
+    [SerializeField] private List<GameObject> _externalVizzes;
 
     // Start is called before the first frame update
     void Start()
@@ -199,8 +257,26 @@ public class PoseManager : Monosingleton<PoseManager>
                 }
             }
         }
+        //among _externalVizzes find viz controllers
+        foreach (GameObject externalViz in _externalVizzes)
+        {
+            //if child has vizcontroller
+            if(externalViz.GetComponent<VizController>() != null){
+                //add to list
+                _vizControllerList.Add(externalViz.GetComponent<VizController>());
+                //add vizcontroller name to _vizControllerDict
+                _vizControllerDict.Add(externalViz.name, externalViz.GetComponent<VizController>());
+                _vizGameObjectsList.Add(externalViz);
+            }
+        }
+        _rototraslationYOffset = _rotoTraslation.localPosition.y;
         NextViz();
         NextViz();
+        if(_randomizeViz){
+            //random current viz
+            _currentViz = (Viz)Random.Range(0, 3);
+        }
+        SetViz(_currentViz);
     }
 
     // Update is called once per frame
@@ -217,6 +293,13 @@ public class PoseManager : Monosingleton<PoseManager>
         CalculateRotoTraslation();
         if(_MIRROR_MODE)
             CalculateParallax();
+
+        //if _currentViz different from _prevViz
+        if(_currentViz != _prevViz){
+            SetViz(_currentViz);
+            _prevViz = _currentViz;
+        }
+
     }
 
     private bool _notPopulated = true;
@@ -448,13 +531,16 @@ public class PoseManager : Monosingleton<PoseManager>
     [SerializeField] private float _exitX = 5.9f;
     private void CalculatePersonDetected()
     {
+        /*MIRROR
         //if abs x less than _exitX
         if(Mathf.Abs(_rotoTraslation.localPosition.x) < _exitX){
             _personDetected = true;
         }
         else{
             _personDetected = false;
-        }
+        }*/
+        //get from posereceiver
+        _personDetected = _poseReceiver.GetPersonDetected();
     }
 
     [SerializeField] private float _rotationOffset = 0f;

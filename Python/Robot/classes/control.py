@@ -197,6 +197,8 @@ class Control:
                 else:
                     print("Invalid ESP Channel")
 
+                self.ESP_CHANNELS[sender_ip].on_esp_msg_rcv(string_msg)
+
 
     def write_serial(self):
         # the SOURCE for the values to SEND via serial is ANY ESP amongst the ESP_CHANNELS

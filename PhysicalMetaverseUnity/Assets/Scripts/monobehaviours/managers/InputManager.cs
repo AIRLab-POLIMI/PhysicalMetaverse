@@ -11,12 +11,13 @@ public class InputManager : Monosingleton<InputManager>
     public float deltaSendTime = 0.01f;
     private float _prevSendTime = 0;
     public bool ENABLE_LOG = false;
+    private PoseManager _poseManager;
     
     // head angles variables
     [SerializeField] private string headXAngleKey = "ay";
     [SerializeField] private string headYAngleKey = "az";
     [Range(0, 1)][SerializeField] private float headAnglesTolerance = 0.2f;
-    private Vector3 _headAngles;
+    [SerializeField] private Vector3 _headAngles;
     private float _prevXAngle;
     private float _prevYAngle;
     [SerializeField] public SetupSO setup;
@@ -24,6 +25,9 @@ public class InputManager : Monosingleton<InputManager>
     public string _jetsonIp;
     public Transform _poseRotationTransform;
     public bool _rotate180 = true;
+    public int _moveXDeadzone = 10;
+    public int _moveYDeadzone = 70;
+    private bool _prevRoutineRunning = false;
     
     #region Event Functions
     
@@ -34,17 +38,48 @@ public class InputManager : Monosingleton<InputManager>
             // Send the camera's X and Y angles via UDP every 0.05 seconds
             if (Time.time - _prevSendTime > deltaSendTime)
             {
+                string udpMessage = "";
+                if(_prevRoutineRunning && !RoutineController.Instance.IsRunning){
+                    _prevRoutineRunning = false;
+                    udpMessage = RoutineController.Instance.GetInitialPositionMsg();
+                    NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
+                }
+
+                //TODO put deadzone where it's supposed to be
+                //_moveXDeadzone on Ljx
+                if (Mathf.Abs(Ljx - 127) < _moveXDeadzone)
+                    Ljx = 127;
+                //_moveYDeadzone on Ljy
+                if (Mathf.Abs(Ljy - 127) < _moveYDeadzone)
+                    Ljy = 127;
+                udpMessage = "Ljy:" + Ljy + "_Ljx:" + Ljx + "_Rbt:20";
+                NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
                 // NetworkManager.Instance.SendMsg(GetUdpMessage());
                 //UDPManager.Instance.SendStringUpdToDefaultEndpoint(GetUdpMessage());
-                string udpMessage = RoutineController.Instance.IsRunning 
-                    ? RoutineController.Instance.GetMsg() 
-                    : GetUdpMessage();
+                ////udpMessage = RoutineController.Instance.IsRunning 
+                ////    ? RoutineController.Instance.GetMsg()
+                ////    : GetUdpMessage();
+
+                    //if coroutine is running else
+                if (RoutineController.Instance.IsRunning){
+                    _prevRoutineRunning = true;
+                    Ljx = 127;
+                    Ljy = 127;
+                    //get msg from RoutineController
+                    udpMessage = RoutineController.Instance.GetMsg();
+                }
+                else
+                    //get msg from GetUdpMessage
+                    udpMessage = GetUdpMessage();
                 /*if(udpMessage != "")
                     Debug.Log("udp " + udpMessage);*/
                 //if not null
-                if (udpMessage != "")
+                if (udpMessage != ""){
                     //send using NetworkManager
                     NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
+                    //log udpMessage
+                    //Debug.Log("udpMessage: " + udpMessage);
+                }
 
                 _prevSendTime = Time.time;
             }
@@ -76,12 +111,16 @@ public class InputManager : Monosingleton<InputManager>
     #endregion
         
         void Start(){
+            _poseManager = PoseManager.Instance;
             //rotate this transform 180 if true
             if (_rotate180)
                 transform.Rotate(0, 180, 0);
             //get ip string from _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonEndpoint = setup.JetsonEndpointUsage.Endpoint;
             _jetsonIp = _jetsonEndpoint.IP.ToString();
+            string udpMessage = RoutineController.Instance.GetInitialPositionMsg();
+            udpMessage += "_Ljy:127_Ljx:127_az:0_ay:0";
+            NetworkingManager.Instance.SendString(udpMessage, _jetsonIp);
         }
 
     #region Compose UDP Mess
@@ -119,6 +158,8 @@ public class InputManager : Monosingleton<InputManager>
                 //if key is Ljx
                 if (keyValSplit[0] == "Ljx")
                 {
+                    //from msg remove substrings like LJx:255_Ljy:255
+                    msg = msg.Replace(keyVal, "");
                     //int oldLjx = Ljx;
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Ljx);
@@ -129,6 +170,8 @@ public class InputManager : Monosingleton<InputManager>
                 //if key is Ljy
                 if (keyValSplit[0] == "Ljy")
                 {
+                    //from msg remove substrings like LJx:255_Ljy:255
+                    msg = msg.Replace(keyVal, "");
                     //int oldLjy = Ljy;
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Ljy);
@@ -148,6 +191,7 @@ public class InputManager : Monosingleton<InputManager>
                     //parse val to int
                     int.TryParse(keyValSplit[1], out Lry);
                 }
+
             }   
             return msg;
         }
@@ -206,22 +250,25 @@ public class InputManager : Monosingleton<InputManager>
             _headAngles = RotationHelper.SubtractAllAngles(
                 _headYTarget, 
                 Constants.JoystickAngleNormalisation);
-            
+            _headAngles.x = (_headAngles.x - 90f) * _headTiltSensitivity + 90f;
+            _headAngles.x += HeadTiltOffset();
             // rescale from 0-180 to -3-3 and clamp
             var xAngle = Mathf.Clamp(
-                MathHelper.MapRange(_headAngles.x, 0, 180, -3, 3),
-                -3, 3);
+                MathHelper.MapRange(_headAngles.x, 0, 180, -6, 6),
+                -3, _maxTiltValue);
             var yAngle = Mathf.Clamp(
                 MathHelper.MapRange(_headAngles.y, 0, 180, -3, 3),
                 -3, 3);
 
             yAngle /= 3;
+
+            yAngle = Mathf.Clamp(yAngle + _headPanOffset, -3, 3);
             
             // if xAngle or yAngle is too close by 'tolerance' to previous value, don't send
             // if xAngle or yAngle are -3 or 3 and their prevAngle value is not exactly -3 or 3, send
             var msg = "";
             if (Mathf.Abs(xAngle - _prevXAngle) > headAnglesTolerance || Mathf.Abs(yAngle - _prevYAngle) > headAnglesTolerance ||
-                (Mathf.Abs(xAngle - _prevXAngle) > 0.0001f && (xAngle >= 3 || xAngle <= -3)) ||
+                (Mathf.Abs(xAngle - _prevXAngle) > 0.0001f && (xAngle >= 6 || xAngle <= -6)) ||
                 (Mathf.Abs(yAngle - _prevYAngle) > 0.0001f && (yAngle >= 3 || yAngle <= -3)))
             {
                 //update prevAngle
@@ -237,6 +284,17 @@ public class InputManager : Monosingleton<InputManager>
             }
             return msg;
         }
-        
+
+        private float HeadTiltOffset()
+        {
+            _headYOffset = 1/_poseManager.GetDistanceFromCamera()*_headAngleAtDistanceOne;
+            return _headYOffset;
+        }
+        public float _headYOffset = 0f;
+        public float _headTiltSensitivity = 0.3f;
+        public float _headAngleAtDistanceOne = 20f;
+        public float _maxTiltValue = 2f;
+        //head pan offset
+        public float _headPanOffset = 0f;
     #endregion 
 }

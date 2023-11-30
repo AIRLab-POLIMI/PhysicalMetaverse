@@ -588,7 +588,11 @@ public class NetworkingManager : Monosingleton<NetworkingManager>
         IPEndPoint sendTo = new IPEndPoint(IPAddress.Parse(ip), myUdpPort);
         _udpMessenger.SendUdp(bytes, sendTo);
         if(ENABLE_SEND_STRING_LOG){
+            bool logEnabled = Debug.unityLogger.logEnabled;
+            //enable debug log
+            Debug.unityLogger.logEnabled = true;
             Debug.Log("<NetworkingManager> Sent UDP string \"" + data + "\" to " + ip);
+            Debug.unityLogger.logEnabled = logEnabled;
         }
     }
 

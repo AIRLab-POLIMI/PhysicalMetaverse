@@ -20,6 +20,10 @@ public class SingleStationManager : MonoBehaviour
     [SerializeField] private bool _lidarTracking = false;
     [SerializeField] private GameObject _interactionGameObject;
 
+    //get _stationId
+    public int GetStationId(){
+        return _stationId;
+    }
     // Start is called before the first frame update
     void Start()
     {

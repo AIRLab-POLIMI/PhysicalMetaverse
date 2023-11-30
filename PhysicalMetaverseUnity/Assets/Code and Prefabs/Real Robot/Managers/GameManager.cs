@@ -18,7 +18,7 @@ public class GameManager : Monosingleton<GameManager>
     
     [Header("TIME")]
     
-    [Range(0, 600)] [SerializeField] private int _gameDurationSeconds;
+    [Range(0, 1200)] [SerializeField] private int _gameDurationSeconds;
     [SerializeField] private int _remainingTime;
     [SerializeField] private float _normalisedElapsedTime;    
     private bool _gameOver;
@@ -32,7 +32,10 @@ public class GameManager : Monosingleton<GameManager>
     
     [Header("SCORE")]
     [SerializeField] private int _score;
+    [SerializeField] private int _errors;
     [SerializeField] private int _scoreToWin;    
+    //serialize result file path
+    [SerializeField] private string _resultFilePath = "C:/Users/Alessandro/Documents/Maurizio/Results";
     [Space]
     
     [Header("RESET BUTTON")]
@@ -105,11 +108,32 @@ public class GameManager : Monosingleton<GameManager>
         _gameOver = true;
         _winPanel.SetActive(true);
         NetworkingManager.Instance.SendString(_winMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(_winMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(_winMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(_winMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        WriteFile();
     }
 
+    //serialize _networkingManager
+    [SerializeField] private GameObject _networkingManager;
+    //serialize _environmentVisualization
+    [SerializeField] private GameObject _environmentVisualization;
     private void LoseTheGame(){
         _gameOver = true;
         _losePanel.SetActive(true);
+        WriteFile();
+        //disable environment
+        _environmentVisualization.SetActive(false);
+    }
+    
+    private void WriteFile(){
+        //write file
+        string fileName = "Result_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt";
+        string filePath = _resultFilePath + "/" + fileName;
+        string data = "Score: " + _score + "\n" + "Errors: " + _errors + "\n" + "Time: " + _normalisedElapsedTime + "\n" + "GameDuration: " + _gameDurationSeconds + "Viz: " + PoseManager.Instance.GetViz() + "\n";
+        System.IO.File.WriteAllText(filePath, data);
+        //log
+        Debug.Log("Wrote file " + fileName + " in " + _resultFilePath);
     }
 
     private void CheckResetTime(){
@@ -121,6 +145,9 @@ public class GameManager : Monosingleton<GameManager>
     public void ResetTime(){
         //send reset time to python
         string data = "S:" + _gameDurationSeconds.ToString();
+        NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
         NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
         //gamemanager teststationsmanager set _normalisedElapsedTime 0 gameDurationSeconds time string
         _normalisedElapsedTime = 0;
@@ -148,6 +175,7 @@ public class GameManager : Monosingleton<GameManager>
     {
         //normalise time and add it to _normalisedElapsedTime
         _normalisedElapsedTime += (float) time / _gameDurationSeconds;
+        _errors++;
     }
 
     //get normalized elapsed

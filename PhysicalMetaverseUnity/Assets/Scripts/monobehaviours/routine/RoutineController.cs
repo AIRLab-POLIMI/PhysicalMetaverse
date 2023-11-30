@@ -2,12 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using Core;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
 public class RoutineController : Monosingleton<RoutineController>
 {
 
+    [SerializeField] bool _playCoroutine = false;
+    [SerializeField] bool _stopCoroutine = false;
     [SerializeField] float routineDuration;
     
     [SerializeField] List<RoutineComponent> routineComponents;
@@ -28,6 +31,17 @@ public class RoutineController : Monosingleton<RoutineController>
             component.Start(routineDuration);
     }
     
+    private void FixedUpdate(){
+        if(_playCoroutine){
+            _playCoroutine = false;
+            Activate();
+        }
+        //if _stopCoroutine call Stop()
+        if(_stopCoroutine){
+            _stopCoroutine = false;
+            Stop();
+        }
+    }
     
     #region Activate Routine
 
@@ -38,8 +52,14 @@ public class RoutineController : Monosingleton<RoutineController>
             
             if (_coroutine != null)
                 StopCoroutine(_coroutine);
-                
+            
+            _coroutinePlaying = true;
             _coroutine = StartCoroutine(ActivateRoutine());
+        }
+
+        public void Stop()
+        {
+            _coroutinePlaying = false;
         }
 
         public string GetMsg()
@@ -50,12 +70,14 @@ public class RoutineController : Monosingleton<RoutineController>
             return _currentMsg;
         }
         
+        private bool _coroutinePlaying = false;
+
         private IEnumerator ActivateRoutine()
         {
             // call GetMgs for every component in the list using the elapsed time from the start of the coroutine as input
             // until routineDuration is reached
             float elapsedTime = 0;
-            while (elapsedTime < routineDuration)
+            while (elapsedTime < routineDuration && _coroutinePlaying)
             {
                 GetMsg(elapsedTime);
                 
@@ -66,6 +88,17 @@ public class RoutineController : Monosingleton<RoutineController>
             GetMsg(routineDuration);
             
             _coroutine = null;
+        }
+
+        public string GetInitialPositionMsg()
+        {
+            _currentMsg = "";
+            foreach (var component in routineComponents)
+                _currentMsg += component.GetDefaultMsg() + Constants.MsgDelimiter;
+            
+            // remove the last delimiter
+            _currentMsg = _currentMsg.Remove(_currentMsg.Length - 1);
+            return _currentMsg;
         }
 
         private void GetMsg(float elapsedTime)

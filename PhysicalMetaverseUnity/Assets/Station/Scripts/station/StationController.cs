@@ -82,6 +82,7 @@ public class StationController : MonoBehaviour
     private float _startActivationTime = 0;
     private bool _activationStarted = false;
     private float _activationPermanenceTime = 1f;
+    private SphereController _sphereController;
     public void SetRight(bool right){
         _isRight = right;
     }
@@ -104,6 +105,8 @@ public class StationController : MonoBehaviour
 
         interactionRangeCollider.Init(sphereColliderTag);
         activationRangeCollider.Init(sphereColliderTag);
+
+        _sphereController = SphereController.Instance;
 
         Hide();
     }
@@ -161,6 +164,12 @@ public class StationController : MonoBehaviour
     
     private void Update()
     {
+        //check if _station gameobject is active
+        /*if(!_station.activeSelf){
+            //disable this gameobject
+            this.gameObject.SetActive(false);
+        }*/
+        
         if (_isHidden)
             return;
         
@@ -258,7 +267,7 @@ public class StationController : MonoBehaviour
         // play the audiosource only once then stop
         audioSource.PlayOneShot(audioSource.clip);
         
-        RoutineController.Instance.Activate();
+        //RoutineController.Instance.Activate();
         
         // OnInteractableExit(false);
         OnInteractableExit();
@@ -319,6 +328,7 @@ public class StationController : MonoBehaviour
             _activationPermanenceTime = time;
         }
 
+        private bool _prevInRange = false;
         private void CheckActivated()
         {
             //if _station IsInvalidated() true return, can't activate a station if it is not valid
@@ -338,10 +348,13 @@ public class StationController : MonoBehaviour
             
             // if it's in range and it's interactable, trigger activated
             if (inRange && _isInteractable){
+                _prevInRange = true;
                 if (!_activationStarted)
                 {
                     _activationStarted = true;
                     _startActivationTime = Time.time;
+                    _sphereController.BlinkSphere();
+                    RoutineController.Instance.Activate();
                 }
                 else
                 {
@@ -354,6 +367,11 @@ public class StationController : MonoBehaviour
             }
             else
             {
+                if (_prevInRange){
+                    _prevInRange = false;
+                    _sphereController.StopBlink();
+                    RoutineController.Instance.Stop();
+                }
                 _activationStarted = false;
             }
         }
@@ -372,15 +390,20 @@ public class StationController : MonoBehaviour
     public void CompleteStation()
     {
         BlinkStation();
+        BlinkStation();
+        BlinkStation();
+        BlinkStation();
+        BlinkStation();
+        //IGNORE MESSAGES THAT ARE TOO CLOSE IN GAME MANAGER
         //id station isright is false send W:10
         if (!_isRight)
         {
-            StationManager.Instance.CompleteWrongStation();
+            StationManager.Instance.CompleteWrongStation(_station.GetComponent<SingleStationManager>().GetStationId());
         }
         //else send R:1
         else
         {
-            StationManager.Instance.CompleteRightStation();
+            StationManager.Instance.CompleteRightStation(_station.GetComponent<SingleStationManager>().GetStationId());
         }
     }
 

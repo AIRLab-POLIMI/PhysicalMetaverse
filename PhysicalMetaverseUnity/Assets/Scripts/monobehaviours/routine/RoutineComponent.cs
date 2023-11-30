@@ -8,6 +8,7 @@ public class RoutineComponent
     [SerializeField] private string dofName;
     
     [SerializeField] private int numCycles;
+    [SerializeField] private float _defaultPosition;
 
     [SerializeField, Range(-1, 1)] private float movementCenter;
     [SerializeField, Range(0, 1)] private float movementAmplitude;
@@ -45,5 +46,11 @@ public class RoutineComponent
         _currentValue = (byte) Mathf.RoundToInt((value - minMotorValue) * _byteRange / _motorRange);
 
         return motorKey + Constants.KeyValDelimiter + _currentValue;
+    }
+
+    //get default value msg
+    public string GetDefaultMsg()
+    {
+        return motorKey + Constants.KeyValDelimiter + _defaultPosition;
     }
 }

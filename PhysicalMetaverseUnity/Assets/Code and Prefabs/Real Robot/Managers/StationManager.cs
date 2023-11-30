@@ -92,7 +92,7 @@ public class StationManager : Monosingleton<StationManager>
     //[SerializeField] private TRACKING_DECAY_TIME
     [SerializeField] private float TRACKING_DECAY_TIME = 0.1f;
     [SerializeField] private bool _lerp = false;
-    [SerializeField] private string _rightStationMessage = "R:1";
+    [SerializeField] private string _rightStationKey = "R";
     [SerializeField] private string _wrongStationMessage = "W:10";
     [SerializeField] private int _completedStations = 0;
     private GameObject _sphere;
@@ -201,6 +201,8 @@ public class StationManager : Monosingleton<StationManager>
         if(_RESET_STATIONS){
             _RESET_STATIONS = false;
             ResetStations();
+            ResetStations();
+            ResetStations();
         }
 
         if(_UPDATE_STATIONS_BEHAVIOUR){
@@ -277,6 +279,7 @@ public class StationManager : Monosingleton<StationManager>
                 {
                     //eanble station
                     station.SetActive(true);
+                    ////station.GetComponent<SingleStationManager>().GetStationInteraction().gameObject.SetActive(true);
                     //set station position, data is formatted as [station code, x, y, size(diagonal)]
                     //((GameObject)_stations[i]).transform.localPosition = new Vector3(((int[])_stationsData[i])[2] / _imageFrameScale + xOffset, (((int[])_stationsData[i])[1] / _imageFrameScale) + yOffset, ((int[])_stationsData[i])[3]/10.0f + zOffset);
                     //if _stations[i].GetComponent<SingleStationManager>()._tracked
@@ -308,21 +311,31 @@ public class StationManager : Monosingleton<StationManager>
             if (_elapsedTime > TRACKING_DECAY_TIME)
             {
                 _stations[i].GetComponent<SingleStationManager>().SetTracked(false);
-                if (_elapsedTime > STATIONS_DECAY_TIME)
+                if (_elapsedTime > STATIONS_DECAY_TIME){
+                    ////_stations[i].GetComponent<SingleStationManager>().GetStationInteraction().gameObject.SetActive(false);
                     _stations[i].SetActive(false);
+                }
             }
         }
     }
 
-    public void CompleteRightStation(){
-        NetworkingManager.Instance.SendString(_rightStationMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
+    public void CompleteRightStation(int stationId){
+        string message = _rightStationKey + ":" + stationId;
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
         _completedStations++;
         GameManager.Instance.UpdateScore(_completedStations);
     }
     
-    public void CompleteWrongStation(){
-        NetworkingManager.Instance.SendString(_wrongStationMessage, NetworkingManager.Instance.GetPythonGamemanagerIp());
-        GameManager.Instance.SubtractTime(ParseTime(_wrongStationMessage));
+    public void CompleteWrongStation(int stationId){
+        string message = "W" + ":" + ((int)(ParseTime(_wrongStationMessage) + stationId));
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        NetworkingManager.Instance.SendString(message, NetworkingManager.Instance.GetPythonGamemanagerIp());
+        GameManager.Instance.SubtractTime(ParseTime(message));
     }
     
     //parse time from _wrongStationMessage

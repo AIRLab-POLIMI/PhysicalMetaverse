@@ -10,8 +10,8 @@
 // // IP = 192.168.1.60 -> THIS DEVICE
 // // IP = 192.168.1.61 -> OTHER DEVICE (the one you are comm with through UDP)
 
-IPAddress staticIP(192, 168, 137, 57);  // this device static IP
-IPAddress defaultDestinationIP(192, 168, 137, 1);       
+IPAddress staticIP(192, 168, 0, 57);  // this device static IP
+IPAddress defaultDestinationIP(192, 168, 0, 1);       
                                       // other device IP
                                       // NB you can have as many "other IPs" as you want; 
                                       // the one you pass in the ESPUDP constructor is just the default. 
@@ -42,9 +42,9 @@ IPAddress defaultDestinationIP(192, 168, 137, 1);
 std::string KEY_1 = "KEY1";
 std::string KEY_2 = "KEY2";
 
-const uint8_t green_pin = 27;
-const uint8_t red_pin = 12;
-const uint8_t blue_pin = 26;
+const uint8_t green_pin = 12;
+const uint8_t red_pin = 13;
+const uint8_t blue_pin = 14;
 
 const bool CORRECT_STATION = false;
 
@@ -311,7 +311,7 @@ void loop()
     delay(100);
     // you can add a DELAY if you don't want to force high frequency check and eventual response
     // delay (50);
-
+    /*
     // Clears the trigPin
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2);
@@ -335,4 +335,5 @@ void loop()
     distanceCm = round(distanceCm);
     //write_key_value_pair to destination ip
     espUdp.write_key_value_pair("d", distanceCm, "192.168.137.1", 25666);
+    */
 }
