@@ -11,39 +11,51 @@ public class LidarManager : Monosingleton<LidarManager>
     [Header("ACTIONS")]
     [Space]
     [SerializeField] private bool ENABLE_LOG = false;
+    [Tooltip("Move LIDAR with odometry inbetween detections")]
     [SerializeField] private bool _SMOOTH_WITH_ODOMETRY = true;
+    [Tooltip("Alternative lidar visualization")]
     [SerializeField] private bool _MERGE_WALLS = false;
+    [Tooltip("Track stations with LIDAR")]
     [SerializeField] private bool _LIDAR_TRACKING = true;
+    [Tooltip("Track person with LIDAR")]
     [SerializeField] private bool _PERSON_TRACKING = true;
     //_CENTER_JUMP_DISTANCE
-    [SerializeField] private bool _CENTER_JUMP_DISTANCE = true;
-    [SerializeField] private bool _WEIGH_DISTANCE = false; //COMMENTED IN PillarManager
+    [Tooltip("Set whether person tracker jump distance is centered in origin or on person tracker")]
+    [SerializeField] private bool _CENTER_JUMP_DISTANCE = false;
+    //[SerializeField] private bool _WEIGH_DISTANCE = false; //COMMENTED IN PillarManager
+    [Tooltip("Update various pillar valiables set from this object at start")]
     [SerializeField] private bool _UPDATE_PILLAR_BEHAVIOUR = true;
-    [SerializeField] private bool _STATION_TO_CLOSEST = true;
+    //show tooltip
+    [Tooltip("Set whether stations, given their pillar group, will snap to the middle pillar or to the closest to Controller")]
+    [SerializeField] private bool _STATION_TO_CLOSEST = false;
+    [Tooltip("Disable LIDAR")]
     [SerializeField] private bool _DISABLE_LIDAR = false;
     //_LIDAR_ROTATION
-    [SerializeField] private float _LIDAR_ROTATION = 0;
+    [Tooltip("LIDAR Y rotation offset")]
+    [SerializeField] private float _LIDAR_ROTATION = 180;
     [Space]
     [Space]
 
     [Header("PILLAR GENERATION")]
     [Space]
-    [SerializeField] private float _lidarScale = 1f;
+    [SerializeField] private float _lidarScale = 0.5f;
     [SerializeField] private bool _disableBackPillars = true;
-    [SerializeField] private int _disablePillarsRange = 60;
-    [SerializeField] private int _savePillarsRange = 20;
+
+    //list of disable back pillars angles
+    [SerializeField] private List<int> _disableBackPillarsAngles = new List<int>();
+    //list of disable back pillars ranges
+    [SerializeField] private List<int> _disableBackPillarsRanges = new List<int>();
     [SerializeField] private GameObject lidarPoint;
     [SerializeField] private GameObject lidarPoint2;
     [SerializeField] private IntSO lidarMode;
     private GameObject[] _points;
-    private int[] _measurements;
     private  int arraySize = 360;
     private float minDistValue = 1.0f;
     private float maxDistValue = 20.0f;
     private int minMeasure = 0;
     private int maxMeasure = 5000;
     private Vector3 defaultHidePosition = new Vector3(-0.5f, -10f, -12.0f);
-    [SerializeField] private FloatSO distanceFromCamera; //In centimeters, positive if lidar is behind camera, negative if lidar is in frontm of the camera
+    [SerializeField] private FloatSO distanceFromCamera; //In centimeters, positive if lidar is behind camera, negative if lidar is in front of the camera
     [SerializeField] private FloatSO poseDistance;
     private float defaultPoseDistance = 10.0f;
     private int nOfLidarDegrees = 0;
@@ -57,15 +69,15 @@ public class LidarManager : Monosingleton<LidarManager>
     [Space]
     [SerializeField] private OdometryManager _odometryManager;
     [Range(0.0f, 2.0f)]
-    [SerializeField] private float _odometrySpeed = 0.23f;
+    [SerializeField] private float _odometrySpeed = 0.339f;
     //_odometryRotationSpeed
     [Range(0.0f, 100.0f)]
-    [SerializeField] private float _odometryRotationSpeed = 0.23f;
+    [SerializeField] private float _odometryRotationSpeed = 23f;
     //get
     public float GetOdometryRotationMaxSpeed(){
         return _odometryRotationSpeed;
     }
-    [SerializeField] private float _odometryRotationCurrentSpeed = 0.23f;
+    [SerializeField] private float _odometryRotationCurrentSpeed = 0f;
     //get _odometryRotationCurrentSpeed
     public float GetOdometryRotationCurrentSpeed(){
         return _odometryRotationCurrentSpeed;
@@ -77,56 +89,60 @@ public class LidarManager : Monosingleton<LidarManager>
     //private prevstartrotation
     private bool _prevStartRotation = false;
     //odometry rotation acceleration
-    [SerializeField] private float _odometryRotationAcceleration = 0.1f;
+    [SerializeField] private float _odometryRotationAcceleration = 77.1f;
     [SerializeField] private float newTolerance = 1.2f; //1 is no tolerance
     private int[] currentPositions;
     [SerializeField] float fadeDuration = 0.05f; // Duration of the fade-out effect in seconds
 
     [Space]
     [Space]
-    [Header("LIDAR TRACKING")]
+    [Header("TRACKING")]
     [Space]
-    [SerializeField] private PoseManager _poseManager;
-    //array of blob booleans
-    [SerializeField] private int[] _blobs = new int[360];
-    [SerializeField] private int[] _personBlobs = new int[360];
-    [SerializeField] private int _middle = 0;
-    [SerializeField] private int count = 0;
-    [SerializeField] private int _skippableBlobPoints = 2;
-    [SerializeField] private int _personSkippableBlobPoints = 6;
-    [SerializeField] private List<int> _blobSizes = new List<int>();
-    [SerializeField] private List<int> _blobStarts = new List<int>();
-    [SerializeField] private List<int> _personBlobSizes = new List<int>();
-    [SerializeField] private List<int> _personBlobWeights = new List<int>();
-    [SerializeField] private List<int> _personBlobStarts = new List<int>();
-    [SerializeField] private List<int> _blobIds = new List<int>();
-    //dictionary of string gameobject blobtrackers
-    [SerializeField] private Dictionary<int, GameObject> _blobTrackers = new Dictionary<int, GameObject>();
-    [SerializeField] private float _maxJumpDistance = 3f;
-    [SerializeField] private List<GameObject> _stationList;
     //range 0 1 public float lidar tracking lerp
     [Range(0.0f, 1.0f)]
-    [SerializeField] private float _lidarTrackingLerp = 0.5f;
+    [SerializeField] private float _lidarTrackingLerp = 0.05f;
+    private int _count = 0;
+    [SerializeField] private List<GameObject> _stationList;
+    //array of blob booleans
+    [SerializeField] private int[] _stationPillarArray = new int[360];
+    [SerializeField] private int _skippableStationPillars = 2;
+    [SerializeField] private List<int> _stationGroupSizes = new List<int>();
+    [SerializeField] private List<int> _stationGroupStarts = new List<int>();
+    [SerializeField] private List<int> _stationGroupIds = new List<int>();
+    [SerializeField] private float _maxStationJumpDistance = 3f;
+    //dictionary of string gameobject blobtrackers
+    [SerializeField] private Dictionary<int, GameObject> _stationTrackers = new Dictionary<int, GameObject>();
+    [SerializeField] private PoseManager _poseManager;
+    [SerializeField] private int[] _personPillarArray = new int[360];
+    [SerializeField] private int _skippablePersonPillars = 1;
+    [SerializeField] private List<int> _personGroupSizes = new List<int>();
+    [SerializeField] private List<int> _personGroupStarts = new List<int>();
+    [SerializeField] private List<int> _personGroupWeights = new List<int>();
+    [SerializeField] private float _personPillarCheckPercent = 0.7f;
+    [SerializeField] private float _personMinBlobSize = 4.58f;
+    [SerializeField] private float _personBiggestBlobSize = 10f;
+    [SerializeField] private float _maxPersonJumpDistance = 16f;
     [SerializeField] private float _humanVizOffset = 1f;
-    [SerializeField] private float _maxPersonJumpDistance = 8f;
     //person weight
     [SerializeField] private int _personWeight = 2;
     //_movementWeight
-    [SerializeField] private int _movementWeight = 3;
+    [SerializeField] private int _personMovementWeight = 5;
     //_poseWeight
-    [SerializeField] private int _poseWeight = 20;
+    [SerializeField] private int _personPoseDetectedWeight = 100;
     [SerializeField] private GameObject personCollider;
+    [SerializeField] private float _personColliderLerpSpeedMultiplier = 1f;
     [SerializeField] private GameObject _personJumpDistance;
     [SerializeField] private float _personPillarDown = -3f;
     [SerializeField] private float _pillarLerpSpeed = 0.1f;
     [SerializeField] private float _backUpReducer = 3f;
-    [SerializeField] private int _PERSON_ID = 9;
+    [SerializeField] private int _PERSON_ID = 9; //TODO remove this without side effects, person should already be detached from station ids now
     //serialize _odometryPersonColliderScale
     [SerializeField] private float _odometryPersonColliderScale = 18f;
     //serialize _odometryPersonJumpDistance
-    [SerializeField] private float _odometryPersonJumpDistance = 4f;
+    [SerializeField] private float _odometryPersonJumpDistance = 6f;
     //serialize _basePersonJumpDistance
-    [SerializeField] private float _basePersonJumpDistance = 16f;
+    [SerializeField] private float _basePersonJumpDistance = 70f;
+    [SerializeField] private  float _closestPersonDistanceThreshold = 1f;
     //setter
     public void SetBasePersonJumpDistance(float value){
         _basePersonJumpDistance = value;
@@ -135,7 +151,7 @@ public class LidarManager : Monosingleton<LidarManager>
 
     [Space]
     [Space]
-    [Header("MERGE WALLS")]
+    [Header("MERGE WALLS (experimental)")]
     [Space]
     [SerializeField] private float _wallCylinderThreshold = 3.0f;
     [SerializeField] private float _wallSizeMultiplier = 1.2f;
@@ -156,8 +172,6 @@ public class LidarManager : Monosingleton<LidarManager>
 
         _points = new GameObject[arraySize];
 
-        _measurements = new int[arraySize];
-
         //Points are spawned as inactive, because prefab is inactive. 
         SpawnPoints();
     }
@@ -170,12 +184,14 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
-    public void SetBlobAt(int id, int value){
-        _blobs [id] = value;
+    // Set station value to pillar
+    public void SetBlobAt(int pillar, int stationId){
+        _stationPillarArray [pillar] = stationId;
     }
 
-    public void SetPersonBlobAt(int id, int value){
-        _personBlobs [id] = value;
+    // Set person weight to pillar
+    public void SetPersonBlobAt(int pillar, int weight){
+        _personPillarArray [pillar] = weight;
     }
 
 
@@ -228,15 +244,15 @@ public class LidarManager : Monosingleton<LidarManager>
             _cylinders.Add(wall);
         }
         //init _blobs to -1
-        _blobs = new int[arraySize];
+        _stationPillarArray = new int[arraySize];
         for(int i = 0; i < arraySize; i++){
-            _blobs[i] = -1;
+            _stationPillarArray[i] = -1;
         }
 
         //init person blobs to -1
-        _personBlobs = new int[arraySize];
+        _personPillarArray = new int[arraySize];
         for(int i = 0; i < arraySize; i++){
-            _personBlobs[i] = -1;
+            _personPillarArray[i] = -1;
         }
 
         //for each pillar do  
@@ -244,34 +260,29 @@ public class LidarManager : Monosingleton<LidarManager>
             _points[i].GetComponent<PillarManager>().SetMovementWeight(_movementWeight);*/
         foreach(GameObject pillar in _points){
             pillar.GetComponent<PillarManager>().SetPersonWeight(_personWeight);
-            pillar.GetComponent<PillarManager>().SetMovementWeight(_movementWeight);
-            pillar.GetComponent<PillarManager>().SetPoseWeight(_poseWeight);
+            pillar.GetComponent<PillarManager>().SetMovementWeight(_personMovementWeight);
+            pillar.GetComponent<PillarManager>().SetPoseWeight(_personPoseDetectedWeight);
         }
         
         DisableBackPillars();
     }
 
-    //list of disable back pillars angles
-    [SerializeField] private List<int> _disableBackPillarsAngles = new List<int>();
-    //list of disable back pillars ranges
-    [SerializeField] private List<int> _disableBackPillarsRanges = new List<int>();
-
-
+    // Disable pillars within ranges at angles defined by global angles and ranges arrays
     private void DisableBackPillars(){
         if(_disableBackPillars){
             //for each _disableBackPillarsAngles, _disableBackPillarsRanges
             for(int i = 0; i < _disableBackPillarsAngles.Count; i++){
                 for(int j = _disableBackPillarsAngles[i]; j < _disableBackPillarsAngles[i]+_disableBackPillarsRanges[i]; j++){
                     //set station id to -1
-                    _blobs[j] = -1;
-                    _personBlobs[j] = -1;
+                    _stationPillarArray[j] = -1;
+                    _personPillarArray[j] = -1;
                     _points[j].GetComponent<PillarManager>().SetStationId(-1);
                     _points[j].SetActive(false);
                 }
                 for(int j = _disableBackPillarsAngles[i]-_disableBackPillarsRanges[i]; j < _disableBackPillarsAngles[i]; j++){
                     //set station id to -1
-                    _blobs[j] = -1;
-                    _personBlobs[j] = -1;
+                    _stationPillarArray[j] = -1;
+                    _personPillarArray[j] = -1;
                     _points[j].GetComponent<PillarManager>().SetStationId(-1);
                     _points[j].SetActive(false);
                 }
@@ -347,23 +358,10 @@ public class LidarManager : Monosingleton<LidarManager>
     }
     void FixedUpdate()
     {
-        //disable mesh of _blobTracker
-        ////_personTracker.GetComponent<MeshRenderer>().enabled = false;
-        //disable _blobTrackers meshes
-        foreach(GameObject blob in _blobTrackers.Values){
+        //disable _stationPillarTrackers meshes
+        foreach(GameObject blob in _stationTrackers.Values){
             blob.GetComponent<MeshRenderer>().enabled = false;
         }
-        //check blob array and enable mesh of corresponding true values
-        /*
-        for(int i = 0; i < 360; i++){
-            if(_blobs[i] >= 0){
-                _points[i].GetComponent<MeshRenderer>().enabled = true;
-            }
-            else{
-                _points[i].GetComponent<MeshRenderer>().enabled = true;
-            }
-        }
-        */
         
         if(_UPDATE_PILLAR_BEHAVIOUR)
             UpdatePillarBehaviour(_personPillarDown, _pillarLerpSpeed, _backUpReducer);
@@ -476,7 +474,7 @@ public class LidarManager : Monosingleton<LidarManager>
             //set rigidbody to kinematic
             blob.GetComponent<Rigidbody>().isKinematic = true;
             //add to list, get key from last digit of station name
-            _blobTrackers.Add(int.Parse(station.name.Substring(station.name.Length - 1)), blob);
+            _stationTrackers.Add(int.Parse(station.name.Substring(station.name.Length - 1)), blob);
             //red if 0 blue if 1
             if(station.name.EndsWith("0")){
                 blob.GetComponent<MeshRenderer>().material.color = Color.red;
@@ -487,33 +485,35 @@ public class LidarManager : Monosingleton<LidarManager>
         }
     }
 
-    public int _found = 0;
+    private int _personFoundGroup = 0;
+
+    // Move person tracker towards the most weighting group of pillars, weight of each pillar is given by movement, collision with tracker and camera pose detection
     private void PersonTracking(){
         //clear lists
-        _personBlobSizes.Clear();
-        _personBlobWeights.Clear();
-        _personBlobStarts.Clear();
+        _personGroupSizes.Clear();
+        _personGroupWeights.Clear();
+        _personGroupStarts.Clear();
         //track a blob of pillars whose station id is 9, the tag is "Person"
-        int skippableBlobPoints = _personSkippableBlobPoints;
+        int skippableBlobPoints = _skippablePersonPillars;
         //look at _personBlobs array
         for(int i = 0; i < 360; i++){
-            skippableBlobPoints = _personSkippableBlobPoints;
+            skippableBlobPoints = _skippablePersonPillars;
             //if true
             int blobWeight = 0;
-            if(_personBlobs[i] > 0){
+            if(_personPillarArray[i] > 0){
                 //count until false
-                count = 0;
+                _count = 0;
                 int j = i;
                 bool seamPassed = false;
                 while(skippableBlobPoints>0){
-                    if(_personBlobs[j] <= 0){
+                    if(_personPillarArray[j] <= 0){
                         skippableBlobPoints--;
                     }
                     else{
-                        skippableBlobPoints = _personSkippableBlobPoints;
+                        skippableBlobPoints = _skippablePersonPillars;
                     }
-                    count++;
-                    blobWeight +=  _personBlobs[j];
+                    _count++;
+                    blobWeight +=  _personPillarArray[j];
                     j++;
                     if(j >= 360){
                         skippableBlobPoints = -1;
@@ -533,25 +533,25 @@ public class LidarManager : Monosingleton<LidarManager>
                         }
                     }*/
                 }
-                _personBlobSizes.Add(count);
-                _personBlobWeights.Add(blobWeight);
-                _personBlobStarts.Add(i);
+                _personGroupSizes.Add(_count);
+                _personGroupWeights.Add(blobWeight);
+                _personGroupStarts.Add(i);
                 i = j;
             }
         }
         //find the index of the max element in list _personBlobSizes using Math.max
-        _found = 0;
+        _personFoundGroup = 0;
         int max = 0;
         int size = 0;
         int trueMiddle = 0;
-        for(int k = 0; k < _personBlobSizes.Count; k++){
-            if(_personBlobWeights[k] > max){
-                size = _personBlobSizes[k];
-                max = _personBlobWeights[k];
-                _found = _personBlobStarts[k];
-                trueMiddle = _found + size/2;
-                if(_found >= 360){
-                    _found -= 360;
+        for(int k = 0; k < _personGroupSizes.Count; k++){
+            if(_personGroupWeights[k] > max){
+                size = _personGroupSizes[k];
+                max = _personGroupWeights[k];
+                _personFoundGroup = _personGroupStarts[k];
+                trueMiddle = _personFoundGroup + size/2;
+                if(_personFoundGroup >= 360){
+                    _personFoundGroup -= 360;
                 }
             }
         }
@@ -559,7 +559,7 @@ public class LidarManager : Monosingleton<LidarManager>
         //int middle = i + count/2;
         //middle = index of the pillar closest to world center
         //for each point in the blob, check distance from world center and keep the smallest
-        int closestIndex = _found;
+        int closestIndex = _personFoundGroup;
         float minDistance = 1000f;
         /*for(int k = found; k < found + count; k++){
             if(k >= 360){
@@ -572,14 +572,14 @@ public class LidarManager : Monosingleton<LidarManager>
                 closestIndex = k;
             }
         }*/
-        _biggestBlobSize = max;
+        _personBiggestBlobSize = max;
         //if max is less than MIN_BLOB_SIZE return
-        if(max < _minBlobSize){
+        if(max < _personMinBlobSize){
             return;
         }
         //look only among 10% of points from the middle
-        int start = trueMiddle - (int)(size*_checkPercent);
-        int end = trueMiddle + (int)(size*_checkPercent);
+        int start = trueMiddle - (int)(size*_personPillarCheckPercent);
+        int end = trueMiddle + (int)(size*_personPillarCheckPercent);
         if(start < 0){
             start += 360;
         }
@@ -658,7 +658,7 @@ public class LidarManager : Monosingleton<LidarManager>
         }
         //destination equal to point minus 1 in direction of vector zero
         Vector3 destination = _lastValidPosition - _lastValidPosition.normalized * _humanVizOffset;
-        personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, _lastValidPosition, _lidarTrackingLerp * _colliderLerpSpeedMultiplier);
+        personCollider.transform.position = Vector3.Lerp(personCollider.transform.position, _lastValidPosition, _lidarTrackingLerp * _personColliderLerpSpeedMultiplier);
         //if personCollider.transform.position magnitude is less than _closestPersonDistanceThreshold resize it to _closestPersonDistanceThreshold
         if(personCollider.transform.position.magnitude < _closestPersonDistanceThreshold){
             personCollider.transform.position = personCollider.transform.position.normalized * _closestPersonDistanceThreshold;
@@ -677,7 +677,7 @@ public class LidarManager : Monosingleton<LidarManager>
             personCollider.transform.localScale = _personColliderBaseScale;
             _maxPersonJumpDistance = _basePersonJumpDistance;
         }
-        _maxPersonJumpDistance = Math.Abs(50f - _biggestBlobSize/20f)/3f;
+        _maxPersonJumpDistance = Math.Abs(50f - _personBiggestBlobSize/20f)/3f;
             //position personCollider at point distance in direction of trueMiddleTransform
             //personCollider.transform.position = trueMiddleTransform.position.normalized * point.position.magnitude;
             
@@ -688,20 +688,16 @@ public class LidarManager : Monosingleton<LidarManager>
     private Vector3 _personColliderBaseScale;
     private Vector3 _personColliderOdometryScaleVector;
     private Vector3 _lastValidPosition = new Vector3(10,0,0);
-    public float _colliderLerpSpeedMultiplier = 4f;
-    public float _closestPersonDistanceThreshold = 1f;
-    public float _checkPercent = 0.7f;
-    public float _minBlobSize = 10f;
-    public float _biggestBlobSize = 10f;
 
-    //Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly
+    // Move each detected station tracker towards its corresponding pillar group, each pillar is marked by a station id or -1 if not a station
+    // Snaps station to a group of pillars, and manages to track it if pillars change reasonably slowly
     void LidarTracking(){
         //clear lists
-        _blobSizes.Clear();
-        _blobStarts.Clear();
-        _blobIds.Clear();
+        _stationGroupSizes.Clear();
+        _stationGroupStarts.Clear();
+        _stationGroupIds.Clear();
 
-        int skippableBlobPoints = _skippableBlobPoints;
+        int skippableBlobPoints = _skippableStationPillars;
         //disable _stationList meshes
         foreach(GameObject station in _stationList){
             ////station.GetComponent<MeshRenderer>().enabled = false;
@@ -709,21 +705,21 @@ public class LidarManager : Monosingleton<LidarManager>
         }
         //find start of groups of consecutive points and count their size
         for(int i = 0; i < 360; i++){
-            skippableBlobPoints = _skippableBlobPoints;
+            skippableBlobPoints = _skippableStationPillars;
             //if true
-            if(_blobs[i] >= 0 && _blobs[i] != _PERSON_ID){
+            if(_stationPillarArray[i] >= 0 && _stationPillarArray[i] != _PERSON_ID){
                 //count until false
-                count = 0;
+                _count = 0;
                 int j = i;
                 bool seamPassed = false;
                 while(skippableBlobPoints>0){
-                    if(_blobs[j] < 0){
+                    if(_stationPillarArray[j] < 0){
                         skippableBlobPoints--;
                     }
                     else{
-                        skippableBlobPoints = _skippableBlobPoints;
+                        skippableBlobPoints = _skippableStationPillars;
                     }
-                    count++;
+                    _count++;
                     j++;
                     if(j >= 360){
                         skippableBlobPoints = -1;
@@ -743,9 +739,9 @@ public class LidarManager : Monosingleton<LidarManager>
                         }
                     }*/
                 }
-                _blobSizes.Add(count);
-                _blobStarts.Add(i);
-                _blobIds.Add(_blobs[i]);
+                _stationGroupSizes.Add(_count);
+                _stationGroupStarts.Add(i);
+                _stationGroupIds.Add(_stationPillarArray[i]);
                 //skip to j
                 i = j;
             }
@@ -794,23 +790,23 @@ public class LidarManager : Monosingleton<LidarManager>
         */
 
         //check _blobIds list, if there are duplicates, keep the biggest one
-        for(int i = 0; i < _blobIds.Count; i++){
-            for(int j = i+1; j < _blobIds.Count; j++){
-                if(_blobIds[i] == _blobIds[j]){
+        for(int i = 0; i < _stationGroupIds.Count; i++){
+            for(int j = i+1; j < _stationGroupIds.Count; j++){
+                if(_stationGroupIds[i] == _stationGroupIds[j]){
                     //if same id, check size
-                    if(_blobSizes[i] > _blobSizes[j]){
+                    if(_stationGroupSizes[i] > _stationGroupSizes[j]){
                         //delete j
-                        _blobIds.RemoveAt(j);
-                        _blobSizes.RemoveAt(j);
-                        _blobStarts.RemoveAt(j);
+                        _stationGroupIds.RemoveAt(j);
+                        _stationGroupSizes.RemoveAt(j);
+                        _stationGroupStarts.RemoveAt(j);
                         //decrement j
                         j--;
                     }
                     else{
                         //delete i
-                        _blobIds.RemoveAt(i);
-                        _blobSizes.RemoveAt(i);
-                        _blobStarts.RemoveAt(i);
+                        _stationGroupIds.RemoveAt(i);
+                        _stationGroupSizes.RemoveAt(i);
+                        _stationGroupStarts.RemoveAt(i);
                         //decrement i
                         i--;
                         //break
@@ -821,18 +817,18 @@ public class LidarManager : Monosingleton<LidarManager>
         }
 
         //for each blob spawn corresponding cylinder at middle
-        for(int i = 0; i < _blobStarts.Count; i++){
+        for(int i = 0; i < _stationGroupStarts.Count; i++){
             Transform point;
             if(!_STATION_TO_CLOSEST){
                 //MOVE TO MIDDLE
                 //spawn cylinder at middle of maxIndex
-                int middle = _blobStarts[i] + _blobSizes[i]/2;
+                int middle = _stationGroupStarts[i] + _stationGroupSizes[i]/2;
                 if(middle >= 360){
                     middle -= 360;
                 }
                 //if middle id is not valid try next one
                 //drifts counter clockwise, try to fix by looking left and right
-                int id = _blobs[middle];
+                int id = _stationPillarArray[middle];
                 //while(id < 0){
                 //    middle++;
                 //    if(middle >= 360){
@@ -849,7 +845,7 @@ public class LidarManager : Monosingleton<LidarManager>
                         if(middleRight >= 360){
                             middleRight -= 360;
                         }
-                        id = _blobs[middleRight];
+                        id = _stationPillarArray[middleRight];
                         lookRight = false;
                     }
                     else{
@@ -857,7 +853,7 @@ public class LidarManager : Monosingleton<LidarManager>
                         if(middleLeft < 0){
                             middleLeft += 360;
                         }
-                        id = _blobs[middleLeft];
+                        id = _stationPillarArray[middleLeft];
                         lookRight = true;
                     }
                 }
@@ -870,9 +866,9 @@ public class LidarManager : Monosingleton<LidarManager>
                 //int middle = i + count/2;
                 //middle = index of the pillar closest to world center
                 //for each point in the blob, check distance from world center and keep the smallest
-                int closestIndex = _blobStarts[i] + _blobSizes[i]/2;
+                int closestIndex = _stationGroupStarts[i] + _stationGroupSizes[i]/2;
                 float minDistance = 1000f;
-                for(int k = _blobStarts[i]; k < _blobStarts[i] + _blobSizes[i]; k++){
+                for(int k = _stationGroupStarts[i]; k < _stationGroupStarts[i] + _stationGroupSizes[i]; k++){
                     if(k >= 360){
                         k -= 360;
                     }
@@ -894,7 +890,7 @@ public class LidarManager : Monosingleton<LidarManager>
             //_blobTracker.transform.position = Vector3.Lerp(_blobTracker.transform.position, point.position, _lidarTrackingLerp);
             //_blobTrackers[_blobIds[i]].transform.position = Vector3.Lerp(_blobTrackers[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
             //no lerp
-            _blobTrackers[_blobIds[i]].transform.position = point.position;
+            _stationTrackers[_stationGroupIds[i]].transform.position = point.position;
             //enable mesh
             //_blobTracker.GetComponent<MeshRenderer>().enabled = true;
             ////_blobTrackers[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
@@ -905,13 +901,13 @@ public class LidarManager : Monosingleton<LidarManager>
 
             //LIDAR TRACKING MOVES INTERACTABLE STATION
             
-            if(Vector3.Distance(_stationList[_blobIds[i]].transform.position, point.position) < _maxJumpDistance){
+            if(Vector3.Distance(_stationList[_stationGroupIds[i]].transform.position, point.position) < _maxStationJumpDistance){
                 ////_stationList[_blobIds[i]].GetComponent<MeshRenderer>().enabled = true;
-                _stationList[_blobIds[i]].transform.position = Vector3.Lerp(_stationList[_blobIds[i]].transform.position, point.position, _lidarTrackingLerp);
+                _stationList[_stationGroupIds[i]].transform.position = Vector3.Lerp(_stationList[_stationGroupIds[i]].transform.position, point.position, _lidarTrackingLerp);
             }
             else{
                 //move without lerp
-                _stationList[_blobIds[i]].transform.position = point.position;
+                _stationList[_stationGroupIds[i]].transform.position = point.position;
             }
         }
         ////spawn cylinder at middle of maxIndex
@@ -929,12 +925,13 @@ public class LidarManager : Monosingleton<LidarManager>
 
     }
 
+    // Move argument station GameObject to corresponding station tracker of this object
     public void LidarTrack(GameObject station){
         //move station to corresponding cylinder position using id
         //get id from station name
         int id = int.Parse(station.name.Substring(station.name.Length - 1));
         //get cylinder position
-        Vector3 position = _blobTrackers[id].transform.position;
+        Vector3 position = _stationTrackers[id].transform.position;
         //lerp station position to cylinder position
         //station.transform.position = Vector3.Lerp(station.transform.position, position, _lidarTrackingLerp);
         // no lerp

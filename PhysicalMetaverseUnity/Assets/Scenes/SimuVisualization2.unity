@@ -37420,7 +37420,7 @@ MonoBehaviour:
   _simulation: {fileID: 1786909777}
   _pillar: {fileID: 9071454379544978574, guid: 43cb5a197d0e5114f877d1a87c853382, type: 3}
   _pillarMeshDisabler: {fileID: 1224544702}
-  _mode: 2
+  _mode: 1
 --- !u!4 &1876277658 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8637557680593042169, guid: 2609b5b87dfb6384f9747d6ddf4391da,
