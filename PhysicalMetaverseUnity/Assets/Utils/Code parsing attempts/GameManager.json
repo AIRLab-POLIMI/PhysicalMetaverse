@@ -1,0 +1,31 @@
+{
+    "BumpManager": {
+      "Functions": ["Instance.Setup"]
+    },
+    "LidarManager": {
+      "Functions": ["Instance.Setup"]
+    },
+    "NetworkingManager": {
+      "Functions": [
+        "Instance.Setup",
+        "Instance.SendString",
+        "Instance.GetPythonGamemanagerIp",
+        "Instance.CloseConnections"
+      ]
+    },
+    "AmbientManager": {
+      "Functions": ["Instance.UpdateLight"]
+    },
+    "PoseManager": {
+      "Functions": ["Instance.Setup", "Instance.GetViz"]
+    },
+    "SetupManager": {
+      "Functions": [
+        "GetComponent<SetupManager>().DeleteEnvironmentSetupText",
+        "GetComponent<SetupManager>().ActivateNetworkSetupText"
+      ]
+    },
+    "SceneManager": {
+      "Functions": ["LoadScene"]
+    }
+  }

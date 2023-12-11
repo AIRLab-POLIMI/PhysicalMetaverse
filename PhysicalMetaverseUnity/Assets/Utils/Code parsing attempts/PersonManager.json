@@ -1,0 +1,22 @@
+{
+    "UnityEngine": {
+      "Functions": ["Vector3.Lerp", "Quaternion.Euler", "Debug.Log", "GameObject.CreatePrimitive", "Transform.RotateAround"],
+      "Variables": ["PrimitiveType.Sphere"]
+    },
+    "System.Collections": {
+      "Functions": ["Array.Length"]
+    },
+    "System": {
+      "Functions": ["Convert.ToChar"]
+    },
+    "System.Text": {
+      "Functions": ["Encoding.UTF8.GetBytes"]
+    },
+    "System.Net": {
+      "Functions": ["IPAddress.Parse"]
+    },
+    "System.Net.Sockets": {
+      "Functions": ["UdpClient.Receive", "UdpClient.Close"]
+    }
+}
+

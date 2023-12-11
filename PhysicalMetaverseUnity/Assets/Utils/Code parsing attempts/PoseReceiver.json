@@ -1,0 +1,53 @@
+{
+  "PoseManager": {
+    "Variables": [
+      "Instance",
+      "Viz",
+      "_rotoTraslation"
+    ],
+    "Functions": [
+      "PoseManager.Instance",
+      "_poseManager.GetViz",
+      "_poseManager.ShowViz",
+      "_poseManager.SetRotationOffset",
+      "_poseManager.GetRotoTraslation",
+      "_poseManager.GetDistanceFromCamera"
+    ]
+  },
+  "MonoSingleton": {
+    "Variables": [],
+    "Functions": ["MonoSingleton<PoseReceiver>.Instance"]
+  },
+  "GameObject": {
+    "Variables": ["_camera", "_poseConfirmationAreaTransform", "_personCollider", "_cameraTransform"],
+    "Functions": []
+  },
+  "Transform": {
+    "Variables": ["_rotoTraslation"],
+    "Functions": ["_rotoTraslation.localPosition.x", "_rotoTraslation.localPosition.z"]
+  },
+  "Quaternion": {
+    "Variables": [],
+    "Functions": ["Quaternion.Euler"]
+  },
+  "Time": {
+    "Variables": [],
+    "Functions": ["Time.time"]
+  },
+  "Vector3": {
+    "Variables": [],
+    "Functions": ["Vector3.SignedAngle"]
+  },
+  "Debug": {
+    "Variables": ["Debug.unityLogger.logEnabled"],
+    "Functions": ["Debug.Log", "Debug.DrawRay"]
+  },
+  "Mathf": {
+    "Variables": [],
+    "Functions": ["Mathf.Atan2", "Mathf.Clamp", "Mathf.Lerp"]
+  },
+  "PrimitiveType": {
+    "Variables": [],
+    "Functions": []
+  }
+}

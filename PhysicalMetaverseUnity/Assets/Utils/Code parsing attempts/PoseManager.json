@@ -1,0 +1,41 @@
+{
+  "PoseReceiver": {
+    "Variables": ["_poseReceiver"],
+    "Functions": [
+      "PoseReceiver.Instance",
+      "_poseReceiver.GetSpawned",
+      "_poseReceiver.GetSpheres",
+      "_poseReceiver.GetDistance",
+      "_poseReceiver.GetPersonDetected"
+    ]
+  },
+  "DOFController": {
+    "Variables": ["_headTilt", "_headPan"],
+    "Functions": [
+      "_headTilt.GetAngle",
+      "_headPan.GetAngle",
+      "_headTilt.SetAngle",
+      "_headPan.SetAngle"
+    ]
+  },
+  "Time": {
+    "Variables": [],
+    "Functions": ["Time.time"]
+  },
+  "Quaternion": {
+    "Variables": [],
+    "Functions": ["Quaternion.Euler"]
+  },
+  "Mathf": {
+    "Variables": [],
+    "Functions": ["Mathf.Lerp", "Mathf.Clamp"]
+  },
+  "Transform": {
+    "Variables": ["_rotoTraslation"],
+    "Functions": ["_rotoTraslation.localPosition.x", "_rotoTraslation.localPosition.z"]
+  },
+  "GameObject": {
+    "Variables": [],
+    "Functions": ["_camera.localRotation"]
+  }
+}
