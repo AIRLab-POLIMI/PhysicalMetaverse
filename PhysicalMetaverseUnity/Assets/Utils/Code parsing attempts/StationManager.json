@@ -1,0 +1,31 @@
+{
+  "externalClassCalls": [
+    {
+      "class": "OdometryManager",
+      "instanceVariable": "_odometryManager"
+    },
+    {
+      "class": "Debug",
+      "methods": ["Log", "unityLogger"]
+    },
+    {
+      "class": "NetworkingManager",
+      "instanceVariable": "NetworkingManager.Instance",
+      "methods": ["SendString", "GetPythonGamemanagerIp"]
+    },
+    {
+      "class": "LidarManager",
+      "instanceVariable": "LidarManager.Instance",
+      "methods": ["GetLidarScale", "AddStationInteraction", "SpawnLidarBlobs"]
+    },
+    {
+      "class": "SingleStationManager",
+      "methods": ["SetTracked", "GetTracked", "SetUntrackedParent", "SetIp", "SetOrientationTransform", "UpdateBehaviour", "GetStationInteraction"]
+    },
+    {
+      "class": "GameManager",
+      "instanceVariable": "GameManager.Instance",
+      "methods": ["UpdateScore", "SubtractTime"]
+    }
+  ]
+}

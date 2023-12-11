@@ -1,31 +1,28 @@
 {
-    "BumpManager": {
-      "Functions": ["Instance.Setup"]
+  "externalClassCalls": [
+    {
+      "class": "BumpManager",
+      "methods": ["Instance.Setup"]
     },
-    "LidarManager": {
-      "Functions": ["Instance.Setup"]
+    {
+      "class": "LidarManager",
+      "methods": ["Instance.Setup"]
     },
-    "NetworkingManager": {
-      "Functions": [
-        "Instance.Setup",
-        "Instance.SendString",
-        "Instance.GetPythonGamemanagerIp",
-        "Instance.CloseConnections"
-      ]
+    {
+      "class": "PoseManager",
+      "methods": ["Instance.Setup", "Instance.GetViz"]
     },
-    "AmbientManager": {
-      "Functions": ["Instance.UpdateLight"]
+    {
+      "class": "NetworkingManager",
+      "methods": ["Instance.Setup", "Instance.SendString", "Instance.GetPythonGamemanagerIp", "Instance.CloseConnections"]
     },
-    "PoseManager": {
-      "Functions": ["Instance.Setup", "Instance.GetViz"]
+    {
+      "class": "AmbientManager",
+      "methods": ["Instance.UpdateLight"]
     },
-    "SetupManager": {
-      "Functions": [
-        "GetComponent<SetupManager>().DeleteEnvironmentSetupText",
-        "GetComponent<SetupManager>().ActivateNetworkSetupText"
-      ]
-    },
-    "SceneManager": {
-      "Functions": ["LoadScene"]
+    {
+      "class": "SetupManager",
+      "methods": ["DeleteEnvironmentSetupText", "ActivateNetworkSetupText"]
     }
-  }
+  ]
+}
