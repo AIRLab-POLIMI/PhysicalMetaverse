@@ -1,12 +1,20 @@
 import tkinter as tk
 import os
+import random
 
 class DraggableRectangle:
     def __init__(self, canvas, x, y, text, on_drag_callback):
         self.canvas = canvas
         self.text = text
-        self.rectangle = canvas.create_rectangle(x, y, x + 100, y + 30, fill="lightblue")
-        self.label = canvas.create_text(x + 50, y + 15, text=text)
+        #self.rectangle = canvas.create_rectangle(x, y, x + 100, y + 30, fill="lightblue")
+        color = "#%06x" % random.randint(0, 0xFFFFFF)
+        #random color
+        self.rectangle = canvas.create_rectangle(x, y, x + 100, y + 30, fill=color)
+        #make text white if background is too dark
+        if int(color[1:3], 16) + int(color[3:5], 16) + int(color[5:7], 16) < 382:
+            self.label = canvas.create_text(x + 50, y + 15, text=text, fill="white")
+        else:
+            self.label = canvas.create_text(x + 50, y + 15, text=text)
         self.on_drag_callback = on_drag_callback
 
         self.canvas.tag_bind(self.rectangle, "<ButtonPress-1>", self.on_start)
