@@ -46,7 +46,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30b16a4f1936dac468784672f8723556, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resetStations: 1
+  _RESET_STATIONS: 1
+  _ENABLE_LOG: 0
+  _UPDATE_STATIONS_BEHAVIOUR: 0
+  _consumeMultiplier: 3
+  _activationPermanenceTime: 1
   _stationPrefab: {fileID: 6699460793187042399, guid: 670ff607560aedb4e9707afb7a1d6df9,
     type: 3}
   _cameraRotationAngle: {fileID: 0}
@@ -60,33 +64,26 @@ MonoBehaviour:
   - 192.168.0.59
   - 192.168.0.60
   - 192.168.0.79
+  _totalStations: 7
   _orientationTransform: {fileID: 0}
   _stations: []
-  _lidarManager: {fileID: 0}
-  _minColorSize: 300
-  ENABLE_LOG: 0
-  _zTrackedTolerance: 2
-  _TOLERANCE_CHECK: 0
-  _perspectiveRotationCorrection: 1
   _scale: 1
   _imageFrameScale: 100
-  _imageRatio: 1.3333334
   _perspectiveCorrection: 3
   _zScale: 27
   zOffset: -0.4
-  yOffset: -3.6
   xOffset: -1.8
-  _cameraSidesCorrection: 1
+  _yPosition: -0.8
+  _zTrackedTolerance: 2
+  _TOLERANCE_CHECK: 0
   _speed: 0.1
-  _untrackedAngle: 0
-  _sun: {fileID: 0}
   STATIONS_DECAY_TIME: 1e+9
   TRACKING_DECAY_TIME: 0.2
-  _yPosition: -0.8
   _lerp: 0
-  _rightStationMessage: R:1
-  _completedStations: 0
+  _rightStationKey: R
   _wrongStationMessage: W:10
+  _completedStations: 0
+  _fadeSpeed: 0.1
 --- !u!114 &8331455122307398594
 MonoBehaviour:
   m_ObjectHideFlags: 0
