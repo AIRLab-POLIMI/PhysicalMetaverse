@@ -72,7 +72,7 @@ with open(filename + '_classes.txt', 'w') as file:
     file.write(filename + '\n')
     for word in angle_bracket_words:
         file.write(word + '\n')"""
-words_blacklist = ['int', 'GameObject', 'Quaternion', 'MeshCollider', 'Rigidbody', 'BoxCollider', 'CapsuleCollider', 'Renderer', 'MeshRenderer', 'Transform', 'Vector3', 'Vector2', 'Vector4', 'Color', 'Material', 'Texture', 'Texture2D', 'RaycastHit', 'Ray', 'Raycast', 'RaycastAll', 'RaycastNonAlloc', 'RaycastHit2D', 'Physics', 'Mathf', 'Time', 'Input', 'Debug', 'MonoBehaviour', 'Component', 'Object', 'ScriptableObject', 'Application', 'Camera', 'CameraClearFlags']
+words_blacklist = ['int', 'GameObject', 'Quaternion', 'MeshCollider', 'Rigidbody', 'BoxCollider', 'CapsuleCollider', 'Renderer', 'MeshRenderer', 'Transform', 'Vector3', 'Vector2', 'Vector4', 'Color', 'Material', 'Texture', 'Texture2D', 'RaycastHit', 'Ray', 'Raycast', 'RaycastAll', 'RaycastNonAlloc', 'RaycastHit2D', 'Physics', 'Mathf', 'Time', 'Input', 'Debug', 'MonoBehaviour', 'Component', 'Object', 'ScriptableObject', 'Application', 'Camera', 'CameraClearFlags', 'UnityEngine.UI.Image', 'float', 'Collider', 'int[]', 'string', 'SpriteRenderer', 'DestroyOnLoad']
 #same as above but for each file with extension .cs in this directory
 import os
 for file in os.listdir():
