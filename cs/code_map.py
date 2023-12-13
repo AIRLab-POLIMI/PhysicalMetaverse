@@ -42,17 +42,32 @@ class DraggableRectangle:
         self.drag_data = {"x": event.x, "y": event.y}
 
     def on_drag(self, event):
+        #scale canvas back to original
+        self.canvas.scale("all", 0, 0, 1/scale, 1/scale)
+
+        """
         dx = event.x - self.drag_data["x"]
         dy = event.y - self.drag_data["y"]
         self.canvas.move(self.rectangle, dx, dy)
         self.canvas.move(self.label, dx, dy)
+        """
+        #take scale into account
+        dx = (event.x - self.drag_data["x"]) / scale
+        dy = (event.y - self.drag_data["y"]) / scale
+        self.canvas.move(self.rectangle, dx, dy)
+        self.canvas.move(self.label, dx, dy)
+
+
         self.drag_data = {"x": event.x, "y": event.y}
         self.on_drag_callback(self)
-        self.check_bounds()
+        #self.check_bounds()
+
+        #scale canvas back to original scale
+        self.canvas.scale("all", 0, 0, scale, scale)
 
     def check_bounds(self):
-        canvas_width = self.canvas.winfo_width()
-        canvas_height = self.canvas.winfo_height()
+        canvas_width = self.canvas.winfo_width() / scale
+        canvas_height = self.canvas.winfo_height() / scale
         x1, y1, x2, y2 = self.canvas.coords(self.rectangle)
 
         # Adjust if outside bounds
@@ -63,6 +78,7 @@ class DraggableRectangle:
             y2 = y1 + 30
             self.canvas.coords(self.rectangle, x1, y1, x2, y2)
             self.canvas.coords(self.label, x1 + 50, y1 + 15)
+
 
 def update_arrows(canvas, rectangles, arrows):
     for arrow, (parent_name, child_name) in arrows.items():
@@ -137,9 +153,46 @@ def create_gui(file_paths):
 
 def bind_controls(canvas, rectangles, arrows):
     #if s is pressed, save the current positions of the rectangles to file
-    canvas.bind_all("<s>", lambda event: save_positions(rectangles, arrows))
+    canvas.bind_all("<s>", lambda event: save_positions(rectangles, arrows, canvas))
+    
+    canvas.bind_all("<MouseWheel>", lambda event: zoom(event, canvas, rectangles))
 
-def save_positions(rectangles, arrows):
+    #call drag_canvas when mousewheel is clicked
+    canvas.bind_all("<Button-2>", lambda event: drag_canvas(event, canvas))
+
+    #bind press d button to draw_canvas_border
+    canvas.bind_all("<d>", lambda event: draw_canvas_border(canvas))
+
+def draw_canvas_border(canvas):
+    canvas.create_rectangle(0, 0, canvas.winfo_width(), canvas.winfo_height(), outline="red")
+
+
+def drag_canvas(event, canvas):
+    canvas.scan_mark(event.x, event.y)
+
+    def scan_drag(event):
+        canvas.scan_dragto(event.x, event.y, gain=1)
+
+    canvas.bind("<B2-Motion>", scan_drag)
+
+scale = 1
+
+def zoom(event, canvas, rectangles):
+    global scale
+    x = canvas.canvasx(event.x)
+    y = canvas.canvasy(event.y)
+    factor = 1.1 if event.delta > 0 else 0.9
+
+    canvas.scale("all", x, y, factor, factor)
+    scale *= factor
+
+    for rectangle in rectangles.values():
+        canvas.itemconfig(rectangle.label, font=("Purisa", int(12 * scale)))
+
+
+def save_positions(rectangles, arrows, canvas):
+    #restore original canvas scale
+    canvas.scale("all", 0, 0, 1/scale, 1/scale)
     with open("positions.txt", 'w') as file:
         for rectangle in rectangles.values():
             x1, y1, x2, y2 = rectangle.canvas.coords(rectangle.rectangle)
@@ -150,6 +203,8 @@ def save_positions(rectangles, arrows):
             parent_name, child_name = arrows[arrow]
             file.write(parent_name + " " + child_name + "\n")
         print("Saved positions to positions.txt")
+    #restore canvas scale
+    canvas.scale("all", 0, 0, scale, scale)
 
 def load_positions(rectangles, arrows, canvas, on_drag):
     with open("positions.txt", 'r') as file:
