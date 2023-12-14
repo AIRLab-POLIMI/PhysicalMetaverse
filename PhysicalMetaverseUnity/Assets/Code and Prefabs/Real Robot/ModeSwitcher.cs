@@ -56,7 +56,7 @@ public class ModeSwitcher : MonoBehaviour
             //disable _simulation
             _simulation.SetActive(true);
             //_rotate90 of PoseReceiver true
-            PoseReceiver.Instance._rotate90 = true;
+            //PoseReceiver.Instance._rotate90 = true;
 
             _pillar.GetComponent<PillarManager>()._debugMaterial = true;
         }
