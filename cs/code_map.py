@@ -37,6 +37,8 @@ class DraggableRectangle:
             self.canvas.itemconfig(self.label, fill="white")
         else:
             self.canvas.itemconfig(self.label, fill="black")
+        #call on drag
+        self.on_drag_callback(self)
 
     def on_start(self, event):
         self.drag_data = {"x": event.x, "y": event.y}
@@ -87,7 +89,8 @@ def update_arrows(canvas, rectangles, arrows):
         #canvas.coords(arrow, parent_rect.canvas.coords(parent_rect.rectangle)[:2] + child_rect.canvas.coords(child_rect.rectangle)[:2])
         #arrows connect centers of rectangles
         canvas.coords(arrow, parent_rect.canvas.coords(parent_rect.rectangle)[0] + 0, parent_rect.canvas.coords(parent_rect.rectangle)[1] + 15, child_rect.canvas.coords(child_rect.rectangle)[0] + 100, child_rect.canvas.coords(child_rect.rectangle)[1] + 15)
-
+        #set arrow color to parent color
+        canvas.itemconfig(arrow, fill=canvas.itemcget(parent_rect.rectangle, "fill"))
 
 def read_class_relationships(file_paths):
     relationships = {}
@@ -155,7 +158,7 @@ def bind_controls(canvas, rectangles, arrows):
     #if s is pressed, save the current positions of the rectangles to file
     canvas.bind_all("<s>", lambda event: save_positions(rectangles, arrows, canvas))
     
-    canvas.bind_all("<MouseWheel>", lambda event: zoom(event, canvas, rectangles))
+    canvas.bind_all("<MouseWheel>", lambda event: zoom(event, canvas, rectangles, arrows))
 
     #call drag_canvas when mousewheel is clicked
     canvas.bind_all("<Button-2>", lambda event: drag_canvas(event, canvas))
@@ -177,7 +180,7 @@ def drag_canvas(event, canvas):
 
 scale = 1
 
-def zoom(event, canvas, rectangles):
+def zoom(event, canvas, rectangles, arrows):
     global scale
     x = canvas.canvasx(event.x)
     y = canvas.canvasy(event.y)
@@ -188,6 +191,9 @@ def zoom(event, canvas, rectangles):
 
     for rectangle in rectangles.values():
         canvas.itemconfig(rectangle.label, font=("Purisa", int(12 * scale)))
+    #for each arrow scale thickness
+    for arrow in arrows:
+        canvas.itemconfig(arrow, width=int(3 * scale))
 
 
 def save_positions(rectangles, arrows, canvas):
@@ -218,6 +224,8 @@ def load_positions(rectangles, arrows, canvas, on_drag):
             elif len(line.split()) == 2:
                 parent_name, child_name = line.split()
                 arrow = canvas.create_line(300, 300, 100, 100, arrow=tk.LAST)
+                #arrow thickness
+                canvas.itemconfig(arrow, width=3)
                 arrows[arrow] = (parent_name, child_name)
             else:
                 print("Error in positions.txt")
