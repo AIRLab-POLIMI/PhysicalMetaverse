@@ -63,7 +63,7 @@ public class GameManager : Monosingleton<GameManager>
         
         NetworkingManager.Instance.Setup();
 
-        _normalisedElapsedTime = 0;
+        _normalisedElapsedTime = 0.00001f;
 
         //set quality to high
         QualitySettings.SetQualityLevel(5);
@@ -150,7 +150,7 @@ public class GameManager : Monosingleton<GameManager>
         NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
         NetworkingManager.Instance.SendString(data, NetworkingManager.Instance.GetPythonGamemanagerIp());
         //gamemanager teststationsmanager set _normalisedElapsedTime 0 gameDurationSeconds time string
-        _normalisedElapsedTime = 0;
+        _normalisedElapsedTime = 0.0001f;
 
         //log resetted time
         Debug.Log("Resetted time to " + _gameDurationSeconds);
