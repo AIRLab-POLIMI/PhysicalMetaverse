@@ -1,4 +1,23 @@
 # PhysicalMetaverse
-SW about the development of a Physical Metaverse
-SWITCH TO DRAWIO https://app.diagrams.net/#G1pP8QfLQ7ZPmrCZGr49P1D1tTheDwJRDS
-[![GitHub Logo](RobotRaspberry.png)](https://www.figma.com/file/SAjLXh5r6vshrb946Us4zP/RobotRaspberry?type=whiteboard&t=M4nzelZkb8Vj2T2W-1)
+
+[![Project Image](sts.png)]
+
+Draft scheme of the core components for Sensory Translation. Generated using code_map.py developed for this repository.
+
+Description of your project goes here. Provide a brief overview of what your project is about, its features, and any other relevant information.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Installation
+
+Provide instructions on how to install your project. Include any dependencies and steps required to set up the project.
+
+```bash
+# Example installation commands
+npm install
+
